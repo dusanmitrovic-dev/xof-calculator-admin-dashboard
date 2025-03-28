@@ -42,3 +42,9 @@
 - [ ] Create `DashboardModule` and `DashboardPageComponent`
 - [ ] Configure dashboard routing
 - [ ] Implement `DashboardPageComponent` (Displays basic overview stats using *mock* service data)
+
+## 5. Feature: Settings
+
+- [ ] Create `SettingsModule` and configure base routing
+- [ ] Create Settings Page Components (`CommissionSettingsPage`, `BonusRulesPage`, `DisplaySettingsPage`, `OtherConfigsPage`)
+- [ ] Configure settings feature routing (linking paths to components)
