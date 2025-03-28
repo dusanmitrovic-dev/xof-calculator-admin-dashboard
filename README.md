@@ -48,3 +48,8 @@
 - [ ] Create `SettingsModule` and configure base routing
 - [ ] Create Settings Page Components (`CommissionSettingsPage`, `BonusRulesPage`, `DisplaySettingsPage`, `OtherConfigsPage`)
 - [ ] Configure settings feature routing (linking paths to components)
+- [ ] Implement `CommissionSettingsPageComponent`
+    - [ ] Use Reactive Forms (`FormGroup` nested for roles/users)
+    - [ ] Load and display *mock* commission settings data
+    - [ ] Implement basic add/remove controls for roles/users (modifies form)
+    - [ ] Call *mock* `SettingsService.saveCommissionSettings` on submit
