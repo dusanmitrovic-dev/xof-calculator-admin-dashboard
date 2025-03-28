@@ -67,3 +67,18 @@
     - [ ] Use Reactive Forms / appropriate controls for Role Percentages map
     - [ ] Load and display *mock* data for all sections
     - [ ] Call respective *mock* save methods in `SettingsService` on submit
+
+## 6. Feature: Earnings
+
+- [ ] Create `EarningsModule` and `EarningsPageComponent`
+- [ ] Configure earnings routing
+- [ ] Implement `EarningsPageComponent`
+    - [ ] Use `MatTable` with `MatTableDataSource`
+    - [ ] Load `DisplaySettings` to determine `show_ids`
+    - [ ] Dynamically set `displayedColumns` based on `show_ids`
+    - [ ] Load and display flattened *mock* earnings data
+    - [ ] Integrate `MatPaginator`
+    - [ ] Integrate `MatSort` (with basic date sorting logic)
+    - [ ] Implement client-side filter input
+    - [ ] Include Edit/Delete buttons in 'actions' column
+    - [ ] Call *mock* `EarningsService` edit/delete methods (using `confirm`/`alert`)
