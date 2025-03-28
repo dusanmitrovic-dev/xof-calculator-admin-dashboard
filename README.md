@@ -23,3 +23,10 @@
     - [ ] Apply themes and global styles in `styles.scss`
 - [ ] Configure Main App Module (`app.module.ts`) with necessary imports (Browser, Animations, HttpClient, Layout, Shared, Core Material)
 - [ ] Configure Main App Routing (`app-routing.module.ts`) with layout and lazy-loading placeholders
+
+## 2. Layout Implementation
+
+- [ ] Create Layout Components (`MainLayout`, `Toolbar`, `Sidenav`)
+- [ ] Implement `MainLayoutComponent` (Handles mobile query, integrates ThemeService, loads DisplaySettings for title)
+- [ ] Implement `ToolbarComponent` (Displays dynamic title, theme toggle, sidenav toggle)
+- [ ] Implement `SidenavComponent` (Displays navigation items with links/icons, basic active state)
