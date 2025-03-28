@@ -36,3 +36,9 @@
 - [ ] Create `SharedModule`
 - [ ] Create `ConfigCardComponent` (Handles title, loading state, content projection for actions/content)
 - [ ] Configure `SharedModule` (Imports/exports Material modules, declares/exports `ConfigCardComponent`)
+
+## 4. Feature: Dashboard
+
+- [ ] Create `DashboardModule` and `DashboardPageComponent`
+- [ ] Configure dashboard routing
+- [ ] Implement `DashboardPageComponent` (Displays basic overview stats using *mock* service data)
