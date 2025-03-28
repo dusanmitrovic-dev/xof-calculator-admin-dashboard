@@ -105,3 +105,5 @@
 - [ ] **Testing:** Implement unit tests for services and components. Consider integration/e2e tests.
 - [ ] **CI/CD:** Set up automated build and deployment pipelines.
 - [ ] **Documentation:** Add code comments and potentially generate documentation.
+
+`note: Use Mongo DB Atlas M0 512mb free tier cloud database`
