@@ -53,3 +53,8 @@
     - [ ] Load and display *mock* commission settings data
     - [ ] Implement basic add/remove controls for roles/users (modifies form)
     - [ ] Call *mock* `SettingsService.saveCommissionSettings` on submit
+- [ ] Implement `BonusRulesPageComponent`
+    - [ ] Use Reactive Forms (`FormArray` for rules)
+    - [ ] Load and display *mock* bonus rules data
+    - [ ] Implement add/remove controls for rules
+    - [ ] Call *mock* `SettingsService.saveBonusRules` on submit (includes sorting)
