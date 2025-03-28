@@ -30,3 +30,9 @@
 - [ ] Implement `MainLayoutComponent` (Handles mobile query, integrates ThemeService, loads DisplaySettings for title)
 - [ ] Implement `ToolbarComponent` (Displays dynamic title, theme toggle, sidenav toggle)
 - [ ] Implement `SidenavComponent` (Displays navigation items with links/icons, basic active state)
+
+## 3. Shared Module & Components
+
+- [ ] Create `SharedModule`
+- [ ] Create `ConfigCardComponent` (Handles title, loading state, content projection for actions/content)
+- [ ] Configure `SharedModule` (Imports/exports Material modules, declares/exports `ConfigCardComponent`)
