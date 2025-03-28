@@ -82,3 +82,26 @@
     - [ ] Implement client-side filter input
     - [ ] Include Edit/Delete buttons in 'actions' column
     - [ ] Call *mock* `EarningsService` edit/delete methods (using `confirm`/`alert`)
+
+## 7. Next Steps / Pending Tasks
+
+- [ ] **Backend Integration:** Replace ALL mock service calls (`of(...)`, `console.log`, `alert`) in `SettingsService` and `EarningsService` with actual `HttpClient` calls to the backend API endpoints.
+- [ ] **Authentication:**
+    - [ ] Implement `AuthService` (login, logout, token management).
+    - [ ] Implement Login Page Component.
+    - [ ] Implement `AuthGuard` to protect routes.
+    - [ ] Implement HTTP Interceptor to add JWT token to API requests.
+- [ ] **Earnings Table Enhancements:**
+    - [ ] Implement server-side pagination, sorting, and filtering by modifying `EarningsService.getEarnings` to accept parameters and making the backend API support them.
+    - [ ] Implement `MatDialog` for editing earning records with a dedicated form.
+    - [ ] Implement `MatDialog` for confirming earning deletions.
+- [ ] **Settings Enhancements:**
+    - [ ] Implement `MatDialog` for adding new Roles/Users in Commission Settings instead of basic inputs.
+- [ ] **UI/UX Refinements:**
+    - [ ] Add more robust loading indicators (e.g., on buttons during save).
+    - [ ] Improve form validation feedback.
+    - [ ] Enhance error handling (display user-friendly messages from API errors).
+    - [ ] Ensure responsiveness across various screen sizes is adequate.
+- [ ] **Testing:** Implement unit tests for services and components. Consider integration/e2e tests.
+- [ ] **CI/CD:** Set up automated build and deployment pipelines.
+- [ ] **Documentation:** Add code comments and potentially generate documentation.
