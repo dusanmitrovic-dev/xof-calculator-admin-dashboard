@@ -3,10 +3,16 @@ import { BrowserModule, provideClientHydration, withEventReplay } from '@angular
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
+import { MainLayoutComponent } from './layout/main-layout/main-layout.component';
+import { ToolbarComponent } from './layout/toolbar/toolbar.component';
+import { SidenavComponent } from './layout/sidenav/sidenav.component';
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    MainLayoutComponent,
+    ToolbarComponent,
+    SidenavComponent
   ],
   imports: [
     BrowserModule,
