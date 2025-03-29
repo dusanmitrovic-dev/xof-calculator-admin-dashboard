@@ -1,0 +1,42 @@
+.app-container {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+  }
+  
+  .app-sidenav-container {
+    flex: 1;
+  }
+  
+  .app-is-mobile .app-toolbar {
+    position: fixed;
+    z-index: 2; // Keep toolbar on top
+  }
+  
+  // Adjust main content padding based on sidenav state only when not mobile
+  // Add padding to avoid content going under the fixed toolbar
+  .main-content {
+      padding: 20px; // General padding
+      margin-top: 64px; // Toolbar height for desktop
+      @media (max-width: 600px) {
+           margin-top: 56px; // Toolbar height for mobile
+      }
+  }
+  
+  // When sidenav is open and not mobile, add left margin
+  mat-sidenav-container.mat-drawer-container {
+      mat-sidenav-content {
+           @media (min-width: 601px) { // Only apply when not mobile
+              // Assuming sidenav width is 240px
+              // Adjust this value if you change sidenav width
+              margin-left: 240px;
+           }
+      }
+  }
+  mat-sidenav {
+      width: 240px; // Set your desired sidenav width
+  }

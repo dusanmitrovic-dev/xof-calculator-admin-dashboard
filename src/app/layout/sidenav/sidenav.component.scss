@@ -1,0 +1,9 @@
+.active-list-item {
+    // Add styles for the active route link
+    background-color: rgba(0, 0, 0, 0.04); // Example light theme active
+    font-weight: bold;
+ }
+
+ .dark-theme .active-list-item {
+     background-color: rgba(255, 255, 255, 0.1); // Example dark theme active
+ }

@@ -1,1 +1,26 @@
-<p>main-layout works!</p>
+<div class="app-container" [class.app-is-mobile]="mobileQuery.matches">
+    <app-toolbar
+      [isMobile]="mobileQuery.matches"
+      (sidenavToggle)="sidenav.toggle()"
+      (themeToggle)="toggleTheme()"
+      [isDark]="(isDark$ | async) ?? false"
+      [appName]="(displaySettings$ | async)?.agency_name"
+      [botName]="(displaySettings$ | async)?.bot_name">
+    </app-toolbar>
+  
+    <mat-sidenav-container class="app-sidenav-container">
+      <mat-sidenav #sidenav
+                   [mode]="mobileQuery.matches ? 'over' : 'side'"
+                   [fixedInViewport]="mobileQuery.matches"
+                   fixedTopGap="56"
+                   [opened]="!mobileQuery.matches">
+        <app-sidenav></app-sidenav>
+      </mat-sidenav>
+  
+      <mat-sidenav-content>
+        <main class="main-content">
+           <router-outlet></router-outlet>
+        </main>
+      </mat-sidenav-content>
+    </mat-sidenav-container>
+  </div>
