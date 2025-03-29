@@ -1,0 +1,16 @@
+{
+    "roles": {
+        "1348854154134552637": {
+            "commission_percentage": 6.5
+        },
+        "1348858428965257256": {
+            "commission_percentage": 6.5
+        }
+    },
+    "users": {
+        "1177277640118370388": {
+            "hourly_rate": 4.0,
+            "override_role": true
+        }
+    }
+}
