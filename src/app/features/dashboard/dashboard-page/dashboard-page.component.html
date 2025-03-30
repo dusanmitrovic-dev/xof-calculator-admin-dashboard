@@ -1,1 +1,57 @@
-<p>dashboard-page works!</p>
+<div class="page-container">
+  <h1>Dashboard Overview</h1>
+
+  <div *ngIf="isLoading; else dashboardContent" style="text-align: center; padding: 40px;">
+      <mat-spinner diameter="50"></mat-spinner>
+  </div>
+
+  <ng-template #dashboardContent>
+      <div class="dashboard-stats">
+          <mat-card class="stat-card">
+              <mat-card-header>
+                  <mat-card-title>Total Earnings Entries</mat-card-title>
+              </mat-card-header>
+              <mat-card-content>
+                  <p class="stat-value">{{ totalEntries }}</p>
+              </mat-card-content>
+          </mat-card>
+
+          <mat-card class="stat-card">
+              <mat-card-header>
+                  <mat-card-title>Unique Users with Earnings</mat-card-title>
+              </mat-card-header>
+              <mat-card-content>
+                  <p class="stat-value">{{ userCount }}</p>
+              </mat-card-content>
+          </mat-card>
+
+          <mat-card class="stat-card">
+              <mat-card-header>
+                  <mat-card-title>Total Gross Revenue</mat-card-title>
+              </mat-card-header>
+              <mat-card-content>
+                  <p class="stat-value">{{ totalGrossRevenue | currency:'USD':'symbol':'1.2-2' }}</p>
+              </mat-card-content>
+          </mat-card>
+
+          <mat-card class="stat-card">
+              <mat-card-header>
+                  <mat-card-title>Total Paid Out (Cut)</mat-card-title>
+              </mat-card-header>
+              <mat-card-content>
+                  <p class="stat-value">{{ totalCut | currency:'USD':'symbol':'1.2-2' }}</p>
+              </mat-card-content>
+          </mat-card>
+      </div>
+
+      <mat-card style="margin-top: 20px;">
+        <mat-card-header>
+            <mat-card-title>Welcome</mat-card-title>
+        </mat-card-header>
+         <mat-card-content>
+            <p>Use the navigation on the left to manage settings and view earnings records.</p>
+            <p><small>Note: Data is currently loaded from mock files. Backend integration needed for live data and saving changes.</small></p>
+         </mat-card-content>
+      </mat-card>
+  </ng-template>
+</div>
