@@ -18,6 +18,7 @@ const routes: Routes = [
       // { path: 'earnings', component: PlaceholderEarningsComponent }  // Replace later
     ],
   },
+  { path: 'dashboard', loadChildren: () => import('./features/dashboard/dashboard.module').then(m => m.DashboardModule) },
 
   // Wildcard route for 404
   { path: '**', redirectTo: '/dashboard' }, // Or a dedicated 404 component
