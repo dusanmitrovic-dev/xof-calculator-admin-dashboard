@@ -1,5 +1,8 @@
 import { NgModule } from '@angular/core';
-import { BrowserModule, provideClientHydration } from '@angular/platform-browser';
+import {
+  BrowserModule,
+  provideClientHydration,
+} from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations'; // Import Animations
 import { HttpClientModule } from '@angular/common/http'; // Import HttpClientModule
 
@@ -23,9 +26,6 @@ import { MatButtonModule } from '@angular/material/button';
   declarations: [
     AppComponent,
     // Layout Components are automatically declared by CLI here
-    MainLayoutComponent,
-    ToolbarComponent,
-    SidenavComponent
   ],
   imports: [
     BrowserModule,
@@ -38,11 +38,14 @@ import { MatButtonModule } from '@angular/material/button';
     MatSidenavModule,
     MatListModule,
     MatIconModule,
-    MatButtonModule
+    MatButtonModule,
+    MainLayoutComponent, // Import standalone component
+    ToolbarComponent,
+    SidenavComponent,
   ],
   providers: [
-    provideClientHydration() // Included by default with SSR setup
+    provideClientHydration(), // Included by default with SSR setup
   ],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
 })
-export class AppModule { }
+export class AppModule {}
