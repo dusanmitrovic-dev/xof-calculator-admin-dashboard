@@ -1,0 +1,28 @@
+.loading-overlay {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 40px 20px;
+    background: rgba(255, 255, 255, 0.7); // Light theme overlay
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 10;
+}
+
+.dark-theme .loading-overlay {
+    background: rgba(0, 0, 0, 0.6); // Dark theme overlay
+}
+
+mat-card-content {
+    position: relative; // Needed for overlay positioning
+    padding-top: 20px; // Add padding above content
+}
+
+mat-card-header {
+    // Ensure actions align correctly
+    display: flex;
+    align-items: center;
+}
