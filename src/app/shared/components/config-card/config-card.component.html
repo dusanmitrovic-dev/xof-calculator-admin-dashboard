@@ -1,1 +1,16 @@
-<p>config-card works!</p>
+<mat-card class="config-card">
+  <mat-card-header>
+    <mat-card-title>{{ title }}</mat-card-title>
+    <span class="spacer"></span>
+    <!-- Slot for action buttons -->
+    <ng-content select="[card-actions]"></ng-content>
+  </mat-card-header>
+  <mat-divider></mat-divider>
+  <mat-card-content>
+    <div *ngIf="loading" class="loading-overlay">
+       <mat-progress-spinner mode="indeterminate" diameter="50"></mat-progress-spinner>
+    </div>
+    <!-- Slot for form content -->
+    <ng-content select="[card-content]"></ng-content>
+  </mat-card-content>
+</mat-card>

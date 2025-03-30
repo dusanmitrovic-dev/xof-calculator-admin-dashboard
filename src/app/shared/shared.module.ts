@@ -43,7 +43,8 @@ const materialModules = [
 ];
 
 @NgModule({
-  imports: [CommonModule, ReactiveFormsModule, ConfigCardComponent, ...materialModules],
+  declarations: [ConfigCardComponent],
+  imports: [CommonModule, ReactiveFormsModule, ...materialModules],
   exports: [
     // Export components/modules needed by other modules
     ConfigCardComponent,
