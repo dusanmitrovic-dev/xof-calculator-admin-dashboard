@@ -1,11 +1,11 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 
 @Component({
   selector: 'app-config-card',
-  standalone: false,
   templateUrl: './config-card.component.html',
-  styleUrl: './config-card.component.scss'
+  styleUrls: ['./config-card.component.scss'],
 })
 export class ConfigCardComponent {
-
+  @Input() title: string = 'Configuration';
+  @Input() loading: boolean = false;
 }
