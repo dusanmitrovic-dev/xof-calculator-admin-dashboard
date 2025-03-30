@@ -4,7 +4,7 @@ import { Component, Input } from '@angular/core';
   selector: 'app-config-card',
   templateUrl: './config-card.component.html',
   styleUrls: ['./config-card.component.scss'],
-  standalone: true,
+  standalone: false,
 })
 export class ConfigCardComponent {
   @Input() title: string = 'Configuration';
