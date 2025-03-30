@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { EarningsService } from '../../core/services/earnings.service'; // Adjust paths
-import { SettingsService } from '../../core/services/settings.service';
-import { Earning } from '../../core/models/earning.model';
+import { EarningsService } from '../../../core/services/earnings.service';
+import { SettingsService } from '../../../core/services/settings.service';
+import { Earning } from '../../../core/models/earning.model';
 import { Subject, combineLatest } from 'rxjs';
 import { takeUntil, map } from 'rxjs/operators';
 
