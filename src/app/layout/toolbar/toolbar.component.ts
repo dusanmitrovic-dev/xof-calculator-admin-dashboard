@@ -20,9 +20,12 @@ export class ToolbarComponent {
   @Output() sidenavToggle = new EventEmitter<void>();
   @Output() themeToggle = new EventEmitter<void>();
 
-  isDarkTheme = false;
+  isDarkTheme = true; // Start with dark theme by default
 
-  constructor(private themeService: ThemeService) {}
+  constructor(private themeService: ThemeService) {
+    // Apply the initial theme
+    this.themeService.enableDarkTheme();
+  }
 
   onToggleSidenav() {
     this.sidenavToggle.emit();
@@ -34,11 +37,11 @@ export class ToolbarComponent {
   }
 
   toggleTheme(): void {
-    this.isDarkTheme = !this.isDarkTheme;
     if (this.isDarkTheme) {
-      this.themeService.enableDarkTheme();
-    } else {
       this.themeService.enableLightTheme();
+    } else {
+      this.themeService.enableDarkTheme();
     }
+    this.isDarkTheme = !this.isDarkTheme; // Toggle the state after applying the theme
   }
 }
