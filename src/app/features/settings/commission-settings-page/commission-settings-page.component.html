@@ -1,1 +1,59 @@
-<p>commission-settings-page works!</p>
+<app-config-card title="Role Commissions" [loading]="isLoading">
+    <div card-actions>
+        <button mat-stroked-button (click)="addRole('NEW_ID_HERE', 5)"> <mat-icon>add</mat-icon> Add Role (Example)</button>
+        <button mat-flat-button color="primary" (click)="onSubmit()" [disabled]="isLoading || commissionForm.pristine || !commissionForm.valid">
+            <mat-icon>save</mat-icon> Save Changes
+        </button>
+    </div>
+    <div card-content [formGroup]="commissionForm">
+        <div formGroupName="roles">
+             <h3>Roles</h3>
+             <div *ngIf="roleKeys.length === 0">No roles defined.</div>
+
+             <div *ngFor="let roleId of roleKeys" [formGroupName]="roleId" class="form-row">
+                 <mat-form-field appearance="outline" class="id-field">
+                     <mat-label>Role ID</mat-label>
+                     <input matInput [value]="roleId" readonly disabled title="Role ID">
+                 </mat-form-field>
+                 <mat-form-field appearance="outline" class="value-field">
+                    <mat-label>Commission %</mat-label>
+                    <input matInput type="number" formControlName="commission_percentage" min="0" max="100" step="0.1" placeholder="Enter commission percentage">
+                     <mat-error *ngIf="rolesFormGroup.get(roleId)?.get('commission_percentage')?.invalid">
+                        Valid percentage required (0-100).
+                     </mat-error>
+                 </mat-form-field>
+                 <button mat-icon-button color="warn" (click)="removeRole(roleId)" matTooltip="Delete Role">
+                     <mat-icon>delete</mat-icon>
+                 </button>
+             </div>
+         </div>
+         <mat-divider style="margin: 20px 0;"></mat-divider>
+         <!-- Users Section Here -->
+         <div formGroupName="users">
+              <h3>User Overrides</h3>
+               <div *ngIf="userKeys.length === 0">No user overrides defined.</div>
+              <div *ngFor="let userId of userKeys" [formGroupName]="userId" class="form-row user-row">
+                   <mat-form-field appearance="outline" class="id-field">
+                       <mat-label>User ID</mat-label>
+                       <input matInput [value]="userId" readonly disabled title="User ID" placeholder="User ID">
+                   </mat-form-field>
+                   <mat-form-field appearance="outline" class="value-field rate-field">
+                      <mat-label>Hourly Rate ($)</mat-label>
+                      <input matInput type="number" formControlName="hourly_rate" min="0" step="0.01" title="Hourly Rate" placeholder="Enter hourly rate">
+                      <mat-error *ngIf="usersFormGroup.get(userId)?.get('hourly_rate')?.invalid">
+                          Valid rate required (>= 0).
+                      </mat-error>
+                   </mat-form-field>
+                    <mat-slide-toggle formControlName="override_role" class="override-toggle">Override Role %</mat-slide-toggle>
+                   <button mat-icon-button color="warn" (click)="removeUser(userId)" matTooltip="Delete User Override">
+                       <mat-icon>delete</mat-icon>
+                   </button>
+              </div>
+         </div>
+     </div>
+ </app-config-card>
+
+ <!-- Add Styling in SCSS for .form-row, .id-field, .value-field etc. -->
+ <!-- e.g. .form-row { display: flex; align-items: center; gap: 16px; margin-bottom: 10px; } -->
+ <!--      .user-row { flex-wrap: wrap; } -->
+ <!--      .override-toggle { margin-left: 16px; } -->
