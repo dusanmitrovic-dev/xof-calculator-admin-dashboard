@@ -20,6 +20,7 @@ import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
+import { SettingsModule } from './features/settings/settings.module';
 // SharedModule will be imported later if needed globally, but not required yet
 
 @NgModule({
@@ -42,6 +43,7 @@ import { MatButtonModule } from '@angular/material/button';
     MainLayoutComponent, // Import standalone component
     ToolbarComponent,
     SidenavComponent,
+    SettingsModule,
   ],
   providers: [
     provideClientHydration(), // Included by default with SSR setup
