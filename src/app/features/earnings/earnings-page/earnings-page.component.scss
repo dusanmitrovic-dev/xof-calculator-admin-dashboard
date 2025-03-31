@@ -1,0 +1,26 @@
+.filter-container {
+  padding: 10px 0;
+}
+
+.mat-mdc-table {
+  width: 100%;
+}
+
+// Ensure columns don't wrap awkwardly by default
+.mat-mdc-header-cell,
+.mat-mdc-cell {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding: 0 8px; // Adjust padding
+}
+
+// Give more space to certain columns if needed
+// .mat-column-user { width: 150px; }
+// .mat-column-id { width: 180px; font-size: 0.8em; }
+
+// Style action buttons cell
+.mat-column-actions {
+  text-align: center;
+  width: 120px; // Fixed width for action buttons
+}
