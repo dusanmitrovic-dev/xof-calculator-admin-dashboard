@@ -14,6 +14,7 @@ import { SidenavComponent } from '../sidenav/sidenav.component';
   selector: 'app-main-layout',
   templateUrl: './main-layout.component.html',
   styleUrls: ['./main-layout.component.scss'],
+  standalone: true,
   imports: [
     CommonModule,
     MatSidenavModule,

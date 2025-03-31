@@ -14,6 +14,7 @@ interface NavItem {
   selector: 'app-sidenav',
   templateUrl: './sidenav.component.html',
   styleUrls: ['./sidenav.component.scss'],
+  standalone: true,
   imports: [CommonModule, MatListModule, MatIconModule, RouterModule],
 })
 export class SidenavComponent {
