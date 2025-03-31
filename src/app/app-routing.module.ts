@@ -19,6 +19,7 @@ const routes: Routes = [
     ],
   },
   { path: 'dashboard', loadChildren: () => import('./features/dashboard/dashboard.module').then(m => m.DashboardModule) },
+  { path: 'earnings', loadChildren: () => import('./features/earnings/earnings.module').then(m => m.EarningsModule) },
 
   // Wildcard route for 404
   { path: '**', redirectTo: '/dashboard' }, // Or a dedicated 404 component
