@@ -4,11 +4,23 @@ import { ThemeService } from '../../core/services/theme.service'; // Adjust path
 import { Observable, Subscription } from 'rxjs';
 import { DisplaySettings } from '../../core/models/display-settings.model';
 import { SettingsService } from '../../core/services/settings.service';
+import { CommonModule } from '@angular/common';
+import { MatSidenavModule } from '@angular/material/sidenav';
+import { RouterModule } from '@angular/router';
+import { ToolbarComponent } from '../toolbar/toolbar.component';
+import { SidenavComponent } from '../sidenav/sidenav.component';
 
 @Component({
   selector: 'app-main-layout',
   templateUrl: './main-layout.component.html',
-  styleUrls: ['./main-layout.component.scss']
+  styleUrls: ['./main-layout.component.scss'],
+  imports: [
+    CommonModule,
+    MatSidenavModule,
+    RouterModule,
+    ToolbarComponent,
+    SidenavComponent,
+  ]
 })
 export class MainLayoutComponent implements OnInit, OnDestroy {
   mobileQuery: MediaQueryList;
@@ -29,7 +41,7 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
     this.displaySettings$ = this.settingsService.getDisplaySettings(); // Fetch settings
   }
 
-  ngOnInit(): void { }
+  ngOnInit(): void {}
 
   ngOnDestroy(): void {
     this.mobileQuery.removeListener(this._mobileQueryListener);

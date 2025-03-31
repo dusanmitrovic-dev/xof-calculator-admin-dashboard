@@ -1,65 +1,73 @@
-// Import custom theme file AFTER standard includes
-@import 'theme';
+// @use '@angular/material' as mat;
+@use 'theme' as *;
 
-/* You can add global styles to this file, and also import other style files */
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+// html,
+// body {
+//   height: 100%;
+// }
 
-// Apply default theme background/text colors to body
-body {
-   background-color: map-get(map-get(map-get($agency-light-theme, color), background), background);
-   color: map-get(map-get(map-get($agency-light-theme, color), foreground), text);
-}
+// body {
+//   margin: 0;
+//   font-family: Roboto, "Helvetica Neue", sans-serif;
+//   background-color: mat.get-color-from-palette(mat.$light-theme-background-palette, background);
+//   color: mat.get-color-from-palette(mat.$light-theme-foreground-palette, text);
+// }
 
-// Helper class
-.spacer {
-    flex: 1 1 auto;
-}
+// // Apply default theme background/text colors to body
+// body {
+//    background-color: map-get(map-get(map-get($agency-light-theme, color), background), background);
+//    color: map-get(map-get(map-get($agency-light-theme, color), foreground), text);
+// }
 
-// General container styling
-.page-container {
-    padding: 20px;
-}
+// // Helper class
+// .spacer {
+//     flex: 1 1 auto;
+// }
 
-// Consistent form field styling
-.mat-mdc-form-field {
-    width: 100%;
-    margin-bottom: 10px;
-}
+// // General container styling
+// .page-container {
+//     padding: 20px;
+// }
 
-// Config Card margin
-.config-card {
-    margin-bottom: 24px;
-}
+// // Consistent form field styling
+// .mat-mdc-form-field {
+//     width: 100%;
+//     margin-bottom: 10px;
+// }
 
-// Config Card Actions alignment
-.config-card-actions {
-    padding: 8px 16px;
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-}
+// // Config Card margin
+// .config-card {
+//     margin-bottom: 24px;
+// }
 
-// General button margin
-button {
-    margin-left: 8px;
-    &:first-child {
-        margin-left: 0;
-    }
-}
-// Action container button margin
-.action-buttons button {
-    margin-left: 8px;
-}
+// // Config Card Actions alignment
+// .config-card-actions {
+//     padding: 8px 16px;
+//     display: flex;
+//     justify-content: flex-end;
+//     align-items: center;
+// }
 
-// Table action buttons spacing
-.action-cell button {
-    margin-left: 4px;
-    margin-right: 4px;
-}
+// // General button margin
+// button {
+//     margin-left: 8px;
+//     &:first-child {
+//         margin-left: 0;
+//     }
+// }
+// // Action container button margin
+// .action-buttons button {
+//     margin-left: 8px;
+// }
 
-// Sidenav active item (light theme)
-.active-list-item {
-    background-color: rgba(0, 0, 0, 0.04);
-    font-weight: bold;
-}
+// // Table action buttons spacing
+// .action-cell button {
+//     margin-left: 4px;
+//     margin-right: 4px;
+// }
+
+// // Sidenav active item (light theme)
+// .active-list-item {
+//     background-color: rgba(0, 0, 0, 0.04);
+//     font-weight: bold;
+// }
