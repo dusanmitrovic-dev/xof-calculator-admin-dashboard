@@ -2,86 +2,86 @@
 
 ## 1. Project Setup & Core Configuration (`ANGULAR`) Data driven !!!!!!!!!!!!!!!
 
-- [ ] Create Angular project (`ng new`)
-- [ ] Add Angular Material (`ng add @angular/material`)
-- [ ] Create `src/app/core/data` folder
-- [ ] Copy provided JSON data files into `src/app/core/data`
-- [ ] Define Core Data Models/Interfaces (`src/app/core/models/`)
-    - [ ] `BonusRule`
-    - [ ] `CommissionSettings` (including `RoleSetting`, `UserOverrideSetting`)
-    - [ ] `DisplaySettings`
-    - [ ] `Earning` (with added `userId`)
-    - [ ] `RolePercentageMap`
-- [ ] Implement Core Services (`src/app/core/services/`)
-    - [ ] `ThemeService` (Handles toggling, loading initial, localStorage)
-    - [ ] `SettingsService` (Loads *mock* data for all config types from JSON)
-    - [ ] `SettingsService` (Implements *mock* save methods for all config types - logs to console)
-    - [ ] `EarningsService` (Flattens and loads *mock* earnings data from JSON)
-    - [ ] `EarningsService` (Implements *mock* CRUD methods - logs/modifies local array)
-- [ ] Configure Theming
-    - [ ] Define custom light/dark palettes in `theme.scss`
-    - [ ] Apply themes and global styles in `styles.scss`
-- [ ] Configure Main App Module (`app.module.ts`) with necessary imports (Browser, Animations, HttpClient, Layout, Shared, Core Material)
-- [ ] Configure Main App Routing (`app-routing.module.ts`) with layout and lazy-loading placeholders
+- [x] Create Angular project (`ng new`)
+- [x] Add Angular Material (`ng add @angular/material`)
+- [x] Create `src/app/core/data` folder
+- [x] Copy provided JSON data files into `src/app/core/data`
+- [x] Define Core Data Models/Interfaces (`src/app/core/models/`)
+    - [x] `BonusRule`
+    - [x] `CommissionSettings` (including `RoleSetting`, `UserOverrideSetting`)
+    - [x] `DisplaySettings`
+    - [x] `Earning` (with added `userId`)
+    - [x] `RolePercentageMap`
+- [x] Implement Core Services (`src/app/core/services/`)
+    - [x] `ThemeService` (Handles toggling, loading initial, localStorage)
+    - [x] `SettingsService` (Loads *mock* data for all config types from JSON)
+    - [x] `SettingsService` (Implements *mock* save methods for all config types - logs to console)
+    - [x] `EarningsService` (Flattens and loads *mock* earnings data from JSON)
+    - [x] `EarningsService` (Implements *mock* CRUD methods - logs/modifies local array)
+- [x] Configure Theming
+    - [x] Define custom light/dark palettes in `theme.scss`
+    - [x] Apply themes and global styles in `styles.scss`
+- [x] Configure Main App Module (`app.module.ts`) with necessary imports (Browser, Animations, HttpClient, Layout, Shared, Core Material)
+- [x] Configure Main App Routing (`app-routing.module.ts`) with layout and lazy-loading placeholders
 
 ## 2. Layout Implementation
 
-- [ ] Create Layout Components (`MainLayout`, `Toolbar`, `Sidenav`)
-- [ ] Implement `MainLayoutComponent` (Handles mobile query, integrates ThemeService, loads DisplaySettings for title)
-- [ ] Implement `ToolbarComponent` (Displays dynamic title, theme toggle, sidenav toggle)
-- [ ] Implement `SidenavComponent` (Displays navigation items with links/icons, basic active state)
+- [x] Create Layout Components (`MainLayout`, `Toolbar`, `Sidenav`)
+- [x] Implement `MainLayoutComponent` (Handles mobile query, integrates ThemeService, loads DisplaySettings for title)
+- [x] Implement `ToolbarComponent` (Displays dynamic title, theme toggle, sidenav toggle)
+- [x] Implement `SidenavComponent` (Displays navigation items with links/icons, basic active state)
 
 ## 3. Shared Module & Components
 
-- [ ] Create `SharedModule`
-- [ ] Create `ConfigCardComponent` (Handles title, loading state, content projection for actions/content)
-- [ ] Configure `SharedModule` (Imports/exports Material modules, declares/exports `ConfigCardComponent`)
+- [x] Create `SharedModule`
+- [x] Create `ConfigCardComponent` (Handles title, loading state, content projection for actions/content)
+- [x] Configure `SharedModule` (Imports/exports Material modules, declares/exports `ConfigCardComponent`)
 
 ## 4. Feature: Dashboard
 
-- [ ] Create `DashboardModule` and `DashboardPageComponent`
-- [ ] Configure dashboard routing
-- [ ] Implement `DashboardPageComponent` (Displays basic overview stats using *mock* service data)
+- [x] Create `DashboardModule` and `DashboardPageComponent`
+- [x] Configure dashboard routing
+- [x] Implement `DashboardPageComponent` (Displays basic overview stats using *mock* service data)
 
 ## 5. Feature: Settings
 
-- [ ] Create `SettingsModule` and configure base routing
-- [ ] Create Settings Page Components (`CommissionSettingsPage`, `BonusRulesPage`, `DisplaySettingsPage`, `OtherConfigsPage`)
-- [ ] Configure settings feature routing (linking paths to components)
-- [ ] Implement `CommissionSettingsPageComponent`
-    - [ ] Use Reactive Forms (`FormGroup` nested for roles/users)
-    - [ ] Load and display *mock* commission settings data
-    - [ ] Implement basic add/remove controls for roles/users (modifies form)
-    - [ ] Call *mock* `SettingsService.saveCommissionSettings` on submit
-- [ ] Implement `BonusRulesPageComponent`
-    - [ ] Use Reactive Forms (`FormArray` for rules)
-    - [ ] Load and display *mock* bonus rules data
-    - [ ] Implement add/remove controls for rules
-    - [ ] Call *mock* `SettingsService.saveBonusRules` on submit (includes sorting)
-- [ ] Implement `DisplaySettingsPageComponent`
-    - [ ] Use Reactive Forms (`FormGroup`)
-    - [ ] Load and display *mock* display settings data
-    - [ ] Call *mock* `SettingsService.saveDisplaySettings` on submit
-- [ ] Implement `OtherConfigsPageComponent`
-    - [ ] Use Reactive Forms / appropriate controls for list management (Models, Periods, Shifts)
-    - [ ] Use Reactive Forms / appropriate controls for Role Percentages map
-    - [ ] Load and display *mock* data for all sections
-    - [ ] Call respective *mock* save methods in `SettingsService` on submit
+- [x] Create `SettingsModule` and configure base routing
+- [x] Create Settings Page Components (`CommissionSettingsPage`, `BonusRulesPage`, `DisplaySettingsPage`, `OtherConfigsPage`)
+- [x] Configure settings feature routing (linking paths to components)
+- [x] Implement `CommissionSettingsPageComponent`
+    - [x] Use Reactive Forms (`FormGroup` nested for roles/users)
+    - [x] Load and display *mock* commission settings data
+    - [x] Implement basic add/remove controls for roles/users (modifies form)
+    - [x] Call *mock* `SettingsService.saveCommissionSettings` on submit
+- [x] Implement `BonusRulesPageComponent`
+    - [x] Use Reactive Forms (`FormArray` for rules)
+    - [x] Load and display *mock* bonus rules data
+    - [x] Implement add/remove controls for rules
+    - [x] Call *mock* `SettingsService.saveBonusRules` on submit (includes sorting)
+- [x] Implement `DisplaySettingsPageComponent`
+    - [x] Use Reactive Forms (`FormGroup`)
+    - [x] Load and display *mock* display settings data
+    - [x] Call *mock* `SettingsService.saveDisplaySettings` on submit
+- [x] Implement `OtherConfigsPageComponent`
+    - [x] Use Reactive Forms / appropriate controls for list management (Models, Periods, Shifts)
+    - [x] Use Reactive Forms / appropriate controls for Role Percentages map
+    - [x] Load and display *mock* data for all sections
+    - [x] Call respective *mock* save methods in `SettingsService` on submit
 
 ## 6. Feature: Earnings
 
-- [ ] Create `EarningsModule` and `EarningsPageComponent`
-- [ ] Configure earnings routing
-- [ ] Implement `EarningsPageComponent`
-    - [ ] Use `MatTable` with `MatTableDataSource`
-    - [ ] Load `DisplaySettings` to determine `show_ids`
-    - [ ] Dynamically set `displayedColumns` based on `show_ids`
-    - [ ] Load and display flattened *mock* earnings data
-    - [ ] Integrate `MatPaginator`
-    - [ ] Integrate `MatSort` (with basic date sorting logic)
-    - [ ] Implement client-side filter input
-    - [ ] Include Edit/Delete buttons in 'actions' column
-    - [ ] Call *mock* `EarningsService` edit/delete methods (using `confirm`/`alert`)
+- [x] Create `EarningsModule` and `EarningsPageComponent`
+- [x] Configure earnings routing
+- [x] Implement `EarningsPageComponent`
+    - [x] Use `MatTable` with `MatTableDataSource`
+    - [x] Load `DisplaySettings` to determine `show_ids`
+    - [x] Dynamically set `displayedColumns` based on `show_ids`
+    - [x] Load and display flattened *mock* earnings data
+    - [x] Integrate `MatPaginator`
+    - [x] Integrate `MatSort` (with basic date sorting logic)
+    - [x] Implement client-side filter input
+    - [x] Include Edit/Delete buttons in 'actions' column
+    - [x] Call *mock* `EarningsService` edit/delete methods (using `confirm`/`alert`)
 
 ## 7. Next Steps / Pending Tasks
 
