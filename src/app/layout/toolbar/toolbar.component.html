@@ -1,14 +1,8 @@
 <p>toolbar works!</p>
-<mat-toolbar color="primary" class="app-toolbar">
-    <button mat-icon-button (click)="onToggleSidenav()" *ngIf="isMobile">
-      <mat-icon>menu</mat-icon>
+<mat-toolbar>
+    <span>My Application</span>
+    <span class="spacer"></span>
+    <button mat-icon-button (click)="toggleTheme()">
+      <mat-icon>{{ isDarkTheme ? 'dark_mode' : 'light_mode' }}</mat-icon>
     </button>
-  
-    <span>{{ appName || 'Agency' }} Admin - {{ botName || 'Bot' }}</span>
-  
-    <span class="spacer"></span> <!-- Pushes items to the right -->
-  
-    <button mat-icon-button (click)="onToggleTheme()" [title]="isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode'">
-      <mat-icon>{{ isDark ? 'light_mode' : 'dark_mode' }}</mat-icon>
-    </button>
-  </mat-toolbar>
+</mat-toolbar>

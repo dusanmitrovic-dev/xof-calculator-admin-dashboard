@@ -1,67 +1,37 @@
-// @use '@angular/material' as mat;
+@use '@angular/material' as mat;
 
-// @include mat.core();
+@include mat.core();
 
-// // Define palettes
-// $agency-primary-light: mat.define-palette(mat.$indigo-palette, 700, 300, 900);
-// $agency-accent-light: mat.define-palette(mat.$pink-palette, A200, A100, A400);
-// $agency-warn-light: mat.define-palette(mat.$red-palette);
+// Define palettes
+$agency-primary-light: mat.define-palette(mat.$indigo-palette, 700, 300, 900);
+$agency-accent-light: mat.define-palette(mat.$pink-palette, A200, A100, A400);
+$agency-warn-light: mat.define-palette(mat.$red-palette);
 
-// $agency-primary-dark: mat.define-palette(mat.$blue-palette, 300, 100, 500);
-// $agency-accent-dark: mat.define-palette(mat.$pink-palette, A100, A100, A400);
-// $agency-warn-dark: mat.define-palette(mat.$red-palette);
+$agency-primary-dark: mat.define-palette(mat.$blue-palette, 300, 100, 500);
+$agency-accent-dark: mat.define-palette(mat.$pink-palette, A100, A100, A400);
+$agency-warn-dark: mat.define-palette(mat.$red-palette);
 
-// // Define themes
-// $agency-light-theme: mat.define-light-theme((color: (primary: $agency-primary-light,
-//         accent: $agency-accent-light,
-//         warn: $agency-warn-light,
-//       )));
+// Define themes
+$agency-light-theme: mat.define-light-theme((
+  color: (
+    primary: $agency-primary-light,
+    accent: $agency-accent-light,
+    warn: $agency-warn-light,
+  )
+));
 
-// $agency-dark-theme: mat.define-dark-theme((color: (primary: $agency-primary-dark,
-//         accent: $agency-accent-dark,
-//         warn: $agency-warn-dark,
-//       )));
+$agency-dark-theme: mat.define-dark-theme((
+  color: (
+    primary: $agency-primary-dark,
+    accent: $agency-accent-dark,
+    warn: $agency-warn-dark,
+  )
+));
 
-// // Apply light theme by default
-// @include mat.all-component-themes($agency-light-theme);
+// Apply light theme by default
+@include mat.all-component-themes($agency-light-theme);
 
-// // Dark theme class
-// .dark-theme {
-//   @include mat.all-component-themes($agency-dark-theme);
-// }
-
-//   // --- Specific Dark Theme Overrides ---
-
-//   // Ensure body background applies correctly
-//   body& {
-//     background-color: map-get(map-get(map-get($agency-dark-theme, color), background), background);
-//     color: map-get(map-get(map-get($agency-dark-theme, color), foreground), text);
-//   }
-
-//   // Card background
-//   .mat-mdc-card {
-//     background-color: map-get(map-get(map-get($agency-dark-theme, color), background), card);
-//   }
-
-//   // Table header background and text color
-//   .mat-mdc-table thead {
-//     background-color: map-get(map-get(map-get($agency-dark-theme, color), background), app-bar);
-//   }
-//   th.mat-mdc-header-cell {
-//     color: map-get(map-get(map-get($agency-dark-theme, color), foreground), text);
-//   }
-
-//   // Paginator background
-//   .mat-mdc-paginator {
-//     background-color: map-get(map-get(map-get($agency-dark-theme, color), background), card);
-//   }
-
-//   // Loading overlay background
-//   .loading-overlay {
-//     background: rgba(0, 0, 0, 0.6);
-//   }
-
-//   // Active sidenav item
-//   .active-list-item {
-//     background-color: rgba(255, 255, 255, 0.1);
-//   }
+// Dark theme class
+.dark-theme {
+  @include mat.all-component-themes($agency-dark-theme);
+}
