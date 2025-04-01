@@ -1,15 +1,29 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Component, OnInit, OnDestroy, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Subject } from 'rxjs';
 import { takeUntil, finalize } from 'rxjs/operators';
 import { SettingsService } from '../../../core/services/settings.service'; // Adjust path
 import { DisplaySettings } from '../../../core/models/display-settings.model';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { CommonModule } from '@angular/common';
+import { MatCardModule } from '@angular/material/card';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatFormFieldModule } from '@angular/material/form-field';
 
 @Component({
   selector: 'app-display-settings-page',
   templateUrl: './display-settings-page.component.html',
   styleUrls: ['./display-settings-page.component.scss'],
+  imports: [
+    CommonModule,
+    MatCardModule,
+    MatSlideToggleModule,
+    ReactiveFormsModule,
+    MatFormFieldModule,
+  ],
+  schemas: [
+    CUSTOM_ELEMENTS_SCHEMA,
+  ],
 })
 export class DisplaySettingsPageComponent implements OnInit, OnDestroy {
   displayForm!: FormGroup; // Use definite assignment assertion or initialize in constructor
