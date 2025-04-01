@@ -25,13 +25,13 @@ import { MatTooltipModule } from '@angular/material/tooltip';
   declarations: [
     CommissionSettingsPageComponent,
     BonusRulesPageComponent,
-    DisplaySettingsPageComponent,
     OtherConfigsPageComponent,
   ],
   imports: [
     SharedModule, // Includes CommonModule, ReactiveFormsModule, and Base Material
     SettingsRoutingModule,
-    // Feature Specific Material Modules (or import them in SharedModule and re-export)
+    SettingsRoutingModule,
+    DisplaySettingsPageComponent,
     MatCardModule,
     MatFormFieldModule,
     MatInputModule,
