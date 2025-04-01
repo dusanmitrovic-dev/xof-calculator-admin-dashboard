@@ -1,0 +1,29 @@
+.sidenav-container {
+  height: 100%;
+}
+
+.sidenav {
+  width: 250px;
+}
+
+.menu-button {
+  display: none;
+}
+
+.spacer {
+  flex: 1;
+}
+
+.content {
+  padding: 16px;
+}
+
+@media (max-width: 768px) {
+  .menu-button {
+    display: inline-block;
+  }
+
+  .sidenav {
+    width: 100%;
+  }
+}
