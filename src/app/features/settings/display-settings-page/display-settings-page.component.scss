@@ -1,0 +1,21 @@
+.toggles-container {
+  display: flex;
+  flex-direction: column;
+  gap: 15px; // Add space between toggles
+  margin-top: 10px;
+  margin-bottom: 15px;
+}
+
+mat-slide-toggle {
+  // Ensure toggles take full width if desired or align properly
+}
+
+.error-message {
+  color: red; // Or use theme warn color
+  padding: 15px;
+  text-align: center;
+}
+
+mat-card small {
+  color: var(--mat-form-field-hint-text-color); // Use theme hint color
+}
