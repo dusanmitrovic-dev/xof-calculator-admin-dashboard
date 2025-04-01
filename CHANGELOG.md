@@ -3,6 +3,11 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [v0.1.1] – 2025-04-01 
+
+### Changed
+- Style theme toggle button and adjust alignment.
+
 ## [v0.1.0] – 2025-03-31  
 
 ### Added  
