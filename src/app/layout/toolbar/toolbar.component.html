@@ -1,5 +1,7 @@
 <mat-toolbar color="primary">
-  <!-- <span>Shift Calculator</span> -->
+  <button mat-icon-button (click)="toggleSidebar()" class="menu-button">
+    <mat-icon>menu</mat-icon>
+  </button>
   <span class="spacer"></span>
   <button mat-icon-button class="theme-button" (click)="toggleTheme()">
     <mat-icon>{{ isDarkTheme ? 'dark_mode' : 'light_mode' }}</mat-icon>

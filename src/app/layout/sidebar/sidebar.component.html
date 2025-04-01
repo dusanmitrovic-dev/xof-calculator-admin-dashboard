@@ -6,14 +6,7 @@
     </mat-nav-list>
   </mat-sidenav>
   <mat-sidenav-content>
-    <mat-toolbar color="primary">
-      <button mat-icon-button (click)="sidenav.toggle()" class="menu-button">
-        <mat-icon>menu</mat-icon>
-      </button>
-      <span>Shift Calculator</span>
-      <span class="spacer"></span>
-      <!-- ...existing code... -->
-    </mat-toolbar>
+    <app-toolbar (sidebarToggle)="sidenav.toggle()"></app-toolbar>
     <div class="content">
       <!-- Main content -->
       <!-- ...existing code... -->

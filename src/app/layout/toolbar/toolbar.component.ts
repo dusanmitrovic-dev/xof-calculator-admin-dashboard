@@ -19,6 +19,7 @@ export class ToolbarComponent {
   @Input() botName: string | null | undefined = 'Bot';
   @Output() sidenavToggle = new EventEmitter<void>();
   @Output() themeToggle = new EventEmitter<void>();
+  @Output() sidebarToggle = new EventEmitter<void>();
 
   isDarkTheme = true; // Start with dark theme by default
 
@@ -43,5 +44,9 @@ export class ToolbarComponent {
       this.themeService.enableDarkTheme();
     }
     this.isDarkTheme = !this.isDarkTheme; // Toggle the state after applying the theme
+  }
+
+  toggleSidebar() {
+    this.sidebarToggle.emit();
   }
 }
