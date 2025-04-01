@@ -5,6 +5,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatListModule } from '@angular/material/list';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatSidenav } from '@angular/material/sidenav';
 
 @Component({
   selector: 'app-sidebar',
@@ -20,9 +21,14 @@ import { MatToolbarModule } from '@angular/material/toolbar';
   ],
 })
 export class SidebarComponent {
-  isSidebarOpen = true;
+  isCollapsed = true;
 
   toggleSidebar() {
-    this.isSidebarOpen = !this.isSidebarOpen;
+    this.isCollapsed = !this.isCollapsed;
+  }
+
+  logAndToggle(sidenav: MatSidenav) {
+    console.log('Toggle button clicked');
+    sidenav.toggle();
   }
 }

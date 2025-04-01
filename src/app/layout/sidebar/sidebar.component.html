@@ -1,15 +1,22 @@
-<mat-sidenav-container class="sidenav-container">
-  <mat-sidenav #sidenav mode="side" [(opened)]="isSidebarOpen" class="sidenav">
-    <!-- Sidebar content -->
-    <mat-nav-list>
-      <!-- ...existing code... -->
-    </mat-nav-list>
-  </mat-sidenav>
-  <mat-sidenav-content>
-    <mat-toolbar (sidebarToggle)="sidenav.toggle()"></mat-toolbar>
+<div class="sidebar-container">
+  <div class="sidebar" [class.collapsed]="isCollapsed">
+    <button class="toggle-button" (click)="toggleSidebar()">
+      <mat-icon>{{ isCollapsed ? 'menu' : 'close' }}</mat-icon>
+    </button>
+    <nav class="nav-list">
+      <!-- Sidebar content -->
+      <a href="#" class="nav-item">Dashboard</a>
+      <a href="#" class="nav-item">Settings</a>
+      <a href="#" class="nav-item">Profile</a>
+    </nav>
+  </div>
+  <div class="main-content">
+    <mat-toolbar>
+      <span>Application Title</span>
+    </mat-toolbar>
     <div class="content">
       <!-- Main content -->
       <!-- ...existing code... -->
     </div>
-  </mat-sidenav-content>
-</mat-sidenav-container>
+  </div>
+</div>
