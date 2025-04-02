@@ -46,7 +46,6 @@
 - [x] Create `SharedModule`
 - [x] Create `ConfigCardComponent` (Handles title, loading state, content projection for actions/content)
 - [x] Configure `SharedModule` (Imports/exports Material modules, declares/exports `ConfigCardComponent`)
-
 - [ ] Verify the getDisplaySettings and saveDisplaySettings methods.
 - [ ] Ensure mock data is being fetched and saved correctly.
 - [ ] Replace mock methods with actual API calls if a backend is available.
