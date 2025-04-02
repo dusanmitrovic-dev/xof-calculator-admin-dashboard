@@ -24,6 +24,11 @@
 - [x] Configure Main App Module (`app.module.ts`) with necessary imports (Browser, Animations, HttpClient, Layout, Shared, Core Material)
 - [x] Configure Main App Routing (`app-routing.module.ts`) with layout and lazy-loading placeholders
 
+- [ ] Fix the sidebar toggle functionality.
+- [ ] Ensure responsiveness for mobile devices.
+- [ ] Verify navigation links and their functionality.
+- [ ] Adjust styles for better alignment and spacing.
+
 ## 2. Layout Implementation
 
 - [x] Create Layout Components (`MainLayout`, `Toolbar`, `Sidenav`)
@@ -83,6 +88,7 @@
     - [x] Include Edit/Delete buttons in 'actions' column
     - [x] Call *mock* `EarningsService` edit/delete methods (using `confirm`/`alert`)
 - [ ] Error fixes
+
 
 ## 7. Next Steps / Pending Tasks
 
