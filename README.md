@@ -126,5 +126,12 @@
 - [ ] **Testing:** Implement unit tests for services and components. Consider integration/e2e tests.
 - [ ] **CI/CD:** Set up automated build and deployment pipelines.
 - [ ] **Documentation:** Add code comments and potentially generate documentation.
+- [ ] Replace mock service calls with actual API calls.
+- [ ] Implement login, logout, and route protection.
+- [ ] Add server-side pagination, sorting, and filtering for the earnings table.
+- [ ] Use dialogs for adding new roles/users in commission settings.
+- [ ] Add robust loading indicators and improve form validation feedback.
+- [ ] Implement unit tests for services and components.
+- [ ] Set up automated build and deployment pipelines.
 
 `note: Use Mongo DB Atlas M0 512mb free tier cloud database.`
