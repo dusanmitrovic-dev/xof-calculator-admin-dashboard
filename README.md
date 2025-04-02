@@ -55,6 +55,8 @@
 - [x] Create `DashboardModule` and `DashboardPageComponent`
 - [x] Configure dashboard routing
 - [x] Implement `DashboardPageComponent` (Displays basic overview stats using *mock* service data)
+- [ ] Verify all necessary modules and components are imported.
+- [ ] Ensure the SettingsModule and other feature modules are correctly configured.
 
 ## 5. Feature: Settings
 
