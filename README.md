@@ -49,7 +49,7 @@
 
 - [ ] Verify the getDisplaySettings and saveDisplaySettings methods.
 - [ ] Ensure mock data is being fetched and saved correctly.
-<input disabled="" type="checkbox"> Replace mock methods with actual API calls if a backend is available.
+- [ ] Replace mock methods with actual API calls if a backend is available.
 
 ## 4. Feature: Dashboard
 
