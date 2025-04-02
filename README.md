@@ -34,6 +34,12 @@
 - [x] Implement `MainLayoutComponent` (Handles mobile query, integrates ThemeService, loads DisplaySettings for title)
 - [x] Implement `ToolbarComponent` (Displays dynamic title, theme toggle, sidenav toggle)
 - [x] Implement `SidenavComponent` (Displays navigation items with links/icons, basic active state)
+- [ ] Ensure the form loads and saves settings correctly.
+- [ ] Fix validation and pristine state handling.
+- [ ] Test the onSubmit method for proper error handling and success messages.
+- [ ] Verify the form layout and ensure all fields are displayed correctly.
+- [ ] Fix alignment and spacing issues for form fields and toggles.
+- [ ] Ensure the page is fully responsive, especially on Android devices.
 
 ## 3. Shared Module & Components
 
