@@ -106,4 +106,4 @@
 - [ ] **CI/CD:** Set up automated build and deployment pipelines.
 - [ ] **Documentation:** Add code comments and potentially generate documentation.
 
-`note: Use Mongo DB Atlas M0 512mb free tier cloud database`
+`note: Use Mongo DB Atlas M0 512mb free tier cloud database.`
