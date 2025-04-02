@@ -1,61 +1,70 @@
 <div class="page-container">
   <h1>Display Settings</h1>
 
-  <app-config-card title="Bot & Display Configuration" [loading]="isLoading">
-    <div card-actions>
-      <button
-        mat-flat-button
-        color="primary"
-        (click)="onSubmit()"
-        [disabled]="isLoading || displayForm.pristine || !displayForm.valid">
-        <mat-icon>save</mat-icon> Save Changes
-      </button>
-    </div>
+  <div class="responsive-container">
+    <app-config-card title="Bot & Display Configuration" [loading]="isLoading">
+      <div card-actions>
+        <button
+          mat-flat-button
+          color="primary"
+          (click)="onSubmit()"
+          [disabled]="isLoading || displayForm.pristine || !displayForm.valid">
+          <mat-icon>save</mat-icon> Save Changes
+        </button>
+      </div>
 
-    <div card-content>
-      <form [formGroup]="displayForm" *ngIf="displayForm">
+      <div card-content>
+        <form [formGroup]="displayForm" *ngIf="displayForm">
 
-        <mat-form-field appearance="outline">
-          <mat-label>Agency Name</mat-label>
-          <input matInput formControlName="agency_name" placeholder="Enter agency name" required>
-          <mat-error *ngIf="displayForm.get('agency_name')?.hasError('required')">
-            Agency name is required.
-          </mat-error>
-        </mat-form-field>
+          <div class="responsive-container">
+            <mat-form-field appearance="outline">
+              <mat-label>Agency Name</mat-label>
+              <input matInput formControlName="agency_name" placeholder="Enter agency name" required>
+              <mat-error *ngIf="displayForm.get('agency_name')?.hasError('required')">
+                Agency name is required.
+              </mat-error>
+            </mat-form-field>
+          </div>
 
-        <mat-form-field appearance="outline">
-          <mat-label>Bot Name</mat-label>
-          <input matInput formControlName="bot_name" placeholder="Enter bot name" required>
-          <mat-error *ngIf="displayForm.get('bot_name')?.hasError('required')">
-            Bot name is required.
-          </mat-error>
-        </mat-form-field>
+          <div class="responsive-container">
+            <mat-form-field appearance="outline">
+              <mat-label>Bot Name</mat-label>
+              <input matInput formControlName="bot_name" placeholder="Enter bot name" required>
+              <mat-error *ngIf="displayForm.get('bot_name')?.hasError('required')">
+                Bot name is required.
+              </mat-error>
+            </mat-form-field>
+          </div>
 
-        <div class="toggles-container">
-            <mat-slide-toggle formControlName="ephemeral_responses" color="primary">
+          <div class="responsive-container">
+            <div class="toggles-container">
+              <mat-slide-toggle formControlName="ephemeral_responses" color="primary">
                 Use Ephemeral Responses (Bot commands visible only to user)
-            </mat-slide-toggle>
+              </mat-slide-toggle>
 
-            <mat-slide-toggle formControlName="show_average" color="primary">
+              <mat-slide-toggle formControlName="show_average" color="primary">
                 Show Average Calculations (e.g., in reports)
-            </mat-slide-toggle>
+              </mat-slide-toggle>
 
-            <mat-slide-toggle formControlName="show_ids" color="primary">
+              <mat-slide-toggle formControlName="show_ids" color="primary">
                 Show Discord User/Role IDs in Bot Output
-            </mat-slide-toggle>
-        </div>
+              </mat-slide-toggle>
+            </div>
+          </div>
 
-      </form>
-      <p *ngIf="!displayForm && !isLoading" class="error-message">
+        </form>
+        <p *ngIf="!displayForm && !isLoading" class="error-message">
           Could not initialize display settings form.
-      </p>
-    </div>
-  </app-config-card>
+        </p>
+      </div>
+    </app-config-card>
+  </div>
 
-  <mat-card *ngIf="!isLoading">
+  <div class="responsive-container">
+    <mat-card *ngIf="!isLoading">
       <mat-card-content>
         <p><small>These settings primarily affect how the Discord bot displays information.</small></p>
       </mat-card-content>
-  </mat-card>
-
+    </mat-card>
+  </div>
 </div>
