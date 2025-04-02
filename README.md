@@ -48,7 +48,7 @@
 - [x] Configure `SharedModule` (Imports/exports Material modules, declares/exports `ConfigCardComponent`)
 
 - [ ] Verify the getDisplaySettings and saveDisplaySettings methods.
-<input disabled="" type="checkbox"> Ensure mock data is being fetched and saved correctly.
+- [ ] Ensure mock data is being fetched and saved correctly.
 <input disabled="" type="checkbox"> Replace mock methods with actual API calls if a backend is available.
 
 ## 4. Feature: Dashboard
