@@ -82,6 +82,7 @@
     - [x] Implement client-side filter input
     - [x] Include Edit/Delete buttons in 'actions' column
     - [x] Call *mock* `EarningsService` edit/delete methods (using `confirm`/`alert`)
+- [ ] Error fixes
 
 ## 7. Next Steps / Pending Tasks
 
