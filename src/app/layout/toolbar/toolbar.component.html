@@ -1,9 +1,40 @@
-<mat-toolbar color="primary">
-  <button mat-icon-button (click)="toggleSidebar()" class="menu-button">
+<mat-toolbar color="primary" class="app-toolbar">
+  <button
+    mat-icon-button
+    (click)="onToggleSidenav()"
+    class="menu-button"
+    aria-label="Toggle sidenav">
     <mat-icon>menu</mat-icon>
   </button>
-  <span class="spacer"></span>
-  <button mat-icon-button class="theme-button" (click)="toggleTheme()">
-    <mat-icon>{{ isDarkTheme ? 'dark_mode' : 'light_mode' }}</mat-icon>
+
+  <!-- App Name / Title -->
+  <span class="app-title" [matTooltip]="botName ? (appName + ' - ' + botName) : appName" *ngIf="appName">
+      {{ appName }}
+      <span class="bot-name" *ngIf="botName"> | {{ botName }}</span>
+  </span>
+
+
+  <span class="spacer"></span> <!-- Pushes items to the right -->
+
+  <!-- Theme Toggle Button -->
+  <button
+    mat-icon-button
+    class="theme-button"
+    (click)="onToggleTheme()"
+    [matTooltip]="isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode'"
+    aria-label="Toggle theme">
+    <mat-icon>{{ isDark ? 'light_mode' : 'dark_mode' }}</mat-icon>
   </button>
+
+   <!-- Optional: User Menu or other actions -->
+   <!--
+   <button mat-icon-button [matMenuTriggerFor]="userMenu" aria-label="User menu">
+       <mat-icon>account_circle</mat-icon>
+   </button>
+   <mat-menu #userMenu="matMenu">
+       <button mat-menu-item>Profile</button>
+       <button mat-menu-item>Logout</button>
+   </mat-menu>
+   -->
+
 </mat-toolbar>

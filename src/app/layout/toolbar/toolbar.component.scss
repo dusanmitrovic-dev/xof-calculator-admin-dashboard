@@ -1,41 +1,49 @@
-@use '@angular/material' as mat;
-
-mat-toolbar {
-  // Ensure proper elevation is applied by the theme
-  // Optional: Add custom styles if needed
-  position: sticky; // Keep toolbar visible
+.app-toolbar {
+  // Default Material toolbar height is 64px (desktop) and 56px (mobile)
+  // Use Material elevation class for shadow
+  box-shadow: 0 2px 4px -1px rgba(0, 0, 0, .2), 0 4px 5px 0 rgba(0, 0, 0, .14), 0 1px 10px 0 rgba(0, 0, 0, .12);
+  position: sticky; // Make toolbar sticky at the top
   top: 0;
-  z-index: 1000; // Ensure it's above content
+  z-index: 1000; // Ensure it's above other content
 }
 
 .menu-button {
-  // Specific styling for the menu toggle button if needed
-  margin-right: 8px;
+  // Specific styles for the menu button if needed
 }
 
-.app-title-group {
-  display: flex;
-  flex-direction: column;
-  line-height: 1.2;
-  margin: 0 16px; // Spacing around title
-
-  .app-name {
-    font-size: 1.1rem;
-    font-weight: 500; // Slightly bolder
-  }
-
-  .bot-name {
-    font-size: 0.8rem;
-    opacity: 0.8;
-  }
+.app-title {
+  margin-left: 16px;
+  font-size: 1.1em; // Slightly larger title
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  cursor: default; // Indicate non-interactive title
 }
 
+.bot-name {
+  opacity: 0.8; // Make bot name slightly less prominent
+  font-size: 0.9em;
+}
 
 .spacer {
-  flex: 1 1 auto; // Pushes items to the right
+  flex: 1 1 auto; // This pushes items after it to the right
 }
 
 .theme-button {
-  // Specific styling for the theme toggle button if needed
-  margin-left: 8px;
+  // Specific styles for theme button if needed
+}
+
+
+// Mobile adjustments (often handled by Material itself, but can override)
+@media (max-width: 600px) {
+  .app-toolbar {
+    height: 56px; // Default mobile height
+  }
+
+  .app-title {
+    margin-left: 8px; // Reduce margin on mobile
+    font-size: 1em;
+  }
 }
