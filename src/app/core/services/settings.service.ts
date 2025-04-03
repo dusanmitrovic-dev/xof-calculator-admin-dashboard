@@ -22,7 +22,7 @@ import * as shiftConfigData from '../data/shift_config.json';
 })
 export class SettingsService {
   // Simulate some network delay
-  private networkDelay = 300; // Simulate latency
+  private networkDelay = 1; // Simulate latency
 
   // In-memory store for mock data
   private _bonusRules: BonusRule[] = [];

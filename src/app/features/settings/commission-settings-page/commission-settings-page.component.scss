@@ -1,0 +1,102 @@
+.page-container {
+  padding: 20px;
+}
+
+// Common row styling
+.item-row {
+  display: flex;
+  flex-wrap: wrap; // Allow items to wrap on smaller screens
+  align-items: flex-start; // Align form fields to the top
+  gap: 16px;
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+
+  &:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+
+  button[mat-icon-button][color="warn"] {
+    margin-left: auto; // Push delete button to the far right
+    align-self: center; // Center vertically with the first line of fields
+    flex-shrink: 0;
+  }
+}
+
+.id-field {
+  flex: 1 1 250px; // Allow ID field to take more space initially
+  min-width: 200px;
+  font-family: monospace; // Make IDs stand out slightly
+
+  input[readonly] {
+    cursor: default; // Indicate readonly
+    color: rgba(0, 0, 0, 0.7);
+  }
+
+  button[matSuffix] {
+    color: grey;
+  }
+}
+
+.value-field {
+  flex: 0 1 180px; // Fixed basis, allow shrinking
+  min-width: 150px;
+}
+
+.percentage-field {
+  flex-basis: 150px;
+}
+
+.rate-field {
+  flex-basis: 150px;
+}
+
+
+// User specific row styling
+.user-row {
+  align-items: center; // Vertically center items in user row as toggle is shorter
+}
+
+.override-toggle {
+  margin: 8px 16px 8px 0; // Add some space around the toggle
+  flex-shrink: 0;
+}
+
+.override-percentage-field {
+  // Styles specific to the override field if needed
+}
+
+.section-divider {
+  margin: 24px 0;
+}
+
+.no-data-message {
+  padding: 20px;
+  text-align: center;
+  color: grey;
+  font-style: italic;
+}
+
+// Responsive adjustments
+@media (max-width: 768px) {
+  .item-row {
+    flex-direction: column;
+    align-items: stretch; // Stretch items full width
+    padding-bottom: 16px;
+
+    button[mat-icon-button][color="warn"] {
+      margin-left: 0;
+      margin-top: 8px;
+      align-self: flex-end; // Align delete to bottom right
+    }
+  }
+
+  .id-field,
+  .value-field {
+    flex-basis: auto; // Let them take full width
+  }
+
+  .override-toggle {
+    margin: 8px 0; // Adjust margin for column layout
+  }
+}

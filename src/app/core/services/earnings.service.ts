@@ -14,7 +14,7 @@ interface RawEarningsData {
   providedIn: 'root',
 })
 export class EarningsService {
-  private networkDelay = 500;
+  private networkDelay = 1;
   private earnings: Earning[] = []; // Keep local copy for mock updates
 
   constructor() {
