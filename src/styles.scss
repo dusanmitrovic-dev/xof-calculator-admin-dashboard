@@ -1,2 +1,103 @@
 // @use '@angular/material' as mat;
 @use 'theme' as *;
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+}
+
+// Global Helper Classes
+.page-container {
+  padding: 20px 24px; // Consistent padding for page content
+  box-sizing: border-box;
+  height: 100%; // Allow page containers to potentially fill height if needed
+}
+
+// Common Form Styling Adjustments
+mat-form-field {
+  width: 100%; // Make form fields generally take full width within their container
+}
+
+// Loading container styling
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 40px;
+  min-height: 150px;
+  color: grey;
+
+  p {
+    margin-top: 10px;
+    font-style: italic;
+  }
+}
+
+// No data message styling
+.no-data-message {
+  padding: 20px;
+  text-align: center;
+  color: grey;
+  font-style: italic;
+  margin-top: 10px;
+}
+
+
+// General Table Enhancements
+.table-container {
+  overflow-x: auto; // Ensure horizontal scroll on smaller screens
+  margin-bottom: 16px; // Space below table before paginator
+}
+
+table.mat-table {
+  // Targeting the table element itself
+  min-width: 700px; // Set a minimum width to encourage scrolling rather than ugly wrapping
+}
+
+th.mat-header-cell,
+td.mat-cell,
+td.mat-footer-cell {
+  padding: 8px 10px; // Adjust cell padding
+}
+
+// Snackbar Styling (add panelClass in component TS)
+.snackbar-success {
+  background-color: #4CAF50;
+  color: white;
+}
+
+.snackbar-error {
+  background-color: #f44336;
+  color: white;
+}
+
+.snackbar-warning {
+  background-color: #FF9800;
+  color: black;
+}
+
+.snackbar-info {
+  background-color: #2196F3;
+  color: white;
+}
+
+// Ensure links look consistent
+a {
+  color: mat.get-color-from-palette($agency-admin-primary);
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+// Utility classes
+.spacer {
+  flex: 1 1 auto;
+}
