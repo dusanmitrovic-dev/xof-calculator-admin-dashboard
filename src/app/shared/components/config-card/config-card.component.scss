@@ -1,28 +1,56 @@
-.loading-overlay {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 40px 20px;
-    background: rgba(255, 255, 255, 0.7); // Light theme overlay
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    z-index: 10;
-}
-
-.dark-theme .loading-overlay {
-    background: rgba(0, 0, 0, 0.6); // Dark theme overlay
-}
-
-mat-card-content {
-    position: relative; // Needed for overlay positioning
-    padding-top: 20px; // Add padding above content
+.config-card {
+  position: relative; // Needed for absolute positioning of overlay
+  overflow: hidden; // Prevent spinner overflow issues
+  margin-bottom: 20px; // Add space between cards
 }
 
 mat-card-header {
-    // Ensure actions align correctly
-    display: flex;
-    align-items: center;
+  padding-bottom: 8px; // Reduce bottom padding for closer divider
+}
+
+.spacer {
+  flex: 1 1 auto;
+}
+
+.card-actions-container {
+  display: flex;
+  gap: 8px; // Space between action buttons
+  flex-wrap: wrap; // Allow buttons to wrap if needed
+}
+
+mat-card-content {
+  padding-top: 16px;
+  position: relative; // Context for overlay
+  min-height: 100px; // Ensure card has some height even when empty/loading
+}
+
+.loading-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(255, 255, 255, 0.8); // Light overlay
+  display: flex;
+  flex-direction: column; // Stack spinner and text
+  justify-content: center;
+  align-items: center;
+  z-index: 10; // Ensure it's above the content
+
+  span {
+    margin-top: 8px;
+    font-size: 0.9em;
+    color: rgba(0, 0, 0, 0.7);
+  }
+}
+
+// Dark theme adjustments
+body.dark-theme {
+  .loading-overlay {
+    background-color: rgba(48, 48, 48, 0.8); // Dark overlay
+
+    span {
+      color: rgba(255, 255, 255, 0.7);
+    }
+  }
 }
