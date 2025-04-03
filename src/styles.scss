@@ -1,121 +1,103 @@
-// @use '@angular/material' as mat;
-@use 'theme' as *;
-
-// src/styles.scss (or your global stylesheet)
 @use '@angular/material' as mat;
 
-// Include the core styles for Angular Material core theme components.
+// Import your theme definitions (adjust path if needed)
+// Assuming theme.scss is in the same directory or accessible path
+@use 'theme' as theme; // Use the alias 'theme' to access variables like theme.$agency-light-theme
+
+// Apply the core Material styles (typography, density, etc.)
 @include mat.core();
 
-// Define the palettes for your theme using the Material Design palettes available in palette.scss
-// (imported above). For each palette, you can optionally specify a default, lighter, and darker
-// hue. Available color palettes: https://material.io/design/color/
-$agency-admin-dashboard-primary: mat.m2-define-palette(mat.$m2-indigo-palette);
-$agency-admin-dashboard-accent: mat.m2-define-palette(mat.$m2-pink-palette, A200, A100, A400);
+// Apply the color palettes globally for the light theme
+:root {
+  // Apply typography and density based on the light theme
+  @include mat.all-component-themes(theme.$agency-light-theme);
 
-// The warn palette is typically used for error states.
-$agency-admin-dashboard-warn: mat.m2-define-palette(mat.$m2-red-palette);
-
-// Create the theme object. A theme consists of configurations for individual
-// theming systems such as "color" or "typography".
-$agency-admin-dashboard-light-theme: mat.m2-define-light-theme((color: (primary: $agency-admin-dashboard-primary,
-        accent: $agency-admin-dashboard-accent,
-        warn: $agency-admin-dashboard-warn,
-      ),
-      typography: mat.m2-define-typography-config(),
-      density: 0, // Adjust density (-3 to 0) as needed
-    ));
-
-$agency-admin-dashboard-dark-theme: mat.m2-define-dark-theme((color: (primary: $agency-admin-dashboard-primary, // Or a different primary for dark
-        accent: $agency-admin-dashboard-accent,
-        warn: $agency-admin-dashboard-warn,
-      ),
-      typography: mat.m2-define-typography-config(),
-      density: 0,
-    ));
-
-// Apply the light theme by default
-@include mat.all-component-themes($agency-admin-dashboard-light-theme);
-
-// Apply the dark theme selector
-.dark-theme {
-  @include mat.all-component-themes($agency-admin-dashboard-dark-theme);
-
-  // Optional: Add specific overrides for dark theme if needed
-  // body {
-  //   background-color: #121212; // Standard dark background
-  // }
+  // Define some global CSS variables for consistent spacing, etc.
+  --app-content-padding: 20px;
+  --app-card-spacing: 20px;
+  --app-section-spacing: 24px;
 }
 
+// Apply the dark theme colors when the .dark-theme class is present
+.dark-theme {
+  @include mat.all-component-colors(theme.$agency-dark-theme);
+  // You could add dark-theme specific CSS variables here if needed
+}
 
-/* You can add global styles to this file, and also import other style files */
+// Basic Reset & Global Styles
 html,
 body {
   height: 100%;
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif; // Material default font
 }
 
 body {
-  margin: 0;
-  font-family: Roboto, "Helvetica Neue", sans-serif;
-  // Smooth background transition for theme changes
-  transition: background-color 0.3s ease;
+  // Use Material theme background and text color
+  // These will automatically switch with the .dark-theme class
+  background-color: mat.get-theme-color(theme.$agency-light-theme, background, background);
+  color: mat.get-theme-color(theme.$agency-light-theme, foreground, text);
+
+  &.dark-theme {
+    background-color: mat.get-theme-color(theme.$agency-dark-theme, background, background);
+    color: mat.get-theme-color(theme.$agency-dark-theme, foreground, text);
+  }
 }
 
-/* Global Helper Classes */
-.page-container {
-  padding: 24px; // Consistent padding for main content areas
+// Consistent heading styles (optional, Material typography handles much of this)
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin-top: 0;
+  margin-bottom: 0.75em;
+  font-weight: 400; // Adjust as needed
 }
 
-.full-width {
-  width: 100%;
-}
-
-.spacer {
-  flex: 1 1 auto; // Used in flex containers like toolbar headers
-}
-
-/* Center loading spinners */
-.loading-indicator-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 40px;
-  min-height: 200px; // Prevent layout collapse while loading
-}
-
-/* Consistent heading styles */
 h1 {
-  font-size: 2em; // Example size
-  font-weight: 500;
-  margin-bottom: 24px;
-  // color: mat.get-theme-color(mat.$m2-indigo-palette, 500); // Use theme color
+  font-size: 2.2rem;
+  line-height: 1.2;
+}
 
-  // .dark-theme & {
-  //   // Adjust for dark theme if needed
-  //   // color: mat.get-theme-color(mat.$m2-indigo-palette, 200);
-  // }
+h2 {
+  font-size: 1.8rem;
+  line-height: 1.2;
 }
 
 h3 {
-  font-size: 1.4em;
-  font-weight: 500;
-  margin-top: 20px;
-  margin-bottom: 16px;
-  // color: mat.get-theme-color(mat.$m2-indigo-palette, 400);
+  font-size: 1.4rem;
+  line-height: 1.3;
+}
 
+a {
+  text-decoration: none;
+  // Inherit color by default, let components override
+  color: inherit;
+  // Use theme color for links if desired
+  // color: mat.get-theme-color(theme.$agency-light-theme, primary);
   // .dark-theme & {
-  //   // color: mat.get-theme-color(mat.$m2-indigo-palette, 300);
+  //   color: mat.get-theme-color(theme.$agency-dark-theme, primary);
   // }
 }
 
-/* Style Material Form Fields Consistently */
-mat-form-field {
-  margin-bottom: 8px; // Add a bit of space below fields
+// Utility: Page Container for consistent padding
+.page-container {
+  padding: var(--app-content-padding);
+  box-sizing: border-box; // Include padding in width/height
 }
 
-/* Responsive grid helper */
-.responsive-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-  gap: 20px;
+// Utility: Responsive container for simple centering/max-width
+.responsive-container {
+  width: 100%;
+  max-width: 1200px; // Adjust max-width as needed
+  margin: 0 auto; // Center the container
+  padding: 0 var(--app-content-padding); // Add horizontal padding
+  box-sizing: border-box;
+}
+
+// Helper for spacing elements vertically
+.vertical-spacing>*+* {
+  margin-top: var(--app-section-spacing);
 }
