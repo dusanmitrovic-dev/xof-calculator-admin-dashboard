@@ -4,11 +4,13 @@
             "commission_percentage": 6.5
         },
         "1348858428965257256": {
-            "commission_percentage": 6.5
+            "commission_percentage": 6.5,
+            "hourly_rate": 4.0
         }
     },
     "users": {
         "1177277640118370388": {
+            "commission_percentage": 7.0,
             "hourly_rate": 4.0,
             "override_role": true
         }
