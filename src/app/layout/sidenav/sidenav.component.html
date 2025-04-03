@@ -1,6 +1,10 @@
-<mat-nav-list>
-    <a mat-list-item *ngFor="let item of navItems" [routerLink]="item.link" routerLinkActive="active-list-item">
-      <mat-icon matListItemIcon>{{ item.icon }}</mat-icon>
+<mat-nav-list class="app-nav-list">
+    <!-- Use trackBy for potential minor performance gain -->
+    <a mat-list-item *ngFor="let item of navItems; trackBy: trackByLink"
+       [routerLink]="item.link"
+       routerLinkActive="active-list-item"
+       (click)="onNavigate()"> <!-- Emit event on click -->
+      <mat-icon matListItemIcon aria-hidden="true">{{ item.icon }}</mat-icon>
       <span matListItemTitle>{{ item.name }}</span>
     </a>
 </mat-nav-list>
