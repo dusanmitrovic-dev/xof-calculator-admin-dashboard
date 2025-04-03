@@ -1,14 +1,15 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { EarningsService } from '../../../core/services/earnings.service';
-import { SettingsService } from '../../../core/services/settings.service';
+// import { SettingsService } from '../../../core/services/settings.service'; // Only if needed
 import { Earning } from '../../../core/models/earning.model';
-import { Subject, combineLatest } from 'rxjs';
-import { takeUntil, map } from 'rxjs/operators';
+import { Subject } from 'rxjs';
+import { takeUntil, map, finalize } from 'rxjs/operators';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-dashboard-page',
   templateUrl: './dashboard-page.component.html',
-  styleUrls: ['./dashboard-page.component.scss'],
+  styleUrls: ['./dashboard-page.component.scss'], // Link SCSS file
   standalone: false,
 })
 export class DashboardPageComponent implements OnInit, OnDestroy {
@@ -17,14 +18,14 @@ export class DashboardPageComponent implements OnInit, OnDestroy {
   totalGrossRevenue = 0;
   totalCut = 0;
   userCount = 0;
-  // Add more stats as needed
 
   private destroy$ = new Subject<void>();
 
   constructor(
     private earningsService: EarningsService,
-    private settingsService: SettingsService // If settings needed for dashboard
-  ) {}
+    private snackBar: MatSnackBar
+  ) // private settingsService: SettingsService // Inject if settings are needed here
+  {}
 
   ngOnInit(): void {
     this.loadDashboardData();
@@ -37,12 +38,24 @@ export class DashboardPageComponent implements OnInit, OnDestroy {
 
   loadDashboardData(): void {
     this.isLoading = true;
-    // Example: Combine earnings and potentially user count from settings
     this.earningsService
-      .getEarnings() // Using the already flattened data from service constructor
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(
-        (earnings: Earning[]) => {
+      .getEarnings()
+      .pipe(
+        takeUntil(this.destroy$),
+        finalize(() => (this.isLoading = false)) // Ensure loading stops
+      )
+      .subscribe({
+        next: (earnings: Earning[]) => {
+          if (!earnings) {
+            // Handle potential null/undefined response
+            console.warn('Received null or undefined earnings data.');
+            this.totalEntries = 0;
+            this.totalGrossRevenue = 0;
+            this.totalCut = 0;
+            this.userCount = 0;
+            return;
+          }
+
           this.totalEntries = earnings.length;
           this.totalGrossRevenue = earnings.reduce(
             (sum, entry) => sum + (entry.gross_revenue || 0),
@@ -52,17 +65,21 @@ export class DashboardPageComponent implements OnInit, OnDestroy {
             (sum, entry) => sum + (entry.total_cut || 0),
             0
           );
-          // Calculate unique users based on the flattened data
           const uniqueUsers = new Set(earnings.map((e) => e.userId));
           this.userCount = uniqueUsers.size;
-
-          this.isLoading = false;
         },
-        (error) => {
+        error: (error) => {
           console.error('Error loading dashboard data', error);
-          this.isLoading = false;
-          // Handle error display
-        }
-      );
+          this.snackBar.open('Could not load dashboard statistics.', 'Close', {
+            duration: 3000,
+            panelClass: ['snackbar-error'],
+          });
+          // Reset stats on error
+          this.totalEntries = 0;
+          this.totalGrossRevenue = 0;
+          this.totalCut = 0;
+          this.userCount = 0;
+        },
+      });
   }
 }

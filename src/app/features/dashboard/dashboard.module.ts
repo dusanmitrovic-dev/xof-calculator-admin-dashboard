@@ -7,17 +7,17 @@ import { DashboardPageComponent } from './dashboard-page/dashboard-page.componen
 // Required Material Modules for this Feature
 import { MatCardModule } from '@angular/material/card';
 import { MatGridListModule } from '@angular/material/grid-list'; // Example if using grid
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner'; // Added for loading
 
 @NgModule({
-  declarations: [
-    DashboardPageComponent
-  ],
+  declarations: [DashboardPageComponent],
   imports: [
-    SharedModule, // Use SharedModule for CommonModule, etc.
+    SharedModule, // Use SharedModule for CommonModule, CurrencyPipe, etc.
     DashboardRoutingModule,
     // Import necessary Material modules here
     MatCardModule,
-    MatGridListModule
-  ]
+    MatGridListModule,
+    MatProgressSpinnerModule, // Added
+  ],
 })
-export class DashboardModule { }
+export class DashboardModule {}

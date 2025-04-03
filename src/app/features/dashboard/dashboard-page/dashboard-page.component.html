@@ -1,42 +1,43 @@
-<div class="page-container">
+<div class="page-container dashboard-page">
   <h1>Dashboard Overview</h1>
 
-  <div *ngIf="isLoading; else dashboardContent" style="text-align: center; padding: 40px;">
-      <mat-spinner diameter="50"></mat-spinner>
+  <div *ngIf="isLoading; else dashboardContent" class="loading-container">
+      <mat-spinner diameter="50" aria-label="Loading dashboard data"></mat-spinner>
+      <p>Loading Stats...</p>
   </div>
 
   <ng-template #dashboardContent>
-      <div class="dashboard-stats">
-          <mat-card class="stat-card">
+      <div class="dashboard-stats-grid">
+          <mat-card class="stat-card" appearance="outlined">
               <mat-card-header>
-                  <mat-card-title>Total Earnings Entries</mat-card-title>
+                  <mat-card-subtitle>Total Earnings Entries</mat-card-subtitle>
               </mat-card-header>
               <mat-card-content>
-                  <p class="stat-value">{{ totalEntries }}</p>
+                  <p class="stat-value">{{ totalEntries | number }}</p>
               </mat-card-content>
           </mat-card>
 
-          <mat-card class="stat-card">
+          <mat-card class="stat-card" appearance="outlined">
               <mat-card-header>
-                  <mat-card-title>Unique Users with Earnings</mat-card-title>
+                  <mat-card-subtitle>Unique Users with Earnings</mat-card-subtitle>
               </mat-card-header>
               <mat-card-content>
-                  <p class="stat-value">{{ userCount }}</p>
+                  <p class="stat-value">{{ userCount | number }}</p>
               </mat-card-content>
           </mat-card>
 
-          <mat-card class="stat-card">
+          <mat-card class="stat-card revenue-card" appearance="outlined">
               <mat-card-header>
-                  <mat-card-title>Total Gross Revenue</mat-card-title>
+                  <mat-card-subtitle>Total Gross Revenue</mat-card-subtitle>
               </mat-card-header>
               <mat-card-content>
                   <p class="stat-value">{{ totalGrossRevenue | currency:'USD':'symbol':'1.2-2' }}</p>
               </mat-card-content>
           </mat-card>
 
-          <mat-card class="stat-card">
+          <mat-card class="stat-card payout-card" appearance="outlined">
               <mat-card-header>
-                  <mat-card-title>Total Paid Out (Cut)</mat-card-title>
+                  <mat-card-subtitle>Total Paid Out (Cut)</mat-card-subtitle>
               </mat-card-header>
               <mat-card-content>
                   <p class="stat-value">{{ totalCut | currency:'USD':'symbol':'1.2-2' }}</p>
@@ -44,13 +45,13 @@
           </mat-card>
       </div>
 
-      <mat-card style="margin-top: 20px;">
+      <mat-card class="welcome-card" appearance="outlined">
         <mat-card-header>
-            <mat-card-title>Welcome</mat-card-title>
+            <mat-card-title>Welcome!</mat-card-title>
         </mat-card-header>
          <mat-card-content>
-            <p>Use the navigation on the left to manage settings and view earnings records.</p>
-            <p><small>Note: Data is currently loaded from mock files. Backend integration needed for live data and saving changes.</small></p>
+            <p>Use the navigation menu to manage settings and view detailed earnings records.</p>
+            <p><small><strong>Note:</strong> This application currently uses mock data loaded from local files. Backend integration is required to work with live data and persist changes.</small></p>
          </mat-card-content>
       </mat-card>
   </ng-template>
