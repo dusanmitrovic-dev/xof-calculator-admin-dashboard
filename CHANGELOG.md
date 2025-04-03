@@ -3,10 +3,15 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [v0.3.0] – 2025-04-03
+
+### Changed
+- Enhance earnings data handling with improved ID generation and logging.
+
 ## [v0.2.0] – 2025-04-03
 
 ### Changed
-- Snhance settings service with in-memory data handling for bonus rules, commission settings, display settings, models, periods, shifts, and role percentages.
+- Enhance settings service with in-memory data handling for bonus rules, commission settings, display settings, models, periods, shifts, and role percentages.
 
 ## [v0.1.2] – 2025-04-01 
 
