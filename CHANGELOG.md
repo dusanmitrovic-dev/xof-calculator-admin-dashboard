@@ -3,6 +3,11 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [v0.4.0] – 2025-04-03
+
+### Added
+- Implement models, periods, and shifts management with save functionality.
+
 ## [v0.3.0] – 2025-04-03
 
 ### Changed
