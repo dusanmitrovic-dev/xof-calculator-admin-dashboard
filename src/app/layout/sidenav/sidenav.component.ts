@@ -23,15 +23,15 @@ export class SidenavComponent {
     { link: '/earnings', name: 'Earnings', icon: 'paid' },
     {
       link: '/settings/commission',
-      name: 'Commission Settings',
+      name: 'Compensation',
       icon: 'settings',
     },
     { link: '/settings/bonus-rules', name: 'Bonus Rules', icon: 'rule' },
     {
       link: '/settings/display',
-      name: 'Display Settings',
+      name: 'Display',
       icon: 'display_settings',
     },
-    { link: '/settings/other', name: 'Other Configs', icon: 'category' },
+    { link: '/settings/other', name: 'Other', icon: 'category' },
   ];
 }
