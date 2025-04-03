@@ -1,52 +1,80 @@
 .page-container {
   padding: 20px;
-
-  h1 {
-    font-size: 1.5rem;
-    margin-bottom: 20px;
-  }
 }
 
-mat-form-field {
-  width: 100%; // Ensure form fields take full width on smaller screens
+.page-description {
+  margin-bottom: 20px;
+}
+
+.form-row {
+  margin-bottom: 16px;
+}
+
+.full-width-field {
+  width: 100%;
+}
+
+.toggles-section {
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.section-title {
+  font-size: 1.1em;
+  font-weight: 500;
+  margin-bottom: 12px;
 }
 
 .toggles-container {
   display: flex;
   flex-direction: column;
-  gap: 15px;
-  margin-top: 10px;
-  margin-bottom: 15px;
+  gap: 16px; // Space between toggles vertically
 }
 
-mat-slide-toggle {
-  width: 100%; // Ensure toggles align properly on mobile
+.form-toggle {
+  display: flex; // Ensure icon is aligned properly
+  align-items: center;
+
+  mat-icon {
+    font-size: 18px;
+    height: 18px;
+    width: 18px;
+    margin-left: 8px;
+    color: grey;
+    cursor: help;
+  }
 }
+
 
 .error-message {
-  color: red;
-  padding: 15px;
+  padding: 20px;
   text-align: center;
+  color: #f44336; // Material Warn color
+  font-style: italic;
 }
 
-mat-card {
-  margin-top: 20px;
-
-  small {
-    color: var(--mat-form-field-hint-text-color);
+body.light-theme {
+  .page-description {
+      color: black;
   }
 }
 
-@media (max-width: 600px) {
-  .page-container {
-    padding: 10px;
+// Dark theme adjustments
+body.dark-theme {
+  .toggles-section {
+    border-top-color: rgba(255, 255, 255, 0.12);
   }
 
-  h1 {
-    font-size: 1.2rem;
+  .page-description {
+    color: rgba(255, 255, 255, 0.7);
   }
 
-  button {
-    width: 100%; // Make buttons full-width on smaller screens
+  .form-toggle mat-icon {
+    color: rgba(255, 255, 255, 0.5);
+  }
+
+  .page-description{
+    color: white;
   }
 }

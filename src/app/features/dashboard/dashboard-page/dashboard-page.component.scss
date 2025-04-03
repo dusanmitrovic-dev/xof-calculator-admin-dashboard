@@ -33,7 +33,6 @@
 
   mat-card-subtitle {
     font-size: 0.9em;
-    color: rgba(0, 0, 0, 0.6);
     margin-bottom: 4px;
   }
 
@@ -42,7 +41,6 @@
     font-weight: 500;
     margin: 0;
     line-height: 1.2;
-    color: var(--mat-primary-color, #3f51b5); // Use theme color if available
   }
 }
 
@@ -59,23 +57,22 @@
   margin-top: 20px;
 }
 
+// Light Theme Adjustments
+body.light-theme {
+  .stat-value {
+    color: black; // Dark text for light theme
+  }
+  mat-card-subtitle {
+    color: black; // Dark text for light theme
+  }
+}
+
 // Dark Theme Adjustments
 body.dark-theme {
-  .stat-card {
-    mat-card-subtitle {
-      color: rgba(255, 255, 255, 0.7);
-    }
-
-    .stat-value {
-      color: var(--mat-primary-contrast-color, #ff4081); // Adjust color for dark theme
-    }
+  .stat-value {
+    color: white; // White text for dark theme
   }
-
-  .revenue-card .stat-value {
-    color: #81C784; // Lighter Green
-  }
-
-  .payout-card .stat-value {
-    color: #FFB74D; // Lighter Orange
+  mat-card-subtitle {
+    color: white; // Ensure white text for dark theme
   }
 }
