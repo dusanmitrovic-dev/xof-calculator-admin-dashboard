@@ -1,26 +1,118 @@
-.filter-container {
-  padding: 10px 0;
+.earnings-page {
+  padding: 20px;
 }
 
-.mat-mdc-table {
+.table-controls {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between; // Pushes items apart
+  align-items: center;
+  margin-bottom: 16px;
+  gap: 16px;
+}
+
+.filter-field {
+  flex: 1 1 300px; // Allow filter to grow but have a base size
+  max-width: 450px; // Prevent it from getting too wide
+}
+
+.add-button {
+  flex-shrink: 0; // Prevent button from shrinking
+}
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 200px;
+  color: grey;
+
+  p {
+    margin-top: 10px;
+  }
+}
+
+.table-container {
+  overflow-x: auto; // Allow horizontal scrolling on small screens
+}
+
+.earnings-table {
   width: 100%;
+
+  th.mat-header-cell,
+  td.mat-cell {
+    padding: 8px 12px; // Adjust padding
+  }
+
+  // Align numeric columns to the right
+  .numeric-header {
+    text-align: right;
+    justify-content: flex-end; // For mat-sort-header internal alignment
+  }
+
+  .numeric-cell {
+    text-align: right;
+    font-family: monospace; // Optional: for numbers
+  }
+
+  // Align actions column
+  .actions-header {
+    text-align: center;
+    justify-content: center;
+  }
+
+  .actions-cell {
+    text-align: center;
+    white-space: nowrap; // Prevent buttons wrapping
+
+    button {
+      margin: 0 4px; // Space between buttons
+    }
+  }
+
+  .id-cell {
+    font-size: 0.85em;
+    color: grey;
+    max-width: 150px; // Prevent long IDs taking too much space
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  // No data row styling
+  .no-data-cell {
+    text-align: center;
+    padding: 30px;
+    color: grey;
+    font-style: italic;
+  }
+
+  // Sticky header background
+  tr.mat-header-row {
+    background-color: #f5f5f5; // Light grey background
+  }
 }
 
-// Ensure columns don't wrap awkwardly by default
-.mat-mdc-header-cell,
-.mat-mdc-cell {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  padding: 0 8px; // Adjust padding
+mat-paginator {
+  margin-top: 1px; // Separate from table visually
 }
 
-// Give more space to certain columns if needed
-// .mat-column-user { width: 150px; }
-// .mat-column-id { width: 180px; font-size: 0.8em; }
 
-// Style action buttons cell
-.mat-column-actions {
-  text-align: center;
-  width: 120px; // Fixed width for action buttons
+// Dark theme adjustments
+body.dark-theme {
+  .earnings-table {
+    tr.mat-header-row {
+      background-color: #424242; // Darker grey
+    }
+
+    .id-cell {
+      color: rgba(255, 255, 255, 0.5);
+    }
+  }
+
+  .loading-container,
+  .no-data-cell {
+    color: rgba(255, 255, 255, 0.7);
+  }
 }
