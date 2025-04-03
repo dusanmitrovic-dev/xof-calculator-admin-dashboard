@@ -1,53 +1,46 @@
 import { NgModule } from '@angular/core';
 import {
   BrowserModule,
-  provideClientHydration,
+  provideClientHydration, // Keep if using SSR/Hydration
 } from '@angular/platform-browser';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations'; // Import Animations
-import { HttpClientModule } from '@angular/common/http'; // Import HttpClientModule
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { HttpClientModule } from '@angular/common/http'; // Keep for potential future API use
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 
-// Import Layout Components
-import { MainLayoutComponent } from './layout/main-layout/main-layout.component';
-import { ToolbarComponent } from './layout/toolbar/toolbar.component';
-import { SidenavComponent } from './layout/sidenav/sidenav.component';
+// Layout Components are standalone, imported where needed (e.g., routing module or app component)
+// Removed direct imports of MainLayoutComponent, ToolbarComponent, SidenavComponent here
 
-// Import Angular Material Modules needed by Layout
-import { MatToolbarModule } from '@angular/material/toolbar';
-import { MatSidenavModule } from '@angular/material/sidenav';
-import { MatListModule } from '@angular/material/list';
-import { MatIconModule } from '@angular/material/icon';
-import { MatButtonModule } from '@angular/material/button';
+// Import Feature Modules (which import SharedModule themselves)
 import { SettingsModule } from './features/settings/settings.module';
-// SharedModule will be imported later if needed globally, but not required yet
+// DashboardModule and EarningsModule are lazy-loaded via routing
+
+// Core Services are provided in 'root'
 
 @NgModule({
   declarations: [
     AppComponent,
-    // Layout Components are automatically declared by CLI here
+    // Other non-standalone components declared here if any
   ],
   imports: [
-    BrowserModule,
-    AppRoutingModule,
-    BrowserAnimationsModule, // Add Animations module
-    HttpClientModule, // Add HttpClientModule
+    BrowserModule, // Should be imported only once in AppModule
+    AppRoutingModule, // Handles routing, including lazy loading features
+    BrowserAnimationsModule, // For Angular Material animations
+    HttpClientModule, // Keep, might be used later or by libraries
 
-    // Material Modules for Layout
-    MatToolbarModule,
-    MatSidenavModule,
-    MatListModule,
-    MatIconModule,
-    MatButtonModule,
-    MainLayoutComponent, // Import standalone component
-    ToolbarComponent,
-    SidenavComponent,
-    SettingsModule,
+    // Eagerly loaded modules (if any besides AppModule itself)
+    // SettingsModule is currently eagerly loaded because it's imported here.
+    // If you want Settings also lazy-loaded, remove this import and load it in app-routing.module
+     SettingsModule, // This imports SharedModule internally
+
+    // Standalone Components used directly by AppComponent template (if any)
+    // MainLayoutComponent is used via routing, not directly here
   ],
   providers: [
-    provideClientHydration(), // Included by default with SSR setup
+     provideClientHydration(), // Keep if using Angular Universal / SSR Hydration
+    // Global services could be provided here, but 'providedIn: root' is preferred
   ],
-  bootstrap: [AppComponent],
+  bootstrap: [AppComponent], // The root component to bootstrap
 })
 export class AppModule {}
