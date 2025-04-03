@@ -1,3 +1,41 @@
+@use '@angular/material' as mat;
+
+mat-toolbar {
+  // Ensure proper elevation is applied by the theme
+  // Optional: Add custom styles if needed
+  position: sticky; // Keep toolbar visible
+  top: 0;
+  z-index: 1000; // Ensure it's above content
+}
+
+.menu-button {
+  // Specific styling for the menu toggle button if needed
+  margin-right: 8px;
+}
+
+.app-title-group {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+  margin: 0 16px; // Spacing around title
+
+  .app-name {
+    font-size: 1.1rem;
+    font-weight: 500; // Slightly bolder
+  }
+
+  .bot-name {
+    font-size: 0.8rem;
+    opacity: 0.8;
+  }
+}
+
+
+.spacer {
+  flex: 1 1 auto; // Pushes items to the right
+}
+
 .theme-button {
-    margin-left: auto; // Pushes the button to the right
+  // Specific styling for the theme toggle button if needed
+  margin-left: 8px;
 }
