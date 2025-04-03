@@ -1,11 +1,18 @@
-import { Component, OnInit, ChangeDetectorRef, OnDestroy } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  ChangeDetectorRef,
+  OnDestroy,
+  ViewChild,
+} from '@angular/core';
 import { MediaMatcher } from '@angular/cdk/layout';
 import { ThemeService } from '../../core/services/theme.service'; // Adjust path
-import { Observable, Subscription } from 'rxjs';
+import { Observable, Subject } from 'rxjs'; // Import Subject
+import { takeUntil } from 'rxjs/operators'; // Import takeUntil
 import { DisplaySettings } from '../../core/models/display-settings.model';
 import { SettingsService } from '../../core/services/settings.service';
 import { CommonModule } from '@angular/common';
-import { MatSidenavModule } from '@angular/material/sidenav';
+import { MatSidenav, MatSidenavModule } from '@angular/material/sidenav'; // Import MatSidenav
 import { RouterModule } from '@angular/router';
 import { ToolbarComponent } from '../toolbar/toolbar.component';
 import { SidenavComponent } from '../sidenav/sidenav.component';
@@ -13,7 +20,7 @@ import { SidenavComponent } from '../sidenav/sidenav.component';
 @Component({
   selector: 'app-main-layout',
   templateUrl: './main-layout.component.html',
-  styleUrls: ['./main-layout.component.scss'],
+  styleUrls: ['./main-layout.component.scss'], // Link SCSS file
   standalone: true,
   imports: [
     CommonModule,
@@ -21,34 +28,65 @@ import { SidenavComponent } from '../sidenav/sidenav.component';
     RouterModule,
     ToolbarComponent,
     SidenavComponent,
-  ]
+  ],
 })
 export class MainLayoutComponent implements OnInit, OnDestroy {
   mobileQuery: MediaQueryList;
-  private _mobileQueryListener: () => void;
   isDark$: Observable<boolean>;
   displaySettings$: Observable<DisplaySettings>;
 
+  @ViewChild('sidenav') sidenav!: MatSidenav; // Reference to sidenav
+
+  private _mobileQueryListener: () => void;
+  private destroy$ = new Subject<void>(); // For unsubscribing
+
   constructor(
-    changeDetectorRef: ChangeDetectorRef,
+    private changeDetectorRef: ChangeDetectorRef,
     media: MediaMatcher,
     private themeService: ThemeService,
     private settingsService: SettingsService // Inject SettingsService
   ) {
-    this.mobileQuery = media.matchMedia('(max-width: 600px)');
-    this._mobileQueryListener = () => changeDetectorRef.detectChanges();
-    this.mobileQuery.addListener(this._mobileQueryListener);
+    this.mobileQuery = media.matchMedia('(max-width: 768px)'); // Adjust breakpoint if needed
+    this._mobileQueryListener = () => {
+      this.changeDetectorRef.detectChanges();
+      // Optional: Close sidenav if screen becomes non-mobile while it's open in 'over' mode
+      if (
+        !this.mobileQuery.matches &&
+        this.sidenav &&
+        this.sidenav.mode === 'over'
+      ) {
+        // this.sidenav.close(); // Decide if this behavior is desired
+      }
+    };
+    // Use addEventListener for modern approach
+    this.mobileQuery.addEventListener('change', this._mobileQueryListener);
+
     this.isDark$ = this.themeService.isDark$;
-    this.displaySettings$ = this.settingsService.getDisplaySettings(); // Fetch settings
+    // Fetch settings once and handle potential errors
+    this.displaySettings$ = this.settingsService.getDisplaySettings().pipe(
+      takeUntil(this.destroy$)
+      // catchError(err => {
+      //     console.error("Failed to load display settings for layout", err);
+      //     return of({ agency_name: 'App', bot_name: 'Bot' } as DisplaySettings); // Provide defaults
+      // })
+    );
   }
 
   ngOnInit(): void {}
 
   ngOnDestroy(): void {
-    this.mobileQuery.removeListener(this._mobileQueryListener);
+    // Use removeEventListener
+    this.mobileQuery.removeEventListener('change', this._mobileQueryListener);
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   toggleTheme(): void {
     this.themeService.toggleTheme();
+  }
+
+  // Optional: Handle sidenav state changes if needed
+  onSidenavOpenedChange(isOpen: boolean): void {
+    console.log('Sidenav open state:', isOpen);
   }
 }

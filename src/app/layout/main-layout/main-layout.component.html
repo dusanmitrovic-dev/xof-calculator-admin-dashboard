@@ -7,20 +7,27 @@
       [appName]="(displaySettings$ | async)?.agency_name"
       [botName]="(displaySettings$ | async)?.bot_name">
     </app-toolbar>
-  
+
     <mat-sidenav-container class="app-sidenav-container">
-      <mat-sidenav #sidenav
+      <!-- Sidenav -->
+      <mat-sidenav #sidenav class="app-sidenav"
                    [mode]="mobileQuery.matches ? 'over' : 'side'"
                    [fixedInViewport]="mobileQuery.matches"
-                   fixedTopGap="56"
-                   [opened]="!mobileQuery.matches">
-        <app-sidenav></app-sidenav>
+                   fixedTopGap="64"
+                   [opened]="!mobileQuery.matches"
+                   (openedChange)="onSidenavOpenedChange($event)">
+         <!-- Auto close sidenav on navigation in mobile view -->
+        <app-sidenav (navigated)="mobileQuery.matches && sidenav.close()"></app-sidenav>
       </mat-sidenav>
-  
-      <mat-sidenav-content>
-        <main class="main-content">
+
+      <!-- Main Content Area -->
+      <mat-sidenav-content class="app-sidenav-content">
+        <main class="main-content" role="main">
            <router-outlet></router-outlet>
         </main>
+        <!-- Optional Footer -->
+         <!-- <footer class="app-footer"> Footer content here </footer> -->
       </mat-sidenav-content>
+
     </mat-sidenav-container>
   </div>
