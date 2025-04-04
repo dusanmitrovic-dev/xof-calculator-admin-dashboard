@@ -4,7 +4,7 @@
     <div class="table-controls">
         <mat-form-field appearance="outline" class="filter-field">
             <mat-label>Filter Earnings</mat-label>
-            <input matInput (keyup)="applyFilter($event)" placeholder="Search table..." #input>
+            <input matInput (keyup)="applyFilter(input.value)" placeholder="Search table..." #input>
             <button *ngIf="input.value" matSuffix mat-icon-button aria-label="Clear filter" (click)="clearFilter()">
                 <mat-icon>close</mat-icon>
              </button>

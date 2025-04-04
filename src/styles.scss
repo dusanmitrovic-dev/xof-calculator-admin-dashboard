@@ -1,5 +1,7 @@
-// @use '@angular/material' as mat;
+@use '@angular/material' as mat;
 @use 'theme' as *;
+
+$agency-admin-primary: mat.m2-define-palette(mat.$m2-indigo-palette, 500, 100, 700);
 
 html,
 body {
@@ -89,7 +91,7 @@ td.mat-footer-cell {
 
 // Ensure links look consistent
 a {
-  color: mat.get-color-from-palette($agency-admin-primary);
+  color: mat.m2-get-color-from-palette($agency-admin-primary);
   text-decoration: none;
 
   &:hover {

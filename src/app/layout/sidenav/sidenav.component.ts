@@ -26,7 +26,7 @@ export class SidenavComponent {
     { link: '/earnings', name: 'Earnings Records', icon: 'receipt_long' }, // More specific icon
     {
       link: '/settings/commission',
-      name: 'Commission Setup', // More descriptive name
+      name: 'Compensation Setup', // More descriptive name
       icon: 'settings_applications', // More specific icon
     },
     {

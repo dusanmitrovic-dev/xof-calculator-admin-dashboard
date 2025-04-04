@@ -35,7 +35,7 @@ import { LayoutModule } from '@angular/cdk/layout'; // Added
 // Shared Components
 import { ConfigCardComponent } from './components/config-card/config-card.component';
 // TODO: Add ConfirmDialogComponent, etc. here if they are truly shared
-// import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dialog.component';
+import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dialog.component';
 
 // Define Material & CDK modules to be exported
 const materialModules = [
@@ -69,7 +69,8 @@ const cdkModules = [ClipboardModule, LayoutModule];
 @NgModule({
   declarations: [
     ConfigCardComponent,
-    // ConfirmDialogComponent,
+    ConfirmDialogComponent,
+    ConfirmDialogComponent,
   ],
   imports: [
     CommonModule,
@@ -90,7 +91,7 @@ const cdkModules = [ClipboardModule, LayoutModule];
 
     // Export shared components
     ConfigCardComponent,
-    // ConfirmDialogComponent,
+    ConfirmDialogComponent,
   ],
 })
 export class SharedModule {}

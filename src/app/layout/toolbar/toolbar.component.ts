@@ -4,53 +4,55 @@ import {
   Input,
   Output,
   ChangeDetectionStrategy,
-} from '@angular/core'; // Added ChangeDetectionStrategy
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
-import { MatTooltipModule } from '@angular/material/tooltip'; // Added Tooltip Module
-import { MatMenuModule } from '@angular/material/menu'; // Added Menu Module
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatMenuModule } from '@angular/material/menu';
 
 @Component({
   selector: 'app-toolbar',
   templateUrl: './toolbar.component.html',
-  styleUrls: ['./toolbar.component.scss'], // Link SCSS file
+  styleUrls: ['./toolbar.component.scss'],
   standalone: true,
   imports: [
     CommonModule,
     MatToolbarModule,
     MatIconModule,
     MatButtonModule,
-    MatTooltipModule, // Import Tooltip
-    MatMenuModule, // Import Menu
+    MatTooltipModule,
+    MatMenuModule,
   ],
-  changeDetection: ChangeDetectionStrategy.OnPush, // Use OnPush for simple presentational component
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ToolbarComponent {
-  // Inputs from parent (MainLayoutComponent)
+  // --- Inputs ---
   @Input() isMobile: boolean = false;
-  @Input() isDark: boolean = false; // Theme state from ThemeService via MainLayout
-  @Input() appName: string | null | undefined = 'App'; // Default App Name
+  // This Input receives the TRUE theme state from the parent (MainLayoutComponent -> ThemeService)
+  @Input() isDark: boolean = false;
+  @Input() appName: string | null | undefined = 'App';
   @Input() botName: string | null | undefined;
 
-  // Outputs to parent (MainLayoutComponent)
+  // --- Outputs ---
   @Output() sidenavToggle = new EventEmitter<void>();
+  // This Output just signals the parent to toggle the theme via the service
   @Output() themeToggle = new EventEmitter<void>();
-  // @Output() sidebarToggle = new EventEmitter<void>(); // Removed - wasn't used by layout
 
-  constructor() {
-    // No theme logic needed here anymore - parent handles it
-  }
+  // NO internal theme state (`isDarkTheme`) needed here!
+  // NO constructor logic needed for theme!
+
+  constructor() {} // Constructor can be empty or removed if not needed
 
   onToggleSidenav(): void {
     this.sidenavToggle.emit();
   }
 
   onToggleTheme(): void {
-    // Just emit the event, let the parent component call the service
+    // ONLY emit the event. The parent component handles calling the ThemeService.
     this.themeToggle.emit();
   }
 
-  // Removed toggleSidebar() as it wasn't connected
+  // NO local toggleTheme() method needed here!
 }

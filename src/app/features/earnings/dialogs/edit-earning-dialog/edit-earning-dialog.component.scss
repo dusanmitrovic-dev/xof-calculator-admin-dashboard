@@ -1,0 +1,48 @@
+// Often, the styles for Add and Edit dialogs can be the same.
+// You can either duplicate the styles from add-earning-dialog.scss here,
+// or, for better maintainability (DRY principle), create a shared SCSS file
+// (e.g., _earning-dialog-styles.scss) and import it into both component SCSS files:
+// @import 'earning-dialog-styles';
+
+// For now, let's duplicate the key styles:
+form {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+mat-dialog-content.edit-earning-content {
+  // Use specific class if desired
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  overflow-y: auto;
+  flex-grow: 1;
+}
+
+.form-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+
+  mat-form-field {
+    flex: 1 1 180px;
+    min-width: 150px;
+  }
+}
+
+.full-width {
+  width: 100%;
+}
+
+mat-dialog-actions {
+  padding: 16px 24px;
+  border-top: 1px solid rgba(0, 0, 0, 0.12);
+  flex-shrink: 0;
+}
+
+body.dark-theme mat-dialog-actions {
+  border-top-color: rgba(255, 255, 255, 0.12);
+}

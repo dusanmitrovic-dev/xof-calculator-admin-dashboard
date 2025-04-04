@@ -18,7 +18,9 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatDatepickerModule } from '@angular/material/datepicker'; // Likely needed for Edit Dialog
 import { MatNativeDateModule } from '@angular/material/core'; // Required for datepicker
-import { MatSelectModule } from '@angular/material/select'; // Likely needed for Edit Dialog (role, period, shift)
+import { MatSelectModule } from '@angular/material/select';
+import { AddEarningDialogComponent } from './dialogs/add-earning-dialog/add-earning-dialog.component';
+import { EditEarningDialogComponent } from './dialogs/edit-earning-dialog/edit-earning-dialog.component'; // Likely needed for Edit Dialog (role, period, shift)
 
 // TODO: Import Dialog Components when created
 // import { EditEarningDialogComponent } from './dialogs/edit-earning-dialog/edit-earning-dialog.component';
@@ -27,6 +29,8 @@ import { MatSelectModule } from '@angular/material/select'; // Likely needed for
 @NgModule({
   declarations: [
     EarningsPageComponent,
+    AddEarningDialogComponent,
+    EditEarningDialogComponent,
     // EditEarningDialogComponent, // Declare dialog components here
     // ConfirmDialogComponent, // Or declare in SharedModule if truly shared
   ],
@@ -49,9 +53,5 @@ import { MatSelectModule } from '@angular/material/select'; // Likely needed for
     MatNativeDateModule,
     MatSelectModule,
   ],
-  // entryComponents: [ // No longer needed with Ivy
-  //   EditEarningDialogComponent,
-  //   ConfirmDialogComponent
-  // ]
 })
 export class EarningsModule {}

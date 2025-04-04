@@ -5,6 +5,12 @@
   position: sticky; // Make toolbar sticky at the top
   top: 0;
   z-index: 1000; // Ensure it's above other content
+  .mat-icon.force-white-icon {
+      color: white; // Force the icon color to white
+
+      // Optional: Add !important if needed, but try without it first.
+      // color: white !important;
+  }
 }
 
 .menu-button {
@@ -28,11 +34,19 @@
 }
 
 .spacer {
-  flex: 1 1 auto; // This pushes items after it to the right
+  flex: 1 1 auto;
 }
 
 .theme-button {
-  // Specific styles for theme button if needed
+  // You might have styles for the button itself here
+
+  // Target the mat-icon specifically when the force-white-icon class is applied
+  .mat-icon.force-white-icon {
+    color: white; // Force the icon color to white
+
+    // Optional: Add !important if needed to override high-specificity Material styles, but try without it first.
+    // color: white !important;
+  }
 }
 
 
