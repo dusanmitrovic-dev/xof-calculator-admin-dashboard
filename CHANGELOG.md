@@ -3,6 +3,11 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [v0.5.0] – 2025-04-05
+
+### Added
+- Visual update.
+
 ## [v0.4.0] – 2025-04-03
 
 ### Added
