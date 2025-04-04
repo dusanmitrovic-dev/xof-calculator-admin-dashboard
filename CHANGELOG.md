@@ -39,7 +39,7 @@ All notable changes to this project will be documented in this file.
   - Mark `main-layout` and `sidenav` components as standalone.  
 
 - **Routing**  
-  - Implement lazy loading for feature modules.  
+  - Implement lazy loading for feature modules,
   - Clean up and optimize route definitions.  
 
 - **Dashboard**  
