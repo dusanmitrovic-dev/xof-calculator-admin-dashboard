@@ -35,11 +35,11 @@ All notable changes to this project will be documented in this file.
   - Set default theme to dark mode.  
   - Implement theme toggle functionality in the toolbar.  
   - Integrate Angular Material theming into the toolbar.  
-  - Enhance `main-layout` and `sidenav` components with Angular Material modules,
+  - Enhance `main-layout` and `sidenav` components with Angular Material modules.  
   - Mark `main-layout` and `sidenav` components as standalone.  
 
 - **Routing**  
-  - Implement lazy loading for feature modules,
+  - Implement lazy loading for feature modules.  
   - Clean up and optimize route definitions.  
 
 - **Dashboard**  
