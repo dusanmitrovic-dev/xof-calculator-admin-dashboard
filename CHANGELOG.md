@@ -32,9 +32,9 @@ All notable changes to this project will be documented in this file.
 
 ### Added  
 - **Theme & Layout**  
-  - Set default theme to dark mode,
-  - Implement theme toggle functionality in the toolbar,
-  - Integrate Angular Material theming into the toolbar,
+  - Set default theme to dark mode.  
+  - Implement theme toggle functionality in the toolbar.  
+  - Integrate Angular Material theming into the toolbar.  
   - Enhance `main-layout` and `sidenav` components with Angular Material modules,
   - Mark `main-layout` and `sidenav` components as standalone.  
 
