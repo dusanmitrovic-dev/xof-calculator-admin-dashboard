@@ -3,6 +3,11 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [v0.6.0] – 2025-04-05
+
+### Changed
+- Comment out header elements in various pages.
+
 ## [v0.5.0] – 2025-04-05
 
 ### Added
