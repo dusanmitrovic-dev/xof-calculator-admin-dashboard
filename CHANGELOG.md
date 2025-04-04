@@ -21,7 +21,7 @@ All notable changes to this project will be documented in this file.
 ## [v0.1.2] – 2025-04-01 
 
 ### Added
-- `LICENCE.txt` file.
+- Added `LICENCE.txt` file.
 
 ## [v0.1.1] – 2025-04-01 
 
