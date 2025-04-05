@@ -36,3 +36,19 @@ app-config-card [card-actions] button {
 app-config-card [card-actions] button mat-icon {
   margin-right: 4px;
 }
+
+.placeholder-input{
+
+}
+
+body.light-theme{
+  .placeholder-input {
+    color: black;
+  }
+}
+
+body.dark-theme {
+  .placeholder-input {
+    color: white;
+  }
+}

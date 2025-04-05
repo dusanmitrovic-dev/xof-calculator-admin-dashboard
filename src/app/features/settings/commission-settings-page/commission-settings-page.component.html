@@ -6,7 +6,7 @@
     <app-config-card title="Role Base Commissions" [loading]="isLoading">
       <div card-actions>
         <!-- TODO: Replace button with one that opens the Add Role Dialog -->
-        <button mat-stroked-button (click)="openAddRoleDialog()" [disabled]="isLoading">
+        <button mat-stroked-button class="add-role-button" (click)="openAddRoleDialog()" [disabled]="isLoading">
           <mat-icon>add</mat-icon> Add Role
         </button>
         <button
@@ -114,14 +114,7 @@
             </mat-error>
           </mat-form-field>
 
-          <mat-slide-toggle
-              formControlName="override_role"
-              class="override-toggle"
-              color="primary"
-              matTooltip="Enable to set a specific commission % for this user, ignoring their role's %"
-            >
-                Override Role %?
-            </mat-slide-toggle>
+
 
             <!-- Conditionally show Override Commission % field -->
             <mat-form-field
@@ -147,6 +140,14 @@
                  </mat-error>
             </mat-form-field>
 
+            <mat-slide-toggle
+              formControlName="override_role"
+              class="override-toggle"
+              color="primary"
+              matTooltip="Enable to set a specific commission % for this user, ignoring their role's %"
+            >
+                Override Role?
+            </mat-slide-toggle>
 
           <button
             mat-icon-button
@@ -158,6 +159,7 @@
           >
             <mat-icon>delete_outline</mat-icon>
           </button>
+
         </div>
       </div>
     </app-config-card>
