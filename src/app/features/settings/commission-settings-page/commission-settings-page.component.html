@@ -46,7 +46,6 @@
               placeholder="e.g., 6.5"
               required
             />
-            <!-- Accessing error from the specific control -->
             <mat-error *ngIf="rolesFormGroup.get(roleId)?.get('commission_percentage')?.hasError('required')">
               Percentage is required.
             </mat-error>
