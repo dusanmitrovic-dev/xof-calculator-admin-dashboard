@@ -77,7 +77,6 @@
         <button mat-stroked-button (click)="openAddUserOverrideDialog()" [disabled]="isLoading">
           <mat-icon>person_add</mat-icon> Add User Override
         </button>
-         <!-- Save button is already in the Roles card, controls the whole form -->
        </div>
       <div card-content formGroupName="users">
         <div *ngIf="userKeys.length === 0 && !isLoading" class="no-data-message">
