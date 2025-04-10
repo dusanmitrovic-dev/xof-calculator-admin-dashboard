@@ -5,6 +5,7 @@
 - [x] Create Angular project (`ng new`)
 - [x] Add Angular Material (`ng add @angular/material`)
 - [x] Create `src/app/core/data` folder
+- [ ] 
 - [x] Copy provided JSON data files into `src/app/core/data`
 - [x] Define Core Data Models/Interfaces (`src/app/core/models/`)
     - [x] `BonusRule`
