@@ -12,6 +12,7 @@
     - [x] `DisplaySettings`
     - [x] `Earning` (with added `userId`)
     - [x] `RolePercentageMap`
+        
 - [x] Implement Core Services (`src/app/core/services/`)
     - [x] `ThemeService` (Handles toggling, loading initial, localStorage)
     - [x] `SettingsService` (Loads *mock* data for all config types from JSON)
