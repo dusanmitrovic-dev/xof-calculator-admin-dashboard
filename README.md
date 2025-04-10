@@ -19,6 +19,7 @@
     - [x] `EarningsService` (Flattens and loads *mock* earnings data from JSON)
     - [x] `EarningsService` (Implements *mock* CRUD methods - logs/modifies local array)
 - [x] Configure Theming
+- [ ] 
     - [x] Define custom light/dark palettes in `theme.scss`
     - [x] Apply themes and global styles in `styles.scss`
 - [x] Configure Main App Module (`app.module.ts`) with necessary imports (Browser, Animations, HttpClient, Layout, Shared, Core Material)
