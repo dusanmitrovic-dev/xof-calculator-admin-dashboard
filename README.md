@@ -1,6 +1,6 @@
 # xof-calculator-admin-dashboard
 
-## 1. Project Setup & Core Configuration (`ANGULAR`) Data driven !!!!!!!!!!!!!!!
+## 1. Project Setup & Core Configuration (`ANGULAR`) Data driven !!!!!!!!!!
 
 - [x] Create Angular project (`ng new`)
 - [x] Add Angular Material (`ng add @angular/material`)
