@@ -85,6 +85,7 @@
     - [x] Use Reactive Forms (`FormGroup`)
     - [x] Load and display *mock* display settings data
     - [x] Call *mock* `SettingsService.saveDisplaySettings` on submit
+    - [ ] 
 - [x] Implement `OtherConfigsPageComponent`
     - [x] Use Reactive Forms / appropriate controls for list management (Models, Periods, Shifts)
     - [x] Use Reactive Forms / appropriate controls for Role Percentages map
