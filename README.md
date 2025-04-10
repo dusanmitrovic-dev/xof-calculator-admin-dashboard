@@ -33,6 +33,7 @@
 - [ ] 
 - [x] Configure Main App Routing (`app-routing.module.ts`) with layout and lazy-loading placeholders
 - [ ] Fix the sidebar toggle functionality.
+- [ ] 
 - [ ] Ensure responsiveness for mobile devices.
 - [ ] Verify navigation links and their functionality.
 - [ ] Adjust styles for better alignment and spacing.
