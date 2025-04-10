@@ -79,6 +79,7 @@
     - [x] Load and display *mock* bonus rules data
     - [x] Implement add/remove controls for rules
     - [x] Call *mock* `SettingsService.saveBonusRules` on submit (includes sorting)
+    - [ ] 
 - [x] Implement `DisplaySettingsPageComponent`
     - [x] Use Reactive Forms (`FormGroup`)
     - [x] Load and display *mock* display settings data
