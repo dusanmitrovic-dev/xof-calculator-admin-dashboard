@@ -9,6 +9,7 @@
 - [x] Copy provided JSON data files into `src/app/core/data`
 - [x] Define Core Data Models/Interfaces (`src/app/core/models/`)
     - [x] `BonusRule`
+    - [ ] 
     - [x] `CommissionSettings` (including `RoleSetting`, `UserOverrideSetting`)
     - [x] `DisplaySettings`
     - [ ] 
