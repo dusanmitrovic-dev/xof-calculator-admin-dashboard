@@ -115,6 +115,7 @@
 ## 7. Next Steps / Pending Tasks
 
 - [ ] **Backend Integration:** Replace ALL mock service calls (`of(...)`, `console.log`, `alert`) in `SettingsService` and `EarningsService` with actual `HttpClient` calls to the backend API endpoints.
+- [ ] 
 - [ ] **Authentication:**
     - [ ] Implement `AuthService` (login, logout, token management).
     - [ ] Implement Login Page Component.
