@@ -11,6 +11,7 @@
     - [x] `BonusRule`
     - [x] `CommissionSettings` (including `RoleSetting`, `UserOverrideSetting`)
     - [x] `DisplaySettings`
+    - [ ] 
     - [x] `Earning` (with added `userId`)
     - [ ] 
     - [x] `RolePercentageMap`
