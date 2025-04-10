@@ -19,6 +19,7 @@
     - [x] `SettingsService` (Implements *mock* save methods for all config types - logs to console)
     - [x] `EarningsService` (Flattens and loads *mock* earnings data from JSON)
     - [x] `EarningsService` (Implements *mock* CRUD methods - logs/modifies local array)
+    - [ ] 
 - [x] Configure Theming
 - [ ] 
     - [x] Define custom light/dark palettes in `theme.scss`
