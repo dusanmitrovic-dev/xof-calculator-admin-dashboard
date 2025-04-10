@@ -22,6 +22,7 @@
     - [x] Define custom light/dark palettes in `theme.scss`
     - [x] Apply themes and global styles in `styles.scss`
 - [x] Configure Main App Module (`app.module.ts`) with necessary imports (Browser, Animations, HttpClient, Layout, Shared, Core Material)
+- [ ] 
 - [x] Configure Main App Routing (`app-routing.module.ts`) with layout and lazy-loading placeholders
 - [ ] Fix the sidebar toggle functionality.
 - [ ] Ensure responsiveness for mobile devices.
