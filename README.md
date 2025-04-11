@@ -1,39 +1,29 @@
 # xof-calculator-admin-dashboard
 
-## 1. Project Setup & Core Configuration (`ANGULAR`) Data driven !!!!!!!!!!
+## 1. Project Setup & Core Configuration (`ANGULAR`) Data driven !!!!!!!!!!!!!!!
 
 - [x] Create Angular project (`ng new`)
 - [x] Add Angular Material (`ng add @angular/material`)
 - [x] Create `src/app/core/data` folder
-- [ ] 
 - [x] Copy provided JSON data files into `src/app/core/data`
 - [x] Define Core Data Models/Interfaces (`src/app/core/models/`)
     - [x] `BonusRule`
-    - [ ] 
     - [x] `CommissionSettings` (including `RoleSetting`, `UserOverrideSetting`)
     - [x] `DisplaySettings`
-    - [ ] 
     - [x] `Earning` (with added `userId`)
-    - [ ] 
     - [x] `RolePercentageMap`
-    - [ ] 
 - [x] Implement Core Services (`src/app/core/services/`)
     - [x] `ThemeService` (Handles toggling, loading initial, localStorage)
     - [x] `SettingsService` (Loads *mock* data for all config types from JSON)
     - [x] `SettingsService` (Implements *mock* save methods for all config types - logs to console)
     - [x] `EarningsService` (Flattens and loads *mock* earnings data from JSON)
     - [x] `EarningsService` (Implements *mock* CRUD methods - logs/modifies local array)
-    - [ ] 
 - [x] Configure Theming
-- [ ] 
     - [x] Define custom light/dark palettes in `theme.scss`
     - [x] Apply themes and global styles in `styles.scss`
-    - [ ] 
 - [x] Configure Main App Module (`app.module.ts`) with necessary imports (Browser, Animations, HttpClient, Layout, Shared, Core Material)
-- [ ] 
 - [x] Configure Main App Routing (`app-routing.module.ts`) with layout and lazy-loading placeholders
 - [ ] Fix the sidebar toggle functionality.
-- [ ] 
 - [ ] Ensure responsiveness for mobile devices.
 - [ ] Verify navigation links and their functionality.
 - [ ] Adjust styles for better alignment and spacing.
@@ -72,31 +62,26 @@
 
 - [x] Create `SettingsModule` and configure base routing
 - [x] Create Settings Page Components (`CommissionSettingsPage`, `BonusRulesPage`, `DisplaySettingsPage`, `OtherConfigsPage`)
-- [ ] 
 - [x] Configure settings feature routing (linking paths to components)
 - [x] Implement `CommissionSettingsPageComponent`
     - [x] Use Reactive Forms (`FormGroup` nested for roles/users)
     - [x] Load and display *mock* commission settings data
     - [x] Implement basic add/remove controls for roles/users (modifies form)
     - [x] Call *mock* `SettingsService.saveCommissionSettings` on submit
-    - [ ] 
 - [x] Implement `BonusRulesPageComponent`
     - [x] Use Reactive Forms (`FormArray` for rules)
     - [x] Load and display *mock* bonus rules data
     - [x] Implement add/remove controls for rules
     - [x] Call *mock* `SettingsService.saveBonusRules` on submit (includes sorting)
-    - [ ] 
 - [x] Implement `DisplaySettingsPageComponent`
     - [x] Use Reactive Forms (`FormGroup`)
     - [x] Load and display *mock* display settings data
     - [x] Call *mock* `SettingsService.saveDisplaySettings` on submit
-    - [ ] 
 - [x] Implement `OtherConfigsPageComponent`
     - [x] Use Reactive Forms / appropriate controls for list management (Models, Periods, Shifts)
     - [x] Use Reactive Forms / appropriate controls for Role Percentages map
     - [x] Load and display *mock* data for all sections
     - [x] Call respective *mock* save methods in `SettingsService` on submit
-    - [ ] 
 - [ ] Update the documentation to reflect the current state of the project.
 - [ ] Add notes about pending tasks and known issues.
 
@@ -114,7 +99,6 @@
     - [x] Implement client-side filter input
     - [x] Include Edit/Delete buttons in 'actions' column
     - [x] Call *mock* `EarningsService` edit/delete methods (using `confirm`/`alert`)
-    - [ ] 
 - [ ] Ensure all pages are mobile-friendly and work well on Android devices.
 - [ ] Add proper error messages and loading indicators where necessary.
 - [ ] Test all pages and components for functionality and fix any issues.
@@ -123,7 +107,6 @@
 ## 7. Next Steps / Pending Tasks
 
 - [ ] **Backend Integration:** Replace ALL mock service calls (`of(...)`, `console.log`, `alert`) in `SettingsService` and `EarningsService` with actual `HttpClient` calls to the backend API endpoints.
-- [ ] 
 - [ ] **Authentication:**
     - [ ] Implement `AuthService` (login, logout, token management).
     - [ ] Implement Login Page Component.
