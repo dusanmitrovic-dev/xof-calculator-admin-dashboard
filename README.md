@@ -132,7 +132,6 @@
 - [ ] Use dialogs for adding new roles/users in commission settings.
 - [ ] Add robust loading indicators and improve form validation feedback.
 - [ ] Implement unit tests for services and components.
-
 - [ ] Set up automated build and deployment pipelines.
 
 `note: Use Mongo DB Atlas M0 512mb free tier cloud database.`
