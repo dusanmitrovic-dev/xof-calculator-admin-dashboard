@@ -130,7 +130,6 @@
 - [ ] Implement login, logout, and route protection.
 - [ ] Add server-side pagination, sorting, and filtering for the earnings table.
 - [ ] Use dialogs for adding new roles/users in commission settings.
-
 - [ ] Add robust loading indicators and improve form validation feedback.
 - [ ] Implement unit tests for services and components.
 - [ ] Set up automated build and deployment pipelines.
