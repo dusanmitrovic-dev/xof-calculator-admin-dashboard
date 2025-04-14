@@ -6,6 +6,9 @@
   # Use https://search.nixos.org/packages to find packages
   packages = [
     pkgs.nodejs_20
+    pkgs.python39
+    pkgs.git
+    pkgs.curl
   ];
   # Sets environment variables in the workspace
   env = {};
