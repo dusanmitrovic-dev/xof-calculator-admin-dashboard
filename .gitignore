@@ -43,3 +43,6 @@ Thumbs.db
 
 /backend
 /backend/*
+
+/discord_bot
+/discord_bot/*
