@@ -3,6 +3,12 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [v0.7.0] – 2025-04-14
+
+### Changed
+- Completely redoing frontend.
+- Will be using typescript.
+
 ## [v0.6.0] – 2025-04-05
 
 ### Changed
