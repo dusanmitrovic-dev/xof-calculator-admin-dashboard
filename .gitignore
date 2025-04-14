@@ -41,8 +41,8 @@ testem.log
 .DS_Store
 Thumbs.db
 
-/backend
-/backend/*
+# /backend
+# /backend/*
 
-/discord_bot
-/discord_bot/*
+# /discord_bot
+# /discord_bot/*
