@@ -1,0 +1,20 @@
+mat-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.spacer {
+  flex: 1 1 auto; /* Fills available space */
+}
+
+/* Optional: Add some margin to buttons if needed */
+mat-toolbar button,
+mat-toolbar a {
+  margin-left: 8px;
+}
+
+.user-info {
+    font-size: 0.9em;
+    margin-right: 10px;
+}

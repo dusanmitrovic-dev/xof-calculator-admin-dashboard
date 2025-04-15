@@ -1,4 +1,23 @@
 /* You can add global styles to this file, and also import other style files */
+@import '@angular/material/prebuilt-themes/indigo-pink.css'; /* Default light theme */
 
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+/* Define a dark theme (e.g., pink-bluegrey) */
+@import '@angular/material/prebuilt-themes/pink-bluegrey.css';
+
+/* Scoping the themes */
+body.light-theme {
+  @import '@angular/material/prebuilt-themes/indigo-pink.css';
+  background-color: #fafafa; /* Example light background */
+  color: #212121; /* Example light text */
+}
+
+body.dark-theme {
+  @import '@angular/material/prebuilt-themes/pink-bluegrey.css';
+  background-color: #303030; /* Example dark background */
+  color: #ffffff; /* Example dark text */
+}
+
+/* Additional global styles if needed */

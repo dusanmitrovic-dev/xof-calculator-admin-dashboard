@@ -1,0 +1,5 @@
+.main-content {
+  padding: 20px; /* Add some padding around the routed content */
+  /* If using a fixed toolbar, add padding-top to prevent overlap */
+  /* padding-top: 64px; /* Assuming toolbar height is 64px */ 
+}

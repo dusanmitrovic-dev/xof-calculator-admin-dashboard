@@ -3,6 +3,14 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [v0.15.0] – 2025-04-15
+
+### Added
+- Implemented main application `LayoutComponent` containing `ToolbarComponent` and `<router-outlet>`.
+- Implemented `ToolbarComponent` with app title, theme toggle (dark/light), and logout button.
+- Added global CSS for theme switching (`.dark-theme`, `.light-theme`) in `styles.css`.
+- Configured root `AppComponent` to conditionally display `LayoutComponent` only when logged in, otherwise display the router outlet for auth pages.
+
 ## [v0.14.0] – 2025-04-15
 
 ### Added
