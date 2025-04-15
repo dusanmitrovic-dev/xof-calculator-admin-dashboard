@@ -1,0 +1,86 @@
+@use '@angular/material' as mat;
+
+// Component styles rely on global theme variables set on the body
+
+.config-container {
+  padding: 20px;
+}
+
+.loading-spinner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 40px;
+}
+
+.config-card {
+  margin-top: 20px;
+  // Use CSS variables for background and text
+  background-color: var(--mat-card-background-color, white); // Fallback
+  color: var(--mat-card-text-color, rgba(0,0,0,0.87)); // Fallback
+
+  // Use CSS variables for title and subtitle
+  .mat-mdc-card-title {
+    color: var(--mat-card-title-text-color, inherit); // Inherit or fallback
+  }
+  .mat-mdc-card-subtitle {
+    color: var(--mat-secondary-text-color, rgba(0,0,0,0.54)); // Fallback
+  }
+}
+
+.info-message, .error-message {
+    margin-top: 20px;
+    text-align: center;
+    padding: 15px;
+    border-radius: 4px;
+    border: 1px solid transparent; // Basic border
+}
+
+.info-message {
+    // Use CSS variables for info message styling
+    background-color: var(--mat-info-message-background-color, #e0e0e0); // Example fallback
+    color: var(--mat-info-message-text-color, rgba(0,0,0,0.87)); // Example fallback
+    border-color: var(--mat-info-message-border-color, #bdbdbd); // Example fallback
+}
+
+.error-message {
+    // Use CSS variables for error message styling (warn color)
+    background-color: var(--mat-error-message-background-color, rgba(244, 67, 54, 0.1)); // Fallback
+    color: var(--mat-warn-color, #f44336); // Fallback
+    border-color: var(--mat-warn-color, #f44336); // Fallback
+}
+
+
+pre {
+  background-color: rgba(128, 128, 128, 0.1);
+  padding: 15px;
+  border-radius: 4px;
+  overflow-x: auto; // Handle long lines
+  color: var(--mat-pre-text-color, inherit); // Inherit color by default
+}
+
+:host-context(body.dark-theme) pre {
+   background-color: rgba(200, 200, 200, 0.1);
+}
+
+// Ensure the CSS variables used above are defined somewhere,
+// typically within the theme definitions in styles.scss or by Material itself.
+// Example definitions might be needed in styles.scss if not provided by default:
+/*
+body.light-theme {
+  --mat-card-background-color: white;
+  --mat-card-text-color: rgba(0,0,0,0.87);
+  --mat-secondary-text-color: rgba(0,0,0,0.54);
+  --mat-warn-color: #f44336;
+  --mat-info-message-background-color: #e0e0e0;
+  ...
+}
+body.dark-theme {
+  --mat-card-background-color: #424242; // Example dark card
+  --mat-card-text-color: white;
+  --mat-secondary-text-color: rgba(255,255,255,0.7);
+  --mat-warn-color: #ff8a80; // Lighter red for dark theme
+  --mat-info-message-background-color: #616161;
+  ...
+}
+*/

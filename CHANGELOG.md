@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 
+## [v0.21.0] – 2025-04-15
+
+### Changed
+- Work on guild-selector, config service, user service, dashboard and guild config.
+
 ## [v0.20.0] – 2025-04-15
 
 ### Changed

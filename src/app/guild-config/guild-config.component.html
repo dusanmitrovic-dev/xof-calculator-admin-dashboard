@@ -1,1 +1,41 @@
-<p>guild-config works!</p>
+<div class="config-container">
+  <h1>Guild Configuration</h1>
+
+  <app-guild-selector (guildSelected)="onGuildSelected($event)"></app-guild-selector>
+
+  @if (isLoading()) {
+    <div class="loading-spinner">
+       <mat-spinner diameter="50"></mat-spinner>
+    </div>
+  }
+
+  @if (selectedGuildId() && !isLoading() && guildConfig()) {
+    <mat-card class="config-card">
+      <mat-card-header>
+        <mat-card-title>Configuration for Guild: {{ selectedGuildId() }}</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <p>Current Configuration Data:</p>
+        <!-- Display raw JSON for now - replace with form later -->
+        <pre>{{ guildConfig() | json }}</pre>
+
+        <!-- Placeholder for Form -->
+        <!-- 
+        <form [formGroup]="configForm" (ngSubmit)="saveConfig()"> 
+          Form fields go here...
+          <button mat-raised-button color="primary" type="submit">Save Configuration</button>
+        </form> 
+        -->
+
+      </mat-card-content>
+    </mat-card>
+  } @else if (selectedGuildId() && !isLoading() && !guildConfig()) {
+     <p class="info-message">No configuration found for guild {{ selectedGuildId() }} or failed to load.</p>
+     <!-- Optionally add a button to create a default config -->
+  } @else if (error()) {
+     <p class="error-message">{{ error() }}</p>
+  } @else if (!selectedGuildId() && !isLoading()) {
+    <p class="info-message">Please select a guild above to view or edit its configuration.</p>
+  }
+
+</div>

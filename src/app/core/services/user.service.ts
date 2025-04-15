@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
-import { catchError, map } from 'rxjs/operators';
+import { catchError, map, tap } from 'rxjs/operators'; // Added tap
 import { AuthService } from '../../auth/services/auth.service'; // To check role
 
 // Define interfaces for user and potentially other data structures
@@ -27,16 +27,13 @@ export class UserService {
   getManagedGuilds(): Observable<string[]> {
     // Admins can manage all available guilds
     if (this.authService.isAdmin()) {
+      console.log('[UserService] User is admin, fetching all available guilds.');
       return this.getAvailableGuilds(); // Fetch all guilds from the backend
     } else {
       // Managers get their specific list (fetch current user data?)
-      // Option 1: Assume managedGuilds are in the token (add to AuthService.decodeToken)
-      // Option 2: Fetch current user details from backend
-      // Let's go with Option 2 for now - fetch user data
-      // This endpoint needs to exist on the backend (e.g., GET /api/users/me)
-      // Since we don't have a /me endpoint yet, we might need to adjust
-      // For now, let's return an empty array for managers pending backend update or using token
-      console.warn('getManagedGuilds for manager role not fully implemented yet.');
+      // This part needs the backend /api/users/me endpoint or similar
+      console.warn('[UserService] Getting managed guilds for manager role not fully implemented yet. Returning [].');
+      // Fetch current user data here when backend is ready
       return of([]); 
     }
   }
@@ -44,6 +41,10 @@ export class UserService {
   // Get all available Guild IDs (for admins to assign)
   getAvailableGuilds(): Observable<string[]> {
     return this.http.get<string[]>(`${this.apiUrl}/managed-guilds/available`).pipe(
+      tap(guilds => {
+        // Log the exact data received from the backend API
+        console.log('[UserService.getAvailableGuilds] Received guilds from API:', guilds);
+      }),
       catchError(err => {
         console.error('Error fetching available guilds:', err);
         return of([]); // Return empty array on error

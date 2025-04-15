@@ -36,20 +36,19 @@ export class GuildSelectorComponent implements OnInit {
 
   loadGuilds(): void {
     this.isLoading.set(true);
-    this.userService.getManagedGuilds().subscribe(guilds => {
+    console.log('[GuildSelector] Loading guilds...');
+    // Add explicit type for the 'guilds' parameter
+    this.userService.getManagedGuilds().subscribe((guilds: string[]) => { 
+      console.log('[GuildSelector] Received guilds from UserService:', guilds);
       this.availableGuilds.set(guilds);
-      // Optionally auto-select the first guild if only one exists?
-      // if (guilds.length === 1) {
-      //   this.selectedGuild.set(guilds[0]);
-      //   this.onGuildSelectionChange(guilds[0]);
-      // }
       this.isLoading.set(false);
+      console.log('[GuildSelector] availableGuilds signal set to:', this.availableGuilds());
     });
   }
 
   onGuildSelectionChange(guildId: string | null): void {
     this.selectedGuild.set(guildId);
     this.guildSelected.emit(guildId);
-    console.log('Guild selected:', guildId);
+    console.log('[GuildSelector] Guild selection changed:', guildId);
   }
 }
