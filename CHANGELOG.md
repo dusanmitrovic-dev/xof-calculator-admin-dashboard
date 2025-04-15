@@ -3,6 +3,24 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [v0.19.1] – 2025-04-15
+
+### Changed
+- Updated dark theme to `purple-green` in `styles.css`.
+- Updated dark theme palette definitions in `login.component.css` and `register.component.css` SASS.
+
+### Fixed
+- Corrected invalid dark theme CSS filename (`cyan-light-blue.css`) import in `styles.css`, resolving build error.
+
+## [v0.19.0] – 2025-04-15
+
+### Changed
+- Updated Material theme palettes (`deeppurple-amber` for light, `cyan-light-blue` for dark) in `styles.css`.
+- Confirmed guild selection logic accommodates admin (all guilds) vs manager (assigned guilds) roles.
+
+### Fixed
+- Applied themed background colors to host elements of `LoginComponent` and `RegisterComponent` using Material SASS functions to fix contrast issues when not logged in.
+
 ## [v0.18.0] – 2025-04-15
 
 ### Added

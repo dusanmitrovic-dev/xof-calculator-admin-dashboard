@@ -28,7 +28,7 @@ import { CommonModule } from '@angular/common'; // Required for *ngIf, etc.
     MatProgressSpinnerModule
   ],
   templateUrl: './login.component.html',
-  styleUrls: ['./login.component.css']
+  styleUrls: ['./login.component.scss'] // Updated extension
 })
 export class LoginComponent implements OnInit {
   private fb = inject(FormBuilder);

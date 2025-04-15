@@ -41,7 +41,7 @@ export const passwordMatchValidator: ValidatorFn = (control: AbstractControl): V
     MatProgressSpinnerModule
   ],
   templateUrl: './register.component.html',
-  styleUrls: ['./register.component.css']
+  styleUrls: ['./register.component.scss'] // Updated extension
 })
 export class RegisterComponent implements OnInit {
   private fb = inject(FormBuilder);

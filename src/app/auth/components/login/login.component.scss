@@ -1,0 +1,97 @@
+@use '@angular/material' as mat;
+
+:host {
+  display: block; /* Ensure the component takes up space */
+  /* Apply the theme's background color to the host */
+  background-color: mat.get-theme-color(mat.m2-define-light-theme((
+      color: (
+        primary: mat.$m2-deep-purple-palette,
+        accent: mat.$m2-amber-palette,
+      )
+    )), background, background);
+  color: mat.get-theme-color(mat.m2-define-light-theme((
+      color: (
+        primary: mat.$m2-deep-purple-palette,
+        accent: mat.$m2-amber-palette,
+      )
+    )), foreground, text);
+}
+
+/* Apply dark theme background if the body has dark-theme class */
+:host-context(body.dark-theme) {
+   background-color: mat.get-theme-color(mat.m2-define-dark-theme((
+      color: (
+        primary: mat.$m2-purple-palette, /* Updated */
+        accent: mat.$m2-green-palette    /* Updated */
+      )
+    )), background, background);
+    color: mat.get-theme-color(mat.m2-define-dark-theme((
+      color: (
+        primary: mat.$m2-purple-palette, /* Updated */
+        accent: mat.$m2-green-palette    /* Updated */
+      )
+    )), foreground, text);
+}
+
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh; /* Full viewport height */
+  padding: 20px;
+  /* Background color is now handled by :host */
+}
+
+.login-card {
+  max-width: 400px;
+  width: 100%;
+  padding: 20px;
+  /* Card background should contrast with host background, handled by theme */
+}
+
+.full-width {
+  width: 100%;
+  margin-bottom: 15px; /* Add some spacing between fields */
+}
+
+.button-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+  margin-bottom: 10px;
+  min-height: 40px; /* Reserve space for spinner/button */
+}
+
+.error-message {
+  /* Use theme's error color */
+  color: mat.get-theme-color(mat.m2-define-light-theme((
+      color: (
+        primary: mat.$m2-deep-purple-palette,
+        accent: mat.$m2-amber-palette,
+        warn: mat.$m2-red-palette
+      )
+    )), warn, default);
+  text-align: center;
+  margin-top: 15px;
+  font-size: 0.9em;
+}
+
+:host-context(body.dark-theme) .error-message {
+   color: mat.get-theme-color(mat.m2-define-dark-theme((
+      color: (
+        primary: mat.$m2-purple-palette, /* Updated */
+        accent: mat.$m2-green-palette,   /* Updated */
+        warn: mat.$m2-red-palette
+      )
+    )), warn, default);
+}
+
+mat-card-actions {
+  justify-content: center; /* Center the register link */
+  margin-top: 15px;
+}
+
+mat-error {
+  font-size: 0.85em;
+}
