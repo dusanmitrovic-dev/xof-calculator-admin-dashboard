@@ -25,7 +25,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     CommonModule,
     ReactiveFormsModule, 
     GuildSelectorComponent, 
-    JsonPipe, // Keep JsonPipe for debugging temporarily
+    // JsonPipe, // Keep JsonPipe for debugging temporarily
     MatCardModule,
     MatProgressSpinnerModule,
     MatFormFieldModule,
