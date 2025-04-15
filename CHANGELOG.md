@@ -3,6 +3,24 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [v0.14.0] – 2025-04-15
+
+### Added
+- Implemented functional `authGuard` to protect routes based on login status.
+- Implemented functional `adminGuard` to protect routes based on login status and admin role.
+- Guards redirect unauthenticated/unauthorized users to the login page or dashboard.
+
+## [v0.13.0] – 2025-04-15
+
+### Added
+- Implemented `RegisterComponent`:
+  - Reactive form with email, password, and confirm password.
+  - Validation for required fields, email, password length, and password match (custom validator).
+  - Integration with `AuthService` for registration.
+  - Loading spinner and error display.
+  - Material Design styling consistent with LoginComponent.
+  - Link back to login page.
+
 ## [v0.12.0] – 2025-04-15
 
 ### Added
