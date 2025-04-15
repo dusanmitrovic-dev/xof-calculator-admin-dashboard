@@ -3,6 +3,15 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [v0.17.0] – 2025-04-15
+
+### Added
+- Set up the routes:
+  - The main application routes (dashboard, guild-config, earnings, user-management) are now grouped and protected by authGuard.
+  - The user-management route is further protected by adminGuard.
+  - The default path (/) after login redirects to /dashboard.
+  - The wildcard route ** now redirects to /dashboard, relying on authGuard to send unauthenticated users to login.
+
 ## [v0.16.0] – 2025-04-15
 
 ### Added
