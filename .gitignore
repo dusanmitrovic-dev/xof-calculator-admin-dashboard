@@ -44,6 +44,7 @@ Thumbs.db
 /.idx
 /.idx/*
 
+package-lock.json
 # /backend
 # /backend/*
 
