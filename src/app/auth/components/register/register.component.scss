@@ -1,57 +1,50 @@
 @use '@angular/material' as mat;
 
-:host {
-  display: block; /* Ensure the component takes up space */
-  /* Apply the theme's background color to the host */
-  background-color: mat.get-theme-color(mat.m2-define-light-theme(( /* Using light as default for register */
-      color: (
-        primary: mat.$m2-deep-purple-palette,
-        accent: mat.$m2-amber-palette,
-      )
-    )), background, background);
-    color: mat.get-theme-color(mat.m2-define-light-theme(( /* Using light as default for register */
-      color: (
-        primary: mat.$m2-deep-purple-palette,
-        accent: mat.$m2-amber-palette,
-      )
-    )), foreground, text);
-}
+// Component styles should ideally inherit the theme from the body
 
-/* Apply dark theme background if the body has dark-theme class */
-:host-context(body.dark-theme) {
-   background-color: mat.get-theme-color(mat.m2-define-dark-theme(( /* Using dark for dark mode */
-      color: (
-        primary: mat.$m2-cyan-palette,
-        accent: mat.$m2-light-blue-palette,
-      )
-    )), background, background);
-    color: mat.get-theme-color(mat.m2-define-dark-theme(( /* Using dark for dark mode */
-      color: (
-        primary: mat.$m2-cyan-palette,
-        accent: mat.$m2-light-blue-palette,
-      )
-    )), foreground, text);
+:host {
+  display: block; 
+  background-color: var(--mat-app-background-color);
+  color: var(--mat-app-text-color);
 }
 
 .register-container {
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 100vh; /* Full viewport height */
+  min-height: 100vh; 
   padding: 20px;
-  /* Background color is now handled by :host */
 }
 
 .register-card {
   max-width: 400px;
   width: 100%;
   padding: 20px;
-   /* Card background should contrast with host background, handled by theme */
+  // Let the card use its default theme colors
+}
+
+// Specific overrides if needed
+.register-card {
+  .mat-mdc-card-subtitle {
+     color: var(--mat-secondary-text-color); 
+  }
+
+  mat-card-actions a[mat-button] {
+      color: var(--mat-primary-color);
+  }
+}
+
+// Error message color
+.error-message {
+  color: var(--mat-warn-color);
+  text-align: center;
+  margin-top: 15px;
+  font-size: 0.9em;
 }
 
 .full-width {
   width: 100%;
-  margin-bottom: 15px; /* Add some spacing between fields */
+  margin-bottom: 15px; 
 }
 
 .button-container {
@@ -60,35 +53,11 @@
   align-items: center;
   margin-top: 20px;
   margin-bottom: 10px;
-  min-height: 40px; /* Reserve space for spinner/button */
-}
-
-.error-message {
-  /* Use theme's error color */
-   color: mat.get-theme-color(mat.m2-define-light-theme(( /* Using light as default for register */
-      color: (
-        primary: mat.$m2-deep-purple-palette,
-        accent: mat.$m2-amber-palette,
-        warn: mat.$m2-red-palette
-      )
-    )), warn, default);
-  text-align: center;
-  margin-top: 15px;
-  font-size: 0.9em;
-}
-
-:host-context(body.dark-theme) .error-message {
-   color: mat.get-theme-color(mat.m2-define-dark-theme(( /* Using dark for dark mode */
-      color: (
-        primary: mat.$m2-cyan-palette,
-        accent: mat.$m2-light-blue-palette,
-        warn: mat.$m2-red-palette
-      )
-    )), warn, default);
+  min-height: 40px; 
 }
 
 mat-card-actions {
-  justify-content: center; /* Center the login link */
+  justify-content: center; 
   margin-top: 15px;
 }
 

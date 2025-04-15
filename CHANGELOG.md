@@ -3,14 +3,28 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+
+## [v0.20.0] – 2025-04-15
+
+### Changed
+- Updated dark theme to `purple-green` in `styles.scss`.
+- Updated dark theme palette definitions in `login.component.scss` and `register.component.scss` SASS.
+
+### Fixed
+- Resolved Sass `@use` warnings by renaming relevant `.css` files to `.scss` and updating component `styleUrls`.
+- Explicitly applied Material theme background/foreground colors to card elements (`.login-card`, `.register-card`, `.dashboard-card`) in component SCSS to ensure correct theme appearance in all contexts.
+- Corrected invalid dark theme CSS filename (`cyan-light-blue.css`) import in `styles.scss`, resolving build error.
+- Forced themed text color on `mat-card-title` and `mat-card-subtitle` in Login/Register components using `!important` to ensure visibility in light mode.
+- Applied explicit theme colors to inputs, labels, buttons, and links within login/register cards using SASS functions to ensure correct text visibility in both light and dark modes.
+
 ## [v0.19.1] – 2025-04-15
 
 ### Changed
-- Updated dark theme to `purple-green` in `styles.css`.
-- Updated dark theme palette definitions in `login.component.css` and `register.component.css` SASS.
+- Updated dark theme to `purple-green` in `styles.scss`.
+- Updated dark theme palette definitions in `login.component.scss` and `register.component.scss` SASS.
 
 ### Fixed
-- Corrected invalid dark theme CSS filename (`cyan-light-blue.css`) import in `styles.css`, resolving build error.
+- Corrected invalid dark theme CSS filename (`cyan-light-blue.css`) import in `styles.scss`, resolving build error.
 
 ## [v0.19.0] – 2025-04-15
 

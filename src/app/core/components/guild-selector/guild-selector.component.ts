@@ -18,7 +18,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
     MatProgressSpinnerModule
   ],
   templateUrl: './guild-selector.component.html',
-  styleUrls: ['./guild-selector.component.css']
+  styleUrls: ['./guild-selector.component.scss']
 })
 export class GuildSelectorComponent implements OnInit {
   private userService = inject(UserService);

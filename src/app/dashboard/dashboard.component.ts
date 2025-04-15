@@ -14,7 +14,7 @@ import { RouterLink } from '@angular/router';
     MatCardModule // For basic styling
   ],
   templateUrl: './dashboard.component.html',
-  styleUrls: ['./dashboard.component.css']
+  styleUrls: ['./dashboard.component.scss'] // Updated extension
 })
 export class DashboardComponent {
   // Placeholder for dashboard logic (e.g., fetching stats)

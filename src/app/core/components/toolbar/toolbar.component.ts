@@ -23,7 +23,7 @@ import { MatMenuModule } from '@angular/material/menu'; // For potential user me
     MatMenuModule
   ],
   templateUrl: './toolbar.component.html',
-  styleUrls: ['./toolbar.component.css']
+  styleUrls: ['./toolbar.component.scss']
 })
 export class ToolbarComponent implements OnInit, OnDestroy {
   private authService = inject(AuthService);

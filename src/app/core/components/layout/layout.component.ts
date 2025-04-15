@@ -10,7 +10,7 @@ import { ToolbarComponent } from '../toolbar/toolbar.component'; // Import the t
     ToolbarComponent   // Include the toolbar
   ],
   templateUrl: './layout.component.html',
-  styleUrls: ['./layout.component.css']
+  styleUrls: ['./layout.component.scss']
 })
 export class LayoutComponent {
   // Layout component logic can go here if needed (e.g., handling sidenav)
