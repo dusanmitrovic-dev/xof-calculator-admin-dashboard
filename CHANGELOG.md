@@ -3,6 +3,11 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [v0.10.0] – 2025-04-15
+
+### Added
+- `authInterceptor` implemented
+
 ## [v0.9.0] – 2025-04-15
 
 ### Added
