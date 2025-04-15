@@ -1,21 +1,24 @@
-/* You can add global styles to this file, and also import other style files */
 @import '@angular/material/prebuilt-themes/indigo-pink.css'; /* Default light theme */
+@import '@angular/material/prebuilt-themes/pink-bluegrey.css'; /* Dark theme */
 
+/* You can add global styles to this file, and also import other style files */
 html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+body { 
+  margin: 0; 
+  font-family: Roboto, "Helvetica Neue", sans-serif; 
+}
 
-/* Define a dark theme (e.g., pink-bluegrey) */
-@import '@angular/material/prebuilt-themes/pink-bluegrey.css';
-
-/* Scoping the themes */
+/* Scoping the themes - The @import rules are removed from here */
 body.light-theme {
-  @import '@angular/material/prebuilt-themes/indigo-pink.css';
+  /* Light theme styles are primarily handled by indigo-pink.css included above */
+  /* Add specific overrides or additional light styles here if needed */
   background-color: #fafafa; /* Example light background */
   color: #212121; /* Example light text */
 }
 
 body.dark-theme {
-  @import '@angular/material/prebuilt-themes/pink-bluegrey.css';
+  /* Dark theme styles are primarily handled by pink-bluegrey.css included above */
+  /* Add specific overrides or additional dark styles here if needed */
   background-color: #303030; /* Example dark background */
   color: #ffffff; /* Example dark text */
 }

@@ -3,6 +3,16 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [v0.16.0] – 2025-04-15
+
+### Added
+- Configured Angular development proxy (`proxy.conf.json`) to forward `/api` requests to backend (`http://localhost:5000`).
+- Updated `angular.json` serve configuration to use the proxy.
+
+### Fixed
+- Resolved CSS `@import` warnings by moving Material theme imports to the top level in `styles.css`.
+- Updated `angular.json` styles configuration to only include `styles.css`.
+
 ## [v0.15.0] – 2025-04-15
 
 ### Added
