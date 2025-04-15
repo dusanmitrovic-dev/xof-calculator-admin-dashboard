@@ -3,10 +3,23 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [v0.11.0] – 2025-04-15
+
+### Added
+- The LoginComponent is now implemented with:
+  - A reactive form for email and password with validation.
+  - Integration with AuthService for the login request.
+  - Loading state indication using MatProgressSpinner.
+  - Password visibility toggle.
+  - Error handling display.
+  - Basic Material Design styling for a centered login card.
+  - A link to the registration page.
+  - Usage of modern Angular syntax (signal, @if block).
+
 ## [v0.10.0] – 2025-04-15
 
 ### Added
-- `authInterceptor` implemented
+- `authInterceptor` implemented.
 
 ## [v0.9.0] – 2025-04-15
 
@@ -21,7 +34,7 @@ All notable changes to this project will be documented in this file.
 ## [v0.8.0] – 2025-04-15
 
 ### Added
-- basic components, services, guards, and interceptor files generated
+- basic components, services, guards, and interceptor files generated.
 
 ## [v0.7.0] – 2025-04-14
 
