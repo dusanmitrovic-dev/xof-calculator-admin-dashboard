@@ -3,6 +3,15 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [v0.12.0] – 2025-04-15
+
+### Added
+- Configured application routes (`app.routes.ts`) for auth components (`/auth/login`, `/auth/register`) using lazy loading.
+- Added default route redirects for `/auth` and `/`.
+
+### Changed
+- Corrected ToastrService import issue in LoginComponent.
+
 ## [v0.11.0] – 2025-04-15
 
 ### Added
