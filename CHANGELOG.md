@@ -3,6 +3,16 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [v0.18.0] – 2025-04-15
+
+### Added
+- Generated placeholder components: `DashboardComponent`, `GuildConfigComponent`, `EarningsComponent`, `UserManagementComponent`.
+- Generated `GuildSelectorComponent` to allow users to select a guild to manage.
+- Added `UserService` to handle fetching user data (including managed/available guilds) and user management actions.
+- Implemented initial `DashboardComponent` with links to other sections.
+- Implemented `GuildSelectorComponent` using `UserService` to fetch and display available guilds.
+- Configured main application routes in `app.routes.ts` for the new components, protected by `authGuard` and `adminGuard` where appropriate.
+
 ## [v0.17.0] – 2025-04-15
 
 ### Added

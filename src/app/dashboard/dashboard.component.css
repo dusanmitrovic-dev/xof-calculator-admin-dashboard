@@ -1,0 +1,27 @@
+.dashboard-container {
+  padding: 20px;
+}
+
+.dashboard-cards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px; /* Spacing between cards */
+  margin-top: 20px;
+}
+
+.dashboard-card {
+  flex: 1 1 300px; /* Allow cards to grow, shrink, with a base width */
+  max-width: 400px; /* Optional max width */
+  cursor: pointer;
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.dashboard-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+/* Add margin to card content for better spacing */
+.dashboard-card mat-card-content {
+  margin-top: 15px;
+}

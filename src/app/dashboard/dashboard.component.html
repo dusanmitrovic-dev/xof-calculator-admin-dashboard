@@ -1,1 +1,38 @@
-<p>dashboard works!</p>
+<div class="dashboard-container">
+  <h1>Welcome to the Admin Dashboard</h1>
+  <p>Select an option below to manage your guilds:</p>
+
+  <div class="dashboard-cards">
+    <mat-card class="dashboard-card" routerLink="/guild-config">
+      <mat-card-header>
+        <mat-card-title>Guild Configuration</mat-card-title>
+        <mat-card-subtitle>Manage settings like roles, shifts, models, etc.</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <p>Click here to view and edit configurations for your managed guilds.</p>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="dashboard-card" routerLink="/earnings">
+      <mat-card-header>
+        <mat-card-title>Earnings Records</mat-card-title>
+        <mat-card-subtitle>View, add, edit, or delete earnings entries.</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <p>Click here to manage the earnings data for your managed guilds.</p>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- TODO: Add conditional display for admin only based on role -->
+    <mat-card class="dashboard-card" routerLink="/user-management">
+      <mat-card-header>
+        <mat-card-title>User Management</mat-card-title>
+        <mat-card-subtitle>(Admin Only) Manage users and their guild access.</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <p>Click here to manage dashboard users and their permissions.</p>
+      </mat-card-content>
+    </mat-card>
+
+  </div>
+</div>
