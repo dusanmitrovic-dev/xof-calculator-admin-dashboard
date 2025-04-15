@@ -3,6 +3,16 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [v0.9.0] – 2025-04-15
+
+### Added
+- AuthService is implemented. Key features:
+  - Uses Angular's `HttpClient` for login/register API calls.
+  - Stores the JWT in `localStorage`.
+  - Uses `jwt-decode` to check token expiry and extract the user's role.
+  - Provides signals (`isAuthenticated`, `currentUserRole`) for components/guards to react to auth state changes.
+  - Includes methods like `logout`, `getToken`, `isLoggedIn`, `getUserRole`, `isAdmin`.
+
 ## [v0.8.0] – 2025-04-15
 
 ### Added
