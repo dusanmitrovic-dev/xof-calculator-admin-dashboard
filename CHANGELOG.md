@@ -3,6 +3,18 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [v0.22.0] - 2025-04-15
+
+### Added
+- Implemented reactive form structure in `GuildConfigComponent` based on fetched config data.
+- Added helper methods for managing FormArrays (models, shifts, periods, bonus_rules).
+- Implemented initial form population logic in `initConfigForm`.
+- Implemented basic `saveConfig` function to send form data to the backend.
+- Added initial HTML template (`guild-config.component.html`) to render the form using Material components (Expansion Panels, Chips, Inputs, Toggles).
+- Added corresponding SCSS styles (`guild-config.component.scss`) for the form layout.
+
+### Changed
+- `GuildConfigComponent` now attempts to build a default form structure if no config is found for a guild.
 
 ## [v0.21.0] – 2025-04-15
 

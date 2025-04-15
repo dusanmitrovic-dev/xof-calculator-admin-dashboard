@@ -9,33 +9,220 @@
     </div>
   }
 
-  @if (selectedGuildId() && !isLoading() && guildConfig()) {
+  <!-- Check if form is initialized before trying to render it -->
+  @if (selectedGuildId() && !isLoading() && configForm.controls && guildConfig()) {
     <mat-card class="config-card">
       <mat-card-header>
-        <mat-card-title>Configuration for Guild: {{ selectedGuildId() }}</mat-card-title>
+        <mat-card-title>Editing Configuration for Guild: {{ selectedGuildId() }}</mat-card-title>
       </mat-card-header>
       <mat-card-content>
-        <p>Current Configuration Data:</p>
-        <!-- Display raw JSON for now - replace with form later -->
-        <pre>{{ guildConfig() | json }}</pre>
 
-        <!-- Placeholder for Form -->
-        <!-- 
-        <form [formGroup]="configForm" (ngSubmit)="saveConfig()"> 
-          Form fields go here...
-          <button mat-raised-button color="primary" type="submit">Save Configuration</button>
-        </form> 
+        <form [formGroup]="configForm" (ngSubmit)="saveConfig()">
+
+          <mat-accordion multi="true">
+
+            <!-- Models Section (String Array) -->
+            <mat-expansion-panel>
+              <mat-expansion-panel-header>
+                <mat-panel-title> Models </mat-panel-title>
+                <mat-panel-description> Manage available models </mat-panel-description>
+              </mat-expansion-panel-header>
+              <div formArrayName="models" class="array-container">
+                <mat-chip-listbox aria-label="Model selection">
+                   @for (modelControl of models.controls; track $index) {
+                      <mat-chip-option>
+                        {{ modelControl.value }}
+                         <button matChipRemove type="button" (click)="removeItem(models, $index)" matTooltip="Remove Model">
+                           <mat-icon>cancel</mat-icon>
+                         </button>
+                      </mat-chip-option>
+                    }
+                 </mat-chip-listbox>
+                 <div class="add-item-form">
+                   <mat-form-field appearance="outline" subscriptSizing="dynamic">
+                     <mat-label>New Model</mat-label>
+                     <input matInput #modelInput placeholder="Enter model name">
+                   </mat-form-field>
+                   <button mat-icon-button type="button" (click)="addItem(models, modelInput)" matTooltip="Add Model">
+                     <mat-icon>add_circle</mat-icon>
+                   </button>
+                 </div>
+               </div>
+            </mat-expansion-panel>
+
+             <!-- Shifts Section (String Array) -->
+             <mat-expansion-panel>
+               <mat-expansion-panel-header>
+                 <mat-panel-title> Shifts </mat-panel-title>
+                 <mat-panel-description> Manage available shifts </mat-panel-description>
+               </mat-expansion-panel-header>
+                <div formArrayName="shifts" class="array-container">
+                 <mat-chip-listbox aria-label="Shift selection">
+                   @for (shiftControl of shifts.controls; track $index) {
+                      <mat-chip-option>
+                        {{ shiftControl.value }}
+                         <button matChipRemove type="button" (click)="removeItem(shifts, $index)" matTooltip="Remove Shift">
+                           <mat-icon>cancel</mat-icon>
+                         </button>
+                      </mat-chip-option>
+                    }
+                  </mat-chip-listbox>
+                  <div class="add-item-form">
+                    <mat-form-field appearance="outline" subscriptSizing="dynamic">
+                      <mat-label>New Shift</mat-label>
+                      <input matInput #shiftInput placeholder="Enter shift name">
+                    </mat-form-field>
+                    <button mat-icon-button type="button" (click)="addItem(shifts, shiftInput)" matTooltip="Add Shift">
+                      <mat-icon>add_circle</mat-icon>
+                    </button>
+                  </div>
+                </div>
+             </mat-expansion-panel>
+
+             <!-- Periods Section (String Array) -->
+              <mat-expansion-panel>
+               <mat-expansion-panel-header>
+                 <mat-panel-title> Periods </mat-panel-title>
+                 <mat-panel-description> Manage available periods </mat-panel-description>
+               </mat-expansion-panel-header>
+               <div formArrayName="periods" class="array-container">
+                 <mat-chip-listbox aria-label="Period selection">
+                   @for (periodControl of periods.controls; track $index) {
+                      <mat-chip-option>
+                        {{ periodControl.value }}
+                         <button matChipRemove type="button" (click)="removeItem(periods, $index)" matTooltip="Remove Period">
+                           <mat-icon>cancel</mat-icon>
+                         </button>
+                      </mat-chip-option>
+                    }
+                  </mat-chip-listbox>
+                 <div class="add-item-form">
+                    <mat-form-field appearance="outline" subscriptSizing="dynamic">
+                      <mat-label>New Period</mat-label>
+                      <input matInput #periodInput placeholder="Enter period name">
+                    </mat-form-field>
+                    <button mat-icon-button type="button" (click)="addItem(periods, periodInput)" matTooltip="Add Period">
+                      <mat-icon>add_circle</mat-icon>
+                    </button>
+                 </div>
+                </div>
+             </mat-expansion-panel>
+
+             <!-- Bonus Rules Section (Array of Objects) -->
+             <mat-expansion-panel>
+               <mat-expansion-panel-header>
+                 <mat-panel-title> Bonus Rules </mat-panel-title>
+                 <mat-panel-description> Define bonus tiers based on gross revenue </mat-panel-description>
+               </mat-expansion-panel-header>
+               <div formArrayName="bonus_rules">
+                 @for (ruleGroup of bonus_rules.controls; track $index) {
+                   <div [formGroupName]="$index" class="bonus-rule-group">
+                     <mat-form-field appearance="outline" subscriptSizing="dynamic">
+                       <mat-label>From ($)</mat-label>
+                       <input matInput type="number" formControlName="from" required min="0">
+                     </mat-form-field>
+                     <mat-form-field appearance="outline" subscriptSizing="dynamic">
+                       <mat-label>To ($)</mat-label>
+                       <input matInput type="number" formControlName="to" required min="0">
+                      </mat-form-field>
+                      <mat-form-field appearance="outline" subscriptSizing="dynamic">
+                       <mat-label>Bonus Amount ($)</mat-label>
+                       <input matInput type="number" formControlName="amount" required min="0">
+                      </mat-form-field>
+                     <button mat-icon-button type="button" color="warn" (click)="removeBonusRule($index)" matTooltip="Remove Bonus Rule">
+                       <mat-icon>remove_circle</mat-icon>
+                     </button>
+                   </div>
+                 }
+                 <button mat-stroked-button type="button" (click)="addBonusRule()">
+                    <mat-icon>add</mat-icon> Add Bonus Rule
+                 </button>
+               </div>
+             </mat-expansion-panel>
+
+              <!-- Display Settings Section (Nested Object) -->
+             <mat-expansion-panel>
+               <mat-expansion-panel-header>
+                 <mat-panel-title> Display Settings </mat-panel-title>
+                 <mat-panel-description> Control bot appearance and responses </mat-panel-description>
+               </mat-expansion-panel-header>
+                <div formGroupName="display_settings" class="settings-group">
+                  <mat-slide-toggle formControlName="ephemeral_responses">Ephemeral Responses</mat-slide-toggle>
+                  <mat-slide-toggle formControlName="show_average">Show Average in Reports</mat-slide-toggle>
+                  <mat-slide-toggle formControlName="show_ids">Show Custom IDs</mat-slide-toggle>
+                  <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>Agency Name</mat-label>
+                    <input matInput formControlName="agency_name">
+                  </mat-form-field>
+                  <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>Bot Name</mat-label>
+                    <input matInput formControlName="bot_name">
+                  </mat-form-field>
+                 </div>
+             </mat-expansion-panel>
+
+             <!-- Commission Settings Section -->
+             <!-- TODO: Implement editing UI for Commission Settings (Roles & Users) -->
+             <mat-expansion-panel disabled> <!-- Disabled for now -->
+               <mat-expansion-panel-header>
+                 <mat-panel-title> Commission Settings </mat-panel-title>
+                 <mat-panel-description> Define role/user commissions (Complex - requires dedicated UI) </mat-panel-description>
+               </mat-expansion-panel-header>
+               <!-- Placeholder: Add UI elements or a button to open a modal/dedicated component later -->
+               <p>Editing Commission Settings needs a more specialized interface (e.g., a table or modal dialog) due to its dynamic key structure.</p>
+             </mat-expansion-panel>
+
+              <!-- Roles Section -->
+             <!-- TODO: Implement editing UI for Simple Roles -->
+             <mat-expansion-panel disabled> <!-- Disabled for now -->
+               <mat-expansion-panel-header>
+                 <mat-panel-title> Role Percentages </mat-panel-title>
+                 <mat-panel-description> Define role percentages (Complex - requires dedicated UI) </mat-panel-description>
+               </mat-expansion-panel-header>
+               <!-- Placeholder: Add UI elements or a button to open a modal/dedicated component later -->
+                <p>Editing Role Percentages needs a more specialized interface due to its dynamic key structure.</p>
+                <!-- <div formGroupName="roles">
+                    Iterate over controls if feasible, or use a different approach
+                </div> -->
+             </mat-expansion-panel>
+
+          </mat-accordion>
+
+          <div class="save-button-container">
+            <button mat-raised-button color="primary" type="submit" [disabled]="configForm.invalid || isSaving()">
+                @if (isSaving()) {
+                    <mat-spinner diameter="20" color="accent"></mat-spinner> Saving...
+                } @else {
+                    Save Configuration
+                }
+            </button>
+             @if (saveSuccess() === true) {
+              <span class="save-status success"> Configuration saved successfully!</span>
+            }
+            @if (saveSuccess() === false && error()) {
+               <span class="save-status error"> {{ error() }} </span>
+            }
+          </div>
+
+        </form>
+
+        <!-- Debugging Output (Optional) -->
+        <!--
+        <hr>
+        <h3>Form Value (Debug)</h3>
+        <pre>{{ configForm.value | json }}</pre>
+        <h3>Form Status (Debug)</h3>
+        <pre>Valid: {{ configForm.valid }} | Dirty: {{ configForm.dirty }} | Touched: {{ configForm.touched }}</pre>
         -->
 
       </mat-card-content>
     </mat-card>
-  } @else if (selectedGuildId() && !isLoading() && !guildConfig()) {
-     <p class="info-message">No configuration found for guild {{ selectedGuildId() }} or failed to load.</p>
-     <!-- Optionally add a button to create a default config -->
+  } @else if (selectedGuildId() && !isLoading() && !guildConfig() && !error()) {
+     <!-- This case might occur if backend returns empty/null but not an error -->
+     <p class="info-message">No configuration data found for guild {{ selectedGuildId() }}. You can start adding settings.</p>
   } @else if (error()) {
      <p class="error-message">{{ error() }}</p>
   } @else if (!selectedGuildId() && !isLoading()) {
     <p class="info-message">Please select a guild above to view or edit its configuration.</p>
   }
-
 </div>
