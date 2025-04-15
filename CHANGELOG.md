@@ -3,6 +3,11 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [v0.8.0] – 2025-04-15
+
+### Added
+- basic components, services, guards, and interceptor files generated
+
 ## [v0.7.0] – 2025-04-14
 
 ### Changed
