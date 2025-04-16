@@ -1,1 +1,99 @@
-<p>user-management works!</p>
+<div class="user-management-container">
+    <h1>User Management</h1>
+  
+    <mat-card class="table-card">
+      <mat-card-header>
+        <mat-card-title>Registered Users</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+  
+        <mat-form-field appearance="outline" class="filter-field">
+          <mat-label>Filter Users</mat-label>
+          <input matInput (keyup)="applyFilter($event)" placeholder="Ex. email@example.com or admin..." #input>
+        </mat-form-field>
+  
+        @if (isLoading()) {
+          <div class="loading-spinner">
+            <mat-spinner diameter="50"></mat-spinner>
+          </div>
+        }
+  
+        @if (error()) {
+          <p class="error-message">{{ error() }}</p>
+        }
+  
+        <div class="mat-elevation-z4 table-responsive" [hidden]="isLoading() || error()">
+          <table mat-table [dataSource]="dataSource" matSort class="user-table">
+  
+            <!-- Email Column -->
+            <ng-container matColumnDef="email">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header> Email </th>
+              <td mat-cell *matCellDef="let row"> {{row.email}} </td>
+            </ng-container>
+  
+            <!-- Role Column -->
+            <ng-container matColumnDef="role">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header> Role </th>
+              <td mat-cell *matCellDef="let row"> {{row.role | titlecase}} </td>
+            </ng-container>
+  
+            <!-- Managed Guilds Column -->
+            <ng-container matColumnDef="managedGuilds">
+              <th mat-header-cell *matHeaderCellDef> Managed Guilds </th>
+              <td mat-cell *matCellDef="let row">
+                @if (row.role === 'admin') {
+                  <mat-chip-option class="chip-all-guilds" disabled>All Guilds</mat-chip-option>
+                } @else if (row.managedGuilds && row.managedGuilds.length > 0) {
+                    <mat-chip-listbox aria-label="Managed guilds">
+                       @for (guildId of row.managedGuilds; track guildId) {
+                         <mat-chip-option class="chip-guild" disabled>{{ guildId }}</mat-chip-option>
+                       }
+                    </mat-chip-listbox>
+                } @else {
+                   <span class="no-guilds">None assigned</span>
+                }
+              </td>
+            </ng-container>
+  
+            <!-- Actions Column -->
+            <ng-container matColumnDef="actions">
+              <th mat-header-cell *matHeaderCellDef> Actions </th>
+              <td mat-cell *matCellDef="let row">
+                <button mat-icon-button color="primary" (click)="editUser(row)" matTooltip="Edit User Role/Guilds">
+                  <mat-icon>manage_accounts</mat-icon>
+                </button>
+                <!-- Disable delete for the current user -->
+                <button mat-icon-button color="warn" 
+                        (click)="deleteUser(row)" 
+                        matTooltip="Delete User" 
+                        [disabled]="row._id === currentUserId()">
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </td>
+            </ng-container>
+  
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+  
+            <!-- Row shown when there is no matching data. -->
+            <tr class="mat-row" *matNoDataRow>
+               @if (input.value) {
+                   <td class="mat-cell" [attr.colspan]="displayedColumns.length">
+                      No users matching the filter "{{input.value}}"
+                   </td>
+                } @else {
+                   <td class="mat-cell" [attr.colspan]="displayedColumns.length">
+                     No users found.
+                   </td>
+                }
+            </tr>
+          </table>
+  
+          <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" aria-label="Select page of users"></mat-paginator>
+        </div>
+  
+      </mat-card-content>
+    </mat-card>
+  
+  </div>
+  

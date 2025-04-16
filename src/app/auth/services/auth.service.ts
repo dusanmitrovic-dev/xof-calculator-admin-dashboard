@@ -10,7 +10,7 @@ interface LoginResponse {
 
 interface DecodedToken {
   user: {
-    id: string;
+    id: string; // User ID we need
     role: 'admin' | 'manager';
     // managedGuilds?: string[]; // May add later if needed
   };
@@ -30,18 +30,13 @@ export class AuthService {
 
   private readonly TOKEN_KEY = 'authToken';
 
-  // Signals or Subjects for authentication state
-  // Use a signal for simpler state management in standalone components
+  // Signals for authentication state
   isAuthenticated = signal<boolean>(this.hasValidToken());
   currentUserRole = signal<'admin' | 'manager' | null>(this.getRoleFromToken());
-  // Or use BehaviorSubject for broader compatibility/more complex scenarios
-  // private isAuthenticatedSubject = new BehaviorSubject<boolean>(this.hasValidToken());
-  // public isAuthenticated$ = this.isAuthenticatedSubject.asObservable();
 
   constructor() {
-    // Optional: Check token validity on service initialization
     if (!this.hasValidToken()) {
-       this.logout(); // Clean up if token expired while app was closed
+       this.logout(); 
     }
     console.log('AuthService initialized. IsAuthenticated:', this.isAuthenticated());
     console.log('CurrentUserRole:', this.currentUserRole());
@@ -59,11 +54,11 @@ export class AuthService {
           this.updateAuthState(false);
         }
       }),
-      map(response => !!response?.token), // Return true if token exists
+      map(response => !!response?.token),
       catchError(error => {
         console.error('Login failed:', error);
         this.updateAuthState(false);
-        return of(false); // Return false on error
+        return of(false);
       })
     );
   }
@@ -80,11 +75,11 @@ export class AuthService {
           this.updateAuthState(false);
         }
       }),
-      map(response => !!response?.token), // Return true if token exists
+      map(response => !!response?.token),
       catchError(error => {
         console.error('Registration failed:', error);
         this.updateAuthState(false);
-        return of(false); // Return false on error
+        return of(false);
       })
     );
   }
@@ -108,6 +103,25 @@ export class AuthService {
     return this.currentUserRole();
   }
 
+  // --- New Method --- 
+  getUserIdFromToken(): string | null {
+      const token = this.getToken();
+      if (!token) return null;
+
+      try {
+        const decoded: DecodedToken = jwtDecode<DecodedToken>(token);
+         // Check expiry just in case
+        if (Date.now() >= decoded.exp * 1000) {
+             return null;
+        }
+        return decoded.user.id; // Return the user ID
+      } catch (error) {
+        console.error('Error decoding token for user ID:', error);
+        return null;
+      }
+  }
+  // --- End New Method ---
+
   isAdmin(): boolean {
     return this.currentUserRole() === 'admin';
   }
@@ -119,8 +133,6 @@ export class AuthService {
   private updateAuthState(isAuthenticated: boolean): void {
     this.isAuthenticated.set(isAuthenticated);
     this.currentUserRole.set(isAuthenticated ? this.getRoleFromToken() : null);
-    // If using Subject:
-    // this.isAuthenticatedSubject.next(isAuthenticated);
     console.log('Auth state updated. IsAuthenticated:', this.isAuthenticated());
     console.log('CurrentUserRole:', this.currentUserRole());
   }
@@ -149,7 +161,6 @@ export class AuthService {
 
     try {
       const decoded: DecodedToken = jwtDecode<DecodedToken>(token);
-       // Check expiry just in case, though hasValidToken should handle it
       if (Date.now() >= decoded.exp * 1000) {
            return null;
       }
