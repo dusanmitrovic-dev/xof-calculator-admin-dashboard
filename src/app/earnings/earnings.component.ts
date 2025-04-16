@@ -1,5 +1,5 @@
-import { Component, inject, signal, OnInit, ViewChild, AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core'; // Added ChangeDetectionStrategy, ChangeDetectorRef
-import { CommonModule, DatePipe, CurrencyPipe } from '@angular/common'; // Added DatePipe, CurrencyPipe
+import { Component, inject, signal, OnInit, ViewChild, AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
+import { CommonModule, DatePipe, CurrencyPipe } from '@angular/common'; 
 import { EarningsService, Earning } from '../core/services/earnings.service';
 import { GuildSelectorComponent } from '../core/components/guild-selector/guild-selector.component';
 
@@ -14,10 +14,11 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatCardModule } from '@angular/material/card';
-import { MatTooltipModule } from '@angular/material/tooltip'; // Added tooltip
+import { MatTooltipModule } from '@angular/material/tooltip'; 
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar'; // Import SnackBar
 
-// Placeholder for Add/Edit Dialog Component (Create later)
-// import { EarningDialogComponent } from './earning-dialog/earning-dialog.component';
+// Import the dialog component
+import { EarningDialogComponent } from './components/earning-dialog/earning-dialog.component'; 
 
 @Component({
   selector: 'app-earnings',
@@ -35,19 +36,21 @@ import { MatTooltipModule } from '@angular/material/tooltip'; // Added tooltip
     MatIconModule,
     MatDialogModule,
     MatCardModule,
-    MatTooltipModule, // Added tooltip
-    DatePipe, // Added DatePipe
-    CurrencyPipe // Added CurrencyPipe
+    MatTooltipModule, 
+    DatePipe, 
+    CurrencyPipe,
+    EarningDialogComponent, // Import standalone dialog component
+    MatSnackBarModule // Import SnackBar module
   ],
   templateUrl: './earnings.component.html',
   styleUrls: ['./earnings.component.scss'],
-  // Consider OnPush for performance with table data
   // changeDetection: ChangeDetectionStrategy.OnPush 
 })
 export class EarningsComponent implements OnInit, AfterViewInit {
   private earningsService = inject(EarningsService);
-  private cdr = inject(ChangeDetectorRef); // Inject ChangeDetectorRef
+  private cdr = inject(ChangeDetectorRef); 
   public dialog = inject(MatDialog);
+  private snackBar = inject(MatSnackBar); // Inject SnackBar
 
   selectedGuildId = signal<string | null>(null);
   isLoading = signal(false);
@@ -62,7 +65,6 @@ export class EarningsComponent implements OnInit, AfterViewInit {
   ngOnInit(): void {}
 
   ngAfterViewInit(): void {
-    // Initial assignment
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
   }
@@ -71,11 +73,11 @@ export class EarningsComponent implements OnInit, AfterViewInit {
     console.log('[EarningsComponent] Guild selected:', guildId);
     this.selectedGuildId.set(guildId);
     this.error.set(null);
-    this.dataSource.data = []; // Clear table immediately
+    this.dataSource.data = []; 
     if (guildId) {
       this.fetchEarnings(guildId);
     } else {
-        this.cdr.detectChanges(); // Ensure view updates when clearing
+        this.cdr.detectChanges(); 
     }
   }
 
@@ -87,19 +89,18 @@ export class EarningsComponent implements OnInit, AfterViewInit {
       next: (earnings) => {
         console.log(`[EarningsComponent] Received earnings data:`, earnings);
         this.dataSource.data = earnings; 
-        // Ensure paginator and sort are re-assigned AFTER data is set
         this.dataSource.paginator = this.paginator; 
         this.dataSource.sort = this.sort;
         this.isLoading.set(false);
-        this.cdr.detectChanges(); // Manually trigger change detection
+        this.cdr.detectChanges(); 
         console.log('[EarningsComponent] dataSource updated.');
       },
       error: (err) => {
         console.error('[EarningsComponent] Error fetching earnings:', err);
         this.error.set('An error occurred while loading earnings records.');
-        this.dataSource.data = []; // Clear data on error
+        this.dataSource.data = []; 
         this.isLoading.set(false);
-        this.cdr.detectChanges(); // Update view on error
+        this.cdr.detectChanges(); 
       }
     });
   }
@@ -113,21 +114,68 @@ export class EarningsComponent implements OnInit, AfterViewInit {
     }
   }
 
-  // --- CRUD Actions (Placeholders) ---
+  // --- CRUD Actions --- 
+
   addEarning(): void {
     if (!this.selectedGuildId()) return;
     console.log('Add earning action triggered');
-    // ... (Dialog logic commented out)
+    const dialogRef = this.dialog.open(EarningDialogComponent, {
+      width: '450px',
+      data: { guildId: this.selectedGuildId(), earning: null },
+      disableClose: true // Prevent closing on backdrop click
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result === 'saved') {
+        this.snackBar.open('Earning record added successfully!', 'Close', { duration: 3000 });
+        this.fetchEarnings(this.selectedGuildId()!); // Refresh data on success
+      }
+    });
   }
 
   editEarning(earning: Earning): void {
      if (!this.selectedGuildId()) return; 
     console.log('Edit earning action triggered for:', earning.id);
-    // ... (Dialog logic commented out)
+    const dialogRef = this.dialog.open(EarningDialogComponent, {
+      width: '450px',
+      data: { guildId: this.selectedGuildId(), earning: earning },
+      disableClose: true
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result === 'saved') {
+         this.snackBar.open('Earning record updated successfully!', 'Close', { duration: 3000 });
+        this.fetchEarnings(this.selectedGuildId()!); // Refresh data on success
+      }
+    });
   }
 
   deleteEarning(earning: Earning): void {
     console.log('Delete earning action triggered for:', earning.id);
-    // ... (Confirmation and delete logic commented out)
+    // TODO: Replace confirm() with MatDialog for confirmation
+    if (confirm(`Are you sure you want to delete earning entry ${earning.id}? This cannot be undone.`)) {
+       // Can use isLoading signal or add a specific isDeleting signal
+      // this.isLoading.set(true); 
+      this.error.set(null); // Clear previous errors
+      this.earningsService.deleteEarning(earning.id).subscribe({
+        next: (response) => {
+          if (response) {
+            console.log('Deletion successful');
+             this.snackBar.open(`Earning ${earning.id} deleted.`, 'Close', { duration: 3000 });
+            this.fetchEarnings(this.selectedGuildId()!); // Refresh data
+          } else {
+            this.error.set('Failed to delete earning record.');
+             this.snackBar.open('Error deleting record.', 'Close', { duration: 3000, panelClass: ['warn-snackbar'] }); // Add error style
+          }
+          // this.isLoading.set(false);
+        },
+        error: (err) => {
+           console.error('Error deleting earning:', err);
+           this.error.set('An error occurred during deletion.');
+           this.snackBar.open('Error during deletion.', 'Close', { duration: 3000, panelClass: ['warn-snackbar'] });
+           // this.isLoading.set(false);
+        }
+      });
+    }
   }
 }
