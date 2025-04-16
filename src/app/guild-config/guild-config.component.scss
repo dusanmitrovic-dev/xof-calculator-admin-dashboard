@@ -1,4 +1,39 @@
 @use '@angular/material' as mat;
+@use 'sass:map';
+
+// Theme definitions matching dashboard
+$light-theme: mat.m2-define-light-theme((
+  color: (
+    primary: mat.m2-define-palette(mat.$m2-indigo-palette),
+    accent: mat.m2-define-palette(mat.$m2-pink-palette),
+    warn: mat.m2-define-palette(mat.$m2-red-palette),
+  ),
+  typography: mat.m2-define-typography-config(),
+  density: 0
+));
+
+$dark-theme: mat.m2-define-dark-theme((
+  color: (
+    primary: mat.m2-define-palette(mat.$m2-indigo-palette),
+    accent: mat.m2-define-palette(mat.$m2-green-palette),
+    warn: mat.m2-define-palette(mat.$m2-red-palette),
+  ),
+  typography: mat.m2-define-typography-config(),
+  density: 0
+));
+
+// Theme color getter functions
+@function theme-color($theme, $color-type, $color-name) {
+  @return mat.m2-get-color-from-palette(map.get($theme, color, $color-type, $color-name), default);
+}
+
+@function theme-background($theme, $bg-name) {
+  @return mat.m2-get-color-from-palette(map.get($theme, background), $bg-name);
+}
+
+@function theme-foreground($theme, $fg-name) {
+  @return mat.m2-get-color-from-palette(map.get($theme, foreground), $fg-name);
+}
 
 :host {
   display: block;
@@ -6,57 +41,124 @@
 
 .config-container {
   padding: 20px;
-}
+  color: theme-foreground($light-theme, text);
+  background-color: theme-background($light-theme, background);
 
-.loading-spinner {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-top: 40px;
-  min-height: 100px;
+  :host-context(body.dark-theme) & {
+    color: theme-foreground($dark-theme, text);
+    background-color: theme-background($dark-theme, background);
+  }
 }
 
 .config-card {
   margin-top: 20px;
+  background-color: theme-background($light-theme, card);
+  color: theme-foreground($light-theme, text);
+
+  mat-card-title {
+    color: theme-foreground($light-theme, text);
+  }
+
+  mat-card-subtitle {
+    color: theme-foreground($light-theme, secondary-text);
+  }
+
+  :host-context(body.dark-theme) & {
+    background-color: theme-background($dark-theme, card);
+    color: theme-foreground($dark-theme, text);
+
+    mat-card-title {
+      color: theme-foreground($dark-theme, text);
+    }
+    mat-card-subtitle {
+      color: theme-foreground($dark-theme, secondary-text);
+    }
+  }
 }
 
-.mat-expansion-panel-header {
-  font-weight: 500;
-}
-.mat-expansion-panel-header mat-icon {
-    margin-right: 8px;
-    color: var(--mat-icon-color); // Use theme variable
+.mat-expansion-panel {
+  background-color: mat.get-theme-color($light-theme, background, card);
+  color: mat.get-theme-color($light-theme, foreground, text);
+
+  .mat-expansion-panel-header {
+    font-weight: 500;
+    color: mat.get-theme-color($light-theme, foreground, text);
+
+    mat-icon {
+      margin-right: 8px;
+      color: mat.get-theme-color($light-theme, primary, default);
+    }
+  }
+
+  .mat-expansion-panel-content {
+    color: mat.get-theme-color($light-theme, foreground, secondary-text);
+  }
+
+  // Dark theme override
+  :host-context(body.dark-theme) & {
+    background-color: mat.get-theme-color($dark-theme, background, card);
+    color: mat.get-theme-color($dark-theme, foreground, text);
+
+    .mat-expansion-panel-header {
+      color: mat.get-theme-color($dark-theme, foreground, text);
+      
+      mat-icon {
+        color: mat.get-theme-color($dark-theme, primary, default);
+      }
+    }
+
+    .mat-expansion-panel-content {
+      color: mat.get-theme-color($dark-theme, foreground, secondary-text);
+    }
+  }
 }
 
 .array-container, .settings-group {
   margin-bottom: 15px;
-  padding: 10px 15px; // Add padding inside expansion panels
+  padding: 10px 15px;
 }
 
 .array-label {
-    display: block;
-    font-weight: 500;
-    margin-bottom: 8px;
-    color: var(--mat-secondary-text-color);
-    font-size: 0.9em;
+  display: block;
+  font-weight: 500;
+  margin-bottom: 8px;
+  color: mat.get-theme-color($light-theme, foreground, secondary-text);
+  font-size: 0.9em;
+
+  :host-context(body.dark-theme) & {
+    color: mat.get-theme-color($dark-theme, foreground, secondary-text);
+  }
 }
 
 .chips-array-container {
-    .mat-mdc-chip-set {
-        margin-bottom: 10px;
+  .mat-mdc-chip-set {
+    margin-bottom: 10px;
+  }
+  
+  .config-chip {
+    margin: 4px !important;
+    background-color: mat.get-theme-color($light-theme, primary, 100);
+    color: mat.get-theme-color($light-theme, primary, 900);
+
+    :host-context(body.dark-theme) & {
+      background-color: mat.get-theme-color($dark-theme, primary, 700);
+      color: mat.get-theme-color($dark-theme, primary, 100);
     }
-    .config-chip { // Style the chips
-        margin: 4px !important;
-        // Add other chip styles if desired
+  }
+
+  .mat-mdc-chip-remove {
+    margin-left: 8px !important;
+  }
+
+  .empty-array-message {
+    font-style: italic;
+    color: mat.get-theme-color($light-theme, foreground, disabled-text);
+    margin: 10px 0;
+
+    :host-context(body.dark-theme) & {
+      color: mat.get-theme-color($dark-theme, foreground, disabled-text);
     }
-    .mat-mdc-chip-remove {
-        margin-left: 8px !important;
-    }
-    .empty-array-message {
-        font-style: italic;
-        color: var(--mat-disabled-text-color);
-        margin: 10px 0;
-    }
+  }
 }
 
 .add-item-form {
@@ -67,7 +169,7 @@
 
   mat-form-field {
     flex-grow: 1;
-    margin-bottom: 0; // Remove default margin
+    margin-bottom: 0;
   }
 }
 
@@ -77,103 +179,146 @@
   flex-wrap: wrap;
   gap: 15px;
   margin-bottom: 10px;
-  padding: 15px; // Increased padding
-  border: 1px solid var(--mat-divider-color, rgba(0,0,0,0.12));
+  padding: 15px;
+  border: 1px solid mat.get-theme-color($light-theme, foreground, divider);
   border-radius: 4px;
+  background-color: mat.get-theme-color($light-theme, background, raised-button);
+
+  :host-context(body.dark-theme) & {
+    border-color: mat.get-theme-color($dark-theme, foreground, divider);
+    background-color: mat.get-theme-color($dark-theme, background, raised-button);
+  }
 
   mat-form-field {
     flex: 1 1 120px;
-    margin-bottom: 0; // Remove default margin
+    margin-bottom: 0;
   }
-   button[mat-icon-button] { // Ensure consistent alignment for remove button
-       margin-top: -10px; // Adjust alignment if needed
-   }
-}
-.add-button {
-    margin-top: 10px;
 }
 
 .settings-group {
   display: flex;
   flex-direction: column;
-  gap: 5px; // Reduced gap
+  gap: 5px;
   padding: 15px;
 
   mat-slide-toggle {
-    margin-bottom: 10px; // Spacing below toggles
+    margin-bottom: 10px;
   }
-  .setting-field { // Specific margin for these fields
-     margin-top: 10px;
-  }
-  mat-form-field.full-width {
-    width: 100%;
+
+  .setting-field {
+    margin-top: 10px;
   }
 }
 
 .disabled-section-message {
-    font-style: italic;
-    padding: 15px;
-    color: var(--mat-disabled-text-color);
-}
+  font-style: italic;
+  padding: 15px;
+  color: mat.get-theme-color($light-theme, foreground, disabled-text);
 
+  :host-context(body.dark-theme) & {
+    color: mat.get-theme-color($dark-theme, foreground, disabled-text);
+  }
+}
 
 .save-button-container {
   margin-top: 25px;
   padding-top: 15px;
-  border-top: 1px solid var(--mat-divider-color, rgba(0,0,0,0.12));
+  border-top: 1px solid mat.get-theme-color($light-theme, foreground, divider);
   display: flex;
   align-items: center;
-  flex-wrap: wrap; // Allow wrapping
+  flex-wrap: wrap;
   gap: 15px;
 
+  :host-context(body.dark-theme) & {
+    border-color: mat.get-theme-color($dark-theme, foreground, divider);
+  }
+
   button {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      min-width: 180px; // Give button some width
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 180px;
   }
 }
 
 .save-status {
-    font-weight: 500;
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    &.success {
-        color: var(--mat-success-color, green);
-    }
-    &.error {
-         color: var(--mat-warn-color, #f44336);
-    }
-     &.info {
-         color: var(--mat-secondary-text-color);
-     }
-}
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
 
+  &.success {
+    color: mat.get-theme-color($light-theme, success, default);
+
+    :host-context(body.dark-theme) & {
+      color: mat.get-theme-color($dark-theme, success, default);
+    }
+  }
+
+  &.error {
+    color: mat.get-theme-color($light-theme, warn, default);
+
+    :host-context(body.dark-theme) & {
+      color: mat.get-theme-color($dark-theme, warn, default);
+    }
+  }
+
+  &.info {
+    color: mat.get-theme-color($light-theme, foreground, secondary-text);
+
+    :host-context(body.dark-theme) & {
+      color: mat.get-theme-color($dark-theme, foreground, secondary-text);
+    }
+  }
+}
 
 .info-message, .error-message {
-    margin-top: 20px;
-    text-align: center;
-    padding: 15px;
-    border-radius: 4px;
-    border: 1px solid transparent;
-}
-.info-message {
-    background-color: var(--mat-info-message-background-color, #e0e0e0);
-    color: var(--mat-info-message-text-color, rgba(0,0,0,0.87));
-    border-color: var(--mat-info-message-border-color, #bdbdbd);
-}
-.error-message {
-    background-color: var(--mat-error-message-background-color, rgba(244, 67, 54, 0.1));
-    color: var(--mat-warn-color, #f44336);
-    border-color: var(--mat-warn-color, #f44336);
-}
-
-pre {
-  background-color: var(--mat-pre-background-color, rgba(128, 128, 128, 0.1));
+  margin-top: 20px;
+  text-align: center;
   padding: 15px;
   border-radius: 4px;
-  overflow-x: auto;
-  color: var(--mat-pre-text-color, inherit);
-  margin-top: 20px;
+
+  &.info-message {
+    background-color: mat.get-theme-color($light-theme, info-message, background);
+    color: mat.get-theme-color($light-theme, info-message, text);
+    border: 1px solid mat.get-theme-color($light-theme, info-message, border);
+
+    :host-context(body.dark-theme) & {
+      background-color: mat.get-theme-color($dark-theme, info-message, background);
+      color: mat.get-theme-color($dark-theme, info-message, text);
+      border-color: mat.get-theme-color($dark-theme, info-message, border);
+    }
+  }
+
+  &.error-message {
+    background-color: mat.get-theme-color($light-theme, error, background);
+    color: mat.get-theme-color($light-theme, error, text);
+    border: 1px solid mat.get-theme-color($light-theme, error, border);
+
+    :host-context(body.dark-theme) & {
+      background-color: mat.get-theme-color($dark-theme, error, background);
+      color: mat.get-theme-color($dark-theme, error, text);
+      border-color: mat.get-theme-color($dark-theme, error, border);
+    }
+  }
+}
+
+.mat-form-field {
+  .mat-input-element {
+    color: mat.get-theme-color($light-theme, foreground, text);
+  }
+
+  .mat-form-field-label {
+    color: mat.get-theme-color($light-theme, foreground, secondary-text);
+  }
+
+  :host-context(body.dark-theme) & {
+    .mat-input-element {
+      color: mat.get-theme-color($dark-theme, foreground, text);
+    }
+
+    .mat-form-field-label {
+      color: mat.get-theme-color($dark-theme, foreground, secondary-text);
+    }
+  }
 }

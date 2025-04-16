@@ -40,7 +40,7 @@ import { UserEditDialogComponent } from './components/user-edit-dialog/user-edit
     MatSnackBarModule,
     MatChipsModule,
     TitleCasePipe, // Add TitleCasePipe
-    UserEditDialogComponent // Add Dialog Component
+    // UserEditDialogComponent // Add Dialog Component
   ],
   templateUrl: './user-management.component.html',
   styleUrls: ['./user-management.component.scss'] 
