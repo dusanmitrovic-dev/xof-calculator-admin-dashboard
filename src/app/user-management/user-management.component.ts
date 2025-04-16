@@ -1,5 +1,5 @@
 import { Component, inject, signal, OnInit, ViewChild, AfterViewInit, ChangeDetectorRef } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, TitleCasePipe } from '@angular/common'; // Added TitleCasePipe
 import { UserService, User } from '../core/services/user.service';
 import { AuthService } from '../auth/services/auth.service';
 
@@ -16,10 +16,10 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatCardModule } from '@angular/material/card';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
-import { MatChipsModule } from '@angular/material/chips'; // To display managed guilds
+import { MatChipsModule } from '@angular/material/chips'; 
 
-// Placeholder for Edit Dialog (Create later)
-// import { UserEditDialogComponent } from './components/user-edit-dialog/user-edit-dialog.component';
+// Import the Edit Dialog
+import { UserEditDialogComponent } from './components/user-edit-dialog/user-edit-dialog.component'; 
 
 @Component({
   selector: 'app-user-management',
@@ -38,23 +38,24 @@ import { MatChipsModule } from '@angular/material/chips'; // To display managed 
     MatCardModule,
     MatTooltipModule,
     MatSnackBarModule,
-    MatChipsModule
+    MatChipsModule,
+    TitleCasePipe, // Add TitleCasePipe
+    UserEditDialogComponent // Add Dialog Component
   ],
   templateUrl: './user-management.component.html',
-  styleUrls: ['./user-management.component.scss'] // Assuming SCSS
+  styleUrls: ['./user-management.component.scss'] 
 })
 export class UserManagementComponent implements OnInit, AfterViewInit {
   private userService = inject(UserService);
-  private authService = inject(AuthService); // To get current user ID
+  private authService = inject(AuthService); 
   private cdr = inject(ChangeDetectorRef);
   public dialog = inject(MatDialog);
   private snackBar = inject(MatSnackBar);
 
   isLoading = signal(false);
   error = signal<string | null>(null);
-  currentUserId = signal<string | null>(this.authService.getUserIdFromToken()); // Helper needed in AuthService
+  currentUserId = signal<string | null>(this.authService.getUserIdFromToken()); 
 
-  // Table data source
   displayedColumns: string[] = ['email', 'role', 'managedGuilds', 'actions'];
   dataSource = new MatTableDataSource<User>([]);
 
@@ -63,7 +64,6 @@ export class UserManagementComponent implements OnInit, AfterViewInit {
 
   ngOnInit(): void {
      if (!this.authService.isAdmin()) {
-        // Although guarded by router, double check
         this.error.set("Access Denied: Admin role required.");
         return;
      }
@@ -109,20 +109,20 @@ export class UserManagementComponent implements OnInit, AfterViewInit {
 
   editUser(user: User): void {
     console.log('Edit user action triggered for:', user.email);
-    // TODO: Open UserEditDialogComponent
-    // Pass user data and potentially the list of available guilds
-    // const dialogRef = this.dialog.open(UserEditDialogComponent, {
-    //    width: '500px',
-    //    data: { user: user }
-    // });
-    // dialogRef.afterClosed().subscribe(result => {
-    //   if (result === 'saved') {
-    //     this.snackBar.open('User updated successfully!', 'Close', { duration: 3000 });
-    //     this.fetchUsers();
-    //   }
-    // });
-     this.snackBar.open(`Edit action for ${user.email} (Not Implemented)`, 'Close', { duration: 2000 });
+    // Open the dialog
+    const dialogRef = this.dialog.open(UserEditDialogComponent, {
+       width: '500px',
+       data: { user: user }, // Pass the user data to the dialog
+       disableClose: true
+    });
 
+    // Handle dialog closing
+    dialogRef.afterClosed().subscribe(result => {
+      if (result === 'saved') {
+        this.snackBar.open('User updated successfully!', 'Close', { duration: 3000 });
+        this.fetchUsers(); // Refresh the user list
+      }
+    });
   }
 
   deleteUser(user: User): void {
@@ -132,18 +132,20 @@ export class UserManagementComponent implements OnInit, AfterViewInit {
         return;
     }
     
-    // TODO: Use MatDialog for confirmation
+    // TODO: Use MatDialog for confirmation instead of confirm()
     if (confirm(`Are you sure you want to delete user ${user.email}? This cannot be undone.`)) {
-        this.isLoading.set(true); // Indicate loading state during delete
+        this.isLoading.set(true); 
         this.userService.deleteUser(user._id).subscribe({
             next: (response) => {
                  if (response) {
                     this.snackBar.open(`User ${user.email} deleted successfully.`, 'Close', { duration: 3000 });
-                    this.fetchUsers(); // Refresh the list
+                    this.fetchUsers(); 
                  } else {
                      this.snackBar.open(`Failed to delete user ${user.email}.`, 'Close', { duration: 3000, panelClass: ['warn-snackbar'] });
                      this.isLoading.set(false);
                  }
+                 // No need to set isLoading to false here if fetchUsers is called, 
+                 // as fetchUsers will set it based on its own progress.
             },
             error: (err) => {
                 console.error('Delete user error:', err);
