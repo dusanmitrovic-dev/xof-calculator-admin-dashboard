@@ -3,6 +3,25 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [0.24.0] - 2025-04-16
+
+### Added
+- Added earnings component.
+
+## [0.23.0] - 2025-04-16
+
+### Added
+- Implemented `EarningsService` for handling `/api/earnings` interactions (get, create, update, delete).
+- Implemented initial `EarningsComponent` structure:
+  - Includes `GuildSelectorComponent`.
+  - Fetches earnings for the selected guild using `EarningsService`.
+  - Displays earnings in a `MatTable` with sorting, pagination, and filtering.
+  - Added placeholders for Add/Edit/Delete actions (dialogs to be implemented).
+- Added required Material modules (`MatTable`, `MatPaginator`, `MatSort`, `MatDialog`, etc.) to `EarningsComponent` imports.
+
+### Fixed
+- Resolved SASS compilation errors in component SCSS files by removing local theme definitions and relying on CSS variables set by global theme.
+
 ## [v0.22.0] - 2025-04-15
 
 ### Added
