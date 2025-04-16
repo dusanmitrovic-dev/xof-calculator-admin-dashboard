@@ -3,6 +3,18 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [0.25.0] - 2025-04-16
+
+### Added
+- Generated `EarningDialogComponent` for adding/editing earnings.
+- Implemented reactive form in `EarningDialogComponent` with fields for earning details.
+- Added logic to fetch dropdown options (shifts, periods, models, roles) from `ConfigService`.
+- Implemented date parsing/formatting helpers.
+- Added save logic to create or update earnings via `EarningsService`.
+- Implemented dialog template (`earning-dialog.component.html`) with Material form fields.
+- Updated `EarningsComponent` to open `EarningDialogComponent` for add/edit actions.
+- Added `MatSnackBar` for user feedback on save/delete actions.
+
 ## [0.24.0] - 2025-04-16
 
 ### Added
