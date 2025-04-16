@@ -1,0 +1,48 @@
+mat-dialog-content {
+    min-width: 450px; /* Adjust width as needed */
+    padding-top: 10px;
+}
+
+.full-width {
+    width: 100%;
+}
+
+mat-form-field {
+    margin-bottom: 15px;
+}
+
+mat-divider {
+    margin: 15px 0;
+}
+
+.guild-selection-list {
+    max-height: 200px; /* Limit height and make scrollable */
+    overflow-y: auto;
+    border: 1px solid var(--mat-divider-color, rgba(0,0,0,0.12));
+    border-radius: 4px;
+}
+
+.dialog-error-message {
+    color: var(--mat-warn-color, red);
+    margin-top: 15px;
+    text-align: center;
+}
+
+mat-dialog-actions {
+    padding: 8px 24px 16px 24px;
+}
+
+mat-dialog-actions button[mat-flat-button] {
+    display: inline-flex;
+    align-items: center;
+}
+h3 {
+    margin-top: 10px;
+    margin-bottom: 8px;
+    font-weight: 500;
+}
+p mat-icon {
+    vertical-align: middle;
+    margin-right: 4px;
+    font-size: 1.1em;
+}

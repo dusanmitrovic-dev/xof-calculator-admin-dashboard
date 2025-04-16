@@ -3,6 +3,16 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [0.27.0] - 2025-04-16
+
+### Added
+- Generated `UserEditDialogComponent` for editing user roles and managed guilds.
+- Implemented reactive form in the dialog to modify user role and select managed guilds using `mat-selection-list`.
+- Added logic to fetch all available guilds via `UserService` to populate selection list.
+- Implemented save functionality to update user data via `UserService`.
+- Added logic to disable role editing for the current admin user and disable guild selection for users with the 'admin' role.
+- Updated `UserManagementComponent` to open the `UserEditDialogComponent` when the edit button is clicked.
+
 ## [0.26.0] - 2025-04-16
 
 ### Added
