@@ -3,6 +3,17 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [0.26.0] - 2025-04-16
+
+### Added
+- Implemented initial `UserManagementComponent` (Admin Only):
+  - Fetches all users via `UserService`.
+  - Displays users in a `MatTable` with sorting, pagination, and filtering.
+  - Shows email, role, and managed guilds (using `mat-chip-listbox`).
+  - Includes action buttons for Edit (placeholder) and Delete.
+  - Delete action includes basic confirmation and prevents self-deletion.
+- Added `getUserIdFromToken()` helper method to `AuthService`.
+
 ## [0.25.0] - 2025-04-16
 
 ### Added
