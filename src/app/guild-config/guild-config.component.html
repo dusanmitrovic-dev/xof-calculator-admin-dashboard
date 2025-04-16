@@ -194,11 +194,13 @@
 
           <div class="save-button-container">
             <button mat-raised-button color="primary" type="submit" [disabled]="configForm.invalid || isSaving() || !configForm.dirty">
-                @if (isSaving()) {
-                    <mat-spinner diameter="20" color="accent"></mat-spinner> Saving...
-                } @else {
-                   <mat-icon>save</mat-icon> Save Configuration
-                }
+                 <!-- Temporarily removed @if/@else for debugging -->
+                 <mat-icon>save</mat-icon> Save Configuration 
+                 <!-- @if (isSaving()) { -->
+                 <!--    <mat-spinner diameter="20" color="accent"></mat-spinner> Saving... -->
+                 <!-- } @else { -->
+                 <!--    <mat-icon>save</mat-icon> Save Configuration -->
+                 <!-- } -->
             </button>
              @if (saveSuccess() === true) {
               <span class="save-status success"><mat-icon>check_circle</mat-icon> Configuration saved!</span>

@@ -39,7 +39,7 @@ import { EarningDialogComponent } from './components/earning-dialog/earning-dial
     MatTooltipModule, 
     DatePipe, 
     CurrencyPipe,
-    EarningDialogComponent, // Import standalone dialog component
+    // EarningDialogComponent, // Import standalone dialog component
     MatSnackBarModule // Import SnackBar module
   ],
   templateUrl: './earnings.component.html',

@@ -1,15 +1,16 @@
-import { Component, inject, signal, OnInit, OnDestroy } from '@angular/core';
+import { Component, inject, signal } from '@angular/core'; // Removed OnInit, OnDestroy
 import { CommonModule } from '@angular/common';
-import { Subscription } from 'rxjs';
+// Removed Subscription import
 import { Router } from '@angular/router';
 import { AuthService } from '../../../auth/services/auth.service';
+import { ThemeService } from '../../services/theme.service'; // Import ThemeService
 
 // Material Modules
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { MatTooltipModule } from '@angular/material/tooltip'; // For tooltips
-import { MatMenuModule } from '@angular/material/menu'; // For potential user menu
+import { MatTooltipModule } from '@angular/material/tooltip'; 
+import { MatMenuModule } from '@angular/material/menu'; 
 
 @Component({
   selector: 'app-toolbar',
@@ -23,49 +24,28 @@ import { MatMenuModule } from '@angular/material/menu'; // For potential user me
     MatMenuModule
   ],
   templateUrl: './toolbar.component.html',
-  styleUrls: ['./toolbar.component.scss']
+  styleUrls: ['./toolbar.component.scss'] // Keep as CSS for now
 })
-export class ToolbarComponent implements OnInit, OnDestroy {
+export class ToolbarComponent { // Removed OnInit, OnDestroy
   private authService = inject(AuthService);
+  private themeService = inject(ThemeService); // Inject ThemeService
   private router = inject(Router);
 
-  isLoggedIn = this.authService.isAuthenticated; // Use the signal directly
-  userRole = this.authService.currentUserRole; // Use the signal
+  isLoggedIn = this.authService.isAuthenticated;
+  userRole = this.authService.currentUserRole;
+  
+  // Use the signal directly from the ThemeService
+  isDarkMode = this.themeService.isDarkMode; 
 
-  // Theme state (basic example - could be a dedicated service)
-  isDarkMode = signal(false);
+  // Removed ngOnInit and ngOnDestroy
+  // Removed theme state logic (toggleTheme, updateTheme)
 
-  ngOnInit() {
-    // Initialize theme based on preference or default
-    // This is a basic example; a more robust solution would use localStorage
-    // and potentially a dedicated ThemeService
-    const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-    this.isDarkMode.set(localStorage.getItem('theme') === 'dark' || (!localStorage.getItem('theme') && prefersDark));
-    this.updateTheme();
-  }
-
-  ngOnDestroy() {
-    // Cleanup if needed (e.g., unsubscribing if signals weren't used)
-  }
-
+  // Wrapper function to call service method
   toggleTheme(): void {
-    this.isDarkMode.update(value => !value);
-    localStorage.setItem('theme', this.isDarkMode() ? 'dark' : 'light');
-    this.updateTheme();
-  }
-
-  updateTheme(): void {
-    if (this.isDarkMode()) {
-      document.body.classList.add('dark-theme');
-      document.body.classList.remove('light-theme');
-    } else {
-      document.body.classList.add('light-theme');
-      document.body.classList.remove('dark-theme');
-    }
+    this.themeService.toggleTheme();
   }
 
   logout(): void {
     this.authService.logout();
-    // Navigation is handled within authService.logout()
   }
 }
