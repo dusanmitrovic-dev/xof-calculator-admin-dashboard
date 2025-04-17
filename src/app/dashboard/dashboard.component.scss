@@ -41,6 +41,7 @@ $dark-theme: mat.m2-define-dark-theme((
   background-color: mat.get-theme-color($light-theme, background, card);
   color: mat.get-theme-color($light-theme, foreground, text);
 
+  // Ensure specific elements within the card also use appropriate text colors
   mat-card-title {
      color: mat.get-theme-color($light-theme, foreground, text);
   }
