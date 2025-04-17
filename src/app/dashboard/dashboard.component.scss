@@ -28,16 +28,17 @@ $dark-theme: mat.m2-define-dark-theme((
 .dashboard-cards {
   display: flex;
   flex-wrap: wrap;
-  gap: 20px; 
+  gap: 20px; /* Spacing between cards */
   margin-top: 20px;
 }
 
 .dashboard-card {
-  flex: 1 1 300px; 
-  max-width: 400px; 
+  flex: 1 1 300px; /* Allow cards to grow, shrink, with a base width */
+  max-width: 400px; /* Optional max width */
   cursor: pointer;
   transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
 
+  // Theme the card background and text for light mode
   background-color: mat.get-theme-color($light-theme, background, card);
   color: mat.get-theme-color($light-theme, foreground, text);
 
