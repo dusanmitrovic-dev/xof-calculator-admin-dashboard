@@ -33,7 +33,7 @@ $dark-theme: mat.m2-define-dark-theme((
 }
 
 .dashboard-card {
-  flex: 1 1 300px; /* Allow cards to grow, shrink, with a base width */
+  flex: 1 1 300px; 
   max-width: 400px; /* Optional max width */
   cursor: pointer;
   transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
