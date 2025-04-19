@@ -52,7 +52,6 @@ $dark-theme: mat.m2-define-dark-theme((
   }
 }
 
-// Theme the card for dark mode when body has dark-theme class
 :host-context(body.dark-theme) .dashboard-card {
   background-color: mat.get-theme-color($dark-theme, background, card);
   color: mat.get-theme-color($dark-theme, foreground, text);
