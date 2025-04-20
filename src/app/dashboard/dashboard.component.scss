@@ -38,7 +38,6 @@ $dark-theme: mat.m2-define-dark-theme((
   cursor: pointer;
   transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
 
-  // Theme the card background and text for light mode
   background-color: mat.get-theme-color($light-theme, background, card);
   color: mat.get-theme-color($light-theme, foreground, text);
 
