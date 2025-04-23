@@ -64,7 +64,7 @@ $dark-theme: mat.m2-define-dark-theme((
      color: mat.get-theme-color($dark-theme, foreground, secondary-text);
   }
   mat-card-content p {
-     color: mat.get-theme-color($dark-theme, foreground, text); // Ensure paragraph text is visible
+     color: mat.get-theme-color($dark-theme, foreground, text);
   }
 }
 
