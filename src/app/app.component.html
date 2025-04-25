@@ -1,8 +1,0 @@
-<!-- Render the main layout only if the user is logged in -->
-@if (isLoggedIn()) {
-  <app-layout></app-layout>
-} @else {
-  <!-- If not logged in, render the router outlet directly 
-       This allows login/register pages to show without the main layout/toolbar -->
-  <router-outlet></router-outlet>
-}
