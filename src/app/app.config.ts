@@ -1,21 +1,34 @@
-import { ApplicationConfig, provideZoneChangeDetection } from '@angular/core';
-import { provideRouter } from '@angular/router';
-// Import necessary modules for HttpClient and Interceptor
-import { provideHttpClient, withInterceptors } from '@angular/common/http'; 
+import { ApplicationConfig, importProvidersFrom } from '@angular/core';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
+import {
+  provideRouter,
+  withEnabledBlockingInitialNavigation,
+  withHashLocation,
+  withInMemoryScrolling,
+  withRouterConfig,
+  withViewTransitions
+} from '@angular/router';
 
+import { DropdownModule, SidebarModule } from '@coreui/angular';
+import { IconSetService } from '@coreui/icons-angular';
 import { routes } from './app.routes';
-import { authInterceptor } from './core/interceptors/auth.interceptor'; // Import the interceptor function
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    provideZoneChangeDetection({ eventCoalescing: true }), 
-    provideRouter(routes),
-    // Provide HttpClient with the interceptor enabled
-    provideHttpClient(
-      withInterceptors([authInterceptor])
-    ), 
-    // Provide animations for Angular Material
+    provideRouter(routes,
+      withRouterConfig({
+        onSameUrlNavigation: 'reload'
+      }),
+      withInMemoryScrolling({
+        scrollPositionRestoration: 'top',
+        anchorScrolling: 'enabled'
+      }),
+      withEnabledBlockingInitialNavigation(),
+      withViewTransitions(),
+      withHashLocation()
+    ),
+    importProvidersFrom(SidebarModule, DropdownModule),
+    IconSetService,
     provideAnimationsAsync()
   ]
 };
