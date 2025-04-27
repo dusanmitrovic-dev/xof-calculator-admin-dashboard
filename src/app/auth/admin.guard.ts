@@ -16,21 +16,13 @@ export class AdminGuard implements CanActivate {
 
     const userRole = this.authService.getUserRole();
 
+    // Check if authenticated and has admin role
     if (this.authService.isAuthenticated() && userRole === 'admin') {
-      return true;
+      return true; // Allow access
     } else {
       // Redirect to dashboard or an unauthorized page if not admin
-      // We'll redirect to dashboard for now.
+      // Redirecting to dashboard as a default unauthorized access page
       return this.router.createUrlTree(['/dashboard']);
     }
   }
 }
-
-/*
-LOG:
----
-Date: 2023-10-27
-Change: Created AdminGuard to protect admin-only routes.
-File: src/app/auth/admin.guard.ts
-Reason: To restrict access to administrative sections of the application.
----*/
