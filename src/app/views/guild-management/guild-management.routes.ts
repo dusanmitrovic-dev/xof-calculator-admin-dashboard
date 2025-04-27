@@ -18,12 +18,3 @@ export const routes: Routes = [
     }
   }
 ];
-
-/*
-LOG:
----
-Date: 2023-10-27
-Change: Added route for Guild Configuration Detail view with a guildId parameter.
-File: src/app/views/guild-management/guild-management.routes.ts
-Reason: To enable navigation to a specific guild's configuration page.
----*/
