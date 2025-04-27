@@ -77,19 +77,4 @@ export class AuthService {
   logout(): void {
     localStorage.removeItem(this.tokenKey);
   }
-
 }
-
-/*
-LOG:
----
-Date: 2023-10-27
-Change: Enhanced AuthService to manage JWT token (store, retrieve, check auth status, logout).
-File: src/app/auth/auth.service.ts
-Reason: To enable frontend authentication state management.
----
-Date: 2023-10-27
-Change: Added JWT decoding and user payload/role extraction to AuthService. Improved isAuthenticated check with token expiry.
-File: src/app/auth/auth.service.ts
-Reason: To support role-based authorization and better authentication status checking in Route Guards and UI.
----*/
