@@ -1,0 +1,37 @@
+<c-card>
+  <c-card-header>Guild Configurations</c-card-header>
+  <c-card-body>
+    <div *ngIf="loading">Loading...</div>
+    <div *ngIf="errorMessage" class="text-danger">{{ errorMessage }}</div>
+    <div *ngIf="!loading && !errorMessage">
+      <table cTable>
+        <thead>
+          <tr>
+            <th>Guild ID</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let guildId of guildIds">
+            <td>{{ guildId }}</td>
+            <td>
+              <!-- Action buttons will go here (e.g., View Config, Manage Earnings) -->
+              <button cButton color="primary" size="sm" class="me-2">View Config</button>
+              <button cButton color="info" size="sm">Manage Earnings</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <div *ngIf="guildIds.length === 0">No guild configurations found.</div>
+    </div>
+  </c-card-body>
+</c-card>
+
+/*
+LOG:
+---
+Date: 2023-10-27
+Change: Manually created GuildConfigListComponent HTML file and added basic table structure.
+File: src/app/views/guild-management/guild-config-list/guild-config-list.component.html
+Reason: To provide the template for displaying the list of guild configurations.
+---*/
