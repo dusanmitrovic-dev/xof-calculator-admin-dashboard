@@ -1,7 +1,7 @@
 import { Routes } from '@angular/router';
 import { DefaultLayoutComponent } from './layout';
 import { AuthGuard } from './auth/auth.guard';
-import { PublicGuard } from './auth/public.guard'; // Import PublicGuard
+import { PublicGuard } from './auth/public.guard';
 
 export const routes: Routes = [
   {
@@ -25,37 +25,42 @@ export const routes: Routes = [
         loadChildren: () => import('./views/theme/routes').then((m) => m.routes)
       },
       {
-        path: 'base',
-        loadChildren: () => import('./views/base/routes').then((m) => m.routes)
+        path: 'guild-management',
+        loadChildren: () => import('./views/guild-management/guild-management.routes').then((m) => m.routes) // Add guild management routes
       },
-      {
-        path: 'buttons',
-        loadChildren: () => import('./views/buttons/routes').then((m) => m.routes)
-      },
-      {
-        path: 'forms',
-        loadChildren: () => import('./views/forms/routes').then((m) => m.routes)
-      },
-      {
-        path: 'icons',
-        loadChildren: () => import('./views/icons/routes').then((m) => m.routes)
-      },
-      {
-        path: 'notifications',
-        loadChildren: () => import('./views/notifications/routes').then((m) => m.routes)
-      },
-      {
-        path: 'widgets',
-        loadChildren: () => import('./views/widgets/routes').then((m) => m.routes)
-      },
-      {
-        path: 'charts',
-        loadChildren: () => import('./views/charts/routes').then((m) => m.routes)
-      },
-      {
-        path: 'pages',
-        loadChildren: () => import('./views/pages/routes').then((m) => m.routes)
-      }
+      // Commented out original template routes that are no longer needed in the sidebar
+      // {
+      //   path: 'base',
+      //   loadChildren: () => import('./views/base/routes').then((m) => m.routes)
+      // },
+      // {
+      //   path: 'buttons',
+      //   loadChildren: () => import('./views/buttons/routes').then((m) => m.routes)
+      // },
+      // {
+      //   path: 'forms',
+      //   loadChildren: () => import('./views/forms/routes').then((m) => m.routes)
+      // },
+      // {
+      //   path: 'icons',
+      //   loadChildren: () => import('./views/icons/routes').then((m) => m.routes)
+      // },
+      // {
+      //   path: 'notifications',
+      //   loadChildren: () => import('./views/notifications/routes').then((m) => m.routes)
+      // },
+      // {
+      //   path: 'widgets',
+      //   loadChildren: () => import('./views/widgets/routes').then((m) => m.routes)
+      // },
+      // {
+      //   path: 'charts',
+      //   loadChildren: () => import('./views/charts/routes').then((m) => m.routes)
+      // },
+      // {
+      //   path: 'pages',
+      //   loadChildren: () => import('./views/pages/routes').then((m) => m.routes)
+      // }
     ],
     canActivate: [AuthGuard] // Apply AuthGuard to the main layout routes
   },

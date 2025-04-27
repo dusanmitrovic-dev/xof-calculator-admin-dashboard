@@ -25,6 +25,15 @@ export const navItems: INavData[] = [
     linkProps: { fragment: 'headings' },
     iconComponent: { name: 'cil-pencil' }
   },
+  {
+    title: true,
+    name: 'Manage Data'
+  },
+  {
+    name: 'Guild Configurations',
+    url: '/guild-management',
+    iconComponent: { name: 'cil-settings' } // Using a settings icon as a placeholder
+  },
   // {
   //   name: 'Components',
   //   title: true
