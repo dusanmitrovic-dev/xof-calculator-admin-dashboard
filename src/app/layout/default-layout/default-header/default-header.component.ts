@@ -52,7 +52,7 @@ export class DefaultHeaderComponent extends HeaderComponent {
       title: 'Urgent: System Maintenance Tonight',
       time: 'Just now',
       link: 'apps/email/inbox/message',
-      message: 'Attention team, we'll be conducting critical system maintenance tonight from 10 PM to 2 AM. Plan accordingly...'
+      message: 'Attention team, we\'ll be conducting critical system maintenance tonight from 10 PM to 2 AM. Plan accordingly...'
     },
     {
       id: 1,
@@ -62,7 +62,7 @@ export class DefaultHeaderComponent extends HeaderComponent {
       title: 'Project Update: Milestone Achieved',
       time: '5 minutes ago',
       link: 'apps/email/inbox/message',
-      message: 'Kudos on hitting sales targets last quarter! Let's keep the momentum. New goals, new victories ahead...'
+      message: 'Kudos on hitting sales targets last quarter! Let\'s keep the momentum. New goals, new victories ahead...'
     },
     {
       id: 2,
@@ -82,7 +82,7 @@ export class DefaultHeaderComponent extends HeaderComponent {
       title: 'Inventory Checkpoint',
       time: '4:03 AM',
       link: 'apps/email/inbox/message',
-      message: 'Team, it's time for our monthly inventory check. Accurate counts ensure smooth operations. Let's nail it...'
+      message: 'Team, it\'s time for our monthly inventory check. Accurate counts ensure smooth operations. Let\'s nail it...'
     },
     {
       id: 3,
@@ -92,7 +92,7 @@ export class DefaultHeaderComponent extends HeaderComponent {
       title: 'Customer Feedback Results',
       time: '3 days ago',
       link: 'apps/email/inbox/message',
-      message: 'Our latest customer feedback is in. Let's analyze and discuss improvements for an even better service...'
+      message: 'Our latest customer feedback is in. Let\'s analyze and discuss improvements for an even better service...'
     }
   ];
 
