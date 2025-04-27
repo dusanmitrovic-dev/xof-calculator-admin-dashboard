@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { DefaultLayoutComponent } from './layout';
+import { AuthGuard } from './auth/auth.guard'; // Import AuthGuard
 
 export const routes: Routes = [
   {
@@ -54,7 +55,8 @@ export const routes: Routes = [
         path: 'pages',
         loadChildren: () => import('./views/pages/routes').then((m) => m.routes)
       }
-    ]
+    ],
+    canActivate: [AuthGuard] // Apply AuthGuard to the main layout routes
   },
   {
     path: '404',
@@ -84,5 +86,15 @@ export const routes: Routes = [
       title: 'Register Page'
     }
   },
-  { path: '**', redirectTo: 'dashboard' }
+  // Redirect any other unhandled paths to the login page
+  { path: '**', redirectTo: 'login' }
 ];
+
+/*
+LOG:
+---
+Date: 2023-10-27
+Change: Applied AuthGuard to the main application routes within the DefaultLayoutComponent.
+File: src/app/app.routes.ts
+Reason: To protect dashboard and other core application features, requiring user authentication.
+---*/
