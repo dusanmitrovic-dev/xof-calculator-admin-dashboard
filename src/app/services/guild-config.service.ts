@@ -16,7 +16,8 @@ export class GuildConfigService {
     const token = this.authService.getToken();
     return new HttpHeaders({
       'Content-Type': 'application/json',
-      'x-auth-token': `${token}` // Or 'Authorization': `Bearer ${token}` depending on backend
+      // Use x-auth-token as per your backend middleware
+      'x-auth-token': `${token}`
     });
   }
 
