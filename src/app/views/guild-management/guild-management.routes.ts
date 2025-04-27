@@ -12,7 +12,7 @@ export const routes: Routes = [
   },
   {
     path: ':guildId',
-    component: GuildConfigDetailComponent, // Placeholder component
+    component: GuildConfigDetailComponent, 
     data: {
       title: 'Guild Configuration Detail'
     }
