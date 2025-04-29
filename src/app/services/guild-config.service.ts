@@ -1,55 +1,126 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { AuthService } from '../auth/auth.service'; // Assuming AuthService is in ../auth
+import { AuthService } from '../auth/auth.service';
+
+// Define interfaces for your data structures based on your DB examples
+// (These are illustrative, adjust based on your actual full config structure)
+export interface BonusRule {
+  from: number;
+  to: number;
+  amount: number;
+}
+
+export interface DisplaySettings {
+  ephemeral_responses: boolean;
+  show_average: boolean;
+  agency_name: string;
+  show_ids: boolean;
+  bot_name: string;
+}
+
+export interface CommissionRoleSetting {
+  commission_percentage: number;
+}
+
+export interface CommissionUserSetting {
+  hourly_rate?: number;
+  override_role?: boolean;
+}
+
+export interface CommissionSettings {
+  roles: { [roleId: string]: CommissionRoleSetting };
+  users: { [userId: string]: CommissionUserSetting };
+}
+
+export interface GuildConfig {
+  _id: string;
+  guild_id: string;
+  models: string[];
+  shifts: string[];
+  periods: string[];
+  bonus_rules: BonusRule[];
+  display_settings: DisplaySettings;
+  commission_settings: CommissionSettings;
+  roles?: { [roleId: string]: number }; // From DB example
+}
 
 @Injectable({
   providedIn: 'root'
 })
 export class GuildConfigService {
-  private baseUrl = '/api/config'; // Base URL for guild config endpoints
+
+  // Use the same apiUrl as AuthService or define specifically
+  private apiUrl = '/api/config'; // Adjust if your config endpoints are different
 
   constructor(private http: HttpClient, private authService: AuthService) { }
 
-  // Helper to get headers with JWT
+  // Helper to get authorization headers
   private getAuthHeaders(): HttpHeaders {
     const token = this.authService.getToken();
     return new HttpHeaders({
-      'Content-Type': 'application/json',
-      // Use x-auth-token as per your backend middleware
-      'x-auth-token': `${token}`
+      'Authorization': `Bearer ${token}`
     });
   }
 
-  // Get config for a specific guild
-  getGuildConfig(guildId: string): Observable<any> {
-    const headers = this.getAuthHeaders();
-    return this.http.get(`${this.baseUrl}/${guildId}`, { headers });
+  // GET /:guild_id: Get config for a specific guild
+  getGuildConfig(guildId: string): Observable<GuildConfig> {
+    if (!guildId) {
+      throw new Error('Guild ID is required to fetch config');
+    }
+    return this.http.get<GuildConfig>(`${this.apiUrl}/${guildId}`, {
+      headers: this.getAuthHeaders()
+    });
+    // TODO: Add error handling (catchError)
   }
 
-  // Create or Update config for a specific guild
-  createOrUpdateGuildConfig(guildId: string, configData: any): Observable<any> {
-    const headers = this.getAuthHeaders();
-    // Your backend POST /api/config/:guild_id handles both create and update
-    return this.http.post(`${this.baseUrl}/${guildId}`, configData, { headers });
+  // POST /: Create/Update a guild config
+  createOrUpdateGuildConfig(guildId: string, config: Partial<GuildConfig>): Observable<GuildConfig> {
+     if (!guildId) {
+      throw new Error('Guild ID is required to update config');
+    }
+    // Assuming your POST endpoint for a specific guild is just /api/config/:guild_id ?
+    // Or maybe it should be PUT? Based on your summary PUT /:guild_id/:field is for specific fields.
+    // Let's assume POST to /:guild_id updates the whole config for that guild for now.
+    // Adjust URL and method (POST/PUT) based on your actual backend API
+    return this.http.post<GuildConfig>(`${this.apiUrl}/${guildId}`, config, {
+       headers: this.getAuthHeaders()
+    });
+    // TODO: Add error handling
   }
 
-   // Delete config for a specific guild (Admin Only backend)
+  // DELETE /:guild_id: Delete config for a specific guild
   deleteGuildConfig(guildId: string): Observable<any> {
-    const headers = this.getAuthHeaders();
-    return this.http.delete(`${this.baseUrl}/${guildId}`, { headers });
+     if (!guildId) {
+      throw new Error('Guild ID is required to delete config');
+    }
+    return this.http.delete(`${this.apiUrl}/${guildId}`, {
+      headers: this.getAuthHeaders()
+    });
+    // TODO: Add error handling
   }
 
-  // Get a specific field from a guild's config
-  getGuildConfigField(guildId: string, field: string): Observable<any> {
-    const headers = this.getAuthHeaders();
-    return this.http.get(`${this.baseUrl}/${guildId}/${field}`, { headers });
+  // GET /:guild_id/:field - Example for getting a specific field (e.g., models)
+  getGuildModels(guildId: string): Observable<string[]> {
+     if (!guildId) {
+      throw new Error('Guild ID is required to fetch models');
+    }
+    return this.http.get<string[]>(`${this.apiUrl}/${guildId}/models`, {
+       headers: this.getAuthHeaders()
+    });
+     // TODO: Add error handling
   }
 
-  // Update a specific field in a guild's config
-  updateGuildConfigField(guildId: string, field: string, value: any): Observable<any> {
-    const headers = this.getAuthHeaders();
-    // Your backend PUT /api/config/:guild_id/:field expects { value: ... }
-    return this.http.put(`${this.baseUrl}/${guildId}/${field}`, { value }, { headers });
+  // PUT /:guild_id/:field - Example for updating a specific field (e.g., models)
+  updateGuildModels(guildId: string, models: string[]): Observable<any> {
+     if (!guildId) {
+      throw new Error('Guild ID is required to update models');
+    }
+    return this.http.put(`${this.apiUrl}/${guildId}/models`, { models }, { // Assuming body should be { models: [...] }
+      headers: this.getAuthHeaders()
+    });
+     // TODO: Add error handling
   }
+
+  // Add other methods for specific fields as needed (shifts, periods, bonus_rules, etc.)
 }

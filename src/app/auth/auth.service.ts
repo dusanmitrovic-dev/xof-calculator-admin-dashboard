@@ -68,23 +68,26 @@ export class AuthService {
   // Internal method to just remove token without updating subjects
   // (subjects are already updated by checkInitialToken)
   private removeTokenInternal(): void {
-     localStorage.removeItem(this.tokenKey);
+    localStorage.removeItem(this.tokenKey);
   }
 
   private setToken(token: string): void {
+    console.log('AuthService: setToken called'); // Log setToken call
     localStorage.setItem(this.tokenKey, token);
     try {
       const payload = jwtDecode<UserPayload>(token);
       // Check expiry again before setting state
       if (payload.exp * 1000 > Date.now()) {
-         this.isAuthenticatedSubject.next(true);
-         this.userPayloadSubject.next(payload);
+        console.log('AuthService: Token valid, updating state.');
+        this.isAuthenticatedSubject.next(true);
+        this.userPayloadSubject.next(payload);
       } else {
+        console.warn('AuthService: Token received but already expired.');
         this.logout(); // Token is immediately expired
       }
     } catch (error) {
-        console.error('Error decoding token on set:', error);
-        this.logout(); // Invalid token received
+      console.error('AuthService: Error decoding token on set:', error); 
+      this.logout(); // Invalid token received
     }
   }
 
@@ -115,18 +118,28 @@ export class AuthService {
   }
 
   login(username: string, password: string): Observable<boolean> {
-    // TODO: Adjust endpoint and payload as needed for your backend
+    console.log('AuthService: login called for', username); // Log service call
     return this.http.post<AuthResponse>(`${this.apiUrl}/auth/login`, { username, password })
       .pipe(
+        tap(response => console.log('AuthService: Received response:', response)), // Log raw response
         map(response => {
           if (response && response.token) {
+            console.log('AuthService: Token received:', response.token); // Log token
             this.setToken(response.token);
             // Check if token was successfully set (not expired/invalid)
-            return this.isLoggedIn();
+            const loggedIn = this.isLoggedIn();
+            console.log('AuthService: isLoggedIn check after setToken:', loggedIn); // Log check result
+            return loggedIn;
           }
+          console.log('AuthService: No token in response'); // Log missing token
           return false;
         }),
-        catchError(this.handleError)
+        catchError(err => {
+          console.error('AuthService: Login API error:', err); // Log API error
+          // Rethrow the error after logging, or handle it by returning `of(false)`
+          // Returning false allows the component's error handler to potentially use the message
+          return throwError(() => new Error(err.error?.message || err.message || 'Login API request failed'));
+        })
       );
   }
 
