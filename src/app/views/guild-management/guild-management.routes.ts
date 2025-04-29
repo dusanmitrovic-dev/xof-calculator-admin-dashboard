@@ -1,6 +1,5 @@
 import { Routes } from '@angular/router';
 import { GuildConfigListComponent } from './guild-config-list/guild-config-list.component';
-import { GuildConfigDetailComponent } from './guild-config-detail/guild-config-detail.component';
 
 export const routes: Routes = [
   {
@@ -8,13 +7,6 @@ export const routes: Routes = [
     component: GuildConfigListComponent,
     data: {
       title: 'Guild Configurations'
-    }
-  },
-  {
-    path: ':guildId',
-    component: GuildConfigDetailComponent, 
-    data: {
-      title: 'Guild Configuration Detail'
     }
   }
 ];

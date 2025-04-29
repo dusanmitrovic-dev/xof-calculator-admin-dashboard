@@ -1,15 +1,15 @@
 import { Component, OnInit } from '@angular/core';
-import { UserService } from '../../services/user.service';
-import { AuthService } from '../../auth/auth.service'; // Assuming AuthService is in ../../auth
+import { UserService } from '../../../services/user.service';
+import { AuthService } from '../../../auth/auth.service'; // Assuming AuthService is in ../../auth
 import { CommonModule } from '@angular/common';
-import { CardComponent, CardHeaderComponent, CardBodyComponent, TableDirective, ButtonDirective, UtilitiesDirective } from '@coreui/angular'; // Assuming CoreUI components for table
+import { CardComponent, CardHeaderComponent, CardBodyComponent, TableDirective, ButtonDirective } from '@coreui/angular'; // Assuming CoreUI components for table
 
 @Component({
   selector: 'app-guild-config-list',
   templateUrl: './guild-config-list.component.html',
   styleUrls: ['./guild-config-list.component.scss'],
   standalone: true,
-  imports: [CommonModule, CardComponent, CardHeaderComponent, CardBodyComponent, TableDirective, ButtonDirective, UtilitiesDirective] // Add necessary imports
+  imports: [CommonModule, CardComponent, CardHeaderComponent, CardBodyComponent, TableDirective, ButtonDirective] // Add necessary imports
 })
 export class GuildConfigListComponent implements OnInit {
 
@@ -29,7 +29,7 @@ export class GuildConfigListComponent implements OnInit {
     // Check if the user is an admin before fetching the list of all guilds
     if (this.authService.getUserRole() === 'admin') {
       this.userService.getAvailableGuildIds().subscribe(
-        (ids) => {
+        (ids: any) => {
           this.guildIds = ids;
           this.loading = false;
         },
