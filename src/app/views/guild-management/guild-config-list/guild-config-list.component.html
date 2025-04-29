@@ -1,37 +1,68 @@
-<c-card>
-  <c-card-header>Guild Configurations</c-card-header>
+<c-card class="mb-4">
+  <c-card-header>
+    Guild Configurations
+    <div class="float-end">
+      <!-- TODO: Add button to create new config if applicable -->
+      <!-- <button cButton color="primary" size="sm">Add New Config</button> -->
+    </div>
+  </c-card-header>
   <c-card-body>
-    <div *ngIf="loading">Loading...</div>
-    <div *ngIf="errorMessage" class="text-danger">{{ errorMessage }}</div>
-    <div *ngIf="!loading && !errorMessage">
-      <table cTable>
-        <thead>
+    <div *ngIf="loading" class="text-center">
+      <c-spinner aria-hidden="true" size="sm" variant="grow"></c-spinner>
+      Loading configs...
+    </div>
+
+    <div *ngIf="errorMessage" class="alert alert-danger">
+      {{ errorMessage }}
+    </div>
+
+    <ng-container *ngIf="(guildConfigs$ | async) as configs">
+      <div *ngIf="!loading && !errorMessage && configs.length === 0" class="alert alert-info">
+        No guild configurations found or accessible.
+      </div>
+
+      <table
+        *ngIf="!loading && !errorMessage && configs.length > 0"
+        [hover]="true"
+        [responsive]="true"
+        [striped]="true"
+        align="middle"
+        cTable
+        class="mb-0 border"
+      >
+        <thead cTableColor="light">
           <tr>
             <th>Guild ID</th>
+            <th>Models</th>
+            <th>Shifts</th>
+            <th>Periods</th>
             <th>Actions</th>
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let guildId of guildIds">
-            <td>{{ guildId }}</td>
+          <tr *ngFor="let config of configs">
             <td>
-              <!-- Action buttons will go here (e.g., View Config, Manage Earnings) -->
-              <button cButton color="primary" size="sm" class="me-2">View Config</button>
-              <button cButton color="info" size="sm">Manage Earnings</button>
+              <div>{{ config.guild_id }}</div>
+              <!-- Optional: Display Agency Name -->
+              <!-- <div class="small text-medium-emphasis">
+                <span>{{ config.display_settings?.agency_name }}</span>
+              </div> -->
+            </td>
+            <td>{{ config.models?.join(', ') || 'N/A' }}</td>
+            <td>{{ config.shifts?.join(', ') || 'N/A' }}</td>
+            <td>{{ config.periods?.join(', ') || 'N/A' }}</td>
+            <td>
+              <button cButton color="primary" variant="outline" size="sm" (click)="editConfig(config)">
+                View/Edit
+              </button>
+              <button cButton color="danger" variant="outline" size="sm" class="ms-1" (click)="deleteConfig(config.guild_id)">
+                Delete
+              </button>
             </td>
           </tr>
         </tbody>
       </table>
-      <div *ngIf="guildIds.length === 0">No guild configurations found.</div>
-    </div>
+    </ng-container>
+
   </c-card-body>
 </c-card>
-
-/*
-LOG:
----
-Date: 2023-10-27
-Change: Manually created GuildConfigListComponent HTML file and added basic table structure.
-File: src/app/views/guild-management/guild-config-list/guild-config-list.component.html
-Reason: To provide the template for displaying the list of guild configurations.
----*/

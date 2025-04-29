@@ -39,18 +39,23 @@ export class LoginComponent {
   constructor(private authService: AuthService, private router: Router) { }
 
   login(): void {
+    console.log('Attempting login with:', this.username); // Log attempt
     this.authService.login(this.username, this.password).subscribe({
       next: (success) => {
+        console.log('Login service call returned:', success); // Log success value
         if (success) {
+          console.log('Login successful, navigating to dashboard...');
           this.router.navigate(['/dashboard']);
         } else {
-          // Handle login failure (e.g., show error message)
-          console.error('Login failed');
+          console.error('Login failed (AuthService returned false)');
+          // TODO: Show user-friendly error message here
+          alert('Login failed. Please check your credentials.'); // Simple alert for now
         }
       },
       error: (error) => {
-        // Handle login error (e.g., show error message)
         console.error('Login error:', error);
+        // TODO: Show user-friendly error message here based on error content
+        alert(`Login error: ${error.message || 'Unknown error'}`); // Simple alert
       }
     });
   }
