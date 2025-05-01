@@ -5,29 +5,73 @@
         <c-card-group class="mb-0">
           <c-card class="p-4">
             <c-card-body>
-              <form cForm>
+              <form cForm #loginForm="ngForm" (ngSubmit)="login()"> <!-- Use ngSubmit -->
                 <h1>Login</h1>
                 <p class="text-body-secondary">Sign In to your account</p>
+
+                <!-- Error Message Display -->
+                <c-alert color="danger" *ngIf="errorMessage" dismissible (visibleChange)="errorMessage = null">
+                  {{ errorMessage }}
+                </c-alert>
+
                 <c-input-group class="mb-3">
-                  <span cInputGroupText> <!-- Changed from c-input-group-text -->
-                    <svg cIcon name="cilUser"></svg>
+                  <span cInputGroupText>
+                    <svg cIcon name="cilEnvelopeClosed"></svg> <!-- Changed icon to envelope -->
                   </span>
-                  <input cFormControl placeholder="Username" autocomplete="username" type="text" [(ngModel)]="username" name="username" />
-                </c-input-group>
+                  <input 
+                    cFormControl 
+                    placeholder="Email" 
+                    autocomplete="email" 
+                    type="email" 
+                    [(ngModel)]="email" 
+                    name="email" 
+                    required 
+                    email #emailInput="ngModel" /> <!-- Added required and email validation -->
+                  </c-input-group>
+                  <!-- Optional: Basic validation message for email -->
+                  <!--
+                  <div *ngIf="emailInput.invalid && (emailInput.dirty || emailInput.touched)" class="text-danger small mb-3">
+                     <div *ngIf="emailInput.errors?.['required']">Email is required.</div>
+                     <div *ngIf="emailInput.errors?.['email']">Please enter a valid email address.</div>
+                  </div>
+                  -->
+
                 <c-input-group class="mb-4">
-                  <span cInputGroupText> <!-- Changed from c-input-group-text -->
+                  <span cInputGroupText>
                     <svg cIcon name="cilLockLocked"></svg>
                   </span>
-                  <input cFormControl placeholder="Password" autocomplete="current-password" type="password" [(ngModel)]="password" name="password" />
+                  <input 
+                    cFormControl 
+                    placeholder="Password" 
+                    autocomplete="current-password" 
+                    type="password" 
+                    [(ngModel)]="password" 
+                    name="password" 
+                    required #passwordInput="ngModel" /> <!-- Added required -->
                 </c-input-group>
+                <!-- Optional: Basic validation message for password -->
+                 <!--
+                 <div *ngIf="passwordInput.invalid && (passwordInput.dirty || passwordInput.touched)" class="text-danger small mb-4">
+                    <div *ngIf="passwordInput.errors?.['required']">Password is required.</div>
+                 </div>
+                 -->
+
                 <c-row>
                   <c-col xs="6">
-                    <button cButton class="px-4" color="primary" (click)="login()">
-                      Login
+                    <!-- Disable button while loading and if form is invalid -->
+                    <button 
+                      cButton 
+                      class="px-4" 
+                      color="primary" 
+                      type="submit" 
+                      [disabled]="isLoading || loginForm.invalid">
+                      <span *ngIf="isLoading" cSpinner component="span" size="sm" aria-hidden="true"></span>
+                      {{ isLoading ? ' Logging in...' : 'Login' }}
                     </button>
                   </c-col>
                   <c-col class="text-right" xs="6">
-                    <button cButton class="px-0" color="link">
+                    <!-- Implement forgot password functionality later if needed -->
+                    <button cButton class="px-0" color="link" disabled>
                       Forgot password?
                     </button>
                   </c-col>
@@ -43,7 +87,8 @@
                   Don't have an account? Register now to manage your guild's
                   earnings and configurations.
                 </p>
-                <button cButton class="mt-3" color="primary" routerLink="/register" active="true">
+                <!-- Use routerLink for navigation -->
+                <button cButton class="mt-3" color="primary" [routerLink]="['/register']" variant="outline" type="button">
                   Register Now!
                 </button>
               </div>

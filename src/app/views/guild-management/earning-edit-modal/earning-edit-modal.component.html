@@ -1,0 +1,159 @@
+<c-modal id="earningEditModal" [visible]="visible" (visibleChange)="handleVisibleChange($event)" backdrop="static" size="lg">
+  <c-modal-header>
+    <h5 cModalTitle>{{ isEditMode ? 'Edit' : 'Add' }} Earning Record</h5>
+    <button (click)="closeModal()" cButtonClose></button>
+  </c-modal-header>
+  <c-modal-body>
+    <c-alert color="danger" *ngIf="errorMessage">
+      {{ errorMessage }}
+    </c-alert>
+    <div *ngIf="loadingConfigOptions" class="text-center">
+       <c-spinner size="sm"></c-spinner> Loading form options...
+    </div>
+
+    <form *ngIf="earningForm && !loadingConfigOptions" [formGroup]="earningForm" (ngSubmit)="saveChanges()">
+       <!-- Display Guild ID (usually disabled) -->
+       <div class="mb-3 row">
+          <label cLabel class="col-sm-3 col-form-label">Guild ID</label>
+          <div class="col-sm-9">
+              <input cFormControl type="text" formControlName="guild_id" readonly />
+          </div>
+       </div>
+       
+       <!-- Display Custom ID in Edit mode (disabled) -->
+       <div class="mb-3 row" *ngIf="isEditMode">
+          <label cLabel class="col-sm-3 col-form-label">Record ID</label>
+          <div class="col-sm-9">
+              <input cFormControl type="text" formControlName="id" readonly />
+          </div>
+       </div>
+
+      <!-- Date -->
+      <div class="mb-3 row">
+        <label cLabel for="earningDate" class="col-sm-3 col-form-label">Date</label>
+        <div class="col-sm-9">
+           <!-- Using basic text input, consider a date picker component -->
+           <input cFormControl type="text" id="earningDate" formControlName="date" placeholder="DD/MM/YYYY" required 
+                 [class.is-invalid]="earningForm.get('date')?.invalid && (earningForm.get('date')?.dirty || earningForm.get('date')?.touched)"/>
+            <div *ngIf="earningForm.get('date')?.invalid && (earningForm.get('date')?.dirty || earningForm.get('date')?.touched)" class="invalid-feedback">
+                 Date is required.
+            </div>
+        </div>
+      </div>
+      
+       <!-- User Mention -->
+      <div class="mb-3 row">
+        <label cLabel for="userMention" class="col-sm-3 col-form-label">User Mention</label>
+        <div class="col-sm-9">
+           <input cFormControl type="text" id="userMention" formControlName="user_mention" placeholder="<@123456789...>" required
+                 [class.is-invalid]="earningForm.get('user_mention')?.invalid && (earningForm.get('user_mention')?.dirty || earningForm.get('user_mention')?.touched)"/>
+           <div *ngIf="earningForm.get('user_mention')?.invalid && (earningForm.get('user_mention')?.dirty || earningForm.get('user_mention')?.touched)" class="invalid-feedback">
+                 User mention is required.
+            </div>
+        </div>
+      </div>
+
+      <!-- Role -->
+       <div class="mb-3 row">
+        <label cLabel for="role" class="col-sm-3 col-form-label">Role</label>
+        <div class="col-sm-9">
+           <!-- Basic text input, consider dropdown if roles are defined in config -->
+           <input cFormControl type="text" id="role" formControlName="role" required
+                  [class.is-invalid]="earningForm.get('role')?.invalid && (earningForm.get('role')?.dirty || earningForm.get('role')?.touched)"/>
+            <div *ngIf="earningForm.get('role')?.invalid && (earningForm.get('role')?.dirty || earningForm.get('role')?.touched)" class="invalid-feedback">
+                 Role is required.
+            </div>
+        </div>
+      </div>
+      
+      <!-- Models Dropdown -->
+      <div class="mb-3 row">
+        <label cLabel for="models" class="col-sm-3 col-form-label">Model</label>
+        <div class="col-sm-9">
+           <select cSelect id="models" formControlName="models" required
+                   [class.is-invalid]="earningForm.get('models')?.invalid && (earningForm.get('models')?.dirty || earningForm.get('models')?.touched)">
+               <option value="" disabled>Select a model</option>
+               <option *ngFor="let model of availableModels" [value]="model">{{ model }}</option>
+           </select>
+            <div *ngIf="earningForm.get('models')?.invalid && (earningForm.get('models')?.dirty || earningForm.get('models')?.touched)" class="invalid-feedback">
+                 Model is required.
+            </div>
+        </div>
+      </div>
+
+      <!-- Shift Dropdown -->
+      <div class="mb-3 row">
+        <label cLabel for="shift" class="col-sm-3 col-form-label">Shift</label>
+        <div class="col-sm-9">
+           <select cSelect id="shift" formControlName="shift" required
+                  [class.is-invalid]="earningForm.get('shift')?.invalid && (earningForm.get('shift')?.dirty || earningForm.get('shift')?.touched)">
+               <option value="" disabled>Select a shift</option>
+               <option *ngFor="let shift of availableShifts" [value]="shift">{{ shift }}</option>
+           </select>
+            <div *ngIf="earningForm.get('shift')?.invalid && (earningForm.get('shift')?.dirty || earningForm.get('shift')?.touched)" class="invalid-feedback">
+                 Shift is required.
+            </div>
+        </div>
+      </div>
+
+       <!-- Period Dropdown -->
+      <div class="mb-3 row">
+        <label cLabel for="period" class="col-sm-3 col-form-label">Period</label>
+        <div class="col-sm-9">
+           <select cSelect id="period" formControlName="period" required
+                  [class.is-invalid]="earningForm.get('period')?.invalid && (earningForm.get('period')?.dirty || earningForm.get('period')?.touched)">
+               <option value="" disabled>Select a period</option>
+               <option *ngFor="let period of availablePeriods" [value]="period">{{ period }}</option>
+           </select>
+           <div *ngIf="earningForm.get('period')?.invalid && (earningForm.get('period')?.dirty || earningForm.get('period')?.touched)" class="invalid-feedback">
+                 Period is required.
+            </div>
+        </div>
+      </div>
+      
+      <!-- Hours Worked -->
+      <div class="mb-3 row">
+        <label cLabel for="hoursWorked" class="col-sm-3 col-form-label">Hours Worked</label>
+        <div class="col-sm-9">
+           <input cFormControl type="number" id="hoursWorked" formControlName="hours_worked" required min="0"
+                  [class.is-invalid]="earningForm.get('hours_worked')?.invalid && (earningForm.get('hours_worked')?.dirty || earningForm.get('hours_worked')?.touched)"/>
+            <div *ngIf="earningForm.get('hours_worked')?.invalid && (earningForm.get('hours_worked')?.dirty || earningForm.get('hours_worked')?.touched)" class="invalid-feedback">
+                 Hours worked is required (must be 0 or more).
+            </div>
+        </div>
+      </div>
+      
+      <!-- Gross Revenue -->
+      <div class="mb-3 row">
+        <label cLabel for="grossRevenue" class="col-sm-3 col-form-label">Gross Revenue ($)</label>
+        <div class="col-sm-9">
+           <input cFormControl type="number" id="grossRevenue" formControlName="gross_revenue" required min="0"
+                  [class.is-invalid]="earningForm.get('gross_revenue')?.invalid && (earningForm.get('gross_revenue')?.dirty || earningForm.get('gross_revenue')?.touched)"/>
+           <div *ngIf="earningForm.get('gross_revenue')?.invalid && (earningForm.get('gross_revenue')?.dirty || earningForm.get('gross_revenue')?.touched)" class="invalid-feedback">
+                 Gross revenue is required (must be 0 or more).
+            </div>
+        </div>
+      </div>
+      
+      <!-- Total Cut -->
+      <div class="mb-3 row">
+        <label cLabel for="totalCut" class="col-sm-3 col-form-label">Total Cut ($)</label>
+        <div class="col-sm-9">
+           <input cFormControl type="number" id="totalCut" formControlName="total_cut" required min="0"
+                  [class.is-invalid]="earningForm.get('total_cut')?.invalid && (earningForm.get('total_cut')?.dirty || earningForm.get('total_cut')?.touched)"/>
+            <div *ngIf="earningForm.get('total_cut')?.invalid && (earningForm.get('total_cut')?.dirty || earningForm.get('total_cut')?.touched)" class="invalid-feedback">
+                 Total cut is required (must be 0 or more).
+            </div>
+        </div>
+      </div>
+
+    </form>
+  </c-modal-body>
+  <c-modal-footer>
+    <button (click)="closeModal()" cButton color="secondary">Cancel</button>
+    <button cButton color="primary" type="submit" (click)="saveChanges()" [disabled]="isLoading || earningForm.invalid || loadingConfigOptions">
+      <c-spinner *ngIf="isLoading" component="span" size="sm" aria-hidden="true"></c-spinner>
+      {{ isLoading ? 'Saving...' : (isEditMode ? 'Save Changes' : 'Add Earning') }}
+    </button>
+  </c-modal-footer>
+</c-modal>

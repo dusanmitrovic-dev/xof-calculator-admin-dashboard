@@ -16,12 +16,13 @@ export class AdminGuard implements CanActivate {
 
     const userRole = this.authService.getUserRole();
 
-    // Check if authenticated and has admin role
-    if (this.authService.isAuthenticated() && userRole === 'admin') {
+    // Check if authenticated (using isLoggedIn) and has admin role
+    // Use isLoggedIn() for synchronous check
+    if (this.authService.isLoggedIn() && userRole === 'admin') { 
       return true; // Allow access
     } else {
       // Redirect to dashboard or an unauthorized page if not admin
-      // Redirecting to dashboard as a default unauthorized access page
+      console.warn('AdminGuard: Access denied. User not admin or not logged in.');
       return this.router.createUrlTree(['/dashboard']);
     }
   }

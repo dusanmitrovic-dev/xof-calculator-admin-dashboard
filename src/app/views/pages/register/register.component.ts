@@ -1,18 +1,18 @@
 import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common'; // Import CommonModule
+import { CommonModule } from '@angular/common';
 import { IconDirective } from '@coreui/icons-angular';
-import { ContainerComponent, RowComponent, ColComponent, TextColorDirective, CardComponent, CardBodyComponent, FormDirective, InputGroupComponent, InputGroupTextDirective, FormControlDirective, ButtonDirective, AlertComponent } from '@coreui/angular'; // Added AlertComponent
+import { ContainerComponent, RowComponent, ColComponent, TextColorDirective, CardComponent, CardBodyComponent, FormDirective, InputGroupComponent, InputGroupTextDirective, FormControlDirective, ButtonDirective, AlertComponent } from '@coreui/angular';
 import { FormGroup, FormControl, ReactiveFormsModule, Validators, ValidatorFn, AbstractControl } from '@angular/forms';
 import { AuthService } from '../../../auth/auth.service';
-import { Router, RouterLink } from '@angular/router'; // Import RouterLink
+import { Router, RouterLink } from '@angular/router';
 
-// Custom validator for password match
+// Custom validator for password match (remains the same)
 export const passwordMatchValidator: ValidatorFn = (control: AbstractControl): {[key: string]: any} | null => {
   const password = control.get('password');
   const confirmPassword = control.get('confirmPassword');
 
   if (!password || !confirmPassword) {
-    return null; // Don't validate if controls are not available
+    return null;
   }
 
   return password.value === confirmPassword.value ? null : { passwordMismatch: true };
@@ -22,10 +22,10 @@ export const passwordMatchValidator: ValidatorFn = (control: AbstractControl): {
     selector: 'app-register',
     templateUrl: './register.component.html',
     styleUrls: ['./register.component.scss'],
-    standalone: true, // Add standalone: true
+    standalone: true,
     imports: [
-      CommonModule, // Add CommonModule
-      RouterLink, // Add RouterLink for the [routerLink] directive
+      CommonModule,
+      RouterLink,
       ContainerComponent,
       RowComponent,
       ColComponent,
@@ -38,68 +38,84 @@ export const passwordMatchValidator: ValidatorFn = (control: AbstractControl): {
       IconDirective,
       FormControlDirective,
       ButtonDirective,
-      ReactiveFormsModule, // Keep ReactiveFormsModule
-      AlertComponent // Added AlertComponent here
+      ReactiveFormsModule,
+      AlertComponent
     ]
 })
 export class RegisterComponent {
 
   registerForm = new FormGroup({
-    username: new FormControl('', [Validators.required]), // Added username based on HTML
+    // Removed username FormControl
     email: new FormControl('', [Validators.required, Validators.email]),
     password: new FormControl('', [Validators.required, Validators.minLength(6)]),
     confirmPassword: new FormControl('', [Validators.required])
-  }, { validators: passwordMatchValidator }); // Apply custom validator to the group
+  }, { validators: passwordMatchValidator });
 
   errorMessage: string | null = null;
   successMessage: string | null = null;
+  isLoading: boolean = false; // Add loading state
 
   constructor(private authService: AuthService, private router: Router) { }
 
   onSubmit() {
-    // Mark all controls as touched to show validation errors
     this.registerForm.markAllAsTouched();
+    this.errorMessage = null;
+    this.successMessage = null;
 
     if (this.registerForm.valid) {
-      // Destructure to get the required fields
-      const { username, email, password } = this.registerForm.value;
+      this.isLoading = true;
+      // Destructure only email and password
+      const { email, password } = this.registerForm.value;
 
-      // Ensure values are not null/undefined before sending
-      if (username && email && password) {
-        this.authService.register(username, email, password).subscribe({
-          next: (success) => {
-            if (success) {
-              this.successMessage = 'Registration successful! You can now log in.';
-              this.errorMessage = null;
-              this.registerForm.reset(); // Clear the form
-              // Optionally navigate to login page after a short delay
-              setTimeout(() => {
-                this.router.navigate(['/login']);
-              }, 2000);
+      if (email && password) { // Check if values are defined (should be if valid)
+        this.authService.register(email, password).subscribe({
+          next: (response) => { // Expecting AuthResponse now
+            this.isLoading = false;
+            // Check if registration itself was successful based on response presence
+            // The service already handled the token storage if successful
+            if (response && response.token) {
+                this.successMessage = 'Registration successful! Redirecting to login...'; // Updated message
+                this.errorMessage = null;
+                this.registerForm.reset();
+                 // Navigate immediately as login is handled by service
+                 setTimeout(() => {
+                     this.router.navigate(['/login']);
+                 }, 1500); // Short delay for message visibility
             } else {
-              // Handle registration failure from backend (e.g., username/email taken)
-              this.errorMessage = 'Registration failed. Please try again.'; // Generic message
-              this.successMessage = null;
+                // This case might occur if the API responds 200/201 but without a token
+                this.errorMessage = 'Registration completed, but failed to log in automatically. Please try logging in manually.';
+                this.successMessage = null;
+                setTimeout(() => {
+                     this.router.navigate(['/login']);
+                 }, 2500);
             }
           },
           error: (error) => {
-            // Handle HTTP error
-            this.errorMessage = error.error?.message || 'An error occurred during registration.';
+            this.isLoading = false;
+            // Use the error message provided by the AuthService's handleError
+            this.errorMessage = error.message || 'An error occurred during registration.';
             this.successMessage = null;
             console.error('Registration error:', error);
           }
         });
       } else {
-        // Should not happen if form is valid, but good practice to check
+        this.isLoading = false;
         this.errorMessage = 'Form data is incomplete.';
-        this.successMessage = null;
       }
     } else {
-      this.errorMessage = 'Please fix the errors in the form.';
-      this.successMessage = null;
+      this.isLoading = false;
+      // Specific check for password mismatch
       if (this.registerForm.errors?.['passwordMismatch']) {
         this.errorMessage = 'Passwords do not match.';
+      } else {
+        this.errorMessage = 'Please fix the errors in the form.';
       }
+      this.successMessage = null;
     }
   }
+
+  // Helper getters for easy access in template validation
+  get email() { return this.registerForm.get('email'); }
+  get password() { return this.registerForm.get('password'); }
+  get confirmPassword() { return this.registerForm.get('confirmPassword'); }
 }

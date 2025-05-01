@@ -1,181 +1,229 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { Observable, BehaviorSubject, throwError } from 'rxjs';
+import { Observable, BehaviorSubject, throwError, of } from 'rxjs';
 import { map, catchError, tap } from 'rxjs/operators';
-import { jwtDecode } from 'jwt-decode'; // Assuming you have jwt-decode installed
+import { jwtDecode } from 'jwt-decode'; // Ensure jwt-decode is installed (npm install jwt-decode)
 import { Router } from '@angular/router';
 
+// Interface for the expected response from login/register API
 interface AuthResponse {
   token: string;
-  // Add other potential response fields if needed
+  // Add other potential response fields if needed (e.g., user details)
 }
 
-interface UserPayload {
-  id: string; // Or whatever identifier you use
-  username: string;
-  email: string;
-  role: string; // e.g., 'admin', 'user'
-  iat: number;
-  exp: number;
+// Interface for the payload decoded from the JWT
+// FIX: Add export keyword
+export interface UserPayload {
+  user: {
+    id: string; // User ID from MongoDB
+    role: string; // 'admin' or 'manager'
+    // Add other fields if they are included in the JWT payload from your backend
+  };
+  iat?: number; // Issued at timestamp (optional)
+  exp?: number; // Expiration timestamp (optional)
 }
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  // TODO: Replace with your actual backend API base URL
-  private apiUrl = '/api'; // Example base URL
+  // Assuming your backend runs on the same host or is proxied
+  // If backend is on a different port (e.g., 5000), use proxy.conf.json or full URL
+  private apiUrl = '/api'; // Adjust if your API base path is different
   private tokenKey = 'authToken';
 
-  // Initialize subjects with default values first
   private isAuthenticatedSubject = new BehaviorSubject<boolean>(false);
   public isAuthenticated$ = this.isAuthenticatedSubject.asObservable();
 
-  private userPayloadSubject = new BehaviorSubject<UserPayload | null>(null);
-  public userPayload$ = this.userPayloadSubject.asObservable();
+  // Store the decoded user payload (includes role and id)
+  private currentUserSubject = new BehaviorSubject<UserPayload | null>(null);
+  public currentUser$ = this.currentUserSubject.asObservable();
 
   constructor(private http: HttpClient, private router: Router) {
-    // Now that subjects are created, check the initial token state
-    this.checkInitialToken();
+    this.checkInitialToken(); // Check for existing token on startup
   }
 
-  // Method to check token on service initialization
+  // Checks local storage for a token on app load
   private checkInitialToken(): void {
-    const token = this.getToken();
+    const token = this.getTokenFromStorage();
     if (token) {
       try {
         const decoded = jwtDecode<UserPayload>(token);
-        if (decoded.exp * 1000 > Date.now()) {
-          // Valid token found
-          this.isAuthenticatedSubject.next(true);
-          this.userPayloadSubject.next(decoded);
+        // Check if token is expired
+        if (decoded.exp && decoded.exp * 1000 > Date.now()) {
+          this.updateAuthState(token, decoded);
         } else {
-          // Token expired
-          this.removeTokenInternal(); // Use internal remove to avoid state updates
+          this.clearAuthData(); // Token expired
         }
       } catch (error) {
-        // Invalid token
         console.error('Error decoding token on init:', error);
-        this.removeTokenInternal(); // Use internal remove
+        this.clearAuthData(); // Invalid token
       }
     } else {
-      // No token found
-      this.isAuthenticatedSubject.next(false);
-      this.userPayloadSubject.next(null);
+      this.clearAuthData(); // No token found
     }
   }
 
-  // Internal method to just remove token without updating subjects
-  // (subjects are already updated by checkInitialToken)
-  private removeTokenInternal(): void {
-    localStorage.removeItem(this.tokenKey);
-  }
-
-  private setToken(token: string): void {
-    console.log('AuthService: setToken called'); // Log setToken call
+  // Updates the authentication state subjects and stores token
+  private updateAuthState(token: string, payload: UserPayload): void {
     localStorage.setItem(this.tokenKey, token);
-    try {
-      const payload = jwtDecode<UserPayload>(token);
-      // Check expiry again before setting state
-      if (payload.exp * 1000 > Date.now()) {
-        console.log('AuthService: Token valid, updating state.');
-        this.isAuthenticatedSubject.next(true);
-        this.userPayloadSubject.next(payload);
-      } else {
-        console.warn('AuthService: Token received but already expired.');
-        this.logout(); // Token is immediately expired
-      }
-    } catch (error) {
-      console.error('AuthService: Error decoding token on set:', error); 
-      this.logout(); // Invalid token received
-    }
+    this.isAuthenticatedSubject.next(true);
+    this.currentUserSubject.next(payload);
+    console.log('Auth state updated. User:', payload.user.role, payload.user.id);
   }
 
-  // Public logout method handles state update and routing
-  logout(): void {
+  // Clears authentication state and removes token
+  private clearAuthData(): void {
     localStorage.removeItem(this.tokenKey);
     this.isAuthenticatedSubject.next(false);
-    this.userPayloadSubject.next(null);
-    // TODO: Optionally call a backend logout endpoint if necessary
-    this.router.navigate(['/login']); // Redirect to login after logout
+    this.currentUserSubject.next(null);
   }
 
-  getToken(): string | null {
-    // Check expiry whenever token is retrieved?
-    // Optional: Could add expiry check here too, but might be redundant
-    return localStorage.getItem(this.tokenKey);
-  }
+  // --- API Methods ---
 
-  // --- API Methods --- 
-
-  register(username: string, email: string, password: string): Observable<boolean> {
-    // TODO: Adjust endpoint and payload as needed for your backend
-    return this.http.post<{ message: string }>(`${this.apiUrl}/auth/register`, { username, email, password })
+  /**
+   * Registers a new user.
+   * @param email User's email
+   * @param password User's password
+   * @returns Observable<AuthResponse> - Emits the response (likely containing a token) on success.
+   */
+  register(email: string, password: string): Observable<AuthResponse> {
+    console.log('AuthService: register called for', email);
+    return this.http.post<AuthResponse>(`${this.apiUrl}/auth/register`, { email, password })
       .pipe(
-        map(response => !!response), // Return true on success (adjust if backend sends different success indicator)
-        catchError(this.handleError)
+        tap(response => {
+          console.log('AuthService: Register successful response:', response);
+          // Automatically log in the user after successful registration
+          if (response && response.token) {
+             try {
+                const payload = jwtDecode<UserPayload>(response.token);
+                if (payload.exp && payload.exp * 1000 > Date.now()) {
+                    this.updateAuthState(response.token, payload);
+                } else {
+                     console.warn('AuthService: Token received on register but already expired.');
+                     this.clearAuthData(); // Should not happen ideally
+                }
+            } catch (error) {
+                console.error('AuthService: Error decoding token on register:', error);
+                this.clearAuthData(); // Invalid token received
+            }
+          } else {
+             console.warn('AuthService: No token received on register.');
+             // Don't automatically log in if no token
+          }
+        }),
+        catchError(this.handleError) // Use shared error handler
       );
   }
 
-  login(username: string, password: string): Observable<boolean> {
-    console.log('AuthService: login called for', username); // Log service call
-    return this.http.post<AuthResponse>(`${this.apiUrl}/auth/login`, { username, password })
+  /**
+   * Logs in a user.
+   * @param email User's email
+   * @param password User's password
+   * @returns Observable<boolean> - Emits true on successful login and token storage, false otherwise.
+   */
+  login(email: string, password: string): Observable<boolean> {
+    console.log('AuthService: login called for', email);
+    return this.http.post<AuthResponse>(`${this.apiUrl}/auth/login`, { email, password })
       .pipe(
-        tap(response => console.log('AuthService: Received response:', response)), // Log raw response
         map(response => {
           if (response && response.token) {
-            console.log('AuthService: Token received:', response.token); // Log token
-            this.setToken(response.token);
-            // Check if token was successfully set (not expired/invalid)
-            const loggedIn = this.isLoggedIn();
-            console.log('AuthService: isLoggedIn check after setToken:', loggedIn); // Log check result
-            return loggedIn;
+            console.log('AuthService: Token received on login');
+            try {
+              const payload = jwtDecode<UserPayload>(response.token);
+              // Double-check expiry before setting state
+              if (payload.exp && payload.exp * 1000 > Date.now()) {
+                this.updateAuthState(response.token, payload);
+                return true; // Login successful
+              } else {
+                console.warn('AuthService: Token received on login but already expired.');
+                this.clearAuthData();
+                return false; // Login failed (expired token)
+              }
+            } catch (error) {
+              console.error('AuthService: Error decoding token on login:', error);
+              this.clearAuthData();
+              return false; // Login failed (invalid token)
+            }
           }
-          console.log('AuthService: No token in response'); // Log missing token
-          return false;
+          console.log('AuthService: No token in login response');
+          return false; // Login failed (no token)
         }),
         catchError(err => {
-          console.error('AuthService: Login API error:', err); // Log API error
-          // Rethrow the error after logging, or handle it by returning `of(false)`
-          // Returning false allows the component's error handler to potentially use the message
-          return throwError(() => new Error(err.error?.message || err.message || 'Login API request failed'));
+          console.error('AuthService: Login API error:', err);
+          this.clearAuthData(); // Clear any potentially stale data on login failure
+          // Return an observable emitting false instead of throwing
+          return of(false);
         })
       );
   }
 
+  /**
+   * Logs out the current user.
+   */
+  logout(): void {
+    console.log('AuthService: logout called');
+    this.clearAuthData();
+    // Optional: Call a backend logout endpoint if necessary
+    // this.http.post(`${this.apiUrl}/auth/logout`, {}).subscribe();
+    this.router.navigate(['/login']); // Redirect to login page
+  }
 
-  // --- Helper Methods --- 
+  // --- Helper Methods ---
 
+  /**
+   * Gets the raw JWT token from storage.
+   * @returns The token string or null if not found.
+   */
+  getTokenFromStorage(): string | null {
+    return localStorage.getItem(this.tokenKey);
+  }
+
+   /**
+   * Gets the currently decoded user payload.
+   * @returns The UserPayload object or null if not logged in.
+   */
+  getCurrentUser(): UserPayload | null {
+    return this.currentUserSubject.value;
+  }
+
+  /**
+   * Gets the role of the currently logged-in user.
+   * @returns The user's role ('admin', 'manager') or null if not logged in.
+   */
+  getUserRole(): string | null {
+    return this.getCurrentUser()?.user?.role ?? null;
+  }
+
+   /**
+   * Gets the ID of the currently logged-in user.
+   * @returns The user's ID string or null if not logged in.
+   */
+  getUserId(): string | null {
+    return this.getCurrentUser()?.user?.id ?? null;
+  }
+
+  /**
+   * Checks if the user is currently authenticated based on the BehaviorSubject.
+   * @returns True if authenticated, false otherwise.
+   */
   isLoggedIn(): boolean {
-    // Check the current state from the subject
     return this.isAuthenticatedSubject.value;
   }
 
-  getCurrentUser(): UserPayload | null {
-    return this.userPayloadSubject.value;
-  }
-
-  getUserRole(): string | null {
-    return this.getCurrentUser()?.role ?? null;
-  }
-
-  // Basic error handler - enhance as needed
-  private handleError(error: HttpErrorResponse) {
+  // Basic error handler - can be enhanced
+  private handleError(error: HttpErrorResponse): Observable<never> {
     let errorMessage = 'An unknown error occurred!';
     if (error.error instanceof ErrorEvent) {
       // Client-side or network error
-      errorMessage = `Error: ${error.error.message}`;
+      errorMessage = `Client Error: ${error.error.message}`;
     } else {
       // Backend returned an unsuccessful response code.
-      // The response body may contain clues as to what went wrong.
-      errorMessage = `Error Code: ${error.status}
-Message: ${error.message}`;
-      if (error.error && typeof error.error === 'object' && error.error.message) {
-        errorMessage = error.error.message; // Use backend error message if available
-      }
+      errorMessage = `Server Error Code: ${error.status}
+Message: ${error.error?.msg || error.message}`; // Prefer backend 'msg' field if exists
     }
-    console.error(errorMessage);
-    // Return an observable that emits the error message
+    console.error('AuthService Error Handler:', errorMessage, error);
+    // Return an observable that emits the error, allowing components to catch it
     return throwError(() => new Error(errorMessage));
   }
 }

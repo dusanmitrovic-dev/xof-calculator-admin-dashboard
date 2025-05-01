@@ -1,11 +1,13 @@
 import { Component } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router'; // Import RouterLink
 import { AuthService } from '../../../auth/auth.service';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import {
+  AlertComponent, 
   ContainerComponent, RowComponent, ColComponent, CardGroupComponent, CardComponent, CardBodyComponent,
   FormDirective, InputGroupComponent, InputGroupTextDirective, FormControlDirective, ButtonDirective
+  // Removed SpinnerComponent as it's reported unused in the template
 } from '@coreui/angular';
 import { IconDirective } from '@coreui/icons-angular';
 
@@ -17,6 +19,8 @@ import { IconDirective } from '@coreui/icons-angular';
   imports: [
     CommonModule,
     FormsModule,
+    RouterLink, // Add RouterLink here
+    AlertComponent, 
     ContainerComponent,
     RowComponent,
     ColComponent,
@@ -25,37 +29,48 @@ import { IconDirective } from '@coreui/icons-angular';
     CardBodyComponent,
     FormDirective,
     InputGroupComponent,
-    InputGroupTextDirective, // Corrected import back to Directive
-    FormControlDirective, // Corrected import for cFormControl
+    InputGroupTextDirective,
+    FormControlDirective,
     IconDirective,
     ButtonDirective
+    // Removed SpinnerComponent from imports
   ]
 })
 export class LoginComponent {
 
-  username!: string;
+  email!: string; 
   password!: string;
+  errorMessage: string | null = null;
+  isLoading: boolean = false;
 
   constructor(private authService: AuthService, private router: Router) { }
 
   login(): void {
-    console.log('Attempting login with:', this.username); // Log attempt
-    this.authService.login(this.username, this.password).subscribe({
+    if (!this.email || !this.password) {
+      this.errorMessage = 'Please enter both email and password.';
+      return;
+    }
+
+    console.log('Attempting login with email:', this.email); 
+    this.isLoading = true;
+    this.errorMessage = null;
+
+    this.authService.login(this.email, this.password).subscribe({
       next: (success) => {
-        console.log('Login service call returned:', success); // Log success value
+        this.isLoading = false;
+        console.log('Login service call returned:', success);
         if (success) {
           console.log('Login successful, navigating to dashboard...');
           this.router.navigate(['/dashboard']);
         } else {
           console.error('Login failed (AuthService returned false)');
-          // TODO: Show user-friendly error message here
-          alert('Login failed. Please check your credentials.'); // Simple alert for now
+          this.errorMessage = 'Login failed. Please check your email and password.';
         }
       },
       error: (error) => {
+        this.isLoading = false;
         console.error('Login error:', error);
-        // TODO: Show user-friendly error message here based on error content
-        alert(`Login error: ${error.message || 'Unknown error'}`); // Simple alert
+        this.errorMessage = error.message || 'An unexpected error occurred during login.';
       }
     });
   }

@@ -1,113 +1,228 @@
-import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { CardComponent, CardHeaderComponent, CardBodyComponent, TableDirective, ButtonDirective, SpinnerComponent } from '@coreui/angular';
-import { GuildConfigService, GuildConfig } from '../../../services/guild-config.service';
-import { AuthService } from '../../../auth/auth.service';
-import { UserService } from '../../../services/user.service'; // Assuming user service is needed to get managed guilds
-import { switchMap, catchError, map, tap } from 'rxjs/operators';
-import { EMPTY, Observable, of } from 'rxjs';
+import { CommonModule } from '@angular/common'; // Import CommonModule
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
+import { Subject } from 'rxjs';
+import { takeUntil, tap } from 'rxjs/operators';
 
-// TODO: Import a component for editing/viewing details, e.g., a modal
+// Import CoreUI modules
+import {
+  AlertModule,
+  ButtonModule,
+  CardModule,
+  GridModule,
+  SpinnerModule,
+  TableModule,
+  ModalModule
+} from '@coreui/angular';
+
+import { GuildConfigService, GuildConfig } from '../../../services/guild-config.service';
+import { EarningsService, Earning } from '../../../services/earnings.service';
+import { AuthService } from '../../../auth/auth.service';
+
+// Import Custom Modal Components (Assuming paths relative to this file)
+import { GuildConfigEditModalComponent } from '../guild-config-edit-modal/guild-config-edit-modal.component';
+import { EarningEditModalComponent } from '../earning-edit-modal/earning-edit-modal.component';
 
 @Component({
-  selector: 'app-guild-config-list',
+  selector: 'app-guild-config-view',
   templateUrl: './guild-config-list.component.html',
-  // styleUrls: ['./guild-config-list.component.scss'], // Assuming styles exist or remove
-  standalone: true,
-  imports: [
-    CommonModule,
-    CardComponent,
-    CardHeaderComponent,
-    CardBodyComponent,
-    TableDirective,
-    ButtonDirective,
-    SpinnerComponent // For loading indicator
-    // TODO: Import modal component if needed
+  standalone: true, // Make component standalone
+  imports: [ // Add imports array
+    CommonModule, // Include CommonModule for *ngIf, *ngFor, pipes (json, currency)
+    GridModule, // For c-row, c-col
+    AlertModule, // For c-alert
+    CardModule, // For c-card, c-card-header, c-card-body
+    SpinnerModule, // For c-spinner
+    ButtonModule, // For c-button
+    TableModule, // For c-table related elements if any are implicitly used or for consistency
+    ModalModule, // Often needed if modals use CoreUI modal directives internally
+    GuildConfigEditModalComponent, // Import the custom modal component
+    EarningEditModalComponent, // Import the custom earning modal component
   ]
+  // styleUrls: ['./guild-config-list.component.scss'], // Uncomment if you have styles
 })
-export class GuildConfigListComponent implements OnInit {
+export class GuildConfigListComponent implements OnInit, OnDestroy {
 
-  guildConfigs$: Observable<GuildConfig[]> = of([]); // Initialize with empty array observable
-  loading: boolean = true;
-  errorMessage: string | null = null;
-  managedGuildIds: string[] = []; // Store IDs the user manages
+  // Data
+  guildConfig: GuildConfig | null = null;
+  earnings: Earning[] = [];
+  guildId: string | null = null;
 
-  // Assuming a way to get the currently selected/managed Guild ID
-  // This might come from a shared service, route param, or user selection
-  // For now, let's assume we fetch configs for all managed guilds
+  // State
+  loadingConfig: boolean = true;
+  loadingEarnings: boolean = true;
+  configError: string | null = null;
+  earningsError: string | null = null;
+
+  // Modal States
+  isConfigEditModalVisible: boolean = false;
+  isEarningModalVisible: boolean = false;
+  selectedEarningForEdit: Earning | null = null;
+
+  // Helpers
+  objectKeys = Object.keys;
+  private destroy$ = new Subject<void>();
 
   constructor(
+    private route: ActivatedRoute,
+    private router: Router,
     private guildConfigService: GuildConfigService,
-    private authService: AuthService,
-    private userService: UserService // Inject UserService
+    private earningsService: EarningsService,
+    private authService: AuthService // Keep AuthService if needed for permissions etc.
   ) { }
 
   ngOnInit(): void {
-    this.loadGuildConfigs();
-  }
-
-  loadGuildConfigs(): void {
-    this.loading = true;
-    this.errorMessage = null;
-
-    // Option 1: If UserService provides managed guild IDs
-    this.guildConfigs$ = this.userService.getManagedGuildIds().pipe(
-      switchMap(guildIds => {
-        if (guildIds && guildIds.length > 0) {
-          this.managedGuildIds = guildIds; // Store the IDs
-          // Now fetch the config for each guild (This could be inefficient if many guilds)
-          // Consider a backend endpoint to get configs for multiple guilds at once
-          // For now, let's just fetch the first one as an example or handle multiple fetches
-          // Example: Fetch config for the first managed guild
-          if (guildIds[0]) {
-             return this.guildConfigService.getGuildConfig(guildIds[0]).pipe(
-               map(config => [config]), // Wrap single config in an array
-               catchError(err => this.handleError(err))
-             );
-          } else {
-             return of([]); // No guilds to fetch config for
-          }
-        } else {
-          // No managed guilds found for the user
-          return of([]);
+    this.route.paramMap.pipe(
+      takeUntil(this.destroy$),
+      tap(params => {
+        const newGuildId = params.get('guildId');
+        if (newGuildId !== this.guildId) { // Only reload if guildId changes
+             this.guildId = newGuildId;
+             console.log('Guild ID from route:', this.guildId);
+             this.resetState();
+             if (this.guildId) {
+                 this.loadGuildConfig(this.guildId);
+                 this.loadGuildEarnings(this.guildId);
+             } else {
+                 this.handleMissingGuildId();
+             }
         }
-      }),
-      catchError(err => this.handleError(err)),
-      tap(() => this.loading = false) // Set loading to false after stream completes/errors
-    );
-
-    // Option 2: If the config service itself gets all accessible configs (e.g., for admin)
-    // This depends on your backend API design for /api/config
-    // this.guildConfigs$ = this.guildConfigService.getAllGuildConfigs().pipe(
-    //    catchError(err => this.handleError(err)),
-    //    tap(() => this.loading = false)
-    // );
+      })
+    ).subscribe();
   }
 
-  private handleError(error: any): Observable<never> {
-      console.error('Error loading guild config:', error);
-      this.errorMessage = error.message || 'Failed to load guild configurations.';
-      this.loading = false;
-      return EMPTY; // Return an empty observable to prevent breaking the stream
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
-  editConfig(config: GuildConfig): void {
-    console.log('Edit config:', config); // Placeholder
-    // TODO: Implement opening an edit modal/form
+  resetState(): void {
+      console.log('Resetting component state for guild:', this.guildId);
+      this.guildConfig = null;
+      this.earnings = [];
+      this.configError = null;
+      this.earningsError = null;
+      this.loadingConfig = true;
+      this.loadingEarnings = true;
+      this.isConfigEditModalVisible = false;
+      this.isEarningModalVisible = false;
+      this.selectedEarningForEdit = null;
   }
 
-  deleteConfig(guildId: string): void {
-    if (confirm(`Are you sure you want to delete the configuration for guild ${guildId}?`)) {
+  handleMissingGuildId(): void {
+      this.configError = 'No Guild ID provided in the route.';
+      this.earningsError = 'No Guild ID provided in the route.';
+      this.loadingConfig = false;
+      this.loadingEarnings = false;
+      // Consider navigating away or showing a clearer message
+      // this.router.navigate(['/dashboard']);
+  }
+
+  // --- Data Loading ---
+  loadGuildConfig(id: string): void {
+    this.loadingConfig = true;
+    this.configError = null;
+    this.guildConfigService.getGuildConfig(id).pipe(
+      takeUntil(this.destroy$)
+    ).subscribe({
+      // Make sure GuildConfig type definition matches the actual data structure
+      next: (config) => { this.guildConfig = config; this.loadingConfig = false; },
+      error: (err) => { console.error('Error loading guild config:', err); this.configError = err.message || 'Failed to load configuration.'; this.loadingConfig = false; }
+    });
+  }
+
+  loadGuildEarnings(id: string): void {
+    this.loadingEarnings = true;
+    this.earningsError = null;
+    this.earningsService.getGuildEarnings(id).pipe(
+      takeUntil(this.destroy$)
+    ).subscribe({
+      next: (earnings) => { this.earnings = earnings; this.loadingEarnings = false; },
+      error: (err) => { console.error('Error loading earnings:', err); this.earningsError = err.message || 'Failed to load earnings.'; this.loadingEarnings = false; }
+    });
+  }
+
+  // --- Config Modal ---
+  openEditConfigModal(): void {
+     if (!this.guildConfig) return; // Guard against null config
+     this.isConfigEditModalVisible = true;
+  }
+
+  // Type the event if the modal component emits a specific type
+  onConfigSaved(savedConfig: GuildConfig): void {
+    this.guildConfig = savedConfig;
+    this.isConfigEditModalVisible = false;
+    // TODO: Show success toast
+    console.log('Config saved:', savedConfig);
+    // Optionally reload config if underlying data might have changed more than provided
+    // if (this.guildId) this.loadGuildConfig(this.guildId);
+  }
+
+  // --- Earning Modal ---
+  openAddEarningModal(): void {
+     if (!this.guildId) return;
+     this.selectedEarningForEdit = null;
+     this.isEarningModalVisible = true;
+  }
+
+  openEditEarningModal(earning: Earning): void {
+     this.selectedEarningForEdit = { ...earning }; // Pass a copy to avoid direct modification
+     this.isEarningModalVisible = true;
+  }
+
+  // Type the event if the modal component emits a specific type
+  onEarningSaved(savedEarning: Earning): void { // Use 'any' or the actual emitted type
+     console.log('Earning saved event received:', savedEarning);
+     if (this.guildId) {
+         this.loadGuildEarnings(this.guildId); // Reload the list
+     } else {
+          console.error("Cannot reload earnings: Guild ID missing.");
+     }
+     this.isEarningModalVisible = false;
+     // TODO: Show success toast
+  }
+
+  // --- Delete Actions ---
+  deleteEarning(earning: Earning): void {
+     if (!this.guildId || !earning.id) {
+         console.error("Missing Guild ID or Earning ID for deletion.");
+         return;
+     }
+     // TODO: Replace confirm with a UI component confirmation
+     if (confirm(`Are you sure you want to delete the earning record from ${earning.date}?`)) {
+        this.earningsService.deleteEarningByCustomId(earning.id).subscribe({
+          next: () => {
+             console.log(`Earning ${earning.id} deleted successfully.`);
+             if (this.guildId) this.loadGuildEarnings(this.guildId); // Reload
+             // TODO: Show success toast
+          },
+          error: (err) => {
+             console.error('Error deleting earning:', err);
+             this.earningsError = err.message || 'Failed to delete earning.';
+             // TODO: Show error toast
+          }
+       });
+     }
+  }
+
+  deleteGuildConfig(): void {
+    if (!this.guildConfig || !this.guildConfig.guild_id) {
+        console.error("Missing Guild Config or Guild ID for deletion.");
+        return;
+    }
+    const guildId = this.guildConfig.guild_id;
+    // TODO: Replace confirm with a UI component confirmation
+    if (confirm(`Are you sure you want to delete the entire configuration for Guild ${guildId}? This is irreversible!`)) {
       this.guildConfigService.deleteGuildConfig(guildId).subscribe({
         next: () => {
-          console.log(`Config for guild ${guildId} deleted.`);
-          this.loadGuildConfigs(); // Reload the list
-          // TODO: Show success message
+          console.log(`Configuration for guild ${guildId} deleted successfully.`);
+          this.router.navigate(['/dashboard']); // Navigate away after deletion
+          // TODO: Show success toast (might need slight delay or different mechanism if navigating away)
         },
         error: (err) => {
-          console.error('Error deleting config:', err);
-          this.errorMessage = err.message || 'Failed to delete configuration.';
-          // TODO: Show error message to user
+          console.error('Error deleting guild configuration:', err);
+          this.configError = err.message || 'Failed to delete configuration.';
+           // TODO: Show error toast
         }
       });
     }

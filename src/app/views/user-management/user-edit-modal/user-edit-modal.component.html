@@ -1,0 +1,72 @@
+<c-modal id="userEditModal" [visible]="visible" (visibleChange)="handleVisibleChange($event)" backdrop="static" size="lg">
+  <c-modal-header>
+    <h5 cModalTitle>Edit User: {{ userToEdit?.email }}</h5>
+    <button (click)="closeModal()" cButtonClose></button>
+  </c-modal-header>
+  <c-modal-body>
+    <c-alert color="danger" *ngIf="errorMessage">
+      {{ errorMessage }}
+    </c-alert>
+    <div *ngIf="loadingGuilds" class="text-center">
+       <c-spinner size="sm"></c-spinner> Loading guild options...
+    </div>
+
+    <form *ngIf="userForm && userToEdit" [formGroup]="userForm" (ngSubmit)="saveChanges()">
+      <!-- Email (Read Only) -->
+      <div class="mb-3 row">
+        <label cLabel class="col-sm-3 col-form-label">Email</label>
+        <div class="col-sm-9">
+            <input cFormControl type="email" formControlName="email" readonly />
+        </div>
+      </div>
+
+      <!-- Role Dropdown -->
+      <div class="mb-3 row">
+        <label cLabel for="userRole" class="col-sm-3 col-form-label">Role</label>
+        <div class="col-sm-9">
+           <select cSelect id="userRole" formControlName="role" required
+                  [class.is-invalid]="userForm.get('role')?.invalid && userForm.get('role')?.touched">
+              <option value="manager">Manager</option>
+              <option value="admin">Admin</option>
+           </select>
+           <div *ngIf="userForm.get('role')?.invalid && userForm.get('role')?.touched" class="invalid-feedback">
+                 Role is required.
+            </div>
+             <div *ngIf="isEditingSelf && userForm.get('role')?.disabled" class="form-text text-warning small">
+                 Cannot change your own role as Admin.
+             </div>
+        </div>
+      </div>
+
+      <!-- Managed Guilds (Checkboxes) - Enabled only for Manager role -->
+      <fieldset formArrayName="managedGuilds" class="mb-3 border rounded p-3" 
+                [disabled]="userForm.get('role')?.value !== 'manager' || loadingGuilds">
+           <legend class="fw-bold fs-6 mb-3">Managed Guilds</legend>
+             <div *ngIf="userForm.get('role')?.value !== 'manager'" class="form-text text-muted mb-2">
+               Guild selection applies only to the 'Manager' role. Admins have access to all guilds.
+             </div>
+             <div *ngIf="availableGuilds.length === 0 && !loadingGuilds" class="form-text text-muted mb-2">
+               No available guilds found in the system configuration.
+             </div>
+
+             <c-row>
+                 <!-- Iterate over availableGuilds and map to FormArray controls by index -->
+                 <c-col md="6" *ngFor="let guildId of availableGuilds; let i = index">
+                     <c-form-check>
+                         <input cFormCheckInput type="checkbox" [formControl]="managedGuildsControls[i]" [id]="'guild_' + i">
+                         <label cFormCheckLabel [for]="'guild_' + i">{{ guildId }}</label>
+                     </c-form-check>
+                 </c-col>
+             </c-row>
+       </fieldset>
+
+    </form>
+  </c-modal-body>
+  <c-modal-footer>
+    <button (click)="closeModal()" cButton color="secondary">Cancel</button>
+    <button cButton color="primary" type="submit" (click)="saveChanges()" [disabled]="isLoading || userForm.invalid || loadingGuilds">
+      <c-spinner *ngIf="isLoading" component="span" size="sm" aria-hidden="true"></c-spinner>
+      {{ isLoading ? 'Saving...' : 'Save Changes' }}
+    </button>
+  </c-modal-footer>
+</c-modal>

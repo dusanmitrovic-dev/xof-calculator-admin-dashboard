@@ -8,11 +8,16 @@ import {
   withRouterConfig,
   withViewTransitions
 } from '@angular/router';
-import { provideHttpClient } from '@angular/common/http'; // Import provideHttpClient
+
+// Import provideHttpClient and withInterceptors
+import { provideHttpClient, withInterceptors } from '@angular/common/http'; 
 
 import { DropdownModule, SidebarModule } from '@coreui/angular';
 import { IconSetService } from '@coreui/icons-angular';
 import { routes } from './app.routes';
+
+// Import the *functional* interceptor
+import { authInterceptor } from './auth/auth-interceptor.interceptor'; // Use the function name
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -28,7 +33,8 @@ export const appConfig: ApplicationConfig = {
       withViewTransitions(),
       withHashLocation()
     ),
-    provideHttpClient(), // Add provideHttpClient here
+    // Configure HttpClient with the functional interceptor
+    provideHttpClient(withInterceptors([authInterceptor])), // Pass the function directly
     importProvidersFrom(SidebarModule, DropdownModule),
     IconSetService,
     provideAnimationsAsync()

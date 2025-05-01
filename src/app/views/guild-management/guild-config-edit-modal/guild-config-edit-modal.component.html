@@ -1,0 +1,167 @@
+<c-modal id="guildConfigEditModal" [visible]="visible" (visibleChange)="handleVisibleChange($event)" backdrop="static" size="lg">
+  <c-modal-header>
+    <h5 cModalTitle>Edit Guild Configuration ({{ guildConfig.guild_id }})</h5>
+    <button (click)="closeModal()" cButtonClose></button>
+  </c-modal-header>
+  <c-modal-body>
+    <c-alert color="danger" *ngIf="errorMessage">
+      {{ errorMessage }}
+    </c-alert>
+
+    <form *ngIf="configForm" [formGroup]="configForm" (ngSubmit)="saveChanges()">
+      
+      <!-- Models -->
+      <div formArrayName="models" class="mb-3">
+        <label cLabel>Models</label>
+        <div *ngFor="let model of models.controls; let i=index" class="input-group mb-2">
+           <input cFormControl type="text" [formControlName]="i" required 
+                  [class.is-invalid]="model.invalid && (model.dirty || model.touched)">
+           <button cButton type="button" color="danger" variant="outline" (click)="removeItem(models, i)" title="Remove Model">
+               <svg cIcon name="cilTrash"></svg>
+            </button>
+        </div>
+        <button cButton type="button" color="secondary" size="sm" (click)="addItem(models)">Add Model</button>
+      </div>
+
+      <!-- Shifts -->
+      <div formArrayName="shifts" class="mb-3">
+        <label cLabel>Shifts</label>
+        <div *ngFor="let shift of shifts.controls; let i=index" class="input-group mb-2">
+           <input cFormControl type="text" [formControlName]="i" required
+                  [class.is-invalid]="shift.invalid && (shift.dirty || shift.touched)">
+           <button cButton type="button" color="danger" variant="outline" (click)="removeItem(shifts, i)" title="Remove Shift">
+               <svg cIcon name="cilTrash"></svg>
+            </button>
+        </div>
+        <button cButton type="button" color="secondary" size="sm" (click)="addItem(shifts)">Add Shift</button>
+      </div>
+      
+      <!-- Periods -->
+      <div formArrayName="periods" class="mb-3">
+        <label cLabel>Periods</label>
+        <div *ngFor="let period of periods.controls; let i=index" class="input-group mb-2">
+           <input cFormControl type="text" [formControlName]="i" required
+                   [class.is-invalid]="period.invalid && (period.dirty || period.touched)">
+           <button cButton type="button" color="danger" variant="outline" (click)="removeItem(periods, i)" title="Remove Period">
+               <svg cIcon name="cilTrash"></svg>
+            </button>
+        </div>
+        <button cButton type="button" color="secondary" size="sm" (click)="addItem(periods)">Add Period</button>
+      </div>
+
+       <!-- Bonus Rules -->
+      <div formArrayName="bonus_rules" class="mb-3 border rounded p-2">
+        <label cLabel class="fw-bold">Bonus Rules</label>
+        <div *ngFor="let rule of bonus_rules.controls; let i=index" [formGroupName]="i" class="row g-2 align-items-center mb-2 border-bottom pb-2">
+           <c-col md="3">
+              <label cLabel [for]="'bonus_from_' + i">From ($)</label>
+              <input cFormControl type="number" [id]="'bonus_from_' + i" formControlName="from" required 
+                     [class.is-invalid]="rule.get('from')?.invalid && (rule.get('from')?.dirty || rule.get('from')?.touched)">
+           </c-col>
+           <c-col md="3">
+             <label cLabel [for]="'bonus_to_' + i">To ($)</label>
+              <input cFormControl type="number" [id]="'bonus_to_' + i" formControlName="to" required
+                     [class.is-invalid]="rule.get('to')?.invalid && (rule.get('to')?.dirty || rule.get('to')?.touched)">
+           </c-col>
+           <c-col md="3">
+              <label cLabel [for]="'bonus_amount_' + i">Bonus ($)</label>
+              <input cFormControl type="number" [id]="'bonus_amount_' + i" formControlName="amount" required
+                     [class.is-invalid]="rule.get('amount')?.invalid && (rule.get('amount')?.dirty || rule.get('amount')?.touched)">
+           </c-col>
+           <c-col md="3" class="text-end align-self-end">
+              <button cButton type="button" color="danger" variant="outline" (click)="removeBonusRule(i)" title="Remove Rule">
+                  <svg cIcon name="cilTrash"></svg>
+              </button>
+           </c-col>
+        </div>
+        <button cButton type="button" color="secondary" size="sm" (click)="addBonusRule()">Add Bonus Rule</button>
+      </div>
+
+       <!-- Display Settings -->
+      <fieldset formGroupName="display_settings" class="mb-3 border rounded p-2">
+        <legend class="fw-bold fs-6">Display Settings</legend>
+         <c-row class="mb-2">
+            <c-col md="6">
+               <c-form-check>
+                  <input cFormCheckInput type="checkbox" id="ephemeral_responses" formControlName="ephemeral_responses">
+                  <label cFormCheckLabel for="ephemeral_responses">Ephemeral Responses</label>
+               </c-form-check>
+            </c-col>
+             <c-col md="6">
+               <c-form-check>
+                  <input cFormCheckInput type="checkbox" id="show_average" formControlName="show_average">
+                  <label cFormCheckLabel for="show_average">Show Average</label>
+               </c-form-check>
+            </c-col>
+          </c-row>
+         <c-row class="mb-2">
+            <c-col md="6">
+               <c-form-check>
+                  <input cFormCheckInput type="checkbox" id="show_ids" formControlName="show_ids">
+                  <label cFormCheckLabel for="show_ids">Show IDs</label>
+               </c-form-check>
+            </c-col>
+         </c-row>
+         <c-row class="mb-2">
+            <c-col md="6">
+               <label cLabel for="agency_name">Agency Name</label>
+               <input cFormControl type="text" id="agency_name" formControlName="agency_name">
+            </c-col>
+             <c-col md="6">
+               <label cLabel for="bot_name">Bot Name</label>
+               <input cFormControl type="text" id="bot_name" formControlName="bot_name">
+            </c-col>
+         </c-row>
+      </fieldset>
+      
+      <!-- Commission Settings (Simplified Example - Needs Improvement for Maps) -->
+       <fieldset formGroupName="commission_settings" class="mb-3 border rounded p-2">
+         <legend class="fw-bold fs-6">Commission Settings</legend>
+         
+         <div formGroupName="roles" class="mb-3">
+            <h6 class="text-muted">By Role (%)</h6>
+             <p class="small text-warning">Editing Role/User specific commissions here is complex. Consider managing these via bot commands or a dedicated interface.</p>
+            <!-- Display existing - Editing requires dynamic controls -->
+             <div *ngFor="let roleId of objectKeys(configForm.get('commission_settings.roles')?.value)" class="row g-2 mb-1">
+                <label class="col-form-label col-sm-3">Role: {{ roleId }}</label>
+                <div class="col-sm-6" [formGroupName]="roleId">
+                    <input cFormControl type="number" formControlName="commission_percentage" placeholder="Commission %">
+                </div>
+             </div>
+         </div>
+         
+          <div formGroupName="users" class="mb-3">
+            <h6 class="text-muted">By User (Overrides)</h6>
+            <!-- Display existing - Editing requires dynamic controls -->
+            <div *ngFor="let userId of objectKeys(configForm.get('commission_settings.users')?.value)" class="row g-2 mb-1" [formGroupName]="userId">
+                 <label class="col-form-label col-sm-3">User: {{ userId }}</label>
+                 <div class="col-sm-4">
+                    <input cFormControl type="number" formControlName="hourly_rate" placeholder="Hourly Rate (Opt.)">
+                 </div>
+                 <div class="col-sm-4 d-flex align-items-center">
+                    <c-form-check>
+                        <input cFormCheckInput type="checkbox" formControlName="override_role">
+                        <label cFormCheckLabel>Override Role %?</label>
+                    </c-form-check>
+                 </div>
+             </div>
+         </div>
+       </fieldset>
+       
+       <!-- Note: We are not editing guildConfig.roles map here -->
+
+    </form>
+  </c-modal-body>
+  <c-modal-footer>
+    <button (click)="closeModal()" cButton color="secondary">Cancel</button>
+    <button cButton color="primary" type="submit" (click)="saveChanges()" [disabled]="isLoading || configForm.invalid">
+      <c-spinner *ngIf="isLoading" component="span" size="sm" aria-hidden="true"></c-spinner>
+      {{ isLoading ? 'Saving...' : 'Save Changes' }}
+    </button>
+  </c-modal-footer>
+</c-modal>
+
+<!-- Helper function needed in component .ts to iterate over object keys in template -->
+<!--
+  objectKeys = Object.keys;
+-->
