@@ -12,12 +12,12 @@ interface AuthResponse {
 }
 
 // Interface for the payload decoded from the JWT
-// FIX: Add export keyword
+// Export added for use in other modules (e.g., guards)
 export interface UserPayload {
   user: {
     id: string; // User ID from MongoDB
-    role: string; // 'admin' or 'manager'
-    // Add other fields if they are included in the JWT payload from your backend
+    role: 'admin' | 'user'; // Define expected roles
+    // Add other fields if they are included in the JWT payload from your backend (e.g., username)
   };
   iat?: number; // Issued at timestamp (optional)
   exp?: number; // Expiration timestamp (optional)
@@ -27,9 +27,8 @@ export interface UserPayload {
   providedIn: 'root'
 })
 export class AuthService {
-  // Assuming your backend runs on the same host or is proxied
-  // If backend is on a different port (e.g., 5000), use proxy.conf.json or full URL
-  private apiUrl = '/api'; // Adjust if your API base path is different
+  // Adjust if your API base path is different or use proxy.conf.json
+  private apiUrl = '/api';
   private tokenKey = 'authToken';
 
   private isAuthenticatedSubject = new BehaviorSubject<boolean>(false);
@@ -40,7 +39,7 @@ export class AuthService {
   public currentUser$ = this.currentUserSubject.asObservable();
 
   constructor(private http: HttpClient, private router: Router) {
-    this.checkInitialToken(); // Check for existing token on startup
+    this.checkInitialToken(); // Check for existing token on service initialization
   }
 
   // Checks local storage for a token on app load
@@ -52,15 +51,18 @@ export class AuthService {
         // Check if token is expired
         if (decoded.exp && decoded.exp * 1000 > Date.now()) {
           this.updateAuthState(token, decoded);
+          console.log('AuthService: Session restored from token.');
         } else {
+          console.log('AuthService: Token found but expired.');
           this.clearAuthData(); // Token expired
         }
       } catch (error) {
-        console.error('Error decoding token on init:', error);
+        console.error('AuthService: Error decoding token on init:', error);
         this.clearAuthData(); // Invalid token
       }
     } else {
-      this.clearAuthData(); // No token found
+        // console.log('AuthService: No token found in storage.'); // Optional log
+        this.clearAuthData(); // No token found
     }
   }
 
@@ -69,7 +71,7 @@ export class AuthService {
     localStorage.setItem(this.tokenKey, token);
     this.isAuthenticatedSubject.next(true);
     this.currentUserSubject.next(payload);
-    console.log('Auth state updated. User:', payload.user.role, payload.user.id);
+    console.log(`AuthService: Auth state updated. User Role: ${payload.user.role}, ID: ${payload.user.id}`);
   }
 
   // Clears authentication state and removes token
@@ -77,40 +79,26 @@ export class AuthService {
     localStorage.removeItem(this.tokenKey);
     this.isAuthenticatedSubject.next(false);
     this.currentUserSubject.next(null);
+     console.log('AuthService: Auth data cleared.');
   }
 
   // --- API Methods ---
 
   /**
-   * Registers a new user.
-   * @param email User's email
-   * @param password User's password
+   * Registers a new user. Assumes backend handles first user as admin.
+   * @param credentials User credentials (e.g., { email: string, password: string })
    * @returns Observable<AuthResponse> - Emits the response (likely containing a token) on success.
    */
-  register(email: string, password: string): Observable<AuthResponse> {
-    console.log('AuthService: register called for', email);
-    return this.http.post<AuthResponse>(`${this.apiUrl}/auth/register`, { email, password })
+  register(credentials: any): Observable<AuthResponse> {
+    console.log('AuthService: Attempting registration...');
+    // IMPORTANT: Backend should implement POST /api/auth/register
+    return this.http.post<AuthResponse>(`${this.apiUrl}/auth/register`, credentials)
       .pipe(
         tap(response => {
-          console.log('AuthService: Register successful response:', response);
-          // Automatically log in the user after successful registration
-          if (response && response.token) {
-             try {
-                const payload = jwtDecode<UserPayload>(response.token);
-                if (payload.exp && payload.exp * 1000 > Date.now()) {
-                    this.updateAuthState(response.token, payload);
-                } else {
-                     console.warn('AuthService: Token received on register but already expired.');
-                     this.clearAuthData(); // Should not happen ideally
-                }
-            } catch (error) {
-                console.error('AuthService: Error decoding token on register:', error);
-                this.clearAuthData(); // Invalid token received
-            }
-          } else {
-             console.warn('AuthService: No token received on register.');
-             // Don't automatically log in if no token
-          }
+          console.log('AuthService: Registration successful response received:', response);
+          // Decide if you want to automatically log in after registration
+          // If yes, handle the token here similar to the login method.
+          // For now, we just return the response, user needs to log in separately.
         }),
         catchError(this.handleError) // Use shared error handler
       );
@@ -118,17 +106,17 @@ export class AuthService {
 
   /**
    * Logs in a user.
-   * @param email User's email
-   * @param password User's password
+   * @param credentials User credentials (e.g., { email: string, password: string })
    * @returns Observable<boolean> - Emits true on successful login and token storage, false otherwise.
    */
-  login(email: string, password: string): Observable<boolean> {
-    console.log('AuthService: login called for', email);
-    return this.http.post<AuthResponse>(`${this.apiUrl}/auth/login`, { email, password })
+  login(credentials: any): Observable<boolean> {
+    console.log('AuthService: Attempting login...');
+    // IMPORTANT: Backend should implement POST /api/auth/login
+    return this.http.post<AuthResponse>(`${this.apiUrl}/auth/login`, credentials)
       .pipe(
         map(response => {
           if (response && response.token) {
-            console.log('AuthService: Token received on login');
+            console.log('AuthService: Token received on login.');
             try {
               const payload = jwtDecode<UserPayload>(response.token);
               // Double-check expiry before setting state
@@ -146,13 +134,14 @@ export class AuthService {
               return false; // Login failed (invalid token)
             }
           }
-          console.log('AuthService: No token in login response');
+          console.warn('AuthService: No token in login response.');
+          this.clearAuthData(); // Ensure clean state if no token
           return false; // Login failed (no token)
         }),
         catchError(err => {
           console.error('AuthService: Login API error:', err);
           this.clearAuthData(); // Clear any potentially stale data on login failure
-          // Return an observable emitting false instead of throwing
+          // Return an observable emitting false instead of re-throwing error
           return of(false);
         })
       );
@@ -162,17 +151,17 @@ export class AuthService {
    * Logs out the current user.
    */
   logout(): void {
-    console.log('AuthService: logout called');
+    console.log('AuthService: Logging out...');
     this.clearAuthData();
-    // Optional: Call a backend logout endpoint if necessary
+    // Optional: Call a backend logout endpoint if necessary (e.g., for session invalidation)
     // this.http.post(`${this.apiUrl}/auth/logout`, {}).subscribe();
-    this.router.navigate(['/login']); // Redirect to login page
+    this.router.navigate(['/login']); // Redirect to login page after logout
   }
 
   // --- Helper Methods ---
 
   /**
-   * Gets the raw JWT token from storage.
+   * Gets the raw JWT token from storage. Used by the interceptor.
    * @returns The token string or null if not found.
    */
   getTokenFromStorage(): string | null {
@@ -188,10 +177,11 @@ export class AuthService {
   }
 
   /**
-   * Gets the role of the currently logged-in user.
-   * @returns The user's role ('admin', 'manager') or null if not logged in.
+   * Gets the role of the currently logged-in user. Useful for guards.
+   * @returns The user's role ('admin', 'user') or null if not logged in.
    */
-  getUserRole(): string | null {
+  getUserRole(): 'admin' | 'user' | null {
+    // Add type assertion based on UserPayload definition
     return this.getCurrentUser()?.user?.role ?? null;
   }
 
@@ -204,7 +194,7 @@ export class AuthService {
   }
 
   /**
-   * Checks if the user is currently authenticated based on the BehaviorSubject.
+   * Checks if the user is currently authenticated based on the BehaviorSubject. Useful for guards.
    * @returns True if authenticated, false otherwise.
    */
   isLoggedIn(): boolean {
@@ -219,11 +209,11 @@ export class AuthService {
       errorMessage = `Client Error: ${error.error.message}`;
     } else {
       // Backend returned an unsuccessful response code.
-      errorMessage = `Server Error Code: ${error.status}
-Message: ${error.error?.msg || error.message}`; // Prefer backend 'msg' field if exists
+      // Attempt to get message from backend response, fallback to status text or generic message
+      errorMessage = `Server Error ${error.status}: ${error.error?.message || error.error?.msg || error.statusText}`;
     }
-    console.error('AuthService Error Handler:', errorMessage, error);
-    // Return an observable that emits the error, allowing components to catch it
+    console.error('AuthService API Error:', errorMessage, error);
+    // Return an observable that emits the error, allowing components/services to catch it if needed
     return throwError(() => new Error(errorMessage));
   }
 }

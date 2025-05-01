@@ -1,20 +1,22 @@
 import { Routes } from '@angular/router';
 import { DefaultLayoutComponent } from './layout';
-import { AuthGuard } from './auth/auth.guard';
-import { PublicGuard } from './auth/public.guard';
-import { AdminGuard } from './auth/admin.guard'; // Import AdminGuard
+
+// Import the *functional* guards
+import { authGuard } from './auth/auth.guard';
+import { publicGuard } from './auth/public.guard'; // Assuming public.guard.ts exports a functional guard
+import { adminGuard } from './auth/admin.guard';   // Assuming admin.guard.ts exports a functional guard
 
 export const routes: Routes = [
   {
     path: '',
-    redirectTo: 'dashboard', // Redirect root path to dashboard (if logged in)
+    redirectTo: 'dashboard', // Redirect root path to dashboard
     pathMatch: 'full'
   },
   {
-    // Routes accessible only when logged in (under the main layout)
+    // Authenticated routes within the main application layout
     path: '',
     component: DefaultLayoutComponent,
-    canActivate: [AuthGuard], // Protect the whole layout and its children
+    canActivate: [authGuard], // Use functional authGuard to protect this layout and its children
     data: {
       title: 'Home'
     },
@@ -24,45 +26,77 @@ export const routes: Routes = [
         loadChildren: () => import('./views/dashboard/routes').then((m) => m.routes)
       },
       {
-        path: 'theme',
+        path: 'theme', // Example route
         loadChildren: () => import('./views/theme/routes').then((m) => m.routes)
       },
       {
-        path: 'guild-management', // Route for managing specific guild configs/earnings
-        loadChildren: () => import('./views/guild-management/guild-management.routes').then((m) => m.routes)
-        // AuthGuard is already applied by the parent, individual routes inside might need further checks if manager specific
+        path: 'guild-management', // Guild config/earnings management
+        loadChildren: () => import('./views/guild-management/guild-management.routes').then((m) => m.routes),
+        // Further role-based activation can be handled within guild-management.routes if needed
       },
       {
-        path: 'user-management', // Route for managing users (Admin only)
-        // FIX: Uncomment loadChildren
+        path: 'user-management', // User management (requires admin privileges)
         loadChildren: () => import('./views/user-management/user-management.routes').then((m) => m.routes),
-        canActivate: [AdminGuard], // Protect this route specifically for Admins
+        canActivate: [adminGuard], // Add functional adminGuard for admin-only access
         data: {
-          title: 'User Management' // Add title for navigation
+          title: 'User Management'
         }
       },
-      // Add other authenticated routes here (e.g., profile settings)
+      // Add other authenticated routes here (e.g., charts, widgets, base UI elements)
+      {
+        path: 'base',
+        loadChildren: () => import('./views/base/routes').then((m) => m.routes)
+      },
+      {
+        path: 'buttons',
+        loadChildren: () => import('./views/buttons/routes').then((m) => m.routes)
+      },
+      {
+        path: 'forms',
+        loadChildren: () => import('./views/forms/routes').then((m) => m.routes)
+      },
+      {
+        path: 'charts',
+        loadChildren: () => import('./views/charts/routes').then((m) => m.routes)
+      },
+      {
+        path: 'icons',
+        loadChildren: () => import('./views/icons/routes').then((m) => m.routes)
+      },
+      {
+        path: 'notifications',
+        loadChildren: () => import('./views/notifications/routes').then((m) => m.routes)
+      },
+      {
+        path: 'widgets',
+        loadChildren: () => import('./views/widgets/routes').then((m) => m.routes)
+      },
     ]
   },
   {
-    // Public routes (Login, Register, Forgot Password, etc.)
-    path: 'login',
-    loadComponent: () => import('./views/pages/login/login.component').then(m => m.LoginComponent),
-    canActivate: [PublicGuard], // Prevent logged-in users from accessing login
-    data: {
-      title: 'Login Page'
-    }
+    // Public routes (Login, Register)
+    // These should only be accessible when the user is *not* logged in
+    path: '',
+    canActivate: [publicGuard], // Use functional publicGuard
+    children: [
+      {
+        path: 'login',
+        loadComponent: () => import('./views/pages/login/login.component').then(m => m.LoginComponent),
+        data: {
+          title: 'Login Page'
+        }
+      },
+      {
+        path: 'register',
+        loadComponent: () => import('./views/pages/register/register.component').then(m => m.RegisterComponent),
+        data: {
+          title: 'Register Page'
+        }
+      }
+    ]
   },
   {
-    path: 'register',
-    loadComponent: () => import('./views/pages/register/register.component').then(m => m.RegisterComponent),
-    canActivate: [PublicGuard], // Prevent logged-in users from accessing register
-    data: {
-      title: 'Register Page'
-    }
-  },
-  {
-    // Error Pages (should ideally be accessible without login)
+    // Standalone error pages (accessible regardless of login status)
     path: '404',
     loadComponent: () => import('./views/pages/page404/page404.component').then(m => m.Page404Component),
     data: {
@@ -76,10 +110,7 @@ export const routes: Routes = [
       title: 'Page 500'
     }
   },
-  // Wildcard route: Redirect any unmatched paths to the dashboard (if logged in) or login (if not)
-  // The AuthGuard on the main layout handles the logged-in check implicitly.
-  // If not logged in, AuthGuard redirects to login. If logged in, but path doesn't match child routes, 
-  // this wildcard might catch it, but a specific 404 within the layout might be better.
-  // Let's redirect to 404 for now, assuming 404 component is styled appropriately.
-  { path: '**', redirectTo: '404' } 
+  // Wildcard route: Matches any path not defined above.
+  // Redirects to the 404 page.
+  { path: '**', redirectTo: '404' }
 ];
