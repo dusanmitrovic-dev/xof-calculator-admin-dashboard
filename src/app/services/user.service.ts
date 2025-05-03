@@ -4,21 +4,25 @@ import { Observable, throwError, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { AuthService } from '../auth/auth.service'; // Adjust path if needed
 
-// Interface for the User object (matching hypothetical backend schema, excluding password)
+// Interface for the User object
 export interface User {
   _id: string; // MongoDB ID
   email: string;
-  role: 'admin' | 'user'; // Assuming roles are 'admin' or 'user' for simplicity
-  // Add any other fields your backend provides (e.g., name, createdAt)
-  createdAt?: string; 
-  updatedAt?: string; 
+  // Add 'manager' to the possible roles
+  role: 'admin' | 'user' | 'manager';
+  // Add managed_guild_ids (optional)
+  managed_guild_ids?: string[];
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 // Interface for the update payload
 export interface UserUpdateData {
-  email?: string; // Maybe allow email update?
-  role?: 'admin' | 'user';
-  // Exclude password; handle password changes separately if needed
+  email?: string;
+  // Add 'manager' to the possible roles
+  role?: 'admin' | 'user' | 'manager';
+  // Add managed_guild_ids (optional)
+  managed_guild_ids?: string[];
 }
 
 // Interface for Delete response
@@ -34,12 +38,7 @@ interface DeleteResponse {
 export class UserService {
   private apiUrl = '/api/users'; // Base URL for user endpoints
 
-  // Inject AuthService if needed for current user info (e.g., ID)
   constructor(private http: HttpClient, private authService: AuthService) { }
-
-  // AuthInterceptor handles adding the Authorization header.
-
-  // --- User Management Methods (Likely Admin Only) ---
 
   /**
    * GET /api/users
@@ -68,13 +67,13 @@ export class UserService {
 
   /**
    * PUT /api/users/:userId
-   * Update a user's details (e.g., role, email).
+   * Update a user's details (role, email, managed_guild_ids).
    */
   updateUser(userId: string, updateData: UserUpdateData): Observable<User> {
     if (!userId) {
       return throwError(() => new Error('User ID cannot be empty for update.'));
     }
-    console.log(`UserService: Updating user with ID ${userId}...`);
+    console.log(`UserService: Updating user with ID ${userId}... Payload:`, updateData);
     return this.http.put<User>(`${this.apiUrl}/${userId}`, updateData).pipe(
       catchError(this.handleError)
     );
@@ -94,26 +93,15 @@ export class UserService {
     );
   }
 
-  // --- Methods for Current User Profile (If needed) ---
-
   /**
    * GET /api/users/me (Example endpoint)
    * Gets the profile of the currently logged-in user.
    */
   getCurrentUserProfile(): Observable<User> {
-     // Assumes backend provides a dedicated endpoint like '/api/users/me'
      console.log('UserService: Fetching current user profile...');
      return this.http.get<User>(`${this.apiUrl}/me`).pipe(
         catchError(this.handleError)
      );
-     // Alternative if no /me endpoint:
-     /*
-     const currentUserId = this.authService.getUserId();
-     if (!currentUserId) {
-         return throwError(() => new Error('Cannot get profile: User not logged in.'));
-     }
-     return this.getUserById(currentUserId);
-     */
   }
 
 
@@ -121,10 +109,8 @@ export class UserService {
   private handleError(error: HttpErrorResponse): Observable<never> {
     let errorMessage = 'An unknown error occurred in User Service!';
     if (error.error instanceof ErrorEvent) {
-      // Client-side or network error
       errorMessage = `Network Error: ${error.message}`;
     } else {
-      // Backend returned an unsuccessful response code.
       errorMessage = `Server Error (Code: ${error.status}): ${error.error?.message || error.error?.msg || 'Unknown server error'}`;
     }
     console.error('UserService Error:', errorMessage, error);
