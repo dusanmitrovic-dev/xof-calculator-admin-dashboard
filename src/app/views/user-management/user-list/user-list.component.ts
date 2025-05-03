@@ -1,51 +1,63 @@
-import { Component, OnInit } from '@angular/core';
-import { CommonModule, DatePipe, TitleCasePipe } from '@angular/common'; // Import CommonModule, DatePipe, TitleCasePipe
-import { Observable, of } from 'rxjs';
-import { catchError, tap } from 'rxjs/operators';
-import { UserService, User } from '../../../services/user.service'; // Adjust path if needed
-import { AuthService } from '../../../auth/auth.service'; // To prevent self-deletion/demotion
-import { 
-    CardModule, 
-    SpinnerComponent, 
-    AlertComponent, 
-    TableModule, 
-    BadgeComponent, 
-    ButtonGroupModule, 
-    ButtonDirective 
-} from '@coreui/angular'; // Import CoreUI Modules/Components
-import { IconDirective } from '@coreui/icons-angular'; // Import IconDirective
-import { UserEditModalComponent } from '../user-edit-modal/user-edit-modal.component'; // Import UserEditModalComponent
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { CommonModule, DatePipe, TitleCasePipe } from '@angular/common';
+import { Subject } from 'rxjs'; // Removed Observable and of as we use a simple array
+import { catchError, takeUntil, tap } from 'rxjs/operators';
+import { UserService, User } from '../../../services/user.service'; // Adjust path
+import { AuthService } from '../../../auth/auth.service'; // To prevent self-action
+
+// CoreUI Modules
+import {
+  AlertModule,
+  BadgeModule,
+  ButtonModule,
+  CardModule,
+  GridModule,
+  ModalModule,
+  SpinnerModule,
+  TableModule,
+  UtilitiesModule,
+  ButtonGroupModule // Added ButtonGroupModule
+} from '@coreui/angular';
+import { IconDirective } from '@coreui/icons-angular';
+
+// Import the modal component
+import { UserEditModalComponent } from '../user-edit-modal/user-edit-modal.component';
 
 @Component({
   selector: 'app-user-list',
-  standalone: true, // Make component standalone
-  imports: [ // Add imports array
-    CommonModule, // For *ngIf, *ngFor, async pipe, DatePipe, TitleCasePipe
-    CardModule, 
-    SpinnerComponent, 
-    AlertComponent, 
-    TableModule, 
-    BadgeComponent, 
-    ButtonGroupModule, 
-    ButtonDirective,
-    IconDirective, 
-    UserEditModalComponent,
-    DatePipe, // Explicitly import DatePipe
-    TitleCasePipe // Explicitly import TitleCasePipe
-  ],
   templateUrl: './user-list.component.html',
-  styleUrls: ['./user-list.component.scss']
+  styleUrls: ['./user-list.component.scss'],
+  standalone: true,
+  imports: [
+    CommonModule,
+    AlertModule,
+    BadgeModule,
+    ButtonModule,
+    CardModule,
+    GridModule,
+    ModalModule,
+    SpinnerModule,
+    TableModule,
+    UtilitiesModule,
+    IconDirective,
+    DatePipe,
+    TitleCasePipe,
+    UserEditModalComponent, // Import the modal component
+    ButtonGroupModule    // Added ButtonGroupModule
+  ]
 })
-export class UserListComponent implements OnInit {
+export class UserListComponent implements OnInit, OnDestroy {
 
-  users$: Observable<User[]> = of([]);
-  loading: boolean = true;
+  users: User[] = [];
+  isLoading: boolean = true;
   errorMessage: string | null = null;
   currentUserId: string | null = null; // To disable actions on self
 
-  // Properties for the edit modal
-  isUserEditModalVisible = false;
+  // Modal State
+  isUserEditModalVisible: boolean = false;
   selectedUserForEdit: User | null = null;
+
+  private destroy$ = new Subject<void>();
 
   constructor(
     private userService: UserService,
@@ -57,67 +69,122 @@ export class UserListComponent implements OnInit {
     this.loadUsers();
   }
 
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  /**
+   * Fetches users from the service.
+   */
   loadUsers(): void {
-    this.loading = true;
+    console.log('UserListComponent: Loading users...');
+    this.isLoading = true;
     this.errorMessage = null;
-    this.users$ = this.userService.getUsers().pipe(
-      tap(() => this.loading = false),
-      catchError(err => {
-        console.error('Error loading users:', err);
-        this.errorMessage = err.message || 'Failed to load users.';
-        this.loading = false;
-        return of([]); // Return empty array on error
-      })
-    );
+    this.userService.getUsers()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (usersData) => {
+          this.users = usersData;
+          this.isLoading = false;
+          console.log('UserListComponent: Users loaded:', usersData);
+        },
+        error: (err) => {
+          console.error('UserListComponent: Error loading users:', err);
+          this.errorMessage = err.message || 'Failed to load users.';
+          this.isLoading = false;
+        }
+      });
   }
 
-  // Method to open the edit modal
+  /**
+   * Opens the user edit modal.
+   */
   openEditUserModal(user: User): void {
-    console.log('Opening edit modal for user:', user);
-    this.selectedUserForEdit = user;
+    // Pass a deep copy to prevent modifying the list directly
+    this.selectedUserForEdit = JSON.parse(JSON.stringify(user));
     this.isUserEditModalVisible = true;
+    console.log(`UserListComponent: Opening edit modal for user ${user.email}`);
   }
 
-  // Method called when the modal saves a user
-  onUserSaved(user: User | null): void {
-    console.log('User saved event received:', user);
-    this.isUserEditModalVisible = false; // Close modal
+  /**
+   * Handles the event emitted when the modal saves a user.
+   * Renamed to match the template binding (userSaved)="onUserSaved($event)"
+   */
+  onUserSaved(savedUser: User | null): void {
+    this.isUserEditModalVisible = false; // Close modal first
+    if (savedUser) {
+        console.log('UserListComponent: User saved event received. Reloading list.');
+        // TODO: Add success toast
+        this.loadUsers(); // Reload the list to reflect changes
+    } else {
+        console.log('UserListComponent: Modal closed without saving.');
+    }
+    // Clear the selected user regardless of save status when modal is handled here
     this.selectedUserForEdit = null;
-    if (user) { // Check if user data was actually returned (not just closed)
-      this.loadUsers(); // Refresh the list if a user was saved
+  }
+
+  /**
+   * Handles the visibleChange event from the modal when closed via backdrop or X.
+   * Ensures the selected user is cleared if the modal is closed without saving.
+   */
+  handleVisibleChange(visible: boolean): void {
+    if (!visible && this.isUserEditModalVisible) {
+        // The modal is closing (likely via backdrop/X)
+        console.log('UserListComponent: Modal closed via visibleChange event.');
+        this.isUserEditModalVisible = false;
+        this.selectedUserForEdit = null; // Clear selection
+        // Optionally emit null from userSaved if needed, but onUserSaved handles the explicit save/cancel
+        // this.userSaved.emit(null); 
     }
   }
-  
-  // Method called when modal is closed without saving (necessary for [(visible)] binding)
-  handleModalVisibleChange(visible: boolean): void {
-      this.isUserEditModalVisible = visible;
-      if (!visible) {
-          this.selectedUserForEdit = null; // Clear selected user when modal closes
-      }
-  }
 
+  /**
+   * Deletes a user after confirmation.
+   */
   deleteUser(user: User): void {
-    if (!user || !user._id) return;
-    
-    // Prevent self-deletion
-    if (user._id === this.currentUserId) {
-      alert('You cannot delete your own account.');
+    if (!user._id) {
+      this.errorMessage = 'Cannot delete user: ID is missing.';
       return;
     }
 
-    if (confirm(`Are you sure you want to delete user ${user.email}?`)) {
-      this.userService.deleteUser(user._id).subscribe({
-        next: (res) => {
-          console.log('User deleted:', res?.msg || 'Success'); // Use optional chaining for res.msg
-          this.loadUsers(); // Refresh the list
-          // TODO: Show success toast/message
-        },
-        error: (err) => {
-          console.error('Error deleting user:', err);
-          this.errorMessage = err.error?.message || err.message || 'Failed to delete user.'; // More robust error handling
-          // TODO: Show error toast/message
-        }
-      });
+    // Prevent self-deletion
+    if (user._id === this.currentUserId) {
+      this.errorMessage = 'Action denied: You cannot delete your own account.';
+      // TODO: Show this error in a more user-friendly way (e.g., toast)
+      alert('You cannot delete your own account.'); // Simple alert for now
+      return;
+    }
+
+    if (confirm(`Are you sure you want to delete user ${user.email} (ID: ${user._id})? This is irreversible!`)) {
+      this.isLoading = true; // Optional: Show loading state during delete
+      this.userService.deleteUser(user._id)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe({
+          next: (response) => {
+            this.isLoading = false;
+            console.log(`User ${user._id} deleted successfully.`, response);
+            // TODO: Add success toast
+            this.loadUsers(); // Refresh the list
+          },
+          error: (err) => {
+            this.isLoading = false;
+            console.error(`Error deleting user ${user._id}:`, err);
+            this.errorMessage = err.message || 'Failed to delete user.';
+            // TODO: Add error toast
+          }
+        });
+    }
+  }
+
+  /**
+   * Determines the color for the role badge.
+   */
+  getRoleBadgeColor(role: 'admin' | 'user' | 'manager'): string { // Added 'manager'
+    switch (role) {
+      case 'admin': return 'danger';
+      case 'manager': return 'warning';
+      default: return 'secondary';
     }
   }
 }

@@ -1,13 +1,13 @@
 import { Component } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../auth/auth.service'; // Verify path
-import { FormsModule } from '@angular/forms';
+import { FormsModule, NgForm } from '@angular/forms'; // Import NgForm
 import { CommonModule } from '@angular/common';
 import {
   AlertComponent,
   ContainerComponent, RowComponent, ColComponent, CardGroupComponent, CardComponent, CardBodyComponent,
   FormDirective, InputGroupComponent, InputGroupTextDirective, FormControlDirective, ButtonDirective,
-  SpinnerComponent // Added SpinnerComponent back for loading indication
+  SpinnerComponent // Ensure SpinnerComponent is imported
 } from '@coreui/angular';
 import { IconDirective } from '@coreui/icons-angular';
 
@@ -18,7 +18,7 @@ import { IconDirective } from '@coreui/icons-angular';
   standalone: true,
   imports: [
     CommonModule,
-    FormsModule,
+    FormsModule, // Required for ngModel and ngForm
     RouterLink, // For the register link
     AlertComponent,
     ContainerComponent,
@@ -33,36 +33,43 @@ import { IconDirective } from '@coreui/icons-angular';
     FormControlDirective,
     IconDirective,
     ButtonDirective,
-    SpinnerComponent // Added SpinnerComponent import
+    SpinnerComponent // Ensure SpinnerComponent is included here
   ]
 })
 export class LoginComponent {
 
-  // Use ngModel for two-way data binding in the template
-  loginData = {
-    email: '',
-    password: ''
-  };
+  // Properties to bind with ngModel in the template
+  email: string = '';
+  password: string = '';
   errorMessage: string | null = null;
   isLoading: boolean = false;
 
   constructor(private authService: AuthService, private router: Router) { }
 
   /**
-   * Handles the login form submission.
+   * Handles the login form submission, triggered by (ngSubmit).
+   * Accepts the NgForm instance if needed for validation status, etc.
    */
-  handleLogin(): void {
-    if (!this.loginData.email || !this.loginData.password) {
+  login(loginForm: NgForm): void { // Changed method name to match template
+    if (loginForm.invalid) { // Optional: Basic form validity check
+        this.errorMessage = 'Please fill in all required fields.';
+        return;
+    }
+
+    if (!this.email || !this.password) {
       this.errorMessage = 'Please enter both email and password.';
       return;
     }
 
-    console.log('Login Component: Attempting login for', this.loginData.email);
+    console.log('Login Component: Attempting login for', this.email);
     this.isLoading = true;
     this.errorMessage = null;
 
+    // Create the credentials object from component properties
+    const credentials = { email: this.email, password: this.password };
+
     // Call the AuthService login method
-    this.authService.login(this.loginData).subscribe({
+    this.authService.login(credentials).subscribe({
       next: (isLoggedIn) => {
         this.isLoading = false;
         if (isLoggedIn) {
@@ -71,12 +78,12 @@ export class LoginComponent {
           this.router.navigate(['/dashboard']);
         } else {
           console.warn('Login Component: Login failed (AuthService returned false).');
-          // The AuthService already logs detailed errors, provide a user-friendly message
+          // The AuthService logs detailed errors, provide a user-friendly message
           this.errorMessage = 'Login failed. Please check your credentials.';
         }
       },
       error: (error) => {
-        // Although AuthService returns false on API error now, catch potential network/unexpected errors
+        // Catch potential network/unexpected errors
         this.isLoading = false;
         console.error('Login Component: Unexpected error during login:', error);
         this.errorMessage = error.message || 'An unexpected error occurred. Please try again.';

@@ -1,45 +1,47 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
-import { AuthService } from '../auth/auth.service'; // Correct path might be needed
 
-// Define an interface for the Earning structure based on your DB data
+// Define an interface for the Earning structure
 export interface Earning {
-  _id?: string; // MongoDB ID, optional on creation
-  id: string;   // Your custom unique ID (required)
-  guild_id: string; // Changed to string based on GuildConfig
-  date: string; // Consider using Date objects if consistency allows
+  _id?: string;      // MongoDB ID
+  id: string;        // Your custom unique ID
+  guild_id: string;  // Discord Guild ID
+  date: string;      // Date string
   total_cut: number;
   gross_revenue: number;
   period: string;
   shift: string;
   role: string;
-  models: string; // Could be string[] if multiple models
+  models: string;    // Change to string[] if multiple models allowed
   hours_worked: number;
-  user_mention: string;
+  user_mention: string; // Discord user mention string
+}
+
+interface DeleteResponse {
+  message?: string;
+  msg?: string;
 }
 
 @Injectable({
   providedIn: 'root'
 })
 export class EarningsService {
-  private apiUrl = '/api/earnings'; // Base URL for earnings endpoints
+  private apiUrl = '/api/earnings'; // Base URL
 
-  // AuthService might still be needed if you need user info for requests, 
-  // but not for adding the token itself.
-  constructor(private http: HttpClient, private authService: AuthService) { }
-
-  // Note: AuthInterceptor handles adding the Authorization header.
+  constructor(private http: HttpClient) { }
 
   /**
    * GET /api/earnings/:guild_id
-   * List all earnings for a specific guild.
+   * Fetches all earning records for a specific guild.
+   * Renamed from getGuildEarnings to match usage in component
    */
   getGuildEarnings(guildId: string): Observable<Earning[]> {
     if (!guildId) {
-      return throwError(() => new Error('Guild ID is required'));
+      return throwError(() => new Error('Guild ID cannot be empty when fetching earnings.'));
     }
+    console.log(`EarningsService: Fetching earnings for guild ${guildId}...`);
     return this.http.get<Earning[]>(`${this.apiUrl}/${guildId}`).pipe(
       catchError(this.handleError)
     );
@@ -47,31 +49,32 @@ export class EarningsService {
 
   /**
    * POST /api/earnings/:guild_id
-   * Create a new earning record for a specific guild.
-   * Requires custom 'id' field in the earningData payload.
+   * Creates a new earning record for a specific guild.
    */
   createEarning(guildId: string, earningData: Earning): Observable<Earning> {
     if (!guildId) {
-      return throwError(() => new Error('Guild ID is required'));
+      return throwError(() => new Error('Guild ID cannot be empty for creating an earning.'));
     }
-    if (!earningData || !earningData.id) {
-      return throwError(() => new Error('Earning data with custom ID is required'));
+    if (!earningData?.id) {
+      return throwError(() => new Error('Earning data must include a unique custom ID.'));
     }
-    // Ensure guild_id matches path param if needed
-    earningData.guild_id = guildId; 
-    return this.http.post<Earning>(`${this.apiUrl}/${guildId}`, earningData).pipe(
+    console.log(`EarningsService: Creating earning with ID ${earningData.id} for guild ${guildId}...`);
+    const payload: Earning = { ...earningData, guild_id: guildId };
+    delete payload._id;
+    return this.http.post<Earning>(`${this.apiUrl}/${guildId}`, payload).pipe(
       catchError(this.handleError)
     );
   }
 
   /**
    * GET /api/earnings/entry/:custom_id
-   * Get a specific earning by its custom id.
+   * Fetches a specific earning record by its custom ID.
    */
   getEarningByCustomId(customId: string): Observable<Earning> {
      if (!customId) {
-      return throwError(() => new Error('Custom Earning ID is required'));
+      return throwError(() => new Error('Custom Earning ID cannot be empty.'));
     }
+    console.log(`EarningsService: Fetching earning with custom ID ${customId}...`);
     return this.http.get<Earning>(`${this.apiUrl}/entry/${customId}`).pipe(
       catchError(this.handleError)
     );
@@ -79,44 +82,47 @@ export class EarningsService {
 
   /**
    * PUT /api/earnings/entry/:custom_id
-   * Update a specific earning by its custom id.
+   * Updates a specific earning record by its custom ID.
    */
   updateEarningByCustomId(customId: string, updateData: Partial<Earning>): Observable<Earning> {
     if (!customId) {
-      return throwError(() => new Error('Custom Earning ID is required'));
+      return throwError(() => new Error('Custom Earning ID cannot be empty for update.'));
     }
-    // Remove _id and id from update payload if present, as they shouldn't be changed directly via PUT
-    // delete updateData._id;
-    // delete updateData.id; // Custom ID is the identifier, should not be changed
-    // delete updateData.guild_id; // Guild ID should likely not be changed
-
-    return this.http.put<Earning>(`${this.apiUrl}/entry/${customId}`, updateData).pipe(
+    console.log(`EarningsService: Updating earning with custom ID ${customId}...`);
+    const payload = { ...updateData };
+    delete payload._id;
+    delete payload.id;
+    delete payload.guild_id;
+    return this.http.put<Earning>(`${this.apiUrl}/entry/${customId}`, payload).pipe(
       catchError(this.handleError)
     );
   }
 
   /**
-   * DELETE /api/earnings/entry/:custom_id
-   * Delete a specific earning by its custom id.
+   * DELETE /api/earnings/:guild_id/:earning_id (assuming this route exists)
+   * Deletes a specific earning record using guild ID and custom earning ID.
+   * Added this method to match usage in component.
    */
-  deleteEarningByCustomId(customId: string): Observable<{ msg: string }> {
-    if (!customId) {
-      return throwError(() => new Error('Custom Earning ID is required'));
+  deleteEarning(guildId: string, earningId: string): Observable<DeleteResponse> {
+    if (!guildId || !earningId) {
+      return throwError(() => new Error('Guild ID and Earning ID cannot be empty for delete.'));
     }
-    return this.http.delete<{ msg: string }>(`${this.apiUrl}/entry/${customId}`).pipe(
+    console.log(`EarningsService: Deleting earning with custom ID ${earningId} for guild ${guildId}...`);
+    // Adjust URL structure based on your actual API endpoint for deletion
+    // Common patterns: /api/earnings/:guild_id/:earning_id or /api/earnings/entry/:earning_id
+    // Assuming /api/earnings/:guild_id/:earning_id based on component usage
+    return this.http.delete<DeleteResponse>(`${this.apiUrl}/${guildId}/${earningId}`).pipe(
       catchError(this.handleError)
     );
   }
 
   // --- Error Handling ---
   private handleError(error: HttpErrorResponse): Observable<never> {
-    let errorMessage = 'An unknown error occurred!';
+    let errorMessage = 'An unknown error occurred in Earnings Service!';
     if (error.error instanceof ErrorEvent) {
-      // Client-side or network error
-      errorMessage = `Client Error: ${error.error.message}`;
+      errorMessage = `Network Error: ${error.message}`;
     } else {
-      // Backend returned an unsuccessful response code.
-      errorMessage = `Server Error (Code: ${error.status}): ${error.error?.msg || error.message}`;
+      errorMessage = `Server Error (Code: ${error.status}): ${error.error?.message || error.error?.msg || 'Unknown server error'}`;
     }
     console.error('EarningsService Error:', errorMessage, error);
     return throwError(() => new Error(errorMessage));

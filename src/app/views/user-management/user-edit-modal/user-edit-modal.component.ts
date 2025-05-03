@@ -1,288 +1,283 @@
 import { Component, Input, Output, EventEmitter, OnInit, OnChanges, SimpleChanges } from '@angular/core';
-import { FormBuilder, FormGroup, FormArray, FormControl, Validators, ReactiveFormsModule } from '@angular/forms'; // Import ReactiveFormsModule
-import { CommonModule } from '@angular/common'; // Import CommonModule
-import { UserService, User } from '../../../services/user.service'; // Adjust path
+import { FormBuilder, FormGroup, FormControl, FormArray, Validators, ReactiveFormsModule } from '@angular/forms'; // Added FormArray
+import { CommonModule } from '@angular/common';
+import { UserService, User, UserUpdateData } from '../../../services/user.service'; // Adjust path
+import { GuildConfigService } from '../../../services/guild-config.service'; // Import GuildConfigService
 import { AuthService } from '../../../auth/auth.service'; // To check if editing self
-import { finalize } from 'rxjs/operators';
-import { 
-    ModalModule, 
-    AlertComponent, 
-    SpinnerComponent, 
-    GridModule, 
-    FormModule, // For c-form-check, etc.
-    ButtonDirective // For c-button
-} from '@coreui/angular'; // Import necessary CoreUI modules/components
+import { finalize, tap, catchError } from 'rxjs/operators';
+import { of } from 'rxjs'; // Import 'of' for catchError
+
+// CoreUI Modules
+import {
+  ModalModule,
+  AlertModule,
+  SpinnerModule,
+  GridModule,
+  FormModule, // Includes FormCheckComponent, FormSelectDirective etc.
+  ButtonModule
+} from '@coreui/angular';
 
 @Component({
   selector: 'app-user-edit-modal',
-  standalone: true, // Make component standalone
-  imports: [ // Add imports array
-    CommonModule, // For *ngIf, *ngFor
-    ReactiveFormsModule, // For formGroup, formControlName, etc.
-    ModalModule, // For c-modal, c-modal-header, etc.
-    AlertComponent, // For c-alert
-    SpinnerComponent, // For c-spinner
-    GridModule, // For c-row, c-col
-    FormModule, // For c-form-check, form controls
-    ButtonDirective // For c-button
-  ],
   templateUrl: './user-edit-modal.component.html',
-  styleUrls: ['./user-edit-modal.component.scss']
+  styleUrls: ['./user-edit-modal.component.scss'],
+  standalone: true,
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    ModalModule,
+    AlertModule,
+    SpinnerModule,
+    GridModule,
+    FormModule,
+    ButtonModule
+  ]
 })
 export class UserEditModalComponent implements OnInit, OnChanges {
 
   @Input() visible: boolean = false;
-  @Input() userToEdit: User | null = null;
+  @Input() userToEdit: User | null = null; // Changed input name to match template errors
   @Output() visibleChange = new EventEmitter<boolean>();
-  @Output() userSaved = new EventEmitter<User>();
+  @Output() userSaved = new EventEmitter<User | null>();
 
   userForm!: FormGroup;
   isLoading: boolean = false;
   errorMessage: string | null = null;
-  
-  availableGuilds: string[] = [];
+  title: string = 'Edit User';
+
+  // Guild Management State
   loadingGuilds: boolean = false;
-  currentUserId: string | null = null; // Prevent admin from demoting self
+  availableGuilds: string[] = []; // Holds available guild IDs
+  guildLoadError: string | null = null;
+
+  currentUserId: string | null = null;
   isEditingSelf: boolean = false;
 
   constructor(
     private fb: FormBuilder,
     private userService: UserService,
-    private authService: AuthService
+    private authService: AuthService,
+    private guildConfigService: GuildConfigService // Inject GuildConfigService
   ) { }
 
   ngOnInit(): void {
     this.currentUserId = this.authService.getUserId();
     this.userForm = this.buildForm();
-    
-    // Listen to role changes to enable/disable managedGuilds
+
+    // Listen for role changes to load/clear guilds and manage checkbox states
     this.userForm.get('role')?.valueChanges.subscribe(role => {
-        this.toggleManagedGuildsControl(role);
+      if (role === 'manager') {
+        this.loadAvailableGuilds();
+      } else {
+        this.clearManagedGuilds(); // Clear if role is not manager
+        this.availableGuilds = []; // Clear available guilds list
+        this.guildLoadError = null;
+      }
     });
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['visible'] && this.visible) {
-      console.log('User edit modal opening for:', this.userToEdit?.email);
-      this.isEditingSelf = !!this.currentUserId && !!this.userToEdit && this.userToEdit._id === this.currentUserId;
-      this.loadAvailableGuilds(); // Load guilds when modal opens
-      if (this.userToEdit) {
-          this.patchForm(this.userToEdit);
+    if (changes['visible']) {
+      if (this.visible) {
+        this.prepareModal();
       } else {
-          // Should not happen if modal is always opened with a user
-          this.errorMessage = "User data is missing.";
-          if (this.userForm) this.userForm.reset(); // Check if userForm exists before reset
+        this.resetModalState(false);
       }
     }
+    // If already visible, react to data changes
+    else if (this.visible && changes['userToEdit']) {
+        this.prepareModal();
+    }
+  }
 
-    if (changes['visible'] && !this.visible) {
-       this.resetModalState();
+  private prepareModal(): void {
+    this.errorMessage = null;
+    this.guildLoadError = null;
+    this.isLoading = false;
+    this.loadingGuilds = false;
+    this.availableGuilds = [];
+    this.userForm.reset(); // Always reset before patching
+    this.clearManagedGuilds(); // Ensure FormArray is empty before patching
+
+    if (this.userToEdit) {
+      this.title = `Edit User (${this.userToEdit.email})`;
+      this.isEditingSelf = !!this.currentUserId && this.userToEdit._id === this.currentUserId;
+      this.patchForm(this.userToEdit);
+      // If the user is a manager, load guilds immediately
+      if (this.userToEdit.role === 'manager') {
+          this.loadAvailableGuilds();
+      }
+    } else {
+      this.errorMessage = "Error: User data is missing.";
+      this.title = "Edit User";
+      this.isEditingSelf = false;
     }
   }
 
   private buildForm(): FormGroup {
     return this.fb.group({
-        // Email is usually not editable
-        email: [{ value: '', disabled: true }], 
-        role: ['manager', Validators.required], // Default to manager?
-        // managedGuilds uses a FormArray of FormControls holding boolean values (checked state)
-        // We map availableGuilds to this structure
-        managedGuilds: this.fb.array([]) 
+      email: [{ value: '', disabled: true }],
+      role: ['user', Validators.required],
+      // FormArray to hold the boolean controls for each managed guild checkbox
+      managedGuilds: this.fb.array([])
     });
   }
-  
-   private buildManagedGuildsArray(guildIds: string[], selectedGuilds: string[] | undefined): FormArray {
-      const formArray = this.fb.array<FormControl>([]);
-      (guildIds || []).forEach(id => {
-          const isSelected = (selectedGuilds || []).includes(id);
-          formArray.push(this.fb.control(isSelected));
-      });
-      return formArray;
+
+  // Helper to get the FormArray controls for the template
+  get managedGuildsControls() {
+    return (this.userForm.get('managedGuilds') as FormArray).controls;
   }
 
   private patchForm(user: User): void {
-    if (!user || !this.userForm) return;
-    
+    if (!user) return;
     this.userForm.patchValue({
         email: user.email,
         role: user.role
-        // managedGuilds is handled separately
     });
-    
-    // Rebuild the managedGuilds FormArray based on availableGuilds and user's managedGuilds
-    this.userForm.setControl('managedGuilds', 
-       this.buildManagedGuildsArray(this.availableGuilds, user.managedGuilds)
-    );
-    
-    // Set initial state for enabled/disabled based on patched role
-    this.toggleManagedGuildsControl(user.role);
-    
-    // Prevent admin from changing their own role
-     if (this.isEditingSelf && user.role === 'admin') {
-       this.userForm.get('role')?.disable();
-     } else {
-        this.userForm.get('role')?.enable();
-     }
 
-    console.log('User form patched:', this.userForm.value);
-  }
-  
-   private toggleManagedGuildsControl(role: string): void {
-    const managedGuildsControl = this.userForm.get('managedGuilds');
-    if (!managedGuildsControl) return;
+    // Clear existing guild controls before patching new ones
+    this.clearManagedGuilds();
 
-    if (role === 'manager') {
-      managedGuildsControl.enable();
-    } else { // Admin role or other
-      managedGuildsControl.disable();
-      // Optionally clear selection if role changes from manager
-      // managedGuildsControl.reset(); // Resets to initial values (might not be desired)
-      // Or set all controls to false
-       (managedGuildsControl as FormArray).controls.forEach(control => control.setValue(false));
+    // We will patch managedGuilds after availableGuilds are loaded if role is manager
+
+    const roleControl = this.userForm.get('role');
+    if (this.isEditingSelf && user.role === 'admin') {
+      roleControl?.disable();
+    } else {
+      roleControl?.enable();
     }
   }
 
-  // Fetch available Guild IDs for the multi-select
+  /**
+   * Loads all available guild IDs from the GuildConfigService.
+   */
   private loadAvailableGuilds(): void {
+    console.log('UserEditModal: Loading available guilds...');
     this.loadingGuilds = true;
-    this.errorMessage = null; // Clear previous errors
-    this.userService.getAvailableGuilds()
-      .pipe(finalize(() => this.loadingGuilds = false))
-      .subscribe({
-        next: (guildIds) => {
-          this.availableGuilds = guildIds || [];
-          console.log('Available guilds loaded:', this.availableGuilds);
-          // Re-patch form if user data is already loaded to build FormArray correctly
-          if(this.userToEdit) {
-             this.patchForm(this.userToEdit); 
-          }
-        },
-        error: (err) => {
-          console.error('Error loading available guilds:', err);
-          this.errorMessage = `Failed to load available guilds: ${err.message || 'Unknown error'}`;
-        }
-      });
-  }
-  
-   // Getter for the FormArray to use in template
-  get managedGuildsControls(): FormControl[] {
-     const fa = this.userForm.get('managedGuilds') as FormArray;
-     return fa ? (fa.controls as FormControl[]) : [];
+    this.guildLoadError = null;
+    this.clearManagedGuilds(); // Clear previous controls
+
+    this.guildConfigService.getAllGuildConfigs().pipe(
+      finalize(() => { this.loadingGuilds = false; }),
+      catchError(err => {
+        console.error('UserEditModal: Error loading available guilds:', err);
+        this.guildLoadError = err.message || 'Failed to load available guilds.';
+        this.availableGuilds = [];
+        return of([]); // Return empty array on error
+      })
+    ).subscribe(configs => {
+      this.availableGuilds = configs.map(config => config.guild_id);
+      console.log('UserEditModal: Available guilds loaded:', this.availableGuilds);
+      this.populateManagedGuildCheckboxes();
+    });
   }
 
-  // --- Modal Actions ---
+  /**
+   * Populates the managedGuilds FormArray based on availableGuilds and userToEdit data.
+   */
+  private populateManagedGuildCheckboxes(): void {
+    const managedGuildsArray = this.userForm.get('managedGuilds') as FormArray;
+    this.clearManagedGuilds(); // Ensure it's empty before adding
+
+    this.availableGuilds.forEach(guildId => {
+      // Check if the user being edited manages this guild
+      const isManaged = this.userToEdit?.managed_guild_ids?.includes(guildId) ?? false;
+      managedGuildsArray.push(new FormControl(isManaged));
+    });
+    console.log('UserEditModal: Populated managed guild checkboxes.', managedGuildsArray.value);
+  }
+
+  /**
+   * Clears the managedGuilds FormArray.
+   */
+  private clearManagedGuilds(): void {
+    const managedGuildsArray = this.userForm.get('managedGuilds') as FormArray;
+    while (managedGuildsArray.length !== 0) {
+      managedGuildsArray.removeAt(0);
+    }
+  }
+
   saveChanges(): void {
-    if (!this.userToEdit || !this.userToEdit._id) {
-      this.errorMessage = 'Cannot save. User data or ID is missing.';
+    if (!this.userToEdit?._id) {
+      this.errorMessage = 'Cannot save: User ID is missing.';
       return;
     }
-    
+
     this.userForm.markAllAsTouched();
     if (this.userForm.invalid) {
-       this.errorMessage = 'Please correct the errors in the form. Check required fields.';
-       // Log specific errors for debugging
-       console.error('Form Errors:', this.getFormValidationErrors());
-       return;
+      this.errorMessage = 'Please select a valid role.'; // Or other validation message
+      return;
     }
-    
-    // Prevent admin self-demotion (extra check)
-    const intendedRole = this.userForm.getRawValue().role;
-    if (this.isEditingSelf && intendedRole !== 'admin') {
-        this.errorMessage = "Admin cannot change their own role.";
+
+    const formValue = this.userForm.getRawValue(); // Get raw value for potentially disabled role
+
+    if (this.isEditingSelf && formValue.role !== 'admin') {
+        this.errorMessage = "Action denied: Admin cannot change their own role.";
+        alert(this.errorMessage); // Simple alert for now
         return;
     }
 
     this.isLoading = true;
     this.errorMessage = null;
 
-    const formValue = this.userForm.getRawValue();
-    
-    // Extract selected managed guilds from the FormArray
-    let selectedGuilds: string[] = [];
-    if (formValue.role === 'manager') {
-         selectedGuilds = (formValue.managedGuilds as boolean[])
-           .map((checked, index) => checked ? this.availableGuilds[index] : null)
-           .filter((id): id is string => id !== null);
-    }
-
-    // Ensure updateData keys match the backend expectations (role, managedGuilds)
-    const updateData: Partial<Pick<User, 'role' | 'managedGuilds'>> = {
+    const updateData: UserUpdateData = {
         role: formValue.role,
-        managedGuilds: formValue.role === 'manager' ? selectedGuilds : [] // Send empty array if not manager
+        // Calculate managed_guild_ids based on the checkbox values if role is manager
+        managed_guild_ids: formValue.role === 'manager'
+            ? this.availableGuilds.filter((_, index) => formValue.managedGuilds[index])
+            : [] // Empty array if not a manager
     };
-    
-    console.log('Updating user:', this.userToEdit._id, updateData);
+
+    console.log(`UserEditModal: Updating user ${this.userToEdit._id} with:`, updateData);
 
     this.userService.updateUser(this.userToEdit._id, updateData)
       .pipe(finalize(() => this.isLoading = false))
       .subscribe({
         next: (savedUser) => {
+          console.log('UserEditModal: Update successful', savedUser);
           this.userSaved.emit(savedUser);
-          this.closeModal();
+          this.closeModal(false);
         },
-        error: (err) => {
-           // Attempt to get a more specific error message
-           const message = err?.error?.message || err?.message || 'Failed to update user.';
-           this.errorMessage = message;
-           console.error('Update user error:', err);
+        error: (err: any) => {
+          this.errorMessage = err?.message || 'Failed to update user.';
+          console.error('UserEditModal: Update error:', err);
         }
       });
   }
-  
-   // Helper to get form validation errors for debugging
-   private getFormValidationErrors() {
-       const errors: any = {};
-       Object.keys(this.userForm.controls).forEach(key => {
-           const controlErrors = this.userForm.get(key)?.errors;
-           if (controlErrors) {
-               errors[key] = controlErrors;
-           }
-       });
-       // Check FormArray errors if applicable
-       const managedGuildsErrors = (this.userForm.get('managedGuilds') as FormArray)?.errors;
-       if(managedGuildsErrors) {
-           errors['managedGuilds'] = managedGuildsErrors;
-       }
-       return errors;
-   }
 
+  closeModal(emitNull: boolean = true): void {
+    this.handleVisibleChange(false, emitNull);
+  }
 
-  closeModal(): void {
-    this.visible = false;
-    this.visibleChange.emit(this.visible);
-    // Reset happens in ngOnChanges when visibility changes to false
+  handleVisibleChange(isVisible: boolean, emitNullEvent: boolean = true): void {
+    if (this.visible === isVisible) return;
+
+    this.visible = isVisible;
+    this.visibleChange.emit(isVisible);
+
+    if (!isVisible && emitNullEvent) {
+      this.userSaved.emit(null);
+      this.resetModalState(false);
+    }
   }
-  
-  // Ensure the event type is boolean as expected by CoreUI's visibleChange
-  handleVisibleChange(event: boolean): void {
-     this.visible = event;
-     this.visibleChange.emit(event);
-     // Reset happens in ngOnChanges when visibility changes to false
-  }
-  
-  private resetModalState(): void {
-       console.log('Resetting user modal state');
-       this.isLoading = false;
-       this.errorMessage = null;
-       this.userToEdit = null;
-       this.isEditingSelf = false;
-       // No need to reload availableGuilds unless they change frequently
-       if (this.userForm) {
-            this.userForm.reset({ role: 'manager', email: { value: '', disabled: true } }); // Reset with default role and disabled email
-            // Clear the FormArray manually
-             const managedGuildsArray = this.userForm.get('managedGuilds') as FormArray;
-             if (managedGuildsArray) {
-                 // Ensure the array is properly cleared and reset
-                 while (managedGuildsArray.length) {
-                     managedGuildsArray.removeAt(0);
-                 }
-             }
-             // Re-apply initial state for the guilds control based on default role
-             this.toggleManagedGuildsControl('manager'); 
-             // Ensure role control is enabled after reset unless it was disabled for self-edit admin
-             if (!this.isEditingSelf || this.userForm.get('role')?.value !== 'admin') {
-                 this.userForm.get('role')?.enable();
-             }
-       }
+
+  private resetModalState(calledFromVisibleChange: boolean): void {
+    console.log('UserEditModal: Resetting state');
+    this.isLoading = false;
+    this.loadingGuilds = false;
+    this.errorMessage = null;
+    this.guildLoadError = null;
+    this.userToEdit = null;
+    this.isEditingSelf = false;
+    this.availableGuilds = [];
+    if (this.userForm) {
+        this.clearManagedGuilds(); // Clear form array
+        this.userForm.reset({
+            role: 'user',
+            email: { value: '', disabled: true },
+            managedGuilds: [] // Ensure array is reset
+        });
+        this.userForm.get('role')?.enable();
+    }
   }
 }

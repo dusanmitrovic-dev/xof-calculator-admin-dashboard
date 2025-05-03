@@ -10,7 +10,6 @@
         <c-card-header>
           <strong>Guild Configuration</strong>
           <div class="float-end">
-            <!-- Use ng-container for the conditional button rendering -->
             <ng-container *ngIf="guildConfig && !loadingConfig; else configLoadingButtons">
               <button cButton color="primary" variant="outline" size="sm" (click)="openEditConfigModal()">
                 <svg cIcon name="cilPencil" size="sm" title="Edit Config"></svg> Edit Config
@@ -33,20 +32,18 @@
            <div *ngIf="loadingConfig" class="text-center py-3"><c-spinner aria-hidden="true" size="sm"></c-spinner> Loading...</div>
            <c-alert color="danger" *ngIf="configError">{{ configError }}</c-alert>
 
-           <!-- Display config details only when loaded, not errored, and exists -->
            <div *ngIf="!loadingConfig && !configError && guildConfig">
              <dl class="row">
                <dt class="col-sm-3">Guild ID</dt><dd class="col-sm-9">{{ guildConfig.guild_id }}</dd>
-               <dt class="col-sm-3">Models</dt><dd class="col-sm-9">{{ guildConfig.models.join(', ') || '-' }}</dd>
-               <dt class="col-sm-3">Shifts</dt><dd class="col-sm-9">{{ guildConfig.shifts.join(', ') || '-' }}</dd>
-               <dt class="col-sm-3">Periods</dt><dd class="col-sm-9">{{ guildConfig.periods.join(', ') || '-' }}</dd>
+               <dt class="col-sm-3">Models</dt><dd class="col-sm-9">{{ guildConfig.models?.join(', ') || '-' }}</dd>
+               <dt class="col-sm-3">Shifts</dt><dd class="col-sm-9">{{ guildConfig.shifts?.join(', ') || '-' }}</dd>
+               <dt class="col-sm-3">Periods</dt><dd class="col-sm-9">{{ guildConfig.periods?.join(', ') || '-' }}</dd>
                <dt class="col-sm-3">Display Settings</dt><dd class="col-sm-9"><pre>{{ guildConfig.display_settings | json }}</pre></dd>
                <dt class="col-sm-3">Bonus Rules</dt>
                <dd class="col-sm-9">
-                  <!-- Use @if for modern control flow -->
                   @if (guildConfig.bonus_rules && guildConfig.bonus_rules.length > 0) {
                     <ul class="list-unstyled mb-0">
-                      @for (rule of guildConfig.bonus_rules; track rule) {
+                      @for (rule of guildConfig.bonus_rules; track $index) { <!-- Changed track -->
                         <li>${{ rule.amount }} bonus: ${{ rule.from }} - ${{ rule.to }}</li>
                       }
                     </ul>
@@ -55,23 +52,25 @@
                   }
                </dd>
                <dt class="col-sm-3">Commission Settings</dt><dd class="col-sm-9"><pre>{{ guildConfig.commission_settings | json }}</pre></dd>
-               <dt class="col-sm-3">Registered Roles</dt>
+               
+               <!-- Update to use commission_settings.roles -->
+               <dt class="col-sm-3">Registered Role Commissions</dt>
                <dd class="col-sm-9">
-                 <!-- Use @if for modern control flow -->
-                 @if (guildConfig.roles && objectKeys(guildConfig.roles).length > 0) {
+                 @if (guildConfig.commission_settings?.roles && objectKeys(guildConfig.commission_settings.roles).length > 0) {
                    <ul class="list-unstyled mb-0">
-                      <!-- Use @for -->
-                     @for (roleId of objectKeys(guildConfig.roles); track roleId) {
-                       <li>{{ roleId }}: {{ guildConfig.roles[roleId] }}%</li> <!-- Use direct access -->
+                     @for (roleId of objectKeys(guildConfig.commission_settings.roles); track roleId) {
+                       <li>{{ roleId }}: {{ guildConfig.commission_settings.roles[roleId].commission_percentage }}%</li> 
                      }
                    </ul>
                  } @else {
                    -
                  }
                </dd>
+               <!-- Optionally display user-specific commissions if needed -->
+               <!-- <dt class="col-sm-3">User Commission Overrides</dt> -->
+               <!-- <dd class="col-sm-9">...</dd> -->
              </dl>
            </div>
-           <!-- Show "not found" only when loaded, not errored, and config is null -->
            <div *ngIf="!loadingConfig && !configError && !guildConfig" class="text-center py-3">No configuration found for this guild.</div>
         </c-card-body>
       </c-card>
@@ -81,7 +80,7 @@
          <c-card-header>
            <strong>Earnings Records</strong>
            <div class="float-end">
-             <button cButton color="success" variant="outline" size="sm" (click)="openAddEarningModal()" [disabled]="loadingEarnings || !guildConfig"> <!-- Also disable if no config -->
+             <button cButton color="success" variant="outline" size="sm" (click)="openAddEarningModal()" [disabled]="loadingEarnings || !guildConfig">
                <svg cIcon name="cilPlus" size="sm"></svg> Add Earning
              </button>
            </div>
@@ -90,9 +89,8 @@
             <div *ngIf="loadingEarnings" class="text-center py-3"><c-spinner aria-hidden="true" size="sm"></c-spinner> Loading...</div>
             <c-alert color="danger" *ngIf="earningsError">{{ earningsError }}</c-alert>
 
-            <!-- Use modern @if/@for -->
             @if (!loadingEarnings && !earningsError) {
-              @if (earnings.length > 0) {
+              @if (earnings && earnings.length > 0) {
                 <table cTable class="mb-0 border" hover responsive striped align="middle">
                   <thead cTableColor="light">
                     <tr>
@@ -135,23 +133,20 @@
 </c-row>
 
 <!-- Guild Config Edit Modal -->
-<!-- Use modern @if syntax -->
-@if (isConfigEditModalVisible && guildConfig) {
+@if (isConfigEditModalVisible) { <!-- Removed guildConfig check as modal handles its own state -->
   <app-guild-config-edit-modal
     [(visible)]="isConfigEditModalVisible"
-    [guildConfig]="guildConfig"
+    [guildConfig]="guildConfig" <!-- Pass the config data -->
     (configSaved)="onConfigSaved($event)">
   </app-guild-config-edit-modal>
 }
 
-
 <!-- Earning Add/Edit Modal -->
-<!-- Use modern @if syntax -->
 @if (isEarningModalVisible && guildId) {
   <app-earning-edit-modal
     [(visible)]="isEarningModalVisible"
     [guildId]="guildId"
-    [earningToEdit]="selectedEarningForEdit"
+    [earningToEdit]="selectedEarningForEdit" <!-- Binding matches Input name -->
     (earningSaved)="onEarningSaved($event)">
   </app-earning-edit-modal>
 }

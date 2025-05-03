@@ -1,0 +1,79 @@
+<!-- src/app/views/guild-management/earnings-list/earnings-list.component.html -->
+<c-row>
+  <c-col xs="12">
+    <c-card class="mb-4">
+      <c-card-header>
+        <strong>Earnings for {{ guildName || 'Guild ' + guildId }}</strong>
+        <div class="float-end">
+          <button cButton color="primary" size="sm" (click)="openCreateEarningModal()">
+            <c-icon name="cilPlus"></c-icon> Add Earning
+          </button>
+        </div>
+      </c-card-header>
+      <c-card-body>
+        <!-- Loading Indicator -->
+        <c-spinner *ngIf="isLoading"></c-spinner>
+
+        <!-- Error Message -->
+        <c-alert color="danger" *ngIf="errorMessage && !isLoading">
+          {{ errorMessage }}
+        </c-alert>
+
+        <!-- Earnings Table -->
+        <div class="table-responsive" *ngIf="!isLoading && !errorMessage">
+          <table cTable hover striped class="mt-3">
+            <thead>
+              <tr>
+                <th scope="col">Date</th>
+                <th scope="col">User</th>
+                <th scope="col">Shift</th>
+                <th scope="col">Role</th>
+                <th scope="col">Models</th>
+                <th scope="col" class="text-end">Hours</th>
+                <th scope="col" class="text-end">Gross Revenue</th>
+                <th scope="col" class="text-end">Total Cut</th>
+                <!-- Optionally show ID if needed for debugging -->
+                <!-- <th scope="col">ID</th> -->
+                <th scope="col">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let earning of earnings">
+                <td>{{ earning.date | date:'shortDate' }}</td>
+                <td>{{ earning.user_mention }}</td>
+                <td>{{ earning.shift }}</td>
+                <td>{{ earning.role }}</td>
+                <td>{{ earning.models }}</td>
+                <td class="text-end">{{ earning.hours_worked }}</td>
+                <td class="text-end">{{ earning.gross_revenue | currency }}</td>
+                <td class="text-end">{{ earning.total_cut | currency }}</td>
+                <!-- <td>{{ earning.id }}</td> -->
+                <td>
+                  <button cButton color="dark" variant="outline" size="sm" class="me-1" title="Edit" (click)="openEditEarningModal(earning)">
+                    <c-icon name="cilPencil"></c-icon>
+                  </button>
+                  <button cButton color="danger" variant="outline" size="sm" title="Delete" (click)="deleteEarning(earning)">
+                    <c-icon name="cilTrash"></c-icon>
+                  </button>
+                </td>
+              </tr>
+              <tr *ngIf="!earnings || earnings.length === 0">
+                <td colspan="9" class="text-center">No earning records found for this guild.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </c-card-body>
+    </c-card>
+  </c-col>
+</c-row>
+
+<!-- Earning Edit/Create Modal -->
+<app-earning-edit-modal
+  [(visible)]="isEarningModalVisible"
+  [mode]="modalMode"
+  [earningData]="selectedEarningForEdit"
+  [guildId]="guildId" 
+  (earningSaved)="handleEarningSaved($event)"
+  (visibleChange)="handleModalClosed()" 
+/>
