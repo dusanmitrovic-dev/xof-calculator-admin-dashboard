@@ -15,7 +15,8 @@ import {
   ModalModule,
   UtilitiesModule
 } from '@coreui/angular';
-import { IconDirective } from '@coreui/icons-angular'; // Import IconDirective
+// import { IconDirective } from '@coreui/icons-angular'; // Import IconDirective REMOVED - Unused
+import { IconModule } from '@coreui/icons-angular'; // Import IconModule instead
 
 import { EarningsService, Earning } from '../../../services/earnings.service';
 import { EarningEditModalComponent } from '../earning-edit-modal/earning-edit-modal.component';
@@ -34,7 +35,8 @@ import { GuildConfigService } from '../../../services/guild-config.service';
     ButtonModule,
     TableModule,
     ModalModule,
-    IconDirective, // Ensure IconDirective is in the imports array
+    // IconDirective, // REMOVED - Unused
+    IconModule, // Added IconModule
     UtilitiesModule,
     CurrencyPipe,
     DatePipe,
