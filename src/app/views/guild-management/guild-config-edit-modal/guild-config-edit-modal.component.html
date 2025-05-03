@@ -1,6 +1,8 @@
 <c-modal id="guildConfigEditModal" [visible]="visible" (visibleChange)="handleVisibleChange($event)" backdrop="static" size="lg">
   <c-modal-header>
-    <h5 cModalTitle>Edit Guild Configuration ({{ guildConfig.guild_id }})</h5>
+    <!-- Use *ngIf to ensure guildConfig is loaded before accessing its properties -->
+    <h5 *ngIf="guildConfig" cModalTitle>Edit Guild Configuration ({{ guildConfig.guild_id }})</h5>
+    <h5 *ngIf="!guildConfig" cModalTitle>Edit Guild Configuration</h5> <!-- Fallback title -->
     <button (click)="closeModal()" cButtonClose></button>
   </c-modal-header>
   <c-modal-body>
@@ -154,7 +156,7 @@
   </c-modal-body>
   <c-modal-footer>
     <button (click)="closeModal()" cButton color="secondary">Cancel</button>
-    <button cButton color="primary" type="submit" (click)="saveChanges()" [disabled]="isLoading || configForm.invalid">
+    <button cButton color="primary" type="submit" (click)="saveChanges()" [disabled]="isLoading || (configForm && configForm.invalid)">
       <c-spinner *ngIf="isLoading" component="span" size="sm" aria-hidden="true"></c-spinner>
       {{ isLoading ? 'Saving...' : 'Save Changes' }}
     </button>
