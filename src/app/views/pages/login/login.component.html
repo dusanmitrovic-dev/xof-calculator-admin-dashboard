@@ -5,7 +5,8 @@
         <c-card-group class="mb-0">
           <c-card class="p-4">
             <c-card-body>
-              <form cForm #loginForm="ngForm" (ngSubmit)="login()"> <!-- Use ngSubmit -->
+              <!-- Pass loginForm to the login method -->
+              <form cForm #loginForm="ngForm" (ngSubmit)="login(loginForm)">
                 <h1>Login</h1>
                 <p class="text-body-secondary">Sign In to your account</p>
 
@@ -16,7 +17,7 @@
 
                 <c-input-group class="mb-3">
                   <span cInputGroupText>
-                    <svg cIcon name="cilEnvelopeClosed"></svg> <!-- Changed icon to envelope -->
+                    <svg cIcon name="cilEnvelopeClosed"></svg>
                   </span>
                   <input 
                     cFormControl 
@@ -26,16 +27,9 @@
                     [(ngModel)]="email" 
                     name="email" 
                     required 
-                    email #emailInput="ngModel" /> <!-- Added required and email validation -->
+                    email #emailInput="ngModel" /> 
                   </c-input-group>
-                  <!-- Optional: Basic validation message for email -->
-                  <!--
-                  <div *ngIf="emailInput.invalid && (emailInput.dirty || emailInput.touched)" class="text-danger small mb-3">
-                     <div *ngIf="emailInput.errors?.['required']">Email is required.</div>
-                     <div *ngIf="emailInput.errors?.['email']">Please enter a valid email address.</div>
-                  </div>
-                  -->
-
+                  
                 <c-input-group class="mb-4">
                   <span cInputGroupText>
                     <svg cIcon name="cilLockLocked"></svg>
@@ -47,18 +41,11 @@
                     type="password" 
                     [(ngModel)]="password" 
                     name="password" 
-                    required #passwordInput="ngModel" /> <!-- Added required -->
+                    required #passwordInput="ngModel" /> 
                 </c-input-group>
-                <!-- Optional: Basic validation message for password -->
-                 <!--
-                 <div *ngIf="passwordInput.invalid && (passwordInput.dirty || passwordInput.touched)" class="text-danger small mb-4">
-                    <div *ngIf="passwordInput.errors?.['required']">Password is required.</div>
-                 </div>
-                 -->
-
+                 
                 <c-row>
                   <c-col xs="6">
-                    <!-- Disable button while loading and if form is invalid -->
                     <button 
                       cButton 
                       class="px-4" 
@@ -70,7 +57,6 @@
                     </button>
                   </c-col>
                   <c-col class="text-right" xs="6">
-                    <!-- Implement forgot password functionality later if needed -->
                     <button cButton class="px-0" color="link" disabled>
                       Forgot password?
                     </button>
@@ -87,7 +73,6 @@
                   Don't have an account? Register now to manage your guild's
                   earnings and configurations.
                 </p>
-                <!-- Use routerLink for navigation -->
                 <button cButton class="mt-3" color="primary" [routerLink]="['/register']" variant="outline" type="button">
                   Register Now!
                 </button>
