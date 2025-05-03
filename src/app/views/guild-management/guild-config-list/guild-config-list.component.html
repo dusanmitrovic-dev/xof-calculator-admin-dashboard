@@ -133,10 +133,10 @@
 </c-row>
 
 <!-- Guild Config Edit Modal -->
-@if (isConfigEditModalVisible) { <!-- Removed guildConfig check as modal handles its own state -->
+@if (isConfigEditModalVisible) { 
   <app-guild-config-edit-modal
     [(visible)]="isConfigEditModalVisible"
-    [guildConfig]="guildConfig" <!-- Pass the config data -->
+    [guildConfig]="guildConfig" 
     (configSaved)="onConfigSaved($event)">
   </app-guild-config-edit-modal>
 }
@@ -146,7 +146,7 @@
   <app-earning-edit-modal
     [(visible)]="isEarningModalVisible"
     [guildId]="guildId"
-    [earningToEdit]="selectedEarningForEdit" <!-- Binding matches Input name -->
+    [earningToEdit]="selectedEarningForEdit" 
     (earningSaved)="onEarningSaved($event)">
   </app-earning-edit-modal>
 }
