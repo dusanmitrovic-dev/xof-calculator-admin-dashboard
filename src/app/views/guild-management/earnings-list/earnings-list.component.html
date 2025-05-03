@@ -71,8 +71,7 @@
 <!-- Earning Edit/Create Modal -->
 <app-earning-edit-modal
   [(visible)]="isEarningModalVisible"
-  [mode]="modalMode"
-  [earningData]="selectedEarningForEdit"
+  [earningToEdit]="selectedEarningForEdit" 
   [guildId]="guildId" 
   (earningSaved)="handleEarningSaved($event)"
 />
