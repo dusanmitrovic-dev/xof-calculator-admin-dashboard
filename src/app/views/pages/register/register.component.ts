@@ -6,7 +6,8 @@ import { IconDirective } from '@coreui/icons-angular';
 import {
   ContainerComponent, RowComponent, ColComponent, TextColorDirective, CardComponent, CardBodyComponent,
   FormDirective, InputGroupComponent, InputGroupTextDirective, FormControlDirective, ButtonDirective,
-  AlertComponent, SpinnerComponent // Ensure SpinnerComponent is imported
+  AlertComponent
+  // SpinnerComponent REMOVED - Unused
 } from '@coreui/angular';
 import { AuthService } from '../../../auth/auth.service'; // Verify path
 
@@ -44,8 +45,8 @@ export const passwordMatchValidator: ValidatorFn = (control: AbstractControl): {
     IconDirective,
     FormControlDirective, // Used with formControlName
     ButtonDirective,
-    AlertComponent,     // For displaying messages
-    SpinnerComponent    // For loading indicator
+    AlertComponent     // For displaying messages
+    // SpinnerComponent REMOVED - Unused
   ]
 })
 export class RegisterComponent {
