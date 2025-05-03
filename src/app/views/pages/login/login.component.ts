@@ -6,8 +6,8 @@ import { CommonModule } from '@angular/common';
 import {
   AlertComponent,
   ContainerComponent, RowComponent, ColComponent, CardGroupComponent, CardComponent, CardBodyComponent,
-  FormDirective, InputGroupComponent, InputGroupTextDirective, FormControlDirective, ButtonDirective,
-  SpinnerComponent // Ensure SpinnerComponent is imported
+  FormDirective, InputGroupComponent, InputGroupTextDirective, FormControlDirective, ButtonDirective
+  // SpinnerComponent REMOVED - Unused
 } from '@coreui/angular';
 import { IconDirective } from '@coreui/icons-angular';
 
@@ -32,8 +32,8 @@ import { IconDirective } from '@coreui/icons-angular';
     InputGroupTextDirective,
     FormControlDirective,
     IconDirective,
-    ButtonDirective,
-    SpinnerComponent // Ensure SpinnerComponent is included here
+    ButtonDirective
+    // SpinnerComponent REMOVED - Unused
   ]
 })
 export class LoginComponent {
