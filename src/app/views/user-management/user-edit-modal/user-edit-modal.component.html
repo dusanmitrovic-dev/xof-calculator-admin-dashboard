@@ -26,6 +26,8 @@
         <div class="col-sm-9">
            <select cSelect id="userRole" formControlName="role" required
                   [class.is-invalid]="userForm.get('role')?.invalid && userForm.get('role')?.touched">
+              <!-- Add a default 'user' option if needed, otherwise stick to manager/admin -->
+              <option value="user">User</option> 
               <option value="manager">Manager</option>
               <option value="admin">Admin</option>
            </select>
@@ -48,12 +50,16 @@
              <div *ngIf="availableGuilds.length === 0 && !loadingGuilds" class="form-text text-muted mb-2">
                No available guilds found in the system configuration.
              </div>
+             <div *ngIf="guildLoadError" class="alert alert-warning small p-2">
+                {{ guildLoadError }}
+             </div>
 
              <c-row>
                  <!-- Iterate over availableGuilds and map to FormArray controls by index -->
                  <c-col md="6" *ngFor="let guildId of availableGuilds; let i = index">
                      <c-form-check>
-                         <input cFormCheckInput type="checkbox" [formControl]="managedGuildsControls[i]" [id]="'guild_' + i">
+                         <!-- Explicitly cast to FormControl to satisfy strict template checking -->
+                         <input cFormCheckInput type="checkbox" [formControl]="$any(managedGuildsControls[i])" [id]="'guild_' + i">
                          <label cFormCheckLabel [for]="'guild_' + i">{{ guildId }}</label>
                      </c-form-check>
                  </c-col>
