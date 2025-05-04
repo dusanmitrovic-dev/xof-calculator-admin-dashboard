@@ -36,8 +36,10 @@ import { GuildConfigService, GuildConfig, BonusRule, CommissionSettings } from '
 export class GuildConfigEditModalComponent implements OnInit, OnChanges {
 
   @Input() visible: boolean = false;
-  // Changed Input name to match template binding [guildConfig]
+  // Existing input for passing the full config when editing
   @Input() guildConfig: GuildConfig | null = null;
+  // *** Added Input for guildId ***
+  @Input() guildId: string | null = null;
   @Output() visibleChange = new EventEmitter<boolean>();
   @Output() configSaved = new EventEmitter<GuildConfig | null>();
 
@@ -63,10 +65,12 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    // React to visibility changes or changes to guildConfig while visible
+    // React to visibility changes or changes to inputs while visible
     if (changes['visible'] && this.visible) {
       this.prepareFormForMode();
-    } else if (this.visible && changes['guildConfig']) {
+    } else if (this.visible && (changes['guildConfig'] || changes['guildId'])) {
+       // Re-prepare if guildConfig or guildId changes while modal is open
+       // (e.g., parent context changes)
       this.prepareFormForMode();
     }
     // Handle closing
@@ -81,27 +85,37 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
     this.configForm = this.buildForm(); // Rebuild form structure
 
     if (this.isEditMode && this.guildConfig) {
+      // EDIT MODE
       this.title = `Edit Guild Configuration (${this.guildConfig.guild_id})`;
       this.patchForm(this.guildConfig);
       this.configForm.get('guild_id')?.disable(); // Disable guild_id in edit mode
-      console.log('Modal prepared for EDIT mode');
+      console.log('Modal prepared for EDIT mode for guild:', this.guildConfig.guild_id);
     } else {
+       // CREATE MODE
       this.title = 'Create New Guild Configuration';
       this.configForm.reset(); // Reset to default values
-      this.configForm.get('guild_id')?.enable();
       // Ensure arrays/groups are clear
       this.models.clear();
       this.shifts.clear();
       this.periods.clear();
       this.bonus_rules.clear();
       this.clearCommissionControls();
-      console.log('Modal prepared for CREATE mode');
+      
+      // Pre-fill guild_id if passed via input and enable it
+      if(this.guildId) {
+        this.configForm.get('guild_id')?.setValue(this.guildId);
+        this.configForm.get('guild_id')?.enable(); // Should be enabled anyway after reset, but ensure
+        console.log('Modal prepared for CREATE mode for guild:', this.guildId);
+      } else {
+        this.configForm.get('guild_id')?.enable();
+         console.log('Modal prepared for CREATE mode (no guildId provided)');
+      }
     }
   }
 
   private buildForm(): FormGroup {
     return this.fb.group({
-      guild_id: ['', [Validators.required, Validators.pattern('^[0-9]+$')]],
+      guild_id: [{ value: '', disabled: false }, [Validators.required, Validators.pattern('^[0-9]+$')]],
       models: this.fb.array([]),
       shifts: this.fb.array([]),
       periods: this.fb.array([]),
@@ -131,9 +145,11 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
     if (!config || !this.configForm) return;
 
     this.configForm.patchValue({
-      guild_id: config.guild_id,
+      guild_id: config.guild_id, // Patch guild_id value
       display_settings: config.display_settings || {},
     });
+    // Ensure guild_id control is disabled *after* patching
+    this.configForm.get('guild_id')?.disable(); 
 
     this.setFormArrayData(this.models, config.models);
     this.setFormArrayData(this.shifts, config.shifts);
@@ -141,7 +157,7 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
     this.patchBonusRules(config.bonus_rules);
     this.patchCommissionSettings(config.commission_settings);
 
-    console.log('Config Form patched for edit:', this.configForm.value);
+    console.log('Config Form patched for edit:', this.configForm.getRawValue());
   }
 
   private setFormArrayData(formArray: FormArray, data: string[] | undefined): void {
@@ -194,7 +210,7 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
   }
 
   // --- FormArray Getters ---
-  get guild_id(): FormControl { return this.configForm.get('guild_id') as FormControl; }
+  get guild_id_control(): FormControl { return this.configForm.get('guild_id') as FormControl; }
   get models(): FormArray { return this.configForm.get('models') as FormArray; }
   get shifts(): FormArray { return this.configForm.get('shifts') as FormArray; }
   get periods(): FormArray { return this.configForm.get('periods') as FormArray; }
@@ -232,9 +248,10 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
     this.isLoading = true;
     this.errorMessage = null;
 
-    const formValue = this.configForm.getRawValue();
+    const formValue = this.configForm.getRawValue(); // Use getRawValue to include disabled guild_id
 
     const saveData: GuildConfig = {
+      // Ensure guild_id is taken from the potentially disabled control
       guild_id: formValue.guild_id,
       models: formValue.models || [],
       shifts: formValue.shifts || [],
@@ -259,8 +276,10 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
     let saveObservable: Observable<GuildConfig>;
 
     if (!this.isEditMode) {
+      // Use the guildId from the form for creation
       saveObservable = this.guildConfigService.createGuildConfig(saveData);
     } else {
+      // Use the guildId from the (disabled) form for update reference
       saveObservable = this.guildConfigService.updateGuildConfig(formValue.guild_id, saveData);
     }
 
@@ -349,9 +368,10 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
     this.isLoading = false;
     this.errorMessage = null;
     this.guildConfig = null; // Clear input data reference
+    this.guildId = null; // Clear guildId input
     if (this.configForm) {
         this.configForm.reset();
-        this.guild_id?.enable();
+        this.guild_id_control?.enable(); // Use the getter
         this.models?.clear();
         this.shifts?.clear();
         this.periods?.clear();
