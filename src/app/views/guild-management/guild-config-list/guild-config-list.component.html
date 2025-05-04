@@ -1,49 +1,54 @@
 <c-row>
   <c-col xs="12">
-    <c-alert color="info" *ngIf="!guildId">
-      No Guild ID specified. Please select a guild to manage.
+    <!-- Message shown when NO guild is selected -->
+    <c-alert color="info" *ngIf="!(selectedGuildId$ | async)">
+      Please select a guild from the dropdown in the header to manage its configuration and earnings.
     </c-alert>
 
-    <ng-container *ngIf="guildId">
+    <!-- Main content area shown ONLY when a guild is selected -->
+    <ng-container *ngIf="currentGuildId">
       <!-- Guild Configuration Section -->
       <c-card class="mb-4">
         <c-card-header>
-          <strong>Guild Configuration</strong>
+          <strong>Guild Configuration for {{ currentGuildId }}</strong>
           <div class="float-end">
-            <ng-container *ngIf="guildConfig && !loadingConfig; else configLoadingButtons">
-              <button cButton color="primary" variant="outline" size="sm" (click)="openEditConfigModal()">
-                <svg cIcon name="cilPencil" size="sm" title="Edit Config"></svg> Edit Config
+              <!-- Buttons enabled only if not loading -->
+              <button cButton color="primary" variant="outline" size="sm" (click)="openEditConfigModal()" [disabled]="loadingConfig">
+                <svg cIcon name="cilPencil" size="sm" title="Edit/Create Config"></svg> {{ guildConfig ? 'Edit' : 'Create' }} Config
               </button>
-              <button cButton color="danger" variant="outline" size="sm" class="ms-2" (click)="deleteGuildConfig()" title="Delete Entire Guild Config">
+              <button cButton color="danger" variant="outline" size="sm" class="ms-2" (click)="deleteGuildConfig()" [disabled]="loadingConfig || !guildConfig" title="Delete Entire Guild Config">
                  <svg cIcon name="cilTrash" size="sm"></svg> Delete Config
               </button>
-            </ng-container>
-            <ng-template #configLoadingButtons>
-               <button cButton color="primary" variant="outline" size="sm" disabled>
-                 <svg cIcon name="cilPencil" size="sm" title="Edit Config"></svg> Edit Config
-               </button>
-               <button cButton color="danger" variant="outline" size="sm" class="ms-2" disabled>
-                  <svg cIcon name="cilTrash" size="sm"></svg> Delete Config
-               </button>
-            </ng-template>
           </div>
         </c-card-header>
         <c-card-body>
-           <div *ngIf="loadingConfig" class="text-center py-3"><c-spinner aria-hidden="true" size="sm"></c-spinner> Loading...</div>
-           <c-alert color="danger" *ngIf="configError">{{ configError }}</c-alert>
+           <!-- Loading State -->
+           <div *ngIf="loadingConfig" class="text-center py-3"><c-spinner aria-hidden="true" size="sm"></c-spinner> Loading Configuration...</div>
+           <!-- Error State -->
+           <c-alert color="danger" *ngIf="!loadingConfig && configError">{{ configError }}</c-alert>
+           <!-- No Config Found State -->
+           <div *ngIf="!loadingConfig && !configError && !guildConfig" class="text-center py-3">
+             No configuration found for this guild.
+             <button cButton color="success" variant="ghost" size="sm" class="ms-2" (click)="openEditConfigModal()">
+                 <svg cIcon name="cilPlus" size="sm"></svg> Create One?
+             </button>
+           </div>
 
+           <!-- Config Display State -->
            <div *ngIf="!loadingConfig && !configError && guildConfig">
              <dl class="row">
-               <dt class="col-sm-3">Guild ID</dt><dd class="col-sm-9">{{ guildConfig.guild_id }}</dd>
-               <dt class="col-sm-3">Models</dt><dd class="col-sm-9">{{ guildConfig.models.join(', ') || '-' }}</dd>
-               <dt class="col-sm-3">Shifts</dt><dd class="col-sm-9">{{ guildConfig.shifts.join(', ') || '-' }}</dd>
-               <dt class="col-sm-3">Periods</dt><dd class="col-sm-9">{{ guildConfig.periods.join(', ') || '-' }}</dd>
+               <dt class="col-sm-3">Guild ID</dt><dd class="col-sm-9"><strong>{{ guildConfig.guild_id }}</strong></dd>
+               <dt class="col-sm-3">Agency Name</dt><dd class="col-sm-9">{{ guildConfig.display_settings?.agency_name || 'Not Set' }}</dd>
+               <dt class="col-sm-3">Bot Name</dt><dd class="col-sm-9">{{ guildConfig.display_settings?.bot_name || 'Not Set' }}</dd>
+               <dt class="col-sm-3">Models</dt><dd class="col-sm-9">{{ guildConfig.models?.join(', ') || '-' }}</dd>
+               <dt class="col-sm-3">Shifts</dt><dd class="col-sm-9">{{ guildConfig.shifts?.join(', ') || '-' }}</dd>
+               <dt class="col-sm-3">Periods</dt><dd class="col-sm-9">{{ guildConfig.periods?.join(', ') || '-' }}</dd>
                <dt class="col-sm-3">Display Settings</dt><dd class="col-sm-9"><pre>{{ guildConfig.display_settings | json }}</pre></dd>
                <dt class="col-sm-3">Bonus Rules</dt>
                <dd class="col-sm-9">
                   @if (guildConfig.bonus_rules && guildConfig.bonus_rules.length > 0) {
                     <ul class="list-unstyled mb-0">
-                      @for (rule of guildConfig.bonus_rules; track $index) { <!-- Changed track -->
+                      @for (rule of guildConfig.bonus_rules; track $index) {
                         <li>${{ rule.amount }} bonus: ${{ rule.from }} - ${{ rule.to }}</li>
                       }
                     </ul>
@@ -52,100 +57,101 @@
                   }
                </dd>
                <dt class="col-sm-3">Commission Settings</dt><dd class="col-sm-9"><pre>{{ guildConfig.commission_settings | json }}</pre></dd>
-               
-               <!-- Update to use commission_settings.roles -->
-               <dt class="col-sm-3">Registered Role Commissions</dt>
+
+               <!-- Registered Role Commissions -->
+               <dt class="col-sm-3">Role Commissions</dt>
                <dd class="col-sm-9">
-                 @if (guildConfig.commission_settings.roles && objectKeys(guildConfig.commission_settings.roles).length > 0) {
+                 @if (guildConfig.commission_settings?.roles && objectKeys(guildConfig.commission_settings.roles).length > 0) {
                    <ul class="list-unstyled mb-0">
                      @for (roleId of objectKeys(guildConfig.commission_settings.roles); track roleId) {
-                       <li>{{ roleId }}: {{ guildConfig.commission_settings.roles[roleId].commission_percentage }}%</li> 
+                       <li>{{ roleId }}: {{ guildConfig.commission_settings.roles[roleId].commission_percentage }}%</li>
                      }
                    </ul>
                  } @else {
                    -
                  }
                </dd>
-               <!-- Optionally display user-specific commissions if needed -->
-               <!-- <dt class="col-sm-3">User Commission Overrides</dt> -->
-               <!-- <dd class="col-sm-9">...</dd> -->
              </dl>
            </div>
-           <div *ngIf="!loadingConfig && !configError && !guildConfig" class="text-center py-3">No configuration found for this guild.</div>
         </c-card-body>
       </c-card>
 
       <!-- Earnings Section -->
       <c-card class="mb-4">
          <c-card-header>
-           <strong>Earnings Records</strong>
+           <strong>Earnings Records for {{ currentGuildId }}</strong>
            <div class="float-end">
-             <button cButton color="success" variant="outline" size="sm" (click)="openAddEarningModal()" [disabled]="loadingEarnings || !guildConfig">
+             <button cButton color="success" variant="outline" size="sm" (click)="openAddEarningModal()" [disabled]="loadingEarnings || !guildConfig" title="{{ !guildConfig ? 'Create Guild Config first' : 'Add New Earning' }}">
                <svg cIcon name="cilPlus" size="sm"></svg> Add Earning
              </button>
            </div>
          </c-card-header>
          <c-card-body>
-            <div *ngIf="loadingEarnings" class="text-center py-3"><c-spinner aria-hidden="true" size="sm"></c-spinner> Loading...</div>
-            <c-alert color="danger" *ngIf="earningsError">{{ earningsError }}</c-alert>
+            <!-- Loading State -->
+            <div *ngIf="loadingEarnings" class="text-center py-3"><c-spinner aria-hidden="true" size="sm"></c-spinner> Loading Earnings...</div>
+            <!-- Error State -->
+            <c-alert color="danger" *ngIf="!loadingEarnings && earningsError">{{ earningsError }}</c-alert>
+            <!-- No Earnings Found State (but config exists) -->
+            <div *ngIf="!loadingEarnings && !earningsError && earnings.length === 0 && guildConfig" class="text-center py-3">No earnings records found for this guild.</div>
+            <!-- Config Missing State (can't load earnings) -->
+            <div *ngIf="!loadingConfig && !guildConfig && !configError" class="text-center py-3 text-muted">Cannot load earnings until a guild configuration is created.</div>
 
-            @if (!loadingEarnings && !earningsError) {
-              @if (earnings && earnings.length > 0) {
-                <table cTable class="mb-0 border" hover responsive striped align="middle">
-                  <thead cTableColor="light">
+            <!-- Earnings Table (Show only if not loading, no error, and earnings exist) -->
+            @if (!loadingEarnings && !earningsError && earnings.length > 0) {
+              <table cTable class="mb-0 border" hover responsive striped align="middle">
+                <thead cTableColor="light">
+                  <tr>
+                    <th>Date</th><th>User</th><th>Role</th><th>Model(s)</th><th>Shift</th><th>Period</th><th>Hours</th><th>Gross Rev.</th><th>Total Cut</th><th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (earning of earnings; track earning.id) {
                     <tr>
-                      <th>Date</th><th>User</th><th>Role</th><th>Model(s)</th><th>Shift</th><th>Period</th><th>Hours</th><th>Gross Rev.</th><th>Total Cut</th><th>Actions</th>
+                      <td>{{ earning.date }}</td>
+                      <td>{{ earning.user_mention }}</td>
+                      <td>{{ earning.role }}</td>
+                      <td>{{ earning.models }}</td>
+                      <td>{{ earning.shift }}</td>
+                      <td>{{ earning.period }}</td>
+                      <td>{{ earning.hours_worked }}</td>
+                      <td>{{ earning.gross_revenue | currency }}</td>
+                      <td>{{ earning.total_cut | currency }}</td>
+                      <td>
+                        <button cButton color="primary" variant="outline" size="sm" (click)="openEditEarningModal(earning)" title="Edit Earning">
+                          <svg cIcon name="cilPencil" size="sm"></svg>
+                        </button>
+                        <button cButton color="danger" variant="outline" size="sm" class="ms-1" (click)="deleteEarning(earning)" title="Delete Earning">
+                          <svg cIcon name="cilTrash" size="sm"></svg>
+                        </button>
+                      </td>
                     </tr>
-                  </thead>
-                  <tbody>
-                    @for (earning of earnings; track earning.id) {
-                      <tr>
-                        <td>{{ earning.date }}</td>
-                        <td>{{ earning.user_mention }}</td>
-                        <td>{{ earning.role }}</td>
-                        <td>{{ earning.models }}</td>
-                        <td>{{ earning.shift }}</td>
-                        <td>{{ earning.period }}</td>
-                        <td>{{ earning.hours_worked }}</td>
-                        <td>{{ earning.gross_revenue | currency }}</td>
-                        <td>{{ earning.total_cut | currency }}</td>
-                        <td>
-                          <button cButton color="primary" variant="outline" size="sm" (click)="openEditEarningModal(earning)" title="Edit Earning">
-                            <svg cIcon name="cilPencil" size="sm"></svg>
-                          </button>
-                          <button cButton color="danger" variant="outline" size="sm" class="ms-1" (click)="deleteEarning(earning)" title="Delete Earning">
-                            <svg cIcon name="cilTrash" size="sm"></svg>
-                          </button>
-                        </td>
-                      </tr>
-                    }
-                  </tbody>
-                </table>
-              } @else {
-                <div class="text-center py-3">No earnings records found.</div>
-              }
+                  }
+                </tbody>
+              </table>
             }
          </c-card-body>
       </c-card>
 
-    </ng-container>
+    </ng-container> <!-- End *ngIf="currentGuildId" -->
   </c-col>
 </c-row>
 
 <!-- Guild Config Edit Modal -->
-@if (isConfigEditModalVisible) { 
+<!-- Pass currentGuildId to the modal for creation context -->
+@if (isConfigEditModalVisible && currentGuildId) { 
   <app-guild-config-edit-modal
     [(visible)]="isConfigEditModalVisible"
+    [guildId]="currentGuildId" 
     [guildConfig]="guildConfig" 
     (configSaved)="onConfigSaved($event)">
   </app-guild-config-edit-modal>
 }
 
 <!-- Earning Add/Edit Modal -->
-@if (isEarningModalVisible && guildId) {
+@if (isEarningModalVisible && currentGuildId) {
   <app-earning-edit-modal
     [(visible)]="isEarningModalVisible"
-    [guildId]="guildId"
+    [guildId]="currentGuildId"
     [earningToEdit]="selectedEarningForEdit" 
     (earningSaved)="onEarningSaved($event)">
   </app-earning-edit-modal>
