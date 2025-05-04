@@ -5,26 +5,27 @@ export const navItems: INavData[] = [
     name: 'Dashboard',
     url: '/dashboard',
     iconComponent: { name: 'cil-speedometer' },
-    badge: {
-      color: 'info',
-      text: 'NEW'
-    }
+    // badge: {
+    //   color: 'info',
+    //   text: 'NEW'
+    // }
   },
-  {
-    title: true,
-    name: 'Theme'
-  },
-  {
-    name: 'Colors',
-    url: '/theme/colors',
-    iconComponent: { name: 'cil-drop' }
-  },
-  {
-    name: 'Typography',
-    url: '/theme/typography',
-    linkProps: { fragment: 'headings' },
-    iconComponent: { name: 'cil-pencil' }
-  },
+  // Removed Theme section
+  // {
+  //   title: true,
+  //   name: 'Theme'
+  // },
+  // {
+  //   name: 'Colors',
+  //   url: '/theme/colors',
+  //   iconComponent: { name: 'cil-drop' }
+  // },
+  // {
+  //   name: 'Typography',
+  //   url: '/theme/typography',
+  //   linkProps: { fragment: 'headings' },
+  //   iconComponent: { name: 'cil-pencil' }
+  // },
   {
     title: true,
     name: 'Manage Data'
@@ -34,6 +35,7 @@ export const navItems: INavData[] = [
     url: '/guild-management',
     iconComponent: { name: 'cil-settings' } // Using a settings icon as a placeholder
   },
+  // ... (rest of the commented out items remain unchanged)
   // {
   //   name: 'Components',
   //   title: true
