@@ -38,11 +38,12 @@
            <div *ngIf="!loadingConfig && !configError && guildConfig">
              <dl class="row">
                <dt class="col-sm-3">Guild ID</dt><dd class="col-sm-9"><strong>{{ guildConfig.guild_id }}</strong></dd>
-               <dt class="col-sm-3">Agency Name</dt><dd class="col-sm-9">{{ guildConfig.display_settings?.agency_name || 'Not Set' }}</dd>
-               <dt class="col-sm-3">Bot Name</dt><dd class="col-sm-9">{{ guildConfig.display_settings?.bot_name || 'Not Set' }}</dd>
-               <dt class="col-sm-3">Models</dt><dd class="col-sm-9">{{ guildConfig.models?.join(', ') || '-' }}</dd>
-               <dt class="col-sm-3">Shifts</dt><dd class="col-sm-9">{{ guildConfig.shifts?.join(', ') || '-' }}</dd>
-               <dt class="col-sm-3">Periods</dt><dd class="col-sm-9">{{ guildConfig.periods?.join(', ') || '-' }}</dd>
+               <!-- Removed optional chaining '?' where not needed -->
+               <dt class="col-sm-3">Agency Name</dt><dd class="col-sm-9">{{ guildConfig.display_settings.agency_name || 'Not Set' }}</dd>
+               <dt class="col-sm-3">Bot Name</dt><dd class="col-sm-9">{{ guildConfig.display_settings.bot_name || 'Not Set' }}</dd>
+               <dt class="col-sm-3">Models</dt><dd class="col-sm-9">{{ guildConfig.models.join(', ') || '-' }}</dd>
+               <dt class="col-sm-3">Shifts</dt><dd class="col-sm-9">{{ guildConfig.shifts.join(', ') || '-' }}</dd>
+               <dt class="col-sm-3">Periods</dt><dd class="col-sm-9">{{ guildConfig.periods.join(', ') || '-' }}</dd>
                <dt class="col-sm-3">Display Settings</dt><dd class="col-sm-9"><pre>{{ guildConfig.display_settings | json }}</pre></dd>
                <dt class="col-sm-3">Bonus Rules</dt>
                <dd class="col-sm-9">
@@ -61,7 +62,8 @@
                <!-- Registered Role Commissions -->
                <dt class="col-sm-3">Role Commissions</dt>
                <dd class="col-sm-9">
-                 @if (guildConfig.commission_settings?.roles && objectKeys(guildConfig.commission_settings.roles).length > 0) {
+                 <!-- Removed optional chaining '?' for roles access -->
+                 @if (guildConfig.commission_settings.roles && objectKeys(guildConfig.commission_settings.roles).length > 0) {
                    <ul class="list-unstyled mb-0">
                      @for (roleId of objectKeys(guildConfig.commission_settings.roles); track roleId) {
                        <li>{{ roleId }}: {{ guildConfig.commission_settings.roles[roleId].commission_percentage }}%</li>

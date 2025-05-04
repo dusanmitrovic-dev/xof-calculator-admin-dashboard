@@ -6,21 +6,13 @@ import { map, startWith, shareReplay, catchError, tap } from 'rxjs/operators';
 import {
   ColorModeService,
   ContainerComponent,
-  DropdownComponent, // Included via DropdownModule
-  DropdownItemDirective, // Included via DropdownModule
-  DropdownMenuDirective, // Included via DropdownModule
-  DropdownToggleDirective, // Included via DropdownModule
+  // Removed unused imports
   HeaderComponent,
   HeaderNavComponent,
   HeaderTogglerDirective,
   SidebarToggleDirective,
-  NavItemComponent, // Added
-  NavLinkDirective, // Added
-  DropdownModule,  // Added
-  AvatarComponent, // Added if user dropdown is uncommented later
-  BadgeComponent, // Added if user dropdown is uncommented later
-  DropdownDividerDirective, // Added if user dropdown is uncommented later
-  DropdownHeaderDirective // Added if user dropdown is uncommented later
+  DropdownModule,  // Includes dropdown components
+  // Removed unused AvatarComponent, BadgeComponent, DropdownDividerDirective
 } from '@coreui/angular';
 
 import { IconDirective } from '@coreui/icons-angular';
@@ -29,7 +21,7 @@ import { GuildConfigService, AvailableGuild } from '../../../services/guild-conf
 @Component({
     selector: 'app-default-header',
     templateUrl: './default-header.component.html',
-    // Added CommonModule for async pipe and ngIf/ngFor, DropdownModule for CoreUI dropdown components
+    // Adjusted imports array
     imports: [
         CommonModule,
         ContainerComponent,
@@ -37,14 +29,10 @@ import { GuildConfigService, AvailableGuild } from '../../../services/guild-conf
         SidebarToggleDirective,
         IconDirective,
         HeaderNavComponent,
-        NavItemComponent,
-        NavLinkDirective,
+        // Removed unused NavItemComponent, NavLinkDirective
         NgTemplateOutlet,
-        DropdownModule, // Includes DropdownComponent, DropdownToggleDirective, DropdownMenuDirective, DropdownItemDirective
-        AvatarComponent,
-        BadgeComponent,
-        DropdownDividerDirective,
-        DropdownHeaderDirective
+        DropdownModule, // Includes DropdownComponent, DropdownToggleDirective, DropdownMenuDirective, DropdownItemDirective, DropdownHeaderDirective
+        // Removed unused AvatarComponent, BadgeComponent, DropdownDividerDirective
     ],
     standalone: true // Ensure this component is standalone
 })
@@ -103,7 +91,7 @@ export class DefaultHeaderComponent extends HeaderComponent implements OnInit, O
             }
             const selectedGuild = guilds.find(g => g.id === selectedId);
             // Handle case where selectedId might not be in the list (e.g., initial load from storage)
-            return selectedGuild ? selectedGuild.name : 'Select Guild'; 
+            return selectedGuild ? selectedGuild.name : 'Select Guild';
         }),
         startWith('Select Guild') // Provide an initial value before observables emit
     );
@@ -136,7 +124,8 @@ export class DefaultHeaderComponent extends HeaderComponent implements OnInit, O
       title: 'Urgent: System Maintenance Tonight',
       time: 'Just now',
       link: 'apps/email/inbox/message',
-      message: 'Attention team, we'll be conducting critical system maintenance tonight from 10 PM to 2 AM. Plan accordingly...'
+      // Fixed the string literal by escaping the single quote
+      message: 'Attention team, we\'ll be conducting critical system maintenance tonight from 10 PM to 2 AM. Plan accordingly...'
     },
     {
       id: 1,
@@ -146,7 +135,8 @@ export class DefaultHeaderComponent extends HeaderComponent implements OnInit, O
       title: 'Project Update: Milestone Achieved',
       time: '5 minutes ago',
       link: 'apps/email/inbox/message',
-      message: 'Kudos on hitting sales targets last quarter! Let's keep the momentum. New goals, new victories ahead...'
+      // Fixed the string literal by escaping the single quote
+      message: 'Kudos on hitting sales targets last quarter! Let\'s keep the momentum. New goals, new victories ahead...'
     },
     {
       id: 2,
@@ -166,17 +156,19 @@ export class DefaultHeaderComponent extends HeaderComponent implements OnInit, O
       title: 'Inventory Checkpoint',
       time: '4:03 AM',
       link: 'apps/email/inbox/message',
-      message: 'Team, it's time for our monthly inventory check. Accurate counts ensure smooth operations. Let's nail it...'
+      // Fixed the string literal by escaping the single quote
+      message: 'Team, it\'s time for our monthly inventory check. Accurate counts ensure smooth operations. Let\'s nail it...'
     },
     {
-      id: 3,
+      id: 4, // Corrected duplicate id from 3 to 4
       from: 'Ryan Miller',
-      avatar: '4.jpg',
+      avatar: '8.jpg', // Changed avatar to avoid duplicate with Jane Lewis (assuming different user)
       status: 'info',
       title: 'Customer Feedback Results',
       time: '3 days ago',
       link: 'apps/email/inbox/message',
-      message: 'Our latest customer feedback is in. Let's analyze and discuss improvements for an even better service...'
+      // Fixed the string literal by escaping the single quote
+      message: 'Our latest customer feedback is in. Let\'s analyze and discuss improvements for an even better service...'
     }
   ];
 
