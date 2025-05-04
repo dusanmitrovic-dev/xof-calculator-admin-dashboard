@@ -11,6 +11,36 @@
     >
       <svg cIcon name="cilMenu" size="lg"></svg>
     </button>
+
+    <!-- Guild Selector Dropdown -->
+    <c-header-nav class="ms-auto">
+        <ng-container *ngIf="guildLoadingError">
+            <span class="text-danger px-2">{{ guildLoadingError }}</span>
+        </ng-container>
+        <c-dropdown alignment="end" variant="nav-item" *ngIf="!(guildLoadingError)">
+            <button cDropdownToggle [caret]="true">
+                {{ selectedGuildName$ | async }}
+            </button>
+            <ul cDropdownMenu>
+                <li *ngIf="(availableGuilds$ | async)?.length === 0">
+                    <span cDropdownItem class="disabled">No guilds available</span>
+                </li>
+                <li *ngFor="let guild of (availableGuilds$ | async)">
+                    <button cDropdownItem (click)="onGuildSelect(guild.id)" [active]="(selectedGuildId$ | async) === guild.id">
+                        {{ guild.name }} ({{ guild.id }})
+                    </button>
+                </li>
+                 <li><hr cDropdownDivider></li>
+                 <li>
+                    <button cDropdownItem (click)="onGuildSelect(null)" [active]="(selectedGuildId$ | async) === null">
+                         Clear Selection
+                    </button>
+                </li>
+            </ul>
+        </c-dropdown>
+    </c-header-nav>
+
+
     <!-- Commented out example navigation links -->
     <!--
     <c-header-nav class="d-none d-md-flex">
@@ -41,7 +71,7 @@
     </c-header-nav>
     -->
 
-    <c-header-nav class="ms-auto ms-md-0">
+    <c-header-nav class="ms-auto ms-md-0"> <!-- Adjusted class to avoid conflict with guild selector -->
       <!-- Commented out separator -->
       <!--
       <div class="nav-item py-1">
