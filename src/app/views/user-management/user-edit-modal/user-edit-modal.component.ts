@@ -2,9 +2,10 @@ import { Component, Input, Output, EventEmitter, OnInit, OnChanges, SimpleChange
 import { FormBuilder, FormGroup, FormControl, FormArray, Validators, ReactiveFormsModule } from '@angular/forms'; // Added FormArray
 import { CommonModule } from '@angular/common';
 import { UserService, User, UserUpdateData } from '../../../services/user.service'; // Adjust path
-import { GuildConfigService } from '../../../services/guild-config.service'; // Import GuildConfigService
+// *** Import specific types from GuildConfigService ***
+import { GuildConfigService, GuildConfig, AvailableGuild } from '../../../services/guild-config.service'; 
 import { AuthService } from '../../../auth/auth.service'; // To check if editing self
-import { finalize, tap, catchError } from 'rxjs/operators';
+import { finalize, tap, catchError, map } from 'rxjs/operators'; // Added map
 import { of } from 'rxjs'; // Import 'of' for catchError
 
 // CoreUI Modules
@@ -150,6 +151,7 @@ export class UserEditModalComponent implements OnInit, OnChanges {
 
   /**
    * Loads all available guild IDs from the GuildConfigService.
+   * Uses getAvailableGuilds for lightweight list.
    */
   private loadAvailableGuilds(): void {
     console.log('UserEditModal: Loading available guilds...');
@@ -157,7 +159,8 @@ export class UserEditModalComponent implements OnInit, OnChanges {
     this.guildLoadError = null;
     this.clearManagedGuilds(); // Clear previous controls
 
-    this.guildConfigService.getAllGuildConfigs().pipe(
+    // *** Use getAvailableGuilds instead of getAllGuildConfigs ***
+    this.guildConfigService.getAvailableGuilds().pipe(
       finalize(() => { this.loadingGuilds = false; }),
       catchError(err => {
         console.error('UserEditModal: Error loading available guilds:', err);
@@ -165,8 +168,9 @@ export class UserEditModalComponent implements OnInit, OnChanges {
         this.availableGuilds = [];
         return of([]); // Return empty array on error
       })
-    ).subscribe(configs => {
-      this.availableGuilds = configs.map(config => config.guild_id);
+      // *** No map needed here if getAvailableGuilds returns {id: string, name: string}[] ***
+    ).subscribe((guilds: AvailableGuild[]) => { // *** Add type AvailableGuild[] ***
+      this.availableGuilds = guilds.map(g => g.id); // Extract only the IDs
       console.log('UserEditModal: Available guilds loaded:', this.availableGuilds);
       this.populateManagedGuildCheckboxes();
     });
