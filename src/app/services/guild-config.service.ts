@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { Observable, throwError } from 'rxjs';
-import { catchError, map } from 'rxjs/operators';
+import { Observable, throwError, BehaviorSubject, map, catchError, tap } from 'rxjs';
 
 // --- Interfaces matching DB structure ---
 export interface BonusRule {
@@ -41,11 +40,16 @@ export interface GuildConfig {
   bonus_rules: BonusRule[];
   display_settings: DisplaySettings;
   commission_settings: CommissionSettings;
-  // The `roles` field from the DB example seems redundant if commission_settings.roles exists.
-  // Stick to the detailed commission_settings structure unless the backend strictly uses the simpler roles map.
-  // roles?: { [roleId: string]: number };
+  // roles?: { [roleId: string]: number }; // Keep commented unless needed
 }
 // --- End Interfaces ---
+
+// Interface for the guild selector dropdown
+export interface AvailableGuild {
+  id: string;
+  name: string;
+}
+
 
 @Injectable({
   providedIn: 'root'
@@ -54,18 +58,53 @@ export class GuildConfigService {
 
   private apiUrl = '/api/config'; // Base path for config endpoints
 
+  // BehaviorSubject to hold the currently selected guild ID
+  private selectedGuildIdSource = new BehaviorSubject<string | null>(null);
+  selectedGuildId$ = this.selectedGuildIdSource.asObservable();
+
   constructor(private http: HttpClient) { }
 
   /**
-   * GET /api/config
-   * Get all guild configurations.
+   * Update the currently selected guild ID.
    */
-  getAllGuildConfigs(): Observable<GuildConfig[]> {
-    console.log('GuildConfigService: Fetching all guild configs...');
+  selectGuild(guildId: string | null): void {
+    console.log(`GuildConfigService: Selecting guild ${guildId}`);
+    this.selectedGuildIdSource.next(guildId);
+    // Optional: Persist selection to local storage?
+    // if (guildId) {
+    //   localStorage.setItem('selectedGuildId', guildId);
+    // } else {
+    //   localStorage.removeItem('selectedGuildId');
+    // }
+  }
+
+  /**
+   * Gets the currently selected Guild ID directly.
+   * Useful for initial checks, but prefer subscribing to selectedGuildId$ for reactive updates.
+   */
+  getSelectedGuildId(): string | null {
+    return this.selectedGuildIdSource.getValue();
+  }
+
+  /**
+   * GET /api/config
+   * Get all guild configurations, mapped to AvailableGuild interface.
+   * NOTE: This fetches ALL configs. In a real-world scenario with many guilds,
+   * you'd ideally have an API endpoint that returns only the guilds accessible by the current user.
+   */
+  getAvailableGuilds(): Observable<AvailableGuild[]> {
+    console.log('GuildConfigService: Fetching available guilds...');
     return this.http.get<GuildConfig[]>(this.apiUrl).pipe(
+      map(configs => configs.map(config => ({
+        id: config.guild_id,
+        // Use agency_name from display_settings if available, otherwise use guild_id
+        name: config.display_settings?.agency_name || config.guild_id
+      }))),
+      tap(guilds => console.log(`GuildConfigService: Found ${guilds.length} available guilds.`)),
       catchError(this.handleError)
     );
   }
+
 
   /**
    * GET /api/config/:guild_id
@@ -73,6 +112,7 @@ export class GuildConfigService {
    */
   getGuildConfig(guildId: string): Observable<GuildConfig> {
     if (!guildId) {
+      console.error('GuildConfigService: getGuildConfig called with empty guildId.');
       return throwError(() => new Error('Guild ID cannot be empty'));
     }
     console.log(`GuildConfigService: Fetching config for guild ${guildId}...`);
@@ -84,11 +124,9 @@ export class GuildConfigService {
   /**
    * POST /api/config
    * Create a new guild config.
-   * Assumes the backend expects the full config object in the body.
    */
   createGuildConfig(config: GuildConfig): Observable<GuildConfig> {
     console.log(`GuildConfigService: Creating config for guild ${config.guild_id}...`);
-    // Remove _id if present, backend should generate it
     const { _id, ...configData } = config;
     return this.http.post<GuildConfig>(this.apiUrl, configData).pipe(
       catchError(this.handleError)
@@ -101,12 +139,12 @@ export class GuildConfigService {
    */
   updateGuildConfig(guildId: string, config: GuildConfig): Observable<GuildConfig> {
     if (!guildId) {
+      console.error('GuildConfigService: updateGuildConfig called with empty guildId.');
       return throwError(() => new Error('Guild ID cannot be empty for update'));
     }
     console.log(`GuildConfigService: Updating config for guild ${guildId}...`);
-    // Ensure guild_id in body matches path param consistency, remove _id
     const { _id, ...configData } = config;
-    configData.guild_id = guildId; 
+    configData.guild_id = guildId;
     return this.http.put<GuildConfig>(`${this.apiUrl}/${guildId}`, configData).pipe(
       catchError(this.handleError)
     );
@@ -118,16 +156,16 @@ export class GuildConfigService {
    */
   deleteGuildConfig(guildId: string): Observable<{ message?: string; msg?: string }> {
     if (!guildId) {
+       console.error('GuildConfigService: deleteGuildConfig called with empty guildId.');
       return throwError(() => new Error('Guild ID cannot be empty for delete'));
     }
     console.log(`GuildConfigService: Deleting config for guild ${guildId}...`);
-    // Expecting a response like { msg: '...' } or { message: '...' }
     return this.http.delete<{ message?: string; msg?: string }>(`${this.apiUrl}/${guildId}`).pipe(
       catchError(this.handleError)
     );
   }
 
-  // --- Field-specific methods (Keep as they might be useful) ---
+  // --- Field-specific methods (Consider removing if not used elsewhere) ---
 
   /**
    * GET /api/config/:guild_id/:field
@@ -135,12 +173,12 @@ export class GuildConfigService {
    */
   getGuildConfigField<T>(guildId: string, field: keyof GuildConfig): Observable<T> {
     if (!guildId || !field) {
+       console.error('GuildConfigService: getGuildConfigField called with empty guildId or field.');
       return throwError(() => new Error('Guild ID and field name are required'));
     }
     console.log(`GuildConfigService: Getting field '${field}' for guild ${guildId}...`);
-    // Expecting response like { fieldName: value }
     return this.http.get<{ [key: string]: T }>(`${this.apiUrl}/${guildId}/${field}`).pipe(
-      map(response => response[field]), // Extract the value
+      map(response => response[field]),
       catchError(this.handleError)
     );
   }
@@ -151,12 +189,11 @@ export class GuildConfigService {
    */
   updateGuildConfigField(guildId: string, field: keyof GuildConfig, value: any): Observable<GuildConfig> {
     if (!guildId || !field) {
+      console.error('GuildConfigService: updateGuildConfigField called with empty guildId or field.');
       return throwError(() => new Error('Guild ID and field name are required'));
     }
     console.log(`GuildConfigService: Updating field '${field}' for guild ${guildId}...`);
-    // Backend likely expects { "value": ... } or { fieldName: ... } in the body. 
-    // Assuming { "value": ... } based on previous code.
-    const payload = { value }; 
+    const payload = { value };
     return this.http.put<GuildConfig>(`${this.apiUrl}/${guildId}/${field}`, payload).pipe(
       catchError(this.handleError)
     );
@@ -166,14 +203,11 @@ export class GuildConfigService {
   private handleError(error: HttpErrorResponse): Observable<never> {
     let errorMessage = 'An unknown error occurred!';
     if (error.error instanceof ErrorEvent) {
-      // Client-side or network error
       errorMessage = `Network Error: ${error.message}`;
     } else {
-      // Backend returned an unsuccessful response code.
       errorMessage = `Server Error (Code: ${error.status}): ${error.error?.message || error.error?.msg || 'Unknown server error'}`;
     }
     console.error('GuildConfigService Error:', errorMessage, error);
-    // Return an observable that emits the error, allowing components to catch it
     return throwError(() => new Error(errorMessage));
   }
 }

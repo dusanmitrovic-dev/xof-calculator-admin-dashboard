@@ -1,30 +1,58 @@
-import { NgTemplateOutlet } from '@angular/common';
-import { Component, computed, inject, input } from '@angular/core';
+import { CommonModule, NgTemplateOutlet } from '@angular/common';
+import { Component, computed, inject, input, OnInit, OnDestroy } from '@angular/core';
+import { Observable, Subscription, combineLatest } from 'rxjs';
+import { map, startWith, shareReplay, catchError, tap } from 'rxjs/operators';
 
 import {
   ColorModeService,
   ContainerComponent,
-  DropdownComponent,
-  DropdownItemDirective,
-  DropdownMenuDirective,
-  DropdownToggleDirective,
+  DropdownComponent, // Included via DropdownModule
+  DropdownItemDirective, // Included via DropdownModule
+  DropdownMenuDirective, // Included via DropdownModule
+  DropdownToggleDirective, // Included via DropdownModule
   HeaderComponent,
   HeaderNavComponent,
   HeaderTogglerDirective,
-  SidebarToggleDirective
+  SidebarToggleDirective,
+  NavItemComponent, // Added
+  NavLinkDirective, // Added
+  DropdownModule,  // Added
+  AvatarComponent, // Added if user dropdown is uncommented later
+  BadgeComponent, // Added if user dropdown is uncommented later
+  DropdownDividerDirective, // Added if user dropdown is uncommented later
+  DropdownHeaderDirective // Added if user dropdown is uncommented later
 } from '@coreui/angular';
 
 import { IconDirective } from '@coreui/icons-angular';
+import { GuildConfigService, AvailableGuild } from '../../../services/guild-config.service'; // Adjusted path
 
 @Component({
     selector: 'app-default-header',
     templateUrl: './default-header.component.html',
-  imports: [ContainerComponent, HeaderTogglerDirective, SidebarToggleDirective, IconDirective, HeaderNavComponent, NgTemplateOutlet, DropdownComponent, DropdownToggleDirective, DropdownMenuDirective, DropdownItemDirective]
+    // Added CommonModule for async pipe and ngIf/ngFor, DropdownModule for CoreUI dropdown components
+    imports: [
+        CommonModule,
+        ContainerComponent,
+        HeaderTogglerDirective,
+        SidebarToggleDirective,
+        IconDirective,
+        HeaderNavComponent,
+        NavItemComponent,
+        NavLinkDirective,
+        NgTemplateOutlet,
+        DropdownModule, // Includes DropdownComponent, DropdownToggleDirective, DropdownMenuDirective, DropdownItemDirective
+        AvatarComponent,
+        BadgeComponent,
+        DropdownDividerDirective,
+        DropdownHeaderDirective
+    ],
+    standalone: true // Ensure this component is standalone
 })
-export class DefaultHeaderComponent extends HeaderComponent {
+export class DefaultHeaderComponent extends HeaderComponent implements OnInit, OnDestroy {
 
   readonly #colorModeService = inject(ColorModeService);
   readonly colorMode = this.#colorModeService.colorMode;
+  private guildConfigService = inject(GuildConfigService); // Inject GuildConfigService
 
   readonly colorModes = [
     { name: 'light', text: 'Light', icon: 'cilSun' },
@@ -37,12 +65,68 @@ export class DefaultHeaderComponent extends HeaderComponent {
     return this.colorModes.find(mode => mode.name === currentMode)?.icon ?? 'cilSun';
   });
 
+  // Guild Selection Observables
+  availableGuilds$!: Observable<AvailableGuild[]>;
+  selectedGuildId$!: Observable<string | null>;
+  selectedGuildName$!: Observable<string>;
+  guildLoadingError: string | null = null;
+
+  private subscriptions = new Subscription();
+
+
   constructor() {
     super();
+    this.selectedGuildId$ = this.guildConfigService.selectedGuildId$;
   }
 
   sidebarId = input('sidebar1');
 
+  ngOnInit(): void {
+    console.log('DefaultHeaderComponent: Initializing...');
+    this.availableGuilds$ = this.guildConfigService.getAvailableGuilds().pipe(
+        tap(guilds => console.log(`DefaultHeaderComponent: Received ${guilds.length} guilds.`)),
+        catchError(error => {
+            console.error('DefaultHeaderComponent: Error fetching guilds:', error);
+            this.guildLoadingError = `Error loading guilds: ${error.message || 'Unknown error'}`;
+            return []; // Return empty array on error to prevent breaking the UI
+        }),
+        shareReplay(1) // Cache the result and share among subscribers
+    );
+
+    this.selectedGuildName$ = combineLatest([
+        this.selectedGuildId$,
+        this.availableGuilds$ // Make sure availableGuilds$ emits at least once
+    ]).pipe(
+        map(([selectedId, guilds]) => {
+            if (!selectedId || guilds.length === 0) {
+                return 'Select Guild';
+            }
+            const selectedGuild = guilds.find(g => g.id === selectedId);
+            // Handle case where selectedId might not be in the list (e.g., initial load from storage)
+            return selectedGuild ? selectedGuild.name : 'Select Guild'; 
+        }),
+        startWith('Select Guild') // Provide an initial value before observables emit
+    );
+
+     // Optional: Try to load persisted selection on init
+     // const persistedGuildId = localStorage.getItem('selectedGuildId');
+     // if (persistedGuildId) {
+     //    this.guildConfigService.selectGuild(persistedGuildId);
+     // }
+  }
+
+  ngOnDestroy(): void {
+      this.subscriptions.unsubscribe();
+      console.log('DefaultHeaderComponent: Destroyed.');
+  }
+
+  onGuildSelect(guildId: string | null): void {
+      console.log('DefaultHeaderComponent: Guild selected:', guildId);
+      this.guildConfigService.selectGuild(guildId);
+  }
+
+
+  // Keep existing properties/methods for other header features
   public newMessages = [
     {
       id: 0,
@@ -52,7 +136,7 @@ export class DefaultHeaderComponent extends HeaderComponent {
       title: 'Urgent: System Maintenance Tonight',
       time: 'Just now',
       link: 'apps/email/inbox/message',
-      message: 'Attention team, we\'ll be conducting critical system maintenance tonight from 10 PM to 2 AM. Plan accordingly...'
+      message: 'Attention team, we'll be conducting critical system maintenance tonight from 10 PM to 2 AM. Plan accordingly...'
     },
     {
       id: 1,
@@ -62,7 +146,7 @@ export class DefaultHeaderComponent extends HeaderComponent {
       title: 'Project Update: Milestone Achieved',
       time: '5 minutes ago',
       link: 'apps/email/inbox/message',
-      message: 'Kudos on hitting sales targets last quarter! Let\'s keep the momentum. New goals, new victories ahead...'
+      message: 'Kudos on hitting sales targets last quarter! Let's keep the momentum. New goals, new victories ahead...'
     },
     {
       id: 2,
@@ -82,7 +166,7 @@ export class DefaultHeaderComponent extends HeaderComponent {
       title: 'Inventory Checkpoint',
       time: '4:03 AM',
       link: 'apps/email/inbox/message',
-      message: 'Team, it\'s time for our monthly inventory check. Accurate counts ensure smooth operations. Let\'s nail it...'
+      message: 'Team, it's time for our monthly inventory check. Accurate counts ensure smooth operations. Let's nail it...'
     },
     {
       id: 3,
@@ -92,7 +176,7 @@ export class DefaultHeaderComponent extends HeaderComponent {
       title: 'Customer Feedback Results',
       time: '3 days ago',
       link: 'apps/email/inbox/message',
-      message: 'Our latest customer feedback is in. Let\'s analyze and discuss improvements for an even better service...'
+      message: 'Our latest customer feedback is in. Let's analyze and discuss improvements for an even better service...'
     }
   ];
 
