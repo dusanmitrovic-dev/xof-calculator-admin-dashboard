@@ -70,17 +70,10 @@ export class GuildConfigService {
   selectGuild(guildId: string | null): void {
     console.log(`GuildConfigService: Selecting guild ${guildId}`);
     this.selectedGuildIdSource.next(guildId);
-    // Optional: Persist selection to local storage?
-    // if (guildId) {
-    //   localStorage.setItem('selectedGuildId', guildId);
-    // } else {
-    //   localStorage.removeItem('selectedGuildId');
-    // }
   }
 
   /**
    * Gets the currently selected Guild ID directly.
-   * Useful for initial checks, but prefer subscribing to selectedGuildId$ for reactive updates.
    */
   getSelectedGuildId(): string | null {
     return this.selectedGuildIdSource.getValue();
@@ -89,18 +82,17 @@ export class GuildConfigService {
   /**
    * GET /api/config
    * Get all guild configurations, mapped to AvailableGuild interface.
-   * NOTE: This fetches ALL configs. In a real-world scenario with many guilds,
-   * you'd ideally have an API endpoint that returns only the guilds accessible by the current user.
    */
   getAvailableGuilds(): Observable<AvailableGuild[]> {
     console.log('GuildConfigService: Fetching available guilds...');
     return this.http.get<GuildConfig[]>(this.apiUrl).pipe(
       map(configs => configs.map(config => ({
         id: config.guild_id,
-        // Use agency_name from display_settings if available, otherwise use guild_id
         name: config.display_settings?.agency_name || config.guild_id
       }))),
-      tap(guilds => console.log(`GuildConfigService: Found ${guilds.length} available guilds.`)),
+      // *** Added tap for debugging the mapped result ***
+      tap(mappedGuilds => console.log('GuildConfigService Mapped Data:', JSON.stringify(mappedGuilds))),
+      tap(guilds => console.log(`GuildConfigService: Found ${guilds.length} available guilds.`)), // Keep original tap
       catchError(this.handleError)
     );
   }
@@ -108,7 +100,6 @@ export class GuildConfigService {
 
   /**
    * GET /api/config/:guild_id
-   * Get config for a specific guild.
    */
   getGuildConfig(guildId: string): Observable<GuildConfig> {
     if (!guildId) {
@@ -123,11 +114,14 @@ export class GuildConfigService {
 
   /**
    * POST /api/config
-   * Create a new guild config.
    */
   createGuildConfig(config: GuildConfig): Observable<GuildConfig> {
     console.log(`GuildConfigService: Creating config for guild ${config.guild_id}...`);
     const { _id, ...configData } = config;
+    // Ensure guild_id is sent if creating via base endpoint (should normally use POST /:guild_id)
+    if (!configData.guild_id) {
+       console.warn('GuildConfigService: createGuildConfig called without guild_id in payload, relying on API structure.');
+    }
     return this.http.post<GuildConfig>(this.apiUrl, configData).pipe(
       catchError(this.handleError)
     );
@@ -135,7 +129,6 @@ export class GuildConfigService {
 
   /**
    * PUT /api/config/:guild_id
-   * Update an existing guild config.
    */
   updateGuildConfig(guildId: string, config: GuildConfig): Observable<GuildConfig> {
     if (!guildId) {
@@ -144,7 +137,7 @@ export class GuildConfigService {
     }
     console.log(`GuildConfigService: Updating config for guild ${guildId}...`);
     const { _id, ...configData } = config;
-    configData.guild_id = guildId;
+    configData.guild_id = guildId; // Ensure guild_id in body matches param
     return this.http.put<GuildConfig>(`${this.apiUrl}/${guildId}`, configData).pipe(
       catchError(this.handleError)
     );
@@ -152,7 +145,6 @@ export class GuildConfigService {
 
   /**
    * DELETE /api/config/:guild_id
-   * Delete config for a specific guild.
    */
   deleteGuildConfig(guildId: string): Observable<{ message?: string; msg?: string }> {
     if (!guildId) {
@@ -169,7 +161,6 @@ export class GuildConfigService {
 
   /**
    * GET /api/config/:guild_id/:field
-   * Get a specific field from a guild's config.
    */
   getGuildConfigField<T>(guildId: string, field: keyof GuildConfig): Observable<T> {
     if (!guildId || !field) {
@@ -185,7 +176,6 @@ export class GuildConfigService {
 
   /**
    * PUT /api/config/:guild_id/:field
-   * Update a specific field in a guild's config.
    */
   updateGuildConfigField(guildId: string, field: keyof GuildConfig, value: any): Observable<GuildConfig> {
     if (!guildId || !field) {
