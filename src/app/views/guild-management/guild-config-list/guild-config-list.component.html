@@ -36,49 +36,107 @@
 
            <!-- Config Display State -->
            <div *ngIf="!loadingConfig && !configError && guildConfig">
-             <dl class="row">
-               <dt class="col-sm-3">Guild ID</dt><dd class="col-sm-9"><strong>{{ guildConfig.guild_id }}</strong></dd>
-               <!-- Removed optional chaining '?' where not needed -->
-               <dt class="col-sm-3">Agency Name</dt><dd class="col-sm-9">{{ guildConfig.display_settings.agency_name || 'Not Set' }}</dd>
-               <dt class="col-sm-3">Bot Name</dt><dd class="col-sm-9">{{ guildConfig.display_settings.bot_name || 'Not Set' }}</dd>
-               <dt class="col-sm-3">Models</dt><dd class="col-sm-9">{{ guildConfig.models.join(', ') || '-' }}</dd>
-               <dt class="col-sm-3">Shifts</dt><dd class="col-sm-9">{{ guildConfig.shifts.join(', ') || '-' }}</dd>
-               <dt class="col-sm-3">Periods</dt><dd class="col-sm-9">{{ guildConfig.periods.join(', ') || '-' }}</dd>
-               <dt class="col-sm-3">Display Settings</dt><dd class="col-sm-9"><pre>{{ guildConfig.display_settings | json }}</pre></dd>
-               <dt class="col-sm-3">Bonus Rules</dt>
-               <dd class="col-sm-9">
-                  @if (guildConfig.bonus_rules && guildConfig.bonus_rules.length > 0) {
-                    <ul class="list-unstyled mb-0">
-                      @for (rule of guildConfig.bonus_rules; track $index) {
-                        <li>${{ rule.amount }} bonus: ${{ rule.from }} - ${{ rule.to }}</li>
-                      }
-                    </ul>
-                  } @else {
-                    -
-                  }
-               </dd>
-               <dt class="col-sm-3">Commission Settings</dt><dd class="col-sm-9"><pre>{{ guildConfig.commission_settings | json }}</pre></dd>
+              <!-- Using c-row for better structure -->
+              <c-row class="mb-2 border-bottom pb-1">
+                <c-col sm="3" class="fw-semibold">Guild ID</c-col>
+                <c-col sm="9"><strong>{{ guildConfig.guild_id }}</strong></c-col>
+              </c-row>
 
-               <!-- Registered Role Commissions -->
-               <dt class="col-sm-3">Role Commissions</dt>
-               <dd class="col-sm-9">
-                 <!-- Removed optional chaining '?' for roles access -->
-                 @if (guildConfig.commission_settings.roles && objectKeys(guildConfig.commission_settings.roles).length > 0) {
-                   <ul class="list-unstyled mb-0">
-                     @for (roleId of objectKeys(guildConfig.commission_settings.roles); track roleId) {
-                       <li>{{ roleId }}: {{ guildConfig.commission_settings.roles[roleId].commission_percentage }}%</li>
-                     }
-                   </ul>
-                 } @else {
-                   -
-                 }
-               </dd>
-             </dl>
-           </div>
+              <c-row class="mb-2 border-bottom pb-1">
+                 <c-col sm="3" class="fw-semibold">Agency Name</c-col>
+                 <c-col sm="9">{{ guildConfig.display_settings?.agency_name || 'Not Set' }}</c-col>
+              </c-row>
+
+              <c-row class="mb-2 border-bottom pb-1">
+                 <c-col sm="3" class="fw-semibold">Bot Name</c-col>
+                 <c-col sm="9">{{ guildConfig.display_settings?.bot_name || 'Not Set' }}</c-col>
+              </c-row>
+
+               <c-row class="mb-2 border-bottom pb-1">
+                 <c-col sm="3" class="fw-semibold">Models</c-col>
+                 <c-col sm="9">{{ guildConfig.models?.join(', ') || '-' }}</c-col>
+               </c-row>
+
+               <c-row class="mb-2 border-bottom pb-1">
+                 <c-col sm="3" class="fw-semibold">Shifts</c-col>
+                 <c-col sm="9">{{ guildConfig.shifts?.join(', ') || '-' }}</c-col>
+               </c-row>
+
+               <c-row class="mb-2 border-bottom pb-1">
+                 <c-col sm="3" class="fw-semibold">Periods</c-col>
+                 <c-col sm="9">{{ guildConfig.periods?.join(', ') || '-' }}</c-col>
+               </c-row>
+
+               <c-row class="mb-2 border-bottom pb-1">
+                 <c-col sm="3" class="fw-semibold">Display Settings</c-col>
+                 <c-col sm="9">
+                    <ul class="list-unstyled mb-0">
+                       <li>Ephemeral Responses: {{ guildConfig.display_settings?.ephemeral_responses ? 'Yes' : 'No' }}</li>
+                       <li>Show Average: {{ guildConfig.display_settings?.show_average ? 'Yes' : 'No' }}</li>
+                       <li>Show IDs: {{ guildConfig.display_settings?.show_ids ? 'Yes' : 'No' }}</li>
+                       <!-- Add other display settings if needed -->
+                    </ul>
+                 </c-col>
+               </c-row>
+
+               <c-row class="mb-2 border-bottom pb-1">
+                 <c-col sm="3" class="fw-semibold">Bonus Rules</c-col>
+                 <c-col sm="9">
+                    @if (guildConfig.bonus_rules && guildConfig.bonus_rules.length > 0) {
+                      <ul class="list-unstyled mb-0">
+                        @for (rule of guildConfig.bonus_rules; track $index) {
+                          <li>Earn <strong class="text-success">{{ rule.amount | currency }}</strong> bonus for gross revenue between <strong class="text-info">{{ rule.from | currency }}</strong> and <strong class="text-info">{{ rule.to | currency }}</strong></li>
+                        }
+                      </ul>
+                    } @else {
+                      <span class="text-muted">No bonus rules defined.</span>
+                    }
+                 </c-col>
+               </c-row>
+
+               <c-row class="mb-2 border-bottom pb-1">
+                 <c-col sm="3" class="fw-semibold">Role Commissions</c-col>
+                 <c-col sm="9">
+                   @if (guildConfig.commission_settings?.roles && objectKeys(guildConfig.commission_settings.roles).length > 0) {
+                     <ul class="list-unstyled mb-0">
+                       @for (roleId of objectKeys(guildConfig.commission_settings.roles); track roleId) {
+                         <li>Role <code class="text-primary">{{ roleId }}</code>: <strong>{{ guildConfig.commission_settings.roles[roleId].commission_percentage }}%</strong></li>
+                       }
+                     </ul>
+                   } @else {
+                     <span class="text-muted">No role-specific commissions defined.</span>
+                   }
+                 </c-col>
+               </c-row>
+
+               <c-row class="mb-2"> <!-- No border on last item -->
+                 <c-col sm="3" class="fw-semibold">User Overrides</c-col>
+                 <c-col sm="9">
+                   @if (guildConfig.commission_settings?.users && objectKeys(guildConfig.commission_settings.users).length > 0) {
+                     <ul class="list-unstyled mb-0">
+                       @for (userId of objectKeys(guildConfig.commission_settings.users); track userId) {
+                         <li>
+                            User <code class="text-info">{{ userId }}</code>:
+                            @if (guildConfig.commission_settings.users[userId].hourly_rate != null) {
+                              <span> Hourly Rate: <strong>{{ guildConfig.commission_settings.users[userId].hourly_rate | currency }}</strong></span>
+                            }
+                            @if (guildConfig.commission_settings.users[userId].override_role) {
+                              <span class="ms-2">(Overrides Role Commission)</span>
+                            }
+                         </li>
+                       }
+                     </ul>
+                   } @else {
+                     <span class="text-muted">No user-specific overrides defined.</span>
+                   }
+                 </c-col>
+               </c-row>
+
+           </div> <!-- End Config Display State -->
         </c-card-body>
       </c-card>
 
-      <!-- Earnings Section -->
+      <!-- Earnings Section (Remains the same) -->
       <c-card class="mb-4">
          <c-card-header>
            <strong>Earnings Records for {{ currentGuildId }}</strong>
