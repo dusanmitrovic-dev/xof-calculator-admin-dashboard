@@ -37,55 +37,55 @@
            <!-- Config Display State -->
            <div *ngIf="!loadingConfig && !configError && guildConfig">
               <!-- Using c-row for better structure -->
-              <c-row class="mb-2 border-bottom pb-1">
+              <c-row class="mb-2 border-bottom pb-1 align-items-center">
                 <c-col sm="3" class="fw-semibold">Guild ID</c-col>
                 <c-col sm="9"><strong>{{ guildConfig.guild_id }}</strong></c-col>
               </c-row>
 
-              <c-row class="mb-2 border-bottom pb-1">
+              <c-row class="mb-2 border-bottom pb-1 align-items-center">
                  <c-col sm="3" class="fw-semibold">Agency Name</c-col>
                  <c-col sm="9">{{ guildConfig.display_settings?.agency_name || 'Not Set' }}</c-col>
               </c-row>
 
-              <c-row class="mb-2 border-bottom pb-1">
+              <c-row class="mb-2 border-bottom pb-1 align-items-center">
                  <c-col sm="3" class="fw-semibold">Bot Name</c-col>
                  <c-col sm="9">{{ guildConfig.display_settings?.bot_name || 'Not Set' }}</c-col>
               </c-row>
 
-               <c-row class="mb-2 border-bottom pb-1">
+               <c-row class="mb-2 border-bottom pb-1 align-items-center">
                  <c-col sm="3" class="fw-semibold">Models</c-col>
-                 <c-col sm="9">{{ guildConfig.models?.join(', ') || '-' }}</c-col>
+                 <c-col sm="9">{{ guildConfig.models?.length > 0 ? guildConfig.models.join(', ') : '-' }}</c-col>
                </c-row>
 
-               <c-row class="mb-2 border-bottom pb-1">
+               <c-row class="mb-2 border-bottom pb-1 align-items-center">
                  <c-col sm="3" class="fw-semibold">Shifts</c-col>
-                 <c-col sm="9">{{ guildConfig.shifts?.join(', ') || '-' }}</c-col>
+                 <c-col sm="9">{{ guildConfig.shifts?.length > 0 ? guildConfig.shifts.join(', ') : '-' }}</c-col>
                </c-row>
 
-               <c-row class="mb-2 border-bottom pb-1">
+               <c-row class="mb-2 border-bottom pb-1 align-items-center">
                  <c-col sm="3" class="fw-semibold">Periods</c-col>
-                 <c-col sm="9">{{ guildConfig.periods?.join(', ') || '-' }}</c-col>
+                 <c-col sm="9">{{ guildConfig.periods?.length > 0 ? guildConfig.periods.join(', ') : '-' }}</c-col>
                </c-row>
 
                <c-row class="mb-2 border-bottom pb-1">
-                 <c-col sm="3" class="fw-semibold">Display Settings</c-col>
+                 <c-col sm="3" class="fw-semibold pt-1">Display Settings</c-col> <!-- Added pt-1 for alignment -->
                  <c-col sm="9">
                     <ul class="list-unstyled mb-0">
-                       <li>Ephemeral Responses: {{ guildConfig.display_settings?.ephemeral_responses ? 'Yes' : 'No' }}</li>
-                       <li>Show Average: {{ guildConfig.display_settings?.show_average ? 'Yes' : 'No' }}</li>
-                       <li>Show IDs: {{ guildConfig.display_settings?.show_ids ? 'Yes' : 'No' }}</li>
+                       <li>Ephemeral Responses: <strong class="text-info">{{ guildConfig.display_settings?.ephemeral_responses ? 'Yes' : 'No' }}</strong></li>
+                       <li>Show Average: <strong class="text-info">{{ guildConfig.display_settings?.show_average ? 'Yes' : 'No' }}</strong></li>
+                       <li>Show IDs: <strong class="text-info">{{ guildConfig.display_settings?.show_ids ? 'Yes' : 'No' }}</strong></li>
                        <!-- Add other display settings if needed -->
                     </ul>
                  </c-col>
                </c-row>
 
                <c-row class="mb-2 border-bottom pb-1">
-                 <c-col sm="3" class="fw-semibold">Bonus Rules</c-col>
+                 <c-col sm="3" class="fw-semibold pt-1">Bonus Rules</c-col> <!-- Added pt-1 for alignment -->
                  <c-col sm="9">
                     @if (guildConfig.bonus_rules && guildConfig.bonus_rules.length > 0) {
                       <ul class="list-unstyled mb-0">
                         @for (rule of guildConfig.bonus_rules; track $index) {
-                          <li>Earn <strong class="text-success">{{ rule.amount | currency }}</strong> bonus for gross revenue between <strong class="text-info">{{ rule.from | currency }}</strong> and <strong class="text-info">{{ rule.to | currency }}</strong></li>
+                          <li>Earn <strong class="text-success">{{ rule.amount | currency }}</strong> bonus for gross revenue between <strong class="text-primary">{{ rule.from | currency }}</strong> and <strong class="text-primary">{{ rule.to | currency }}</strong></li>
                         }
                       </ul>
                     } @else {
@@ -95,7 +95,7 @@
                </c-row>
 
                <c-row class="mb-2 border-bottom pb-1">
-                 <c-col sm="3" class="fw-semibold">Role Commissions</c-col>
+                 <c-col sm="3" class="fw-semibold pt-1">Role Commissions</c-col> <!-- Added pt-1 for alignment -->
                  <c-col sm="9">
                    @if (guildConfig.commission_settings?.roles && objectKeys(guildConfig.commission_settings.roles).length > 0) {
                      <ul class="list-unstyled mb-0">
@@ -110,7 +110,7 @@
                </c-row>
 
                <c-row class="mb-2"> <!-- No border on last item -->
-                 <c-col sm="3" class="fw-semibold">User Overrides</c-col>
+                 <c-col sm="3" class="fw-semibold pt-1">User Overrides</c-col> <!-- Added pt-1 for alignment -->
                  <c-col sm="9">
                    @if (guildConfig.commission_settings?.users && objectKeys(guildConfig.commission_settings.users).length > 0) {
                      <ul class="list-unstyled mb-0">
@@ -118,10 +118,10 @@
                          <li>
                             User <code class="text-info">{{ userId }}</code>:
                             @if (guildConfig.commission_settings.users[userId].hourly_rate != null) {
-                              <span> Hourly Rate: <strong>{{ guildConfig.commission_settings.users[userId].hourly_rate | currency }}</strong></span>
+                              <span class="ms-2"> Hourly Rate: <strong>{{ guildConfig.commission_settings.users[userId].hourly_rate | currency }}</strong></span>
                             }
                             @if (guildConfig.commission_settings.users[userId].override_role) {
-                              <span class="ms-2">(Overrides Role Commission)</span>
+                              <span class="badge bg-warning text-dark ms-2">Overrides Role %</span>
                             }
                          </li>
                        }
@@ -170,7 +170,7 @@
                       <td>{{ earning.date }}</td>
                       <td>{{ earning.user_mention }}</td>
                       <td>{{ earning.role }}</td>
-                      <td>{{ earning.models }}</td>
+                      <td>{{ earning.models?.length > 0 ? earning.models.join(', ') : '-' }}</td>
                       <td>{{ earning.shift }}</td>
                       <td>{{ earning.period }}</td>
                       <td>{{ earning.hours_worked }}</td>
