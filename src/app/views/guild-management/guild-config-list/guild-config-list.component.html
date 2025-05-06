@@ -70,9 +70,9 @@
                  <c-col sm="3" class="fw-semibold pt-1">Display Settings</c-col>
                  <c-col sm="9">
                     <ul class="list-unstyled mb-0">
-                       <li>Ephemeral Responses: <strong class="text-info">{{ guildConfig.display_settings.ephemeral_responses ? 'Yes' : 'No' }}</strong></li>
-                       <li>Show Average: <strong class="text-info">{{ guildConfig.display_settings.show_average ? 'Yes' : 'No' }}</strong></li>
-                       <li>Show IDs: <strong class="text-info">{{ guildConfig.display_settings.show_ids ? 'Yes' : 'No' }}</strong></li>
+                       <li>Ephemeral Responses: <span class="badge" [ngClass]="guildConfig.display_settings.ephemeral_responses ? 'bg-success' : 'bg-secondary'">{{ guildConfig.display_settings.ephemeral_responses ? 'Yes' : 'No' }}</span></li>
+                       <li>Show Average: <span class="badge" [ngClass]="guildConfig.display_settings.show_average ? 'bg-success' : 'bg-secondary'">{{ guildConfig.display_settings.show_average ? 'Yes' : 'No' }}</span></li>
+                       <li>Show IDs: <span class="badge" [ngClass]="guildConfig.display_settings.show_ids ? 'bg-success' : 'bg-secondary'">{{ guildConfig.display_settings.show_ids ? 'Yes' : 'No' }}</span></li>
                     </ul>
                  </c-col>
                </c-row>
