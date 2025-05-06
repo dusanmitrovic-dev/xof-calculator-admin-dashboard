@@ -1,79 +1,120 @@
 <c-modal id="guildConfigEditModal" [visible]="visible" (visibleChange)="handleVisibleChange($event)" backdrop="static" size="lg">
   <c-modal-header>
-    <!-- Use *ngIf to ensure guildConfig is loaded before accessing its properties -->
-    <h5 *ngIf="guildConfig" cModalTitle>Edit Guild Configuration ({{ guildConfig.guild_id }})</h5>
-    <h5 *ngIf="!guildConfig" cModalTitle>Edit Guild Configuration</h5> <!-- Fallback title -->
+    <h5 cModalTitle>{{ title }}</h5>
     <button (click)="closeModal()" cButtonClose></button>
   </c-modal-header>
   <c-modal-body>
+    <!-- General error message area -->
     <c-alert color="danger" *ngIf="errorMessage">
       {{ errorMessage }}
     </c-alert>
 
-    <form *ngIf="configForm" [formGroup]="configForm" (ngSubmit)="saveChanges()">
+    <form *ngIf="configForm" [formGroup]="configForm" (ngSubmit)="saveChanges()" novalidate>
       
+      <!-- Guild ID (Only shown/editable in Create mode) -->
+      <div class="mb-3" *ngIf="!isEditMode">
+        <label cLabel for="guild_id">Guild ID</label>
+        <input cFormControl type="text" id="guild_id" formControlName="guild_id" required 
+               placeholder="Enter Discord Guild ID" 
+               [class.is-invalid]="guild_id_control.invalid && (guild_id_control.dirty || guild_id_control.touched)">
+        <c-form-feedback [valid]="false" *ngIf="guild_id_control.invalid && (guild_id_control.dirty || guild_id_control.touched)">
+          <div *ngIf="guild_id_control.hasError('required')">Guild ID is required.</div>
+          <div *ngIf="guild_id_control.hasError('pattern')">Guild ID must contain only numbers.</div>
+        </c-form-feedback>
+      </div>
+      <div class="mb-3" *ngIf="isEditMode && guildConfig">
+         <label cLabel>Guild ID</label>
+         <input cFormControl type="text" [value]="guildConfig.guild_id" readonly disabled>
+      </div>
+
       <!-- Models -->
-      <div formArrayName="models" class="mb-3">
-        <label cLabel>Models</label>
+      <div formArrayName="models" class="mb-3 border rounded p-2">
+        <label cLabel class="fw-bold">Models</label>
         <div *ngFor="let model of models.controls; let i=index" class="input-group mb-2">
-           <input cFormControl type="text" [formControlName]="i" required 
+           <input cFormControl type="text" [formControlName]="i" required placeholder="Enter Model Name"
                   [class.is-invalid]="model.invalid && (model.dirty || model.touched)">
            <button cButton type="button" color="danger" variant="outline" (click)="removeItem(models, i)" title="Remove Model">
                <svg cIcon name="cilTrash"></svg>
             </button>
+            <c-form-feedback [valid]="false" *ngIf="model.invalid && (model.dirty || model.touched)">
+               Model name cannot be empty.
+            </c-form-feedback>
         </div>
         <button cButton type="button" color="secondary" size="sm" (click)="addItem(models)">Add Model</button>
       </div>
 
       <!-- Shifts -->
-      <div formArrayName="shifts" class="mb-3">
-        <label cLabel>Shifts</label>
+      <div formArrayName="shifts" class="mb-3 border rounded p-2">
+        <label cLabel class="fw-bold">Shifts</label>
         <div *ngFor="let shift of shifts.controls; let i=index" class="input-group mb-2">
-           <input cFormControl type="text" [formControlName]="i" required
+           <input cFormControl type="text" [formControlName]="i" required placeholder="Enter Shift Name (e.g., Morning)"
                   [class.is-invalid]="shift.invalid && (shift.dirty || shift.touched)">
            <button cButton type="button" color="danger" variant="outline" (click)="removeItem(shifts, i)" title="Remove Shift">
                <svg cIcon name="cilTrash"></svg>
             </button>
+            <c-form-feedback [valid]="false" *ngIf="shift.invalid && (shift.dirty || shift.touched)">
+               Shift name cannot be empty.
+            </c-form-feedback>
         </div>
         <button cButton type="button" color="secondary" size="sm" (click)="addItem(shifts)">Add Shift</button>
       </div>
       
       <!-- Periods -->
-      <div formArrayName="periods" class="mb-3">
-        <label cLabel>Periods</label>
+      <div formArrayName="periods" class="mb-3 border rounded p-2">
+        <label cLabel class="fw-bold">Periods</label>
         <div *ngFor="let period of periods.controls; let i=index" class="input-group mb-2">
-           <input cFormControl type="text" [formControlName]="i" required
+           <input cFormControl type="text" [formControlName]="i" required placeholder="Enter Period Name (e.g., Week 1)"
                    [class.is-invalid]="period.invalid && (period.dirty || period.touched)">
            <button cButton type="button" color="danger" variant="outline" (click)="removeItem(periods, i)" title="Remove Period">
                <svg cIcon name="cilTrash"></svg>
             </button>
+            <c-form-feedback [valid]="false" *ngIf="period.invalid && (period.dirty || period.touched)">
+               Period name cannot be empty.
+            </c-form-feedback>
         </div>
         <button cButton type="button" color="secondary" size="sm" (click)="addItem(periods)">Add Period</button>
       </div>
 
        <!-- Bonus Rules -->
       <div formArrayName="bonus_rules" class="mb-3 border rounded p-2">
-        <label cLabel class="fw-bold">Bonus Rules</label>
-        <div *ngFor="let rule of bonus_rules.controls; let i=index" [formGroupName]="i" class="row g-2 align-items-center mb-2 border-bottom pb-2">
+        <label cLabel class="fw-bold">Bonus Rules (Gross Revenue Tiers)</label>
+        <div *ngFor="let ruleGroup of bonus_rules.controls; let i=index" [formGroupName]="i" class="row g-2 align-items-start mb-2 border-bottom pb-2">
            <c-col md="3">
               <label cLabel [for]="'bonus_from_' + i">From ($)</label>
-              <input cFormControl type="number" [id]="'bonus_from_' + i" formControlName="from" required 
-                     [class.is-invalid]="rule.get('from')?.invalid && (rule.get('from')?.dirty || rule.get('from')?.touched)">
+              <input cFormControl type="number" [id]="'bonus_from_' + i" formControlName="from" required min="0"
+                     [class.is-invalid]="ruleGroup.get('from')?.invalid && (ruleGroup.get('from')?.dirty || ruleGroup.get('from')?.touched)">
+              <c-form-feedback [valid]="false" *ngIf="ruleGroup.get('from')?.invalid && (ruleGroup.get('from')?.dirty || ruleGroup.get('from')?.touched)">
+                  <div *ngIf="ruleGroup.get('from')?.hasError('required')">'From' amount is required.</div>
+                  <div *ngIf="ruleGroup.get('from')?.hasError('min')">Must be 0 or greater.</div>
+              </c-form-feedback>
            </c-col>
            <c-col md="3">
              <label cLabel [for]="'bonus_to_' + i">To ($)</label>
-              <input cFormControl type="number" [id]="'bonus_to_' + i" formControlName="to" required
-                     [class.is-invalid]="rule.get('to')?.invalid && (rule.get('to')?.dirty || rule.get('to')?.touched)">
+              <input cFormControl type="number" [id]="'bonus_to_' + i" formControlName="to" required min="0"
+                     [class.is-invalid]="ruleGroup.get('to')?.invalid && (ruleGroup.get('to')?.dirty || ruleGroup.get('to')?.touched)">
+               <c-form-feedback [valid]="false" *ngIf="ruleGroup.get('to')?.invalid && (ruleGroup.get('to')?.dirty || ruleGroup.get('to')?.touched)">
+                  <div *ngIf="ruleGroup.get('to')?.hasError('required')">'To' amount is required.</div>
+                  <div *ngIf="ruleGroup.get('to')?.hasError('min')">Must be 0 or greater.</div>
+                  <!-- Add custom validator check if implemented: e.g., *ngIf="ruleGroup.hasError('toLessThanFrom')" -->
+              </c-form-feedback>
            </c-col>
            <c-col md="3">
               <label cLabel [for]="'bonus_amount_' + i">Bonus ($)</label>
-              <input cFormControl type="number" [id]="'bonus_amount_' + i" formControlName="amount" required
-                     [class.is-invalid]="rule.get('amount')?.invalid && (rule.get('amount')?.dirty || rule.get('amount')?.touched)">
+              <input cFormControl type="number" [id]="'bonus_amount_' + i" formControlName="amount" required min="0"
+                     [class.is-invalid]="ruleGroup.get('amount')?.invalid && (ruleGroup.get('amount')?.dirty || ruleGroup.get('amount')?.touched)">
+               <c-form-feedback [valid]="false" *ngIf="ruleGroup.get('amount')?.invalid && (ruleGroup.get('amount')?.dirty || ruleGroup.get('amount')?.touched)">
+                  <div *ngIf="ruleGroup.get('amount')?.hasError('required')">Bonus amount is required.</div>
+                  <div *ngIf="ruleGroup.get('amount')?.hasError('min')">Must be 0 or greater.</div>
+              </c-form-feedback>
            </c-col>
-           <c-col md="3" class="text-end align-self-end">
+           <c-col md="3" class="text-end align-self-center pt-4">
               <button cButton type="button" color="danger" variant="outline" (click)="removeBonusRule(i)" title="Remove Rule">
                   <svg cIcon name="cilTrash"></svg>
               </button>
+           </c-col>
+           <!-- Add validation for the group itself if needed (e.g., 'to' must be >= 'from') -->
+           <c-col xs="12" *ngIf="ruleGroup.invalid && ruleGroup.touched">
+              <!-- Example: <c-form-feedback [valid]="false" *ngIf="ruleGroup.hasError('toLessThanFrom')">'To' amount must be greater than or equal to 'From' amount.</c-form-feedback> -->
            </c-col>
         </div>
         <button cButton type="button" color="secondary" size="sm" (click)="addBonusRule()">Add Bonus Rule</button>
@@ -86,13 +127,13 @@
             <c-col md="6">
                <c-form-check>
                   <input cFormCheckInput type="checkbox" id="ephemeral_responses" formControlName="ephemeral_responses">
-                  <label cFormCheckLabel for="ephemeral_responses">Ephemeral Responses</label>
+                  <label cFormCheckLabel for="ephemeral_responses">Ephemeral Responses (Bot replies only visible to user)</label>
                </c-form-check>
             </c-col>
              <c-col md="6">
                <c-form-check>
                   <input cFormCheckInput type="checkbox" id="show_average" formControlName="show_average">
-                  <label cFormCheckLabel for="show_average">Show Average</label>
+                  <label cFormCheckLabel for="show_average">Show Average Earnings</label>
                </c-form-check>
             </c-col>
           </c-row>
@@ -100,70 +141,100 @@
             <c-col md="6">
                <c-form-check>
                   <input cFormCheckInput type="checkbox" id="show_ids" formControlName="show_ids">
-                  <label cFormCheckLabel for="show_ids">Show IDs</label>
+                  <label cFormCheckLabel for="show_ids">Show User/Role IDs</label>
                </c-form-check>
             </c-col>
          </c-row>
          <c-row class="mb-2">
             <c-col md="6">
                <label cLabel for="agency_name">Agency Name</label>
-               <input cFormControl type="text" id="agency_name" formControlName="agency_name">
+               <input cFormControl type="text" id="agency_name" formControlName="agency_name" required maxlength="50"
+                      [class.is-invalid]="configForm.get('display_settings.agency_name')?.invalid && (configForm.get('display_settings.agency_name')?.dirty || configForm.get('display_settings.agency_name')?.touched)">
+               <c-form-feedback [valid]="false" *ngIf="configForm.get('display_settings.agency_name')?.invalid && (configForm.get('display_settings.agency_name')?.dirty || configForm.get('display_settings.agency_name')?.touched)">
+                 <div *ngIf="configForm.get('display_settings.agency_name')?.hasError('required')">Agency name is required.</div>
+                 <div *ngIf="configForm.get('display_settings.agency_name')?.hasError('maxlength')">Agency name cannot exceed 50 characters.</div>
+               </c-form-feedback>
             </c-col>
              <c-col md="6">
                <label cLabel for="bot_name">Bot Name</label>
-               <input cFormControl type="text" id="bot_name" formControlName="bot_name">
+               <input cFormControl type="text" id="bot_name" formControlName="bot_name" required maxlength="50"
+                      [class.is-invalid]="configForm.get('display_settings.bot_name')?.invalid && (configForm.get('display_settings.bot_name')?.dirty || configForm.get('display_settings.bot_name')?.touched)">
+                <c-form-feedback [valid]="false" *ngIf="configForm.get('display_settings.bot_name')?.invalid && (configForm.get('display_settings.bot_name')?.dirty || configForm.get('display_settings.bot_name')?.touched)">
+                 <div *ngIf="configForm.get('display_settings.bot_name')?.hasError('required')">Bot name is required.</div>
+                 <div *ngIf="configForm.get('display_settings.bot_name')?.hasError('maxlength')">Bot name cannot exceed 50 characters.</div>
+               </c-form-feedback>
             </c-col>
          </c-row>
       </fieldset>
       
-      <!-- Commission Settings (Simplified Example - Needs Improvement for Maps) -->
+      <!-- Commission Settings -->
        <fieldset formGroupName="commission_settings" class="mb-3 border rounded p-2">
          <legend class="fw-bold fs-6">Commission Settings</legend>
          
-         <div formGroupName="roles" class="mb-3">
-            <h6 class="text-muted">By Role (%)</h6>
-             <p class="small text-warning">Editing Role/User specific commissions here is complex. Consider managing these via bot commands or a dedicated interface.</p>
-            <!-- Display existing - Editing requires dynamic controls -->
-             <div *ngFor="let roleId of objectKeys(configForm.get('commission_settings.roles')?.value)" class="row g-2 mb-1">
-                <label class="col-form-label col-sm-3">Role: {{ roleId }}</label>
-                <div class="col-sm-6" [formGroupName]="roleId">
-                    <input cFormControl type="number" formControlName="commission_percentage" placeholder="Commission %">
-                </div>
+         <!-- Roles -->
+         <div formGroupName="roles" class="mb-3 border rounded p-2">
+            <h6 class="text-muted mb-2">By Role (%)</h6>
+             <p class="small text-primary fst-italic">Note: You can only edit existing role commissions. Adding/removing roles requires bot commands or direct database changes.</p>
+             
+             <!-- Check if roles group exists and has controls -->
+             <div *ngIf="commissionRoles && objectKeys(commissionRoles.controls).length > 0; else noRoles">
+                 <div *ngFor="let roleId of objectKeys(commissionRoles.controls)" class="row g-2 mb-2 align-items-center">
+                    <label class="col-form-label col-sm-3 text-truncate" title="Role ID: {{roleId}}">Role: <code class="text-primary">{{ roleId }}</code></label>
+                    <div class="col-sm-6" [formGroupName]="roleId">
+                        <input cFormControl type="number" formControlName="commission_percentage" required min="0" max="100" placeholder="Commission %"
+                               [class.is-invalid]="commissionRoles.get(roleId)?.get('commission_percentage')?.invalid && (commissionRoles.get(roleId)?.get('commission_percentage')?.dirty || commissionRoles.get(roleId)?.get('commission_percentage')?.touched)">
+                        <c-form-feedback [valid]="false" *ngIf="commissionRoles.get(roleId)?.get('commission_percentage')?.invalid && (commissionRoles.get(roleId)?.get('commission_percentage')?.dirty || commissionRoles.get(roleId)?.get('commission_percentage')?.touched)">
+                           <div *ngIf="commissionRoles.get(roleId)?.get('commission_percentage')?.hasError('required')">Commission % is required.</div>
+                           <div *ngIf="commissionRoles.get(roleId)?.get('commission_percentage')?.hasError('min')">Must be 0 or greater.</div>
+                           <div *ngIf="commissionRoles.get(roleId)?.get('commission_percentage')?.hasError('max')">Must be 100 or less.</div>
+                        </c-form-feedback>
+                    </div>
+                 </div>
              </div>
+             <ng-template #noRoles>
+                <div class="text-muted fst-italic">No role commissions defined in current config.</div>
+             </ng-template>
          </div>
          
-          <div formGroupName="users" class="mb-3">
-            <h6 class="text-muted">By User (Overrides)</h6>
-            <!-- Display existing - Editing requires dynamic controls -->
-            <div *ngFor="let userId of objectKeys(configForm.get('commission_settings.users')?.value)" class="row g-2 mb-1" [formGroupName]="userId">
-                 <label class="col-form-label col-sm-3">User: {{ userId }}</label>
-                 <div class="col-sm-4">
-                    <input cFormControl type="number" formControlName="hourly_rate" placeholder="Hourly Rate (Opt.)">
-                 </div>
-                 <div class="col-sm-4 d-flex align-items-center">
-                    <c-form-check>
-                        <input cFormCheckInput type="checkbox" formControlName="override_role">
-                        <label cFormCheckLabel>Override Role %?</label>
-                    </c-form-check>
+         <!-- Users -->
+          <div formGroupName="users" class="mb-3 border rounded p-2">
+            <h6 class="text-muted mb-2">By User (Overrides)</h6>
+            <p class="small text-primary fst-italic">Note: You can only edit existing user overrides. Adding/removing users requires bot commands or direct database changes.</p>
+
+             <!-- Check if users group exists and has controls -->
+             <div *ngIf="commissionUsers && objectKeys(commissionUsers.controls).length > 0; else noUsers">
+                <div *ngFor="let userId of objectKeys(commissionUsers.controls)" class="row g-2 mb-2 align-items-center" [formGroupName]="userId">
+                     <label class="col-form-label col-sm-3 text-truncate" title="User ID: {{userId}}">User: <code class="text-info">{{ userId }}</code></label>
+                     <div class="col-sm-4">
+                        <input cFormControl type="number" formControlName="hourly_rate" placeholder="Hourly Rate (Optional)" min="0"
+                              [class.is-invalid]="commissionUsers.get(userId)?.get('hourly_rate')?.invalid && (commissionUsers.get(userId)?.get('hourly_rate')?.dirty || commissionUsers.get(userId)?.get('hourly_rate')?.touched)">
+                        <c-form-feedback [valid]="false" *ngIf="commissionUsers.get(userId)?.get('hourly_rate')?.invalid && (commissionUsers.get(userId)?.get('hourly_rate')?.dirty || commissionUsers.get(userId)?.get('hourly_rate')?.touched)">
+                           <div *ngIf="commissionUsers.get(userId)?.get('hourly_rate')?.hasError('min')">Hourly rate cannot be negative.</div>
+                       </c-form-feedback>
+                     </div>
+                     <div class="col-sm-4 d-flex align-items-center">
+                        <c-form-check>
+                            <input cFormCheckInput type="checkbox" formControlName="override_role" [id]="'override_role_' + userId">
+                            <label cFormCheckLabel [for]="'override_role_' + userId">Override Role %?</label>
+                        </c-form-check>
+                     </div>
                  </div>
              </div>
+             <ng-template #noUsers>
+                 <div class="text-muted fst-italic">No user overrides defined in current config.</div>
+             </ng-template>
          </div>
        </fieldset>
        
-       <!-- Note: We are not editing guildConfig.roles map here -->
-
     </form>
   </c-modal-body>
   <c-modal-footer>
     <button (click)="closeModal()" cButton color="secondary">Cancel</button>
     <button cButton color="primary" type="submit" (click)="saveChanges()" [disabled]="isLoading || (configForm && configForm.invalid)">
       <c-spinner *ngIf="isLoading" component="span" size="sm" aria-hidden="true"></c-spinner>
-      {{ isLoading ? 'Saving...' : 'Save Changes' }}
+      {{ isLoading ? 'Saving...' : (isEditMode ? 'Save Changes' : 'Create Config') }}
     </button>
+    <!-- Optionally show a message if form is invalid on try-submit -->
+    <span *ngIf="configForm?.invalid && configForm?.touched && !isLoading" class="text-danger ms-2 small">Please correct the errors in the form.</span>
   </c-modal-footer>
 </c-modal>
-
-<!-- Helper function needed in component .ts to iterate over object keys in template -->
-<!--
-  objectKeys = Object.keys;
--->

@@ -34,7 +34,7 @@
              </button>
            </div>
 
-           <!-- Config Display State -->
+           <!-- Config Display State (guildConfig is guaranteed non-null here) -->
            <div *ngIf="!loadingConfig && !configError && guildConfig">
               <!-- Using c-row for better structure -->
               <c-row class="mb-2 border-bottom pb-1 align-items-center">
@@ -44,37 +44,42 @@
 
               <c-row class="mb-2 border-bottom pb-1 align-items-center">
                  <c-col sm="3" class="fw-semibold">Agency Name</c-col>
+                 <!-- Removed ?. because guildConfig exists; display_settings might still be optional -->
                  <c-col sm="9">{{ guildConfig.display_settings?.agency_name || 'Not Set' }}</c-col>
               </c-row>
 
               <c-row class="mb-2 border-bottom pb-1 align-items-center">
                  <c-col sm="3" class="fw-semibold">Bot Name</c-col>
+                  <!-- Removed ?. because guildConfig exists; display_settings might still be optional -->
                  <c-col sm="9">{{ guildConfig.display_settings?.bot_name || 'Not Set' }}</c-col>
               </c-row>
 
                <c-row class="mb-2 border-bottom pb-1 align-items-center">
                  <c-col sm="3" class="fw-semibold">Models</c-col>
-                 <c-col sm="9">{{ guildConfig.models?.length > 0 ? guildConfig.models.join(', ') : '-' }}</c-col>
+                 <!-- Removed ?. from guildConfig.models -->
+                 <c-col sm="9">{{ (guildConfig.models && guildConfig.models.length > 0) ? guildConfig.models.join(', ') : '-' }}</c-col>
                </c-row>
 
                <c-row class="mb-2 border-bottom pb-1 align-items-center">
                  <c-col sm="3" class="fw-semibold">Shifts</c-col>
-                 <c-col sm="9">{{ guildConfig.shifts?.length > 0 ? guildConfig.shifts.join(', ') : '-' }}</c-col>
+                  <!-- Removed ?. from guildConfig.shifts -->
+                 <c-col sm="9">{{ (guildConfig.shifts && guildConfig.shifts.length > 0) ? guildConfig.shifts.join(', ') : '-' }}</c-col>
                </c-row>
 
                <c-row class="mb-2 border-bottom pb-1 align-items-center">
                  <c-col sm="3" class="fw-semibold">Periods</c-col>
-                 <c-col sm="9">{{ guildConfig.periods?.length > 0 ? guildConfig.periods.join(', ') : '-' }}</c-col>
+                  <!-- Removed ?. from guildConfig.periods -->
+                 <c-col sm="9">{{ (guildConfig.periods && guildConfig.periods.length > 0) ? guildConfig.periods.join(', ') : '-' }}</c-col>
                </c-row>
 
                <c-row class="mb-2 border-bottom pb-1">
                  <c-col sm="3" class="fw-semibold pt-1">Display Settings</c-col> <!-- Added pt-1 for alignment -->
                  <c-col sm="9">
+                    <!-- Removed ?. from guildConfig.display_settings inside the checks -->
                     <ul class="list-unstyled mb-0">
                        <li>Ephemeral Responses: <strong class="text-info">{{ guildConfig.display_settings?.ephemeral_responses ? 'Yes' : 'No' }}</strong></li>
                        <li>Show Average: <strong class="text-info">{{ guildConfig.display_settings?.show_average ? 'Yes' : 'No' }}</strong></li>
                        <li>Show IDs: <strong class="text-info">{{ guildConfig.display_settings?.show_ids ? 'Yes' : 'No' }}</strong></li>
-                       <!-- Add other display settings if needed -->
                     </ul>
                  </c-col>
                </c-row>
@@ -82,6 +87,7 @@
                <c-row class="mb-2 border-bottom pb-1">
                  <c-col sm="3" class="fw-semibold pt-1">Bonus Rules</c-col> <!-- Added pt-1 for alignment -->
                  <c-col sm="9">
+                    <!-- Removed ?. - rely on outer *ngIf and check property directly -->
                     @if (guildConfig.bonus_rules && guildConfig.bonus_rules.length > 0) {
                       <ul class="list-unstyled mb-0">
                         @for (rule of guildConfig.bonus_rules; track $index) {
@@ -97,6 +103,7 @@
                <c-row class="mb-2 border-bottom pb-1">
                  <c-col sm="3" class="fw-semibold pt-1">Role Commissions</c-col> <!-- Added pt-1 for alignment -->
                  <c-col sm="9">
+                    <!-- Removed ?. - rely on outer *ngIf and check property directly -->
                    @if (guildConfig.commission_settings?.roles && objectKeys(guildConfig.commission_settings.roles).length > 0) {
                      <ul class="list-unstyled mb-0">
                        @for (roleId of objectKeys(guildConfig.commission_settings.roles); track roleId) {
@@ -112,11 +119,13 @@
                <c-row class="mb-2"> <!-- No border on last item -->
                  <c-col sm="3" class="fw-semibold pt-1">User Overrides</c-col> <!-- Added pt-1 for alignment -->
                  <c-col sm="9">
+                   <!-- Removed ?. - rely on outer *ngIf and check property directly -->
                    @if (guildConfig.commission_settings?.users && objectKeys(guildConfig.commission_settings.users).length > 0) {
                      <ul class="list-unstyled mb-0">
                        @for (userId of objectKeys(guildConfig.commission_settings.users); track userId) {
                          <li>
                             User <code class="text-info">{{ userId }}</code>:
+                            <!-- Check nested properties carefully -->
                             @if (guildConfig.commission_settings.users[userId].hourly_rate != null) {
                               <span class="ms-2"> Hourly Rate: <strong>{{ guildConfig.commission_settings.users[userId].hourly_rate | currency }}</strong></span>
                             }
@@ -136,7 +145,7 @@
         </c-card-body>
       </c-card>
 
-      <!-- Earnings Section (Remains the same) -->
+      <!-- Earnings Section -->
       <c-card class="mb-4">
          <c-card-header>
            <strong>Earnings Records for {{ currentGuildId }}</strong>
@@ -170,7 +179,8 @@
                       <td>{{ earning.date }}</td>
                       <td>{{ earning.user_mention }}</td>
                       <td>{{ earning.role }}</td>
-                      <td>{{ earning.models?.length > 0 ? earning.models.join(', ') : '-' }}</td>
+                      <!-- Fixed: Removed ?. and ensure models is treated as array -->
+                      <td>{{ (earning.models && earning.models.length > 0) ? earning.models.join(', ') : '-' }}</td>
                       <td>{{ earning.shift }}</td>
                       <td>{{ earning.period }}</td>
                       <td>{{ earning.hours_worked }}</td>
@@ -197,7 +207,6 @@
 </c-row>
 
 <!-- Guild Config Edit Modal -->
-<!-- Pass currentGuildId to the modal for creation context -->
 @if (isConfigEditModalVisible && currentGuildId) { 
   <app-guild-config-edit-modal
     [(visible)]="isConfigEditModalVisible"
