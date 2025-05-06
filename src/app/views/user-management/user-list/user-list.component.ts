@@ -149,9 +149,9 @@ export class UserListComponent implements OnInit, OnDestroy {
 
   getRoleBadgeColor(role: User['role']): string {
     switch (role?.toLowerCase()) {
-      case 'admin': return 'danger-gradient'; // Using gradient for better visual
-      case 'manager': return 'warning-gradient'; 
-      case 'user': return 'secondary-gradient';
+      case 'admin': return 'danger';
+      case 'manager': return 'warning'; 
+      case 'user': return 'secondary';
       default: return 'light';
     }
   }

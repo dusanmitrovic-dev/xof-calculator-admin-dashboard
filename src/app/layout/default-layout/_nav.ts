@@ -22,7 +22,8 @@ export const navItems: INavData[] = [
   {
     name: 'User Management',
     url: '/user-management',
-    iconComponent: { name: 'cil-user' }
+    iconComponent: { name: 'cil-user' },
+    attributes: { roles: ['admin'] } // Added roles attribute
   },
   // ... (rest of the commented out items remain unchanged) ...
 ];
