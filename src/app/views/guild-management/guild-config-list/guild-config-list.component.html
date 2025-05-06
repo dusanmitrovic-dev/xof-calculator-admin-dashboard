@@ -43,13 +43,14 @@
 
               <c-row class="mb-2 border-bottom pb-1 align-items-center">
                  <c-col sm="3" class="fw-semibold">Agency Name</c-col>
-                 <!-- display_settings and commission_settings themselves can be optional per GuildConfig interface -->
-                 <c-col sm="9">{{ guildConfig.display_settings?.agency_name || 'Not Set' }}</c-col>
+                 <!-- Assuming display_settings is NOT optional on GuildConfig based on warning -->
+                 <c-col sm="9">{{ guildConfig.display_settings.agency_name || 'Not Set' }}</c-col>
               </c-row>
 
               <c-row class="mb-2 border-bottom pb-1 align-items-center">
                  <c-col sm="3" class="fw-semibold">Bot Name</c-col>
-                 <c-col sm="9">{{ guildConfig.display_settings?.bot_name || 'Not Set' }}</c-col>
+                 <!-- Assuming display_settings is NOT optional on GuildConfig based on warning -->
+                 <c-col sm="9">{{ guildConfig.display_settings.bot_name || 'Not Set' }}</c-col>
               </c-row>
 
                <c-row class="mb-2 border-bottom pb-1 align-items-center">
@@ -70,12 +71,12 @@
                <c-row class="mb-2 border-bottom pb-1">
                  <c-col sm="3" class="fw-semibold pt-1">Display Settings</c-col>
                  <c-col sm="9">
-                    <ul class="list-unstyled mb-0" *ngIf="guildConfig.display_settings">
+                    <!-- Assuming display_settings is NOT optional on GuildConfig, direct access -->
+                    <ul class="list-unstyled mb-0">
                        <li>Ephemeral Responses: <strong class="text-info">{{ guildConfig.display_settings.ephemeral_responses ? 'Yes' : 'No' }}</strong></li>
                        <li>Show Average: <strong class="text-info">{{ guildConfig.display_settings.show_average ? 'Yes' : 'No' }}</strong></li>
                        <li>Show IDs: <strong class="text-info">{{ guildConfig.display_settings.show_ids ? 'Yes' : 'No' }}</strong></li>
                     </ul>
-                    <span *ngIf="!guildConfig.display_settings" class="text-muted">Not Set</span>
                  </c-col>
                </c-row>
 
@@ -97,7 +98,8 @@
                <c-row class="mb-2 border-bottom pb-1">
                  <c-col sm="3" class="fw-semibold pt-1">Role Commissions</c-col>
                  <c-col sm="9">
-                   @if (guildConfig.commission_settings?.roles && objectKeys(guildConfig.commission_settings.roles).length > 0) {
+                   <!-- Assuming commission_settings is NOT optional on GuildConfig based on warning -->
+                   @if (guildConfig.commission_settings.roles && objectKeys(guildConfig.commission_settings.roles).length > 0) {
                      <ul class="list-unstyled mb-0">
                        @for (roleId of objectKeys(guildConfig.commission_settings.roles); track roleId) {
                          <li>Role <code class="text-primary">{{ roleId }}</code>: <strong>{{ guildConfig.commission_settings.roles[roleId].commission_percentage }}%</strong></li>
@@ -112,7 +114,8 @@
                <c-row class="mb-2"> 
                  <c-col sm="3" class="fw-semibold pt-1">User Overrides</c-col>
                  <c-col sm="9">
-                   @if (guildConfig.commission_settings?.users && objectKeys(guildConfig.commission_settings.users).length > 0) {
+                   <!-- Assuming commission_settings is NOT optional on GuildConfig based on warning -->
+                   @if (guildConfig.commission_settings.users && objectKeys(guildConfig.commission_settings.users).length > 0) {
                      <ul class="list-unstyled mb-0">
                        @for (userId of objectKeys(guildConfig.commission_settings.users); track userId) {
                          <li>
@@ -165,8 +168,8 @@
                       <td>{{ earning.date }}</td>
                       <td>{{ earning.user_mention }}</td>
                       <td>{{ earning.role }}</td>
-                      <!-- Ensure models is treated as array before calling .join -->
-                      <td>{{ (Array.isArray(earning.models) && earning.models.length > 0) ? earning.models.join(', ') : '-' }}</td>
+                      <!-- Reverted to simpler check, assuming Earning.models is string[] | undefined/null -->
+                      <td>{{ (earning.models && earning.models.length > 0) ? earning.models.join(', ') : '-' }}</td>
                       <td>{{ earning.shift }}</td>
                       <td>{{ earning.period }}</td>
                       <td>{{ earning.hours_worked }}</td>
