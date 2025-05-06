@@ -12,7 +12,6 @@
         <c-card-header>
           <strong>Guild Configuration for {{ currentGuildId }}</strong>
           <div class="float-end">
-              <!-- Buttons enabled only if not loading -->
               <button cButton color="primary" variant="outline" size="sm" (click)="openEditConfigModal()" [disabled]="loadingConfig">
                 <svg cIcon name="cilPencil" size="sm" title="Edit/Create Config"></svg> {{ guildConfig ? 'Edit' : 'Create' }} Config
               </button>
@@ -36,99 +35,158 @@
 
            <!-- Config Display State (guildConfig is guaranteed non-null here) -->
            <div *ngIf="!loadingConfig && !configError && guildConfig">
-              <c-row class="mb-2 border-bottom pb-1 align-items-center">
-                <c-col sm="3" class="fw-semibold">Guild ID</c-col>
-                <c-col sm="9"><strong>{{ guildConfig.guild_id }}</strong></c-col>
-              </c-row>
+              <!-- General Info Card -->
+              <c-card class="mb-3">
+                <c-card-header>General Info</c-card-header>
+                <c-card-body>
+                  <c-row class="mb-2 border-bottom pb-1 align-items-center">
+                    <c-col sm="3" class="fw-semibold">Guild ID</c-col>
+                    <c-col sm="9"><strong>{{ guildConfig.guild_id }}</strong></c-col>
+                  </c-row>
+                  <c-row class="mb-2 border-bottom pb-1 align-items-center">
+                     <c-col sm="3" class="fw-semibold">Agency Name</c-col>
+                     <c-col sm="9">{{ guildConfig.display_settings.agency_name || 'Not Set' }}</c-col>
+                  </c-row>
+                  <c-row class="align-items-center">
+                     <c-col sm="3" class="fw-semibold">Bot Name</c-col>
+                     <c-col sm="9">{{ guildConfig.display_settings.bot_name || 'Not Set' }}</c-col>
+                  </c-row>
+                </c-card-body>
+              </c-card>
 
-              <c-row class="mb-2 border-bottom pb-1 align-items-center">
-                 <c-col sm="3" class="fw-semibold">Agency Name</c-col>
-                 <c-col sm="9">{{ guildConfig.display_settings.agency_name || 'Not Set' }}</c-col>
-              </c-row>
+              <!-- Display Settings Card -->
+              <c-card class="mb-3">
+                <c-card-header>Display Settings</c-card-header>
+                <c-card-body>
+                  <c-row class="mb-2 border-bottom pb-1 align-items-center">
+                    <c-col sm="3" class="fw-semibold">Models</c-col>
+                    <c-col sm="9">
+                      <ng-container *ngIf="guildConfig.models && guildConfig.models.length > 0; else noModels">
+                        <span *ngFor="let model of guildConfig.models" class="badge bg-info me-1 mb-1">{{ model }}</span>
+                      </ng-container>
+                      <ng-template #noModels>-</ng-template>
+                    </c-col>
+                  </c-row>
+                  <c-row class="mb-2 border-bottom pb-1 align-items-center">
+                    <c-col sm="3" class="fw-semibold">Shifts</c-col>
+                    <c-col sm="9">
+                      <ng-container *ngIf="guildConfig.shifts && guildConfig.shifts.length > 0; else noShifts">
+                        <span *ngFor="let shift of guildConfig.shifts" class="badge bg-info me-1 mb-1">{{ shift }}</span>
+                      </ng-container>
+                      <ng-template #noShifts>-</ng-template>
+                    </c-col>
+                  </c-row>
+                  <c-row class="mb-2 border-bottom pb-1 align-items-center">
+                    <c-col sm="3" class="fw-semibold">Periods</c-col>
+                    <c-col sm="9">
+                      <ng-container *ngIf="guildConfig.periods && guildConfig.periods.length > 0; else noPeriods">
+                        <span *ngFor="let period of guildConfig.periods" class="badge bg-info me-1 mb-1">{{ period }}</span>
+                      </ng-container>
+                      <ng-template #noPeriods>-</ng-template>
+                    </c-col>
+                  </c-row>
+                  <c-row class="align-items-center">
+                    <c-col sm="12">
+                        <ul class="list-unstyled mb-0 mt-2">
+                          <li class="mb-1">Ephemeral Responses: 
+                            <span class="badge" [ngClass]="guildConfig.display_settings.ephemeral_responses ? 'bg-success' : 'bg-secondary'">
+                              <svg cIcon [name]="guildConfig.display_settings.ephemeral_responses ? 'cilCheckCircle' : 'cilXCircle'" size="sm" class="me-1"></svg>
+                              {{ guildConfig.display_settings.ephemeral_responses ? 'Yes' : 'No' }}
+                            </span>
+                          </li>
+                          <li class="mb-1">Show Average: 
+                            <span class="badge" [ngClass]="guildConfig.display_settings.show_average ? 'bg-success' : 'bg-secondary'">
+                              <svg cIcon [name]="guildConfig.display_settings.show_average ? 'cilCheckCircle' : 'cilXCircle'" size="sm" class="me-1"></svg>
+                              {{ guildConfig.display_settings.show_average ? 'Yes' : 'No' }}
+                            </span>
+                          </li>
+                          <li>Show IDs: 
+                            <span class="badge" [ngClass]="guildConfig.display_settings.show_ids ? 'bg-success' : 'bg-secondary'">
+                              <svg cIcon [name]="guildConfig.display_settings.show_ids ? 'cilCheckCircle' : 'cilXCircle'" size="sm" class="me-1"></svg>
+                              {{ guildConfig.display_settings.show_ids ? 'Yes' : 'No' }}
+                            </span>
+                          </li>
+                        </ul>
+                    </c-col>
+                  </c-row>
+                </c-card-body>
+              </c-card>
 
-              <c-row class="mb-2 border-bottom pb-1 align-items-center">
-                 <c-col sm="3" class="fw-semibold">Bot Name</c-col>
-                 <c-col sm="9">{{ guildConfig.display_settings.bot_name || 'Not Set' }}</c-col>
-              </c-row>
-
-               <c-row class="mb-2 border-bottom pb-1 align-items-center">
-                 <c-col sm="3" class="fw-semibold">Models</c-col>
-                 <c-col sm="9">{{ (guildConfig.models && guildConfig.models.length > 0) ? guildConfig.models.join(', ') : '-' }}</c-col>
-               </c-row>
-
-               <c-row class="mb-2 border-bottom pb-1 align-items-center">
-                 <c-col sm="3" class="fw-semibold">Shifts</c-col>
-                 <c-col sm="9">{{ (guildConfig.shifts && guildConfig.shifts.length > 0) ? guildConfig.shifts.join(', ') : '-' }}</c-col>
-               </c-row>
-
-               <c-row class="mb-2 border-bottom pb-1 align-items-center">
-                 <c-col sm="3" class="fw-semibold">Periods</c-col>
-                 <c-col sm="9">{{ (guildConfig.periods && guildConfig.periods.length > 0) ? guildConfig.periods.join(', ') : '-' }}</c-col>
-               </c-row>
-
-               <c-row class="mb-2 border-bottom pb-1">
-                 <c-col sm="3" class="fw-semibold pt-1">Display Settings</c-col>
-                 <c-col sm="9">
-                    <ul class="list-unstyled mb-0">
-                       <li>Ephemeral Responses: <span class="badge" [ngClass]="guildConfig.display_settings.ephemeral_responses ? 'bg-success' : 'bg-secondary'">{{ guildConfig.display_settings.ephemeral_responses ? 'Yes' : 'No' }}</span></li>
-                       <li>Show Average: <span class="badge" [ngClass]="guildConfig.display_settings.show_average ? 'bg-success' : 'bg-secondary'">{{ guildConfig.display_settings.show_average ? 'Yes' : 'No' }}</span></li>
-                       <li>Show IDs: <span class="badge" [ngClass]="guildConfig.display_settings.show_ids ? 'bg-success' : 'bg-secondary'">{{ guildConfig.display_settings.show_ids ? 'Yes' : 'No' }}</span></li>
-                    </ul>
-                 </c-col>
-               </c-row>
-
-               <c-row class="mb-2 border-bottom pb-1">
-                 <c-col sm="3" class="fw-semibold pt-1">Bonus Rules</c-col>
-                 <c-col sm="9">
-                    @if (guildConfig.bonus_rules && guildConfig.bonus_rules.length > 0) {
-                      <ul class="list-unstyled mb-0">
+              <!-- Bonus Rules Card -->
+              <c-card class="mb-3">
+                <c-card-header>Bonus Rules</c-card-header>
+                <c-card-body>
+                  @if (guildConfig.bonus_rules && guildConfig.bonus_rules.length > 0) {
+                    <table cTable class="table table-striped table-hover">
+                      <thead>
+                        <tr>
+                          <th>Bonus Amount</th>
+                          <th>Revenue Range</th>
+                        </tr>
+                      </thead>
+                      <tbody>
                         @for (rule of guildConfig.bonus_rules; track $index) {
-                          <li>Earn <strong class="text-success">{{ rule.amount | currency }}</strong> bonus for gross revenue between <strong class="text-primary">{{ rule.from | currency }}</strong> and <strong class="text-primary">{{ rule.to | currency }}</strong></li>
+                          <tr>
+                            <td><strong class="text-success">{{ rule.amount | currency }}</strong></td>
+                            <td><strong class="text-primary">{{ rule.from | currency }}</strong> - <strong class="text-primary">{{ rule.to | currency }}</strong></td>
+                          </tr>
                         }
-                      </ul>
-                    } @else {
-                      <span class="text-muted">No bonus rules defined.</span>
-                    }
-                 </c-col>
-               </c-row>
+                      </tbody>
+                    </table>
+                  } @else {
+                    <div class="text-center text-muted py-3">
+                      <svg cIcon name="cilBan" size="xl" class="mb-2"></svg>
+                      <p>No bonus rules defined.</p>
+                    </div>
+                  }
+                </c-card-body>
+              </c-card>
 
-               <c-row class="mb-2 border-bottom pb-1">
-                 <c-col sm="3" class="fw-semibold pt-1">Role Commissions</c-col>
-                 <c-col sm="9">
-                   @if (guildConfig.commission_settings.roles && objectKeys(guildConfig.commission_settings.roles).length > 0) {
-                     <ul class="list-unstyled mb-0">
-                       @for (roleId of objectKeys(guildConfig.commission_settings.roles); track roleId) {
-                         <li>Role <code class="text-primary">{{ roleId }}</code>: <strong>{{ guildConfig.commission_settings.roles[roleId].commission_percentage }}%</strong></li>
-                       }
-                     </ul>
-                   } @else {
-                     <span class="text-muted">No role-specific commissions defined.</span>
-                   }
-                 </c-col>
-               </c-row>
+              <!-- Role Commissions Card -->
+              <c-card class="mb-3">
+                <c-card-header>Role Commissions</c-card-header>
+                <c-card-body>
+                  @if (guildConfig.commission_settings.roles && objectKeys(guildConfig.commission_settings.roles).length > 0) {
+                    <ul class="list-unstyled mb-0">
+                      @for (roleId of objectKeys(guildConfig.commission_settings.roles); track roleId) {
+                        <li class="border-bottom pb-1 mb-1">Role <code class="text-primary">{{ roleId }}</code>: <strong>{{ guildConfig.commission_settings.roles[roleId].commission_percentage }}%</strong></li>
+                      }
+                    </ul>
+                  } @else {
+                    <div class="text-center text-muted py-3">
+                      <svg cIcon name="cilUserX" size="xl" class="mb-2"></svg>
+                      <p>No role-specific commissions defined.</p>
+                    </div>
+                  }
+                </c-card-body>
+              </c-card>
 
-               <c-row class="mb-2"> 
-                 <c-col sm="3" class="fw-semibold pt-1">User Overrides</c-col>
-                 <c-col sm="9">
-                   @if (guildConfig.commission_settings.users && objectKeys(guildConfig.commission_settings.users).length > 0) {
-                     <ul class="list-unstyled mb-0">
-                       @for (userId of objectKeys(guildConfig.commission_settings.users); track userId) {
-                         <li>
-                            User <code class="text-info">{{ userId }}</code>:
-                            @if (guildConfig.commission_settings.users[userId].hourly_rate != null) {
-                              <span class="ms-2"> Hourly Rate: <strong>{{ guildConfig.commission_settings.users[userId].hourly_rate | currency }}</strong></span>
-                            }
-                            @if (guildConfig.commission_settings.users[userId].override_role) {
-                              <span class="badge bg-warning text-dark ms-2">Overrides Role %</span>
-                            }
-                         </li>
-                       }
-                     </ul>
-                   } @else {
-                     <span class="text-muted">No user-specific overrides defined.</span>
-                   }
-                 </c-col>
-               </c-row>
+              <!-- User Overrides Card -->
+              <c-card class="mb-3">
+                <c-card-header>User Overrides</c-card-header>
+                <c-card-body>
+                  @if (guildConfig.commission_settings.users && objectKeys(guildConfig.commission_settings.users).length > 0) {
+                    <ul class="list-unstyled mb-0">
+                      @for (userId of objectKeys(guildConfig.commission_settings.users); track userId) {
+                        <li class="border-bottom pb-1 mb-1">
+                           User <code class="text-info">{{ userId }}</code>:
+                           @if (guildConfig.commission_settings.users[userId].hourly_rate != null) {
+                             <span class="ms-2"> Hourly Rate: <strong>{{ guildConfig.commission_settings.users[userId].hourly_rate | currency }}</strong></span>
+                           }
+                           @if (guildConfig.commission_settings.users[userId].override_role) {
+                             <span class="badge bg-warning text-dark ms-2">Overrides Role %</span>
+                           }
+                        </li>
+                      }
+                    </ul>
+                  } @else {
+                    <div class="text-center text-muted py-3">
+                      <svg cIcon name="cilUserUnfollow" size="xl" class="mb-2"></svg>
+                      <p>No user-specific overrides defined.</p>
+                    </div>
+                  }
+                </c-card-body>
+              </c-card>
 
            </div> 
         </c-card-body>
@@ -147,8 +205,28 @@
          <c-card-body>
             <div *ngIf="loadingEarnings" class="text-center py-3"><c-spinner aria-hidden="true" size="sm"></c-spinner> Loading Earnings...</div>
             <c-alert color="danger" *ngIf="!loadingEarnings && earningsError">{{ earningsError }}</c-alert>
-            <div *ngIf="!loadingEarnings && !earningsError && earnings.length === 0 && guildConfig" class="text-center py-3">No earnings records found for this guild.</div>
-            <div *ngIf="!loadingConfig && !guildConfig && !configError" class="text-center py-3 text-muted">Cannot load earnings until a guild configuration is created.</div>
+            
+            <div *ngIf="!loadingEarnings && !earningsError && earnings.length === 0 && guildConfig" class="text-center py-3">
+              <c-card class="shadow-sm">
+                <c-card-body class="text-center">
+                  <svg cIcon name="cilInbox" size="xxl" class="text-muted mb-2"></svg>
+                  <h5 class="card-title">No earnings recorded yet.</h5>
+                  <p class="card-text">Click <strong>“Add Earning”</strong> to get started.</p>
+                  <button cButton color="success" (click)="openAddEarningModal()" [disabled]="!guildConfig">
+                    <svg cIcon name="cilPlus" size="sm" class="me-1"></svg>Add Earning
+                  </button>
+                </c-card-body>
+              </c-card>
+            </div>
+
+            <div *ngIf="!loadingConfig && !guildConfig && !configError" class="text-center py-3 text-muted">
+                <svg cIcon name="cilSettings" size="xxl" class="text-warning mb-2"></svg>
+                <h5 class="text-warning">Configuration Needed</h5>
+                <p>Cannot load earnings until a guild configuration is created.</p>
+                 <button cButton color="primary" variant="ghost" size="lg" class="mt-2" (click)="openEditConfigModal()">
+                    <svg cIcon name="cilPlus" size="lg" class="me-1"></svg> Create Guild Configuration
+                </button>
+            </div>
 
             @if (!loadingEarnings && !earningsError && earnings.length > 0) {
               <table cTable class="mb-0 border" hover responsive striped align="middle">
@@ -163,8 +241,12 @@
                       <td>{{ earning.date }}</td>
                       <td>{{ earning.user_mention }}</td>
                       <td>{{ earning.role }}</td>
-                      <!-- Using isArray helper -->
-                      <td>{{ (isArray(earning.models) && earning.models.length > 0) ? earning.models.join(', ') : '-' }}</td>
+                      <td>
+                        <ng-container *ngIf="isArray(earning.models) && earning.models.length > 0; else noEarningModels">
+                           <span *ngFor="let model of earning.models" class="badge bg-secondary me-1 mb-1">{{ model }}</span>
+                        </ng-container>
+                        <ng-template #noEarningModels>-</ng-template>
+                      </td>
                       <td>{{ earning.shift }}</td>
                       <td>{{ earning.period }}</td>
                       <td>{{ earning.hours_worked }}</td>
