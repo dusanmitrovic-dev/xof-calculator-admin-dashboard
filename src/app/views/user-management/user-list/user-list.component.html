@@ -7,7 +7,7 @@
   </c-card-header>
   <c-card-body>
     <div *ngIf="isLoading" class="text-center py-3">
-      <c-spinner aria-hidden="true" size="lg"></c-spinner>
+      <c-spinner aria-hidden="true"></c-spinner> <!-- Removed size="lg" -->
       <p class="mt-2">Loading users...</p>
     </div>
 
