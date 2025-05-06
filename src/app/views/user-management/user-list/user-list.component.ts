@@ -1,9 +1,9 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule, DatePipe, TitleCasePipe } from '@angular/common';
-import { Subject } from 'rxjs'; // Removed Observable and of as we use a simple array
-import { catchError, takeUntil, tap } from 'rxjs/operators';
-import { UserService, User } from '../../../services/user.service'; // Adjust path
-import { AuthService } from '../../../auth/auth.service'; // To prevent self-action
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
+import { UserService, User } from '../../../services/user.service';
+import { AuthService } from '../../../auth/auth.service';
 
 // CoreUI Modules
 import {
@@ -15,8 +15,9 @@ import {
   ModalModule,
   SpinnerModule,
   TableModule,
+  TooltipDirective, // Import TooltipDirective
   UtilitiesModule,
-  ButtonGroupModule // Added ButtonGroupModule
+  ButtonGroupModule
 } from '@coreui/angular';
 import { IconDirective } from '@coreui/icons-angular';
 
@@ -38,12 +39,13 @@ import { UserEditModalComponent } from '../user-edit-modal/user-edit-modal.compo
     ModalModule,
     SpinnerModule,
     TableModule,
+    TooltipDirective, // Add TooltipDirective
     UtilitiesModule,
     IconDirective,
     DatePipe,
     TitleCasePipe,
-    UserEditModalComponent, // Import the modal component
-    ButtonGroupModule    // Added ButtonGroupModule
+    UserEditModalComponent,
+    ButtonGroupModule
   ]
 })
 export class UserListComponent implements OnInit, OnDestroy {
@@ -51,9 +53,8 @@ export class UserListComponent implements OnInit, OnDestroy {
   users: User[] = [];
   isLoading: boolean = true;
   errorMessage: string | null = null;
-  currentUserId: string | null = null; // To disable actions on self
+  currentUserId: string | null = null;
 
-  // Modal State
   isUserEditModalVisible: boolean = false;
   selectedUserForEdit: User | null = null;
 
@@ -65,7 +66,7 @@ export class UserListComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit(): void {
-    this.currentUserId = this.authService.getUserId(); // Get current user ID
+    this.currentUserId = this.authService.getUserId();
     this.loadUsers();
   }
 
@@ -74,11 +75,7 @@ export class UserListComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
-  /**
-   * Fetches users from the service.
-   */
   loadUsers(): void {
-    console.log('UserListComponent: Loading users...');
     this.isLoading = true;
     this.errorMessage = null;
     this.userService.getUsers()
@@ -87,104 +84,96 @@ export class UserListComponent implements OnInit, OnDestroy {
         next: (usersData) => {
           this.users = usersData;
           this.isLoading = false;
-          console.log('UserListComponent: Users loaded:', usersData);
         },
         error: (err) => {
-          console.error('UserListComponent: Error loading users:', err);
           this.errorMessage = err.message || 'Failed to load users.';
           this.isLoading = false;
         }
       });
   }
 
-  /**
-   * Opens the user edit modal.
-   */
   openEditUserModal(user: User): void {
-    // Pass a deep copy to prevent modifying the list directly
     this.selectedUserForEdit = JSON.parse(JSON.stringify(user));
     this.isUserEditModalVisible = true;
-    console.log(`UserListComponent: Opening edit modal for user ${user.email}`);
   }
 
-  /**
-   * Handles the event emitted when the modal saves a user.
-   * Renamed to match the template binding (userSaved)="onUserSaved($event)"
-   */
   onUserSaved(savedUser: User | null): void {
-    this.isUserEditModalVisible = false; // Close modal first
+    this.isUserEditModalVisible = false;
     if (savedUser) {
-        console.log('UserListComponent: User saved event received. Reloading list.');
-        // TODO: Add success toast
-        this.loadUsers(); // Reload the list to reflect changes
-    } else {
-        console.log('UserListComponent: Modal closed without saving.');
-    }
-    // Clear the selected user regardless of save status when modal is handled here
+        this.loadUsers();
+    } 
     this.selectedUserForEdit = null;
   }
 
-  /**
-   * Handles the visibleChange event from the modal when closed via backdrop or X.
-   * Ensures the selected user is cleared if the modal is closed without saving.
-   */
   handleVisibleChange(visible: boolean): void {
     if (!visible && this.isUserEditModalVisible) {
-        // The modal is closing (likely via backdrop/X)
-        console.log('UserListComponent: Modal closed via visibleChange event.');
         this.isUserEditModalVisible = false;
-        this.selectedUserForEdit = null; // Clear selection
-        // Optionally emit null from userSaved if needed, but onUserSaved handles the explicit save/cancel
-        // this.userSaved.emit(null); 
+        this.selectedUserForEdit = null;
     }
   }
 
-  /**
-   * Deletes a user after confirmation.
-   */
   deleteUser(user: User): void {
     if (!user._id) {
       this.errorMessage = 'Cannot delete user: ID is missing.';
       return;
     }
-
-    // Prevent self-deletion
     if (user._id === this.currentUserId) {
-      this.errorMessage = 'Action denied: You cannot delete your own account.';
-      // TODO: Show this error in a more user-friendly way (e.g., toast)
-      alert('You cannot delete your own account.'); // Simple alert for now
+      alert('You cannot delete your own account.');
       return;
     }
-
     if (confirm(`Are you sure you want to delete user ${user.email} (ID: ${user._id})? This is irreversible!`)) {
-      this.isLoading = true; // Optional: Show loading state during delete
+      this.isLoading = true;
       this.userService.deleteUser(user._id)
         .pipe(takeUntil(this.destroy$))
         .subscribe({
-          next: (response) => {
+          next: () => {
             this.isLoading = false;
-            console.log(`User ${user._id} deleted successfully.`, response);
-            // TODO: Add success toast
-            this.loadUsers(); // Refresh the list
+            this.loadUsers();
           },
           error: (err) => {
             this.isLoading = false;
-            console.error(`Error deleting user ${user._id}:`, err);
             this.errorMessage = err.message || 'Failed to delete user.';
-            // TODO: Add error toast
           }
         });
     }
   }
 
-  /**
-   * Determines the color for the role badge.
-   */
-  getRoleBadgeColor(role: 'admin' | 'user' | 'manager'): string { // Added 'manager'
-    switch (role) {
+  getRoleBadgeColor(role: User['role']): string {
+    switch (role?.toLowerCase()) {
       case 'admin': return 'danger';
-      case 'manager': return 'warning';
-      default: return 'secondary';
+      case 'manager': return 'warning'; // Or 'info' or 'success' if 'warning' implies issues
+      case 'user': return 'secondary';
+      default: return 'light'; // Fallback for unknown roles
     }
+  }
+
+  getRoleIcon(role: User['role']): string {
+    switch (role?.toLowerCase()) {
+      case 'admin': return 'cilShieldAlt'; // Shield icon for admin
+      case 'manager': return 'cilUserFollow'; // User with gear or briefcase for manager
+      case 'user': return 'cilUser'; // Standard user icon
+      default: return 'cilBan'; // Fallback icon for unknown roles
+    }
+  }
+
+  getManagedGuildsDisplay(managedGuilds?: string[] | 'all'): string {
+    if (managedGuilds === 'all') {
+      return 'All Guilds'; // Potentially add a count if available and meaningful
+    } else if (managedGuilds && managedGuilds.length > 0) {
+      if (managedGuilds.length > 3) {
+        return `${managedGuilds.slice(0, 2).join(', ')}, ... (+${managedGuilds.length - 2})`;
+      }
+      return managedGuilds.join(', ');
+    }
+    return 'None';
+  }
+
+  getGuildsTooltip(managedGuilds?: string[] | 'all'): string {
+    if (managedGuilds === 'all') {
+      return 'Manages all guilds in the system.';
+    } else if (managedGuilds && managedGuilds.length > 0) {
+      return `Manages: ${managedGuilds.join(', ')}`;
+    }
+    return 'No specific guilds managed.';
   }
 }

@@ -1,64 +1,81 @@
 <c-card class="mb-4">
-  <c-card-header>
+  <c-card-header class="d-flex justify-content-between align-items-center">
     <strong>User Management</strong>
-    <!-- Optional Add User Button -->
+    <button cButton color="success" variant="outline" size="sm" (click)="openAddUserModal()" title="Add New User">
+      <svg cIcon name="cilUserPlus" size="sm" class="me-1"></svg> Add User
+    </button>
   </c-card-header>
   <c-card-body>
-    <!-- Use isLoading instead of loading -->
     <div *ngIf="isLoading" class="text-center py-3">
-      <c-spinner aria-hidden="true" size="sm"></c-spinner> Loading users...
+      <c-spinner aria-hidden="true" size="lg"></c-spinner>
+      <p class="mt-2">Loading users...</p>
     </div>
 
-    <c-alert color="danger" *ngIf="errorMessage" dismissible (click)="errorMessage=null">
+    <c-alert color="danger" *ngIf="errorMessage && !isLoading" dismissible (click)="errorMessage=null">
       {{ errorMessage }}
     </c-alert>
 
-    <!-- Remove async pipe and check users array directly -->
     <ng-container *ngIf="!isLoading && !errorMessage">
-      <div *ngIf="users.length === 0" class="alert alert-info">
-        No users found.
+      <div *ngIf="users.length === 0" class="text-center py-5">
+        <svg cIcon name="cilPeople" size="xxl" class="text-muted mb-3"></svg>
+        <h5 class="text-muted">No users found.</h5>
+        <p class="text-muted">Click "Add User" to get started.</p>
+         <button cButton color="success" variant="ghost" size="lg" class="mt-2" (click)="openAddUserModal()">
+            <svg cIcon name="cilUserPlus" size="lg" class="me-1"></svg> Add First User
+        </button>
       </div>
 
       <table *ngIf="users.length > 0" 
-             cTable class="mb-0 border" [hover]="true" [responsive]="true" [striped]="true" align="middle">
+             cTable class="mb-0 border" hover responsive striped align="middle">
         <thead cTableColor="light">
           <tr>
-            <th>Email</th>
-            <th>Role</th>
-            <th>Managed Guilds</th>
-            <th>Actions</th>
+            <th style="width: 35%;">User Details</th>
+            <th style="width: 20%;">Role</th>
+            <th style="width: 25%;">Managed Guilds</th>
+            <th style="width: 20%;" class="text-center">Actions</th>
           </tr>
         </thead>
         <tbody>
-          <!-- Iterate over the users array -->
           <tr *ngFor="let user of users">
             <td>
-              <div>{{ user.email }}</div>
-              <!-- Check if createdAt exists before formatting -->
-              <div class="small text-body-secondary">Registered: {{ user.createdAt ? (user.createdAt | date:'short') : 'N/A' }}</div>
+              <div class="fw-semibold">{{ user.email }}</div>
+              <div class="small text-body-secondary">
+                <svg cIcon name="cilCalendar" size="sm" class="me-1"></svg>Registered: {{ user.createdAt ? (user.createdAt | date:'mediumDate') : 'N/A' }}
+              </div>
             </td>
             <td>
-              <!-- Use getRoleBadgeColor method -->
-              <c-badge [color]="getRoleBadgeColor(user.role)" shape="rounded-pill">
+              <c-badge [color]="getRoleBadgeColor(user.role)" shape="rounded-pill" class="px-2 py-1 d-inline-flex align-items-center">
+                <svg cIcon [name]="getRoleIcon(user.role)" size="sm" class="me-1"></svg>
                 {{ user.role | titlecase }}
               </c-badge>
             </td>
             <td>
-              <!-- Display logic for different roles -->
-              <ng-container *ngIf="user.role === 'admin'"><span class="text-muted">All Guilds</span></ng-container>
-              <ng-container *ngIf="user.role === 'manager'">{{ (user.managed_guild_ids && user.managed_guild_ids.length > 0) ? user.managed_guild_ids.join(', ') : 'None Assigned' }}</ng-container>
-              <ng-container *ngIf="user.role === 'user'"><span class="text-muted">N/A</span></ng-container>
+              <ng-container *ngIf="user.role === 'admin'">
+                <svg cIcon name="cilGlobeAlt" size="sm" class="me-1 text-info"></svg><span class="text-body-secondary">All Guilds</span>
+              </ng-container>
+              <ng-container *ngIf="user.role === 'manager'">
+                <ng-container *ngIf="user.managed_guild_ids && user.managed_guild_ids.length > 0; else noGuilds">
+                    <svg cIcon name="cilListNumbered" size="sm" class="me-1 text-success"></svg>
+                    {{ user.managed_guild_ids.length }} Guild(s)
+                    <i class="ms-1" (click)="showManagedGuildsTooltip(user.managed_guild_ids)" cTooltip="{{getGuildsTooltipText(user.managed_guild_ids)}}" placement="top">
+                        <svg cIcon name="cilSearch" size="sm"></svg>
+                    </i>
+                </ng-container>
+                <ng-template #noGuilds>
+                    <svg cIcon name="cilBan" size="sm" class="me-1 text-warning"></svg><span class="text-body-secondary">None Assigned</span>
+                </ng-template>
+              </ng-container>
+              <ng-container *ngIf="user.role === 'user'">
+                <svg cIcon name="cilXCircle" size="sm" class="me-1 text-danger"></svg><span class="text-body-secondary">N/A</span>
+              </ng-container>
             </td>
-            <td>
-              <!-- Ensure c-button-group is imported via ButtonGroupModule -->
-              <c-button-group role="group" aria-label="User Actions">
-                <button cButton color="primary" variant="outline" size="sm" (click)="openEditUserModal(user)" title="Edit User">
-                  <svg cIcon name="cilPencil" size="sm"></svg> Edit
-                </button>
-                <button cButton color="danger" variant="outline" size="sm" (click)="deleteUser(user)" [disabled]="user._id === currentUserId" title="Delete User">
-                  <svg cIcon name="cilTrash" size="sm"></svg> Delete
-                </button>
-              </c-button-group>
+            <td class="text-center">
+              <button cButton color="primary" variant="ghost" size="sm" class="me-1 p-1" (click)="openEditUserModal(user)" title="Edit {{user.email}}" cTooltip="Edit User">
+                <svg cIcon name="cilPencil" size="lg"></svg>
+              </button>
+              <button cButton color="danger" variant="ghost" size="sm" class="p-1" (click)="deleteUser(user)" [disabled]="user._id === currentUserId" title="Delete {{user.email}}" cTooltip="Delete User">
+                <svg cIcon name="cilTrash" size="lg"></svg>
+              </button>
             </td>
           </tr>
         </tbody>
@@ -73,5 +90,5 @@
   [(visible)]="isUserEditModalVisible"
   [userToEdit]="selectedUserForEdit"
   (userSaved)="onUserSaved($event)"
-  (visibleChange)="handleVisibleChange($event)"> <!-- Added visibleChange binding -->
+  (visibleChange)="handleVisibleChange($event)">
 </app-user-edit-modal>
