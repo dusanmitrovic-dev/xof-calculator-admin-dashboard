@@ -71,6 +71,9 @@ export class GuildConfigListComponent implements OnInit, OnDestroy {
   isEarningModalVisible: boolean = false;
   selectedEarningForEdit: Earning | null = null;
 
+  // Make Array.isArray available to the template
+  isArray = Array.isArray;
+
   constructor(
     private router: Router,
     private guildConfigService: GuildConfigService,
