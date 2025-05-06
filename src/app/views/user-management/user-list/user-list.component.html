@@ -27,7 +27,7 @@
 
       <table *ngIf="users.length > 0" 
              cTable class="mb-0 border" hover responsive striped bordered align="middle">
-        <thead cTableColor="light">
+        <thead>
           <tr>
             <th style="width: 35%;">User Details</th>
             <th style="width: 20%;">Role</th>
@@ -66,7 +66,7 @@
                     </button>
                 </ng-container>
                 <ng-template #noGuilds>
-                    <svg cIcon name="cilBan" size="sm" class="me-1 text-warning align-text-bottom"></svg><span class="text-body-secondary">None Assigned</span>
+                    <svg cIcon name="cilBan" size="sm" class="me-1 text-warning align-text-bottom"></svg><span class="text-body-secondary">No Guilds Assigned</span>
                 </ng-template>
               </ng-container>
               <ng-container *ngIf="user.role === 'user'">
