@@ -43,13 +43,11 @@
 
               <c-row class="mb-2 border-bottom pb-1 align-items-center">
                  <c-col sm="3" class="fw-semibold">Agency Name</c-col>
-                 <!-- Assuming display_settings is NOT optional on GuildConfig based on warning -->
                  <c-col sm="9">{{ guildConfig.display_settings.agency_name || 'Not Set' }}</c-col>
               </c-row>
 
               <c-row class="mb-2 border-bottom pb-1 align-items-center">
                  <c-col sm="3" class="fw-semibold">Bot Name</c-col>
-                 <!-- Assuming display_settings is NOT optional on GuildConfig based on warning -->
                  <c-col sm="9">{{ guildConfig.display_settings.bot_name || 'Not Set' }}</c-col>
               </c-row>
 
@@ -71,7 +69,6 @@
                <c-row class="mb-2 border-bottom pb-1">
                  <c-col sm="3" class="fw-semibold pt-1">Display Settings</c-col>
                  <c-col sm="9">
-                    <!-- Assuming display_settings is NOT optional on GuildConfig, direct access -->
                     <ul class="list-unstyled mb-0">
                        <li>Ephemeral Responses: <strong class="text-info">{{ guildConfig.display_settings.ephemeral_responses ? 'Yes' : 'No' }}</strong></li>
                        <li>Show Average: <strong class="text-info">{{ guildConfig.display_settings.show_average ? 'Yes' : 'No' }}</strong></li>
@@ -98,7 +95,6 @@
                <c-row class="mb-2 border-bottom pb-1">
                  <c-col sm="3" class="fw-semibold pt-1">Role Commissions</c-col>
                  <c-col sm="9">
-                   <!-- Assuming commission_settings is NOT optional on GuildConfig based on warning -->
                    @if (guildConfig.commission_settings.roles && objectKeys(guildConfig.commission_settings.roles).length > 0) {
                      <ul class="list-unstyled mb-0">
                        @for (roleId of objectKeys(guildConfig.commission_settings.roles); track roleId) {
@@ -114,7 +110,6 @@
                <c-row class="mb-2"> 
                  <c-col sm="3" class="fw-semibold pt-1">User Overrides</c-col>
                  <c-col sm="9">
-                   <!-- Assuming commission_settings is NOT optional on GuildConfig based on warning -->
                    @if (guildConfig.commission_settings.users && objectKeys(guildConfig.commission_settings.users).length > 0) {
                      <ul class="list-unstyled mb-0">
                        @for (userId of objectKeys(guildConfig.commission_settings.users); track userId) {
@@ -168,8 +163,8 @@
                       <td>{{ earning.date }}</td>
                       <td>{{ earning.user_mention }}</td>
                       <td>{{ earning.role }}</td>
-                      <!-- Reverted to simpler check, assuming Earning.models is string[] | undefined/null -->
-                      <td>{{ (earning.models && earning.models.length > 0) ? earning.models.join(', ') : '-' }}</td>
+                      <!-- Using isArray helper -->
+                      <td>{{ (isArray(earning.models) && earning.models.length > 0) ? earning.models.join(', ') : '-' }}</td>
                       <td>{{ earning.shift }}</td>
                       <td>{{ earning.period }}</td>
                       <td>{{ earning.hours_worked }}</td>
