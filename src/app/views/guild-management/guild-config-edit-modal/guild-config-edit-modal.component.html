@@ -5,7 +5,8 @@
       <svg cIcon name="cilX"></svg>
     </button>
   </c-modal-header>
-  <c-modal-body class="bg-light">
+  <c-modal-body>
+    <!-- Removed bg-light -->
     <c-alert color="danger" *ngIf="errorMessage" class="mb-3">
       {{ errorMessage }}
     </c-alert>
@@ -28,7 +29,8 @@
           </div>
           <div class="mb-0" *ngIf="isEditMode && guildConfig">
             <label cLabel class="fw-semibold">Guild ID</label>
-            <input cFormControl type="text" [value]="guildConfig.guild_id" readonly disabled class="bg-light">
+            <!-- Also remove bg-light from here if it was causing issues -->
+            <input cFormControl type="text" [value]="guildConfig.guild_id" readonly disabled>
           </div>
         </c-card-body>
       </c-card>
@@ -40,7 +42,8 @@
           <!-- Models -->
           <div class="mb-3">
             <label cLabel class="fw-semibold mb-2">Models</label>
-            <div class="d-flex flex-wrap align-items-center border rounded p-2 bg-white">
+            <!-- Removed bg-white -->
+            <div class="d-flex flex-wrap align-items-center border rounded p-2">
               <span *ngFor="let modelCtrl of models.controls; let i=index" class="badge bg-primary me-2 mb-2 p-2 d-flex align-items-center">
                 {{ modelCtrl.value }}
                 <button cButtonClose type="button" class="ms-2" (click)="removeItem(models, i)" [white]="true" title="Remove {{modelCtrl.value}}"></button>
@@ -60,7 +63,8 @@
           <!-- Shifts -->
           <div class="mb-3">
             <label cLabel class="fw-semibold mb-2">Shifts</label>
-            <div class="d-flex flex-wrap align-items-center border rounded p-2 bg-white">
+            <!-- Removed bg-white -->
+            <div class="d-flex flex-wrap align-items-center border rounded p-2">
               <span *ngFor="let shiftCtrl of shifts.controls; let i=index" class="badge bg-info me-2 mb-2 p-2 d-flex align-items-center">
                 {{ shiftCtrl.value }}
                 <button cButtonClose type="button" class="ms-2" (click)="removeItem(shifts, i)" [white]="true" title="Remove {{shiftCtrl.value}}"></button>
@@ -80,7 +84,8 @@
           <!-- Periods -->
           <div>
             <label cLabel class="fw-semibold mb-2">Periods</label>
-            <div class="d-flex flex-wrap align-items-center border rounded p-2 bg-white">
+            <!-- Removed bg-white -->
+            <div class="d-flex flex-wrap align-items-center border rounded p-2">
               <span *ngFor="let periodCtrl of periods.controls; let i=index" class="badge bg-warning text-dark me-2 mb-2 p-2 d-flex align-items-center">
                 {{ periodCtrl.value }}
                 <button cButtonClose type="button" class="ms-2" (click)="removeItem(periods, i)" title="Remove {{periodCtrl.value}}"></button>
