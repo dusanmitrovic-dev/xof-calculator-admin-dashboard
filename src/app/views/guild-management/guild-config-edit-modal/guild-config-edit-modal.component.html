@@ -47,10 +47,10 @@
               </span>
               <div class="input-group" style="max-width: 200px;">
                 <input #modelInput cFormControl type="text" placeholder="Add Model" 
-                       (keyup.enter)="addItemManually(models, modelInput.value); modelInput.value = ''" 
-                       (blur)="if(modelInput.value.trim()) { addItemManually(models, modelInput.value); modelInput.value = '' }"/>
+                       (keyup.enter)="handleItemAdd(models, modelInput)" 
+                       (blur)="handleItemAddOnBlur(models, modelInput)"/>
                 <button cButton type="button" color="secondary" variant="outline" 
-                        (click)="addItemManually(models, modelInput.value); modelInput.value = ''" 
+                        (click)="handleItemAdd(models, modelInput)" 
                         [disabled]="!modelInput.value.trim()">+ Add</button>
               </div>
             </div>
@@ -67,10 +67,10 @@
               </span>
               <div class="input-group" style="max-width: 200px;">
                 <input #shiftInput cFormControl type="text" placeholder="Add Shift" 
-                       (keyup.enter)="addItemManually(shifts, shiftInput.value); shiftInput.value = ''" 
-                       (blur)="if(shiftInput.value.trim()) { addItemManually(shifts, shiftInput.value); shiftInput.value = '' }"/>
+                       (keyup.enter)="handleItemAdd(shifts, shiftInput)" 
+                       (blur)="handleItemAddOnBlur(shifts, shiftInput)"/>
                 <button cButton type="button" color="secondary" variant="outline" 
-                        (click)="addItemManually(shifts, shiftInput.value); shiftInput.value = ''" 
+                        (click)="handleItemAdd(shifts, shiftInput)" 
                         [disabled]="!shiftInput.value.trim()">+ Add</button>
               </div>
             </div>
@@ -87,10 +87,10 @@
               </span>
               <div class="input-group" style="max-width: 200px;">
                 <input #periodInput cFormControl type="text" placeholder="Add Period" 
-                       (keyup.enter)="addItemManually(periods, periodInput.value); periodInput.value = ''" 
-                       (blur)="if(periodInput.value.trim()) { addItemManually(periods, periodInput.value); periodInput.value = '' }"/>
+                       (keyup.enter)="handleItemAdd(periods, periodInput)" 
+                       (blur)="handleItemAddOnBlur(periods, periodInput)"/>
                 <button cButton type="button" color="secondary" variant="outline" 
-                        (click)="addItemManually(periods, periodInput.value); periodInput.value = ''" 
+                        (click)="handleItemAdd(periods, periodInput)" 
                         [disabled]="!periodInput.value.trim()">+ Add</button>
               </div>
             </div>
@@ -176,7 +176,7 @@
             <c-col md="3">
               <label cLabel [for]="'bonus_to_' + i" class="small">To ($)</label>
               <input cFormControl type="number" [id]="'bonus_to_' + i" formControlName="to" required min="0"
-                     [class.is-invalid]="ruleGroup.get('to')?.invalid && (ruleGroup.get('to')?.dirty || ruleGroup.get('to')?.touched) || ruleGroup.hasError('toLessThanFrom')">
+                     [class.is-invalid]="(ruleGroup.get('to')?.invalid && (ruleGroup.get('to')?.dirty || ruleGroup.get('to')?.touched)) || ruleGroup.hasError('toLessThanFrom')">
               <c-form-feedback [valid]="false" *ngIf="ruleGroup.get('to')?.invalid && (ruleGroup.get('to')?.dirty || ruleGroup.get('to')?.touched)">
                 <div *ngIf="ruleGroup.get('to')?.hasError('required')">Required.</div>
                 <div *ngIf="ruleGroup.get('to')?.hasError('min')">Min 0.</div>
@@ -304,8 +304,9 @@
         <button (click)="closeModal()" cButton color="secondary" variant="outline" class="me-2">
             <svg cIcon name="cilBan" size="sm" class="me-1"></svg>Cancel
         </button>
-        <button cButton color="primary" type="submit" (click)="saveChanges()" [disabled]="isLoading || (configForm && configForm.invalid && submitAttempted)" [ladda]="isLoading">
-            <svg cIcon [name]="isEditMode ? 'cilSave' : 'cilPlus'" size="sm" class="me-1"></svg>
+        <button cButton color="primary" type="submit" (click)="saveChanges()" [disabled]="isLoading || (configForm && configForm.invalid && !configForm.dirty && isEditMode) || (configForm && configForm.invalid && submitAttempted)">
+            <c-spinner *ngIf="isLoading" component="span" size="sm" aria-hidden="true" class="me-1"></c-spinner>
+            <svg *ngIf="!isLoading" cIcon [name]="isEditMode ? 'cilSave' : 'cilPlus'" size="sm" class="me-1"></svg>
             {{ isLoading ? 'Saving...' : (isEditMode ? 'Save Changes' : 'Create Config') }}
         </button>
     </div>
