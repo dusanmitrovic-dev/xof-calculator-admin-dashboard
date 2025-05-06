@@ -1,8 +1,8 @@
-import { CommonModule, JsonPipe, CurrencyPipe } from '@angular/common';
+import { CommonModule, CurrencyPipe } from '@angular/common'; // Removed JsonPipe
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { Router } from '@angular/router'; // Removed ActivatedRoute
+import { Router } from '@angular/router';
 import { Subject, Observable } from 'rxjs';
-import { takeUntil, switchMap, catchError, tap, filter } from 'rxjs/operators';
+import { takeUntil, tap } from 'rxjs/operators'; // Removed unused operators
 import { FormsModule } from '@angular/forms';
 
 // Import CoreUI modules
@@ -19,9 +19,10 @@ import {
 import { IconDirective } from '@coreui/icons-angular';
 
 // Import services and interfaces
-import { GuildConfigService, GuildConfig, CommissionSettings } from '../../../services/guild-config.service';
+// Assuming Earning interface has models as string[] | undefined
+import { GuildConfigService, GuildConfig } from '../../../services/guild-config.service';
 import { EarningsService, Earning } from '../../../services/earnings.service';
-import { AuthService } from '../../../auth/auth.service'; // Keep if needed for permissions
+import { AuthService } from '../../../auth/auth.service';
 
 // Import the modal components
 import { GuildConfigEditModalComponent } from '../guild-config-edit-modal/guild-config-edit-modal.component';
@@ -43,8 +44,7 @@ import { EarningEditModalComponent } from '../earning-edit-modal/earning-edit-mo
     ModalModule,
     IconDirective,
     UtilitiesModule,
-    JsonPipe,
-    CurrencyPipe,
+    CurrencyPipe, // JsonPipe removed
     GuildConfigEditModalComponent,
     EarningEditModalComponent
   ]
@@ -53,17 +53,17 @@ export class GuildConfigListComponent implements OnInit, OnDestroy {
 
   // Component State
   selectedGuildId$: Observable<string | null>;
-  currentGuildId: string | null = null; // Store current ID for actions
+  currentGuildId: string | null = null; 
   private destroy$ = new Subject<void>();
 
   // Guild Config State
   guildConfig: GuildConfig | null = null;
-  loadingConfig: boolean = false; // Initially false, true when loading
+  loadingConfig: boolean = false; 
   configError: string | null = null;
 
   // Earnings State
   earnings: Earning[] = [];
-  loadingEarnings: boolean = false; // Initially false, true when loading
+  loadingEarnings: boolean = false; 
   earningsError: string | null = null;
 
   // Modal State
@@ -72,16 +72,14 @@ export class GuildConfigListComponent implements OnInit, OnDestroy {
   selectedEarningForEdit: Earning | null = null;
 
   constructor(
-    // Removed ActivatedRoute
     private router: Router,
     private guildConfigService: GuildConfigService,
     private earningsService: EarningsService,
-    private authService: AuthService // Keep if needed for permissions
+    private authService: AuthService 
   ) {
     this.selectedGuildId$ = this.guildConfigService.selectedGuildId$;
   }
 
-  // Helper for template to iterate over object keys
   objectKeys = Object.keys;
 
   ngOnInit(): void {
@@ -90,12 +88,11 @@ export class GuildConfigListComponent implements OnInit, OnDestroy {
       takeUntil(this.destroy$),
       tap(guildId => {
         console.log('GuildConfigListComponent: Selected Guild ID changed:', guildId);
-        this.currentGuildId = guildId; // Store the current ID
-        this.resetState(); // Reset state whenever guild changes
+        this.currentGuildId = guildId; 
+        this.resetState(); 
         if (guildId) {
           this.loadDataForGuild(guildId);
         } else {
-           // Handle case where no guild is selected
            this.loadingConfig = false;
            this.loadingEarnings = false;
            console.log('GuildConfigListComponent: No guild selected.');
@@ -118,12 +115,11 @@ export class GuildConfigListComponent implements OnInit, OnDestroy {
 
   resetState(): void {
       console.log('GuildConfigListComponent: Resetting state.');
-      // Keep currentGuildId as is
       this.guildConfig = null;
-      this.loadingConfig = true; // Set to true when starting load
+      this.loadingConfig = true; 
       this.configError = null;
       this.earnings = [];
-      this.loadingEarnings = true; // Set to true when starting load
+      this.loadingEarnings = true; 
       this.earningsError = null;
       this.isConfigEditModalVisible = false;
       this.isEarningModalVisible = false;
@@ -135,7 +131,7 @@ export class GuildConfigListComponent implements OnInit, OnDestroy {
     this.loadingConfig = true;
     this.configError = null;
     this.guildConfigService.getGuildConfig(id).pipe(
-      takeUntil(this.destroy$) // Ensure subscription is cleaned up if component destroyed during request
+      takeUntil(this.destroy$)
     ).subscribe({
       next: (config) => {
         this.guildConfig = config;
@@ -144,10 +140,9 @@ export class GuildConfigListComponent implements OnInit, OnDestroy {
       },
       error: (err: any) => {
         console.error(`GuildConfigListComponent: Error loading config for guild ${id}:`, err);
-        // Distinguish between 404 (no config) and other errors
         if (err.status === 404 || err?.message?.includes('not found')) {
-             this.configError = null; // Not an error, just no config exists
-             this.guildConfig = null; // Ensure config is null
+             this.configError = null; 
+             this.guildConfig = null; 
              console.log(`GuildConfigListComponent: No config found for guild ${id}.`);
         } else {
             this.configError = err.message || `Failed to load configuration for guild ${id}.`;
@@ -161,7 +156,7 @@ export class GuildConfigListComponent implements OnInit, OnDestroy {
     console.log(`GuildConfigListComponent: Loading earnings for guild ${id}...`);
     this.loadingEarnings = true;
     this.earningsError = null;
-    this.earningsService.getGuildEarnings(id).pipe( // Assuming this method exists in EarningsService
+    this.earningsService.getGuildEarnings(id).pipe(
         takeUntil(this.destroy$)
     ).subscribe({
         next: (earningsData: Earning[]) => {
@@ -171,10 +166,9 @@ export class GuildConfigListComponent implements OnInit, OnDestroy {
         },
         error: (err: any) => {
             console.error(`GuildConfigListComponent: Error loading earnings for guild ${id}:`, err);
-             // Distinguish between 404 (no earnings) and other errors
             if (err.status === 404 || err?.message?.includes('not found')) {
-                 this.earningsError = null; // Not an error, just no earnings found
-                 this.earnings = []; // Ensure earnings is empty
+                 this.earningsError = null; 
+                 this.earnings = []; 
                  console.log(`GuildConfigListComponent: No earnings found for guild ${id}.`);
             } else {
                 this.earningsError = err.message || `Failed to load earnings for guild ${id}.`;
@@ -184,36 +178,28 @@ export class GuildConfigListComponent implements OnInit, OnDestroy {
     });
   }
 
-  // --- Config Modal Methods ---
   openEditConfigModal(): void {
-    if (!this.currentGuildId) return; // Use stored currentGuildId
-    // Config might be null if not yet created, handle this in modal or here
-    // if (!this.guildConfig) {
-    //    // Maybe initialize a default config structure to pass?
-    //    console.log(`GuildConfigListComponent: No existing config for ${this.currentGuildId}, opening modal in create mode.`);
-    // }
+    if (!this.currentGuildId) return;
     this.isConfigEditModalVisible = true;
     console.log(`GuildConfigListComponent: Opening config edit modal for guild ${this.currentGuildId}`);
   }
 
   deleteGuildConfig(): void {
-    if (!this.currentGuildId) { // Use stored currentGuildId
+    if (!this.currentGuildId) { 
         console.error("Cannot delete config - Guild ID missing.");
         this.configError = "Cannot delete config: Select a guild first.";
         return;
     }
 
     if (confirm(`Are you sure you want to delete the entire configuration for Guild ${this.currentGuildId}? This will also delete associated earnings records and is irreversible!`)) {
-      this.loadingConfig = true; // Show loading indicator during delete
+      this.loadingConfig = true;
       this.guildConfigService.deleteGuildConfig(this.currentGuildId).subscribe({
         next: () => {
           this.loadingConfig = false;
           console.log(`GuildConfigListComponent: Configuration for guild ${this.currentGuildId} deleted successfully.`);
-          // Reset state after successful delete
           this.guildConfig = null;
           this.earnings = [];
           this.configError = "Configuration deleted successfully.";
-          // Optionally trigger a refresh or notification
         },
         error: (err: any) => {
           this.loadingConfig = false;
@@ -228,40 +214,39 @@ export class GuildConfigListComponent implements OnInit, OnDestroy {
     this.isConfigEditModalVisible = false;
     if (savedConfig && this.currentGuildId) {
       console.log('GuildConfigListComponent: Config saved event received. Reloading config.');
-      this.loadGuildConfig(this.currentGuildId); // Reload config for the current guild
+      this.loadGuildConfig(this.currentGuildId); 
     } else {
       console.log('GuildConfigListComponent: Config modal closed without saving.');
     }
   }
 
-  // --- Earning Modal Methods ---
   openAddEarningModal(): void {
-      if (!this.currentGuildId) return; // Use stored currentGuildId
-      this.selectedEarningForEdit = null; // Ensure it's in 'add' mode
+      if (!this.currentGuildId) return;
+      this.selectedEarningForEdit = null; 
       this.isEarningModalVisible = true;
       console.log(`GuildConfigListComponent: Opening earning modal in add mode for guild ${this.currentGuildId}`);
   }
 
   openEditEarningModal(earning: Earning): void {
-      if (!this.currentGuildId) return; // Use stored currentGuildId
-      this.selectedEarningForEdit = { ...earning }; // Clone earning to avoid modifying original object directly
+      if (!this.currentGuildId) return;
+      this.selectedEarningForEdit = { ...earning }; 
       this.isEarningModalVisible = true;
       console.log(`GuildConfigListComponent: Opening earning modal in edit mode for earning ID ${earning.id}`);
   }
 
   deleteEarning(earning: Earning): void {
-      if (!this.currentGuildId || !earning.id) { // Use stored currentGuildId
+      if (!this.currentGuildId || !earning.id) { 
           console.error("Cannot delete earning - Guild ID or Earning ID missing.");
           this.earningsError = "Cannot delete earning: Missing required ID.";
           return;
       }
       if (confirm(`Are you sure you want to delete the earning record from ${earning.date} for user ${earning.user_mention}?`)) {
-          this.loadingEarnings = true; // Show loading indicator
+          this.loadingEarnings = true; 
           this.earningsService.deleteEarning(this.currentGuildId, earning.id).subscribe({
               next: () => {
                   console.log(`GuildConfigListComponent: Earning record ${earning.id} deleted successfully.`);
                   if (this.currentGuildId) {
-                      this.loadEarnings(this.currentGuildId); // Reload earnings on success
+                      this.loadEarnings(this.currentGuildId); 
                   } else {
                       this.loadingEarnings = false;
                   }
@@ -279,13 +264,12 @@ export class GuildConfigListComponent implements OnInit, OnDestroy {
       this.isEarningModalVisible = false;
       if (savedEarning && this.currentGuildId) {
           console.log('GuildConfigListComponent: Earning saved event received. Reloading earnings.');
-          this.loadEarnings(this.currentGuildId); // Reload earnings for the current guild
+          this.loadEarnings(this.currentGuildId); 
       } else {
           console.log('GuildConfigListComponent: Earning modal closed without saving.');
       }
   }
 
-  // Helper to access commission settings roles safely
   getCommissionRoles(): { [roleId: string]: any } | null {
       return this.guildConfig?.commission_settings?.roles ?? null;
   }
