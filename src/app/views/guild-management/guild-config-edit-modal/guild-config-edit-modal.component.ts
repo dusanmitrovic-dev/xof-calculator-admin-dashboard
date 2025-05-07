@@ -176,6 +176,7 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
   }
 
   private patchCommissionSettings(settings: CommissionSettings | undefined): void {
+    console.log('[DEBUG] GuildConfigEditModal: Patching commission settings with:', JSON.stringify(settings)); // Added for debugging
     const rolesGroup = this.commissionRoles;
     const usersGroup = this.commissionUsers;
     this.clearCommissionControls();
