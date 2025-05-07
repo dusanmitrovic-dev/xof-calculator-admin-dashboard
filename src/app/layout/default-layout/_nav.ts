@@ -5,10 +5,6 @@ export const navItems: INavData[] = [
     name: 'Dashboard',
     url: '/dashboard',
     iconComponent: { name: 'cil-speedometer' }
-    // badge: {
-    //   color: 'info',
-    //   text: 'NEW'
-    // }
   },
   {
     title: true,
@@ -16,14 +12,19 @@ export const navItems: INavData[] = [
   },
   {
     name: 'Guild Configurations',
-    url: '/guild-management',
-    iconComponent: { name: 'cil-settings' } // Includes Guild Config & Earnings
+    url: '/guild-configurations', // Changed URL
+    iconComponent: { name: 'cil-settings' }
+  },
+  {
+    name: 'Earnings Records',
+    url: '/earnings-records',    // New URL
+    iconComponent: { name: 'cil-dollar' } // Example icon, change if needed
   },
   {
     name: 'User Management',
     url: '/user-management',
     iconComponent: { name: 'cil-user' },
-    attributes: { roles: ['admin'] } // Added roles attribute
-  },
+    attributes: { roles: ['admin'] }
+  }
   // ... (rest of the commented out items remain unchanged) ...
 ];

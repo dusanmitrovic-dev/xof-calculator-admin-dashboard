@@ -16,7 +16,7 @@ import {
 } from '@coreui/angular';
 
 import { EarningsService, Earning } from '../../../services/earnings.service';
-import { GuildConfigService } from '../../../services/guild-config.service';
+import { GuildConfigService, GuildConfig } from '../../../services/guild-config.service'; // Keep GuildConfig for the new input
 
 @Component({
   selector: 'app-earning-edit-modal',
@@ -39,8 +39,8 @@ export class EarningEditModalComponent implements OnInit, OnChanges {
 
   @Input() visible: boolean = false;
   @Input() guildId: string | null = null;
-  // Changed input name to match template error [earningToEdit]
   @Input() earningToEdit: Earning | null = null;
+  @Input() guildConfig: GuildConfig | null = null; // <<< ADDED THIS INPUT
   @Output() visibleChange = new EventEmitter<boolean>();
   @Output() earningSaved = new EventEmitter<Earning | null>();
 
@@ -48,22 +48,22 @@ export class EarningEditModalComponent implements OnInit, OnChanges {
   isLoading: boolean = false;
   errorMessage: string | null = null;
   title: string = 'Add Earning Record';
+  loadingConfigOptions: boolean = false; // Added this property
 
-  // Property to determine if editing or adding
   get isEditMode(): boolean {
     return !!this.earningToEdit;
   }
 
-  // Options fetched from GuildConfig
+  // Options fetched from GuildConfig input or service
   availableModels: string[] = [];
   availableShifts: string[] = [];
   availablePeriods: string[] = [];
-  loadingConfigOptions: boolean = false;
+  // loadingConfigOptions: boolean = false; // We might not need this if guildConfig is passed directly
 
   constructor(
     private fb: FormBuilder,
     private earningsService: EarningsService,
-    private guildConfigService: GuildConfigService
+    private guildConfigService: GuildConfigService // Keep if still needed for fallback or other reasons
   ) { }
 
   ngOnInit(): void {
@@ -71,13 +71,11 @@ export class EarningEditModalComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    // React when the modal becomes visible or inputs change while visible
     if (changes['visible'] && this.visible) {
         this.prepareModal();
-    } else if (this.visible && (changes['earningToEdit'] || changes['guildId'])) {
+    } else if (this.visible && (changes['earningToEdit'] || changes['guildId'] || changes['guildConfig'])) { // Added guildConfig to condition
         this.prepareModal();
     }
-    // Handle closing via visible binding changing to false
     else if (changes['visible'] && !this.visible) {
         this.resetModalState();
     }
@@ -87,31 +85,53 @@ export class EarningEditModalComponent implements OnInit, OnChanges {
     console.log(`EarningModal: Preparing. Mode: ${this.isEditMode ? 'Edit' : 'Add'}, GuildID: ${this.guildId}`);
     this.errorMessage = null;
     this.isLoading = false;
-    this.earningForm.reset(); // Reset form state
+    this.earningForm.reset(); 
 
     if (!this.guildId) {
       this.errorMessage = "Error: Guild ID is required.";
       return;
     }
-
-    // Set Guild ID (always disabled)
+    
     this.earningForm.get('guild_id')?.setValue(this.guildId);
     this.earningForm.get('guild_id')?.disable();
 
-    // Fetch config options needed for dropdowns
-    this.loadConfigOptions(this.guildId);
+    // Use the passed guildConfig if available, otherwise fetch (or handle error)
+    if (this.guildConfig) {
+        console.log('EarningModal: Using provided guildConfig for options:', this.guildConfig);
+        this.availableModels = this.guildConfig.models || [];
+        this.availableShifts = this.guildConfig.shifts || [];
+        this.availablePeriods = this.guildConfig.periods || [];
+        // Patch form if in edit mode and data is ready
+        if (this.isEditMode && this.earningToEdit) {
+            this.patchForm(this.earningToEdit);
+        }
+    } else {
+        // Fallback or error: If guildConfig is essential, you might want to prevent modal opening or show an error.
+        // For now, assuming it might be fetched or handled gracefully if not strictly required for form init.
+        console.warn('EarningModal: guildConfig not provided. Form options might be limited.');
+        this.availableModels = [];
+        this.availableShifts = [];
+        this.availablePeriods = [];
+        // Optionally, load via service if not passed, but this adds complexity if parent already has it
+        // this.loadConfigOptions(this.guildId); 
+    }
 
     if (this.isEditMode && this.earningToEdit) {
       this.title = `Edit Earning Record (ID: ${this.earningToEdit.id})`;
-      this.patchForm(this.earningToEdit);
-      this.earningForm.get('id')?.disable(); // Disable ID field in edit mode
+      // Ensure patchForm is called after options are potentially set
+      if (this.guildConfig) { // Only patch if options are ready
+          this.patchForm(this.earningToEdit);
+      }
+      this.earningForm.get('id')?.disable(); 
     } else {
       this.title = 'Add New Earning Record';
       this.earningForm.patchValue({ date: this.getTodayDateString() });
-      this.earningForm.get('id')?.disable(); // ID is generated on save for create mode
+      this.earningForm.get('id')?.disable(); 
     }
   }
 
+  // loadConfigOptions might be removed if guildConfig is always passed as Input
+  /*
   private loadConfigOptions(guildId: string): void {
     this.loadingConfigOptions = true;
     this.errorMessage = null;
@@ -123,7 +143,6 @@ export class EarningEditModalComponent implements OnInit, OnChanges {
           this.availableModels = config?.models || [];
           this.availableShifts = config?.shifts || [];
           this.availablePeriods = config?.periods || [];
-          // Re-patch form if edit mode data arrived before options were loaded
           if (this.isEditMode && this.earningToEdit) {
              this.patchForm(this.earningToEdit);
           }
@@ -134,6 +153,7 @@ export class EarningEditModalComponent implements OnInit, OnChanges {
         }
       });
   }
+  */
 
   private buildForm(): FormGroup {
     return this.fb.group({
@@ -142,7 +162,7 @@ export class EarningEditModalComponent implements OnInit, OnChanges {
       date: [this.getTodayDateString(), Validators.required],
       user_mention: ['', Validators.required],
       role: ['', Validators.required],
-      models: ['', Validators.required],
+      models: ['', Validators.required], // Consider making this an array if multiple models can be selected
       shift: ['', Validators.required],
       period: ['', Validators.required],
       hours_worked: [null, [Validators.required, Validators.min(0.1), Validators.pattern(/^\d*\.?\d+$/)]],
@@ -167,7 +187,7 @@ export class EarningEditModalComponent implements OnInit, OnChanges {
       console.warn('EarningModal: Form validation failed.', this.earningForm.errors);
       return;
     }
-    if (!this.guildId) { // Double-check
+    if (!this.guildId) { 
       this.errorMessage = 'Error: Guild ID is missing. Cannot save.';
       return;
     }
@@ -182,7 +202,7 @@ export class EarningEditModalComponent implements OnInit, OnChanges {
       hours_worked: Number(formValue.hours_worked),
       gross_revenue: Number(formValue.gross_revenue),
       total_cut: Number(formValue.total_cut),
-      guild_id: this.guildId
+      guild_id: this.guildId 
     };
 
     let saveObservable: Observable<Earning>;
@@ -202,7 +222,9 @@ export class EarningEditModalComponent implements OnInit, OnChanges {
       };
       saveObservable = this.earningsService.updateEarningByCustomId(earningPayload.id, updateData);
     } else {
-      earningPayload.id = this.generateCustomId();
+      // Ensure ID is not sent for creation if it's backend-generated or use custom id
+      // delete earningPayload.id; // Or set to null if your backend expects that for new records
+      earningPayload.id = this.generateCustomId(); // Using custom ID generation
       console.log('EarningModal: Creating earning:', earningPayload);
       saveObservable = this.earningsService.createEarning(this.guildId, earningPayload);
     }
@@ -212,8 +234,8 @@ export class EarningEditModalComponent implements OnInit, OnChanges {
     ).subscribe({
       next: (savedEarning: Earning) => {
         console.log('EarningModal: Save successful', savedEarning);
-        this.earningSaved.emit(savedEarning); // Emit the saved data
-        this.closeModal(false); // Close without emitting null
+        this.earningSaved.emit(savedEarning);
+        this.closeModal(false);
       },
       error: (err: any) => {
         this.errorMessage = err?.message || 'Failed to save earning record.';
@@ -232,14 +254,11 @@ export class EarningEditModalComponent implements OnInit, OnChanges {
   }
 
   handleVisibleChange(isVisible: boolean): void {
-     // Only react if the change originates from the modal itself (e.g., backdrop click)
-     // and syncs with the parent component's [visible] binding.
      if (this.visible !== isVisible) {
          this.visible = isVisible;
          this.visibleChange.emit(isVisible);
          if (!isVisible) {
-             // Modal is closing
-             this.earningSaved.emit(null); // Signal close without save
+             this.earningSaved.emit(null);
              this.resetModalState();
          }
      }
@@ -249,15 +268,18 @@ export class EarningEditModalComponent implements OnInit, OnChanges {
     console.log('EarningModal: Resetting state');
     this.isLoading = false;
     this.errorMessage = null;
-    this.earningToEdit = null; // Clear reference to edited data
+    this.earningToEdit = null;
     if (this.earningForm) {
         this.earningForm.reset();
-        // Re-apply defaults
         this.earningForm.patchValue({ date: this.getTodayDateString() });
         this.earningForm.get('guild_id')?.setValue(this.guildId);
         this.earningForm.get('guild_id')?.disable();
         this.earningForm.get('id')?.disable();
     }
+    // Reset available options if they were fetched
+    // this.availableModels = [];
+    // this.availableShifts = [];
+    // this.availablePeriods = [];
   }
 
   private generateCustomId(): string {

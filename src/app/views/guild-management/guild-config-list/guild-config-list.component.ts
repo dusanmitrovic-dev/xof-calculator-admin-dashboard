@@ -1,8 +1,7 @@
-import { CommonModule, CurrencyPipe } from '@angular/common'; // Removed JsonPipe
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { Subject, Observable } from 'rxjs';
-import { takeUntil, tap } from 'rxjs/operators'; // Removed unused operators
+import { takeUntil, tap } from 'rxjs/operators';
 import { FormsModule } from '@angular/forms';
 
 // Import CoreUI modules
@@ -19,14 +18,14 @@ import {
 import { IconDirective } from '@coreui/icons-angular';
 
 // Import services and interfaces
-// Assuming Earning interface has models as string[] | undefined
 import { GuildConfigService, GuildConfig } from '../../../services/guild-config.service';
-import { EarningsService, Earning } from '../../../services/earnings.service';
+// EarningsService and Earning interface removed as they are no longer used here
 import { AuthService } from '../../../auth/auth.service';
 
 // Import the modal components
 import { GuildConfigEditModalComponent } from '../guild-config-edit-modal/guild-config-edit-modal.component';
-import { EarningEditModalComponent } from '../earning-edit-modal/earning-edit-modal.component';
+import { CommonModule, CurrencyPipe } from '@angular/common';
+// EarningEditModalComponent removed as it's no longer used here
 
 @Component({
   selector: 'app-guild-config-list',
@@ -44,9 +43,9 @@ import { EarningEditModalComponent } from '../earning-edit-modal/earning-edit-mo
     ModalModule,
     IconDirective,
     UtilitiesModule,
-    CurrencyPipe, // JsonPipe removed
-    GuildConfigEditModalComponent,
-    EarningEditModalComponent
+    CurrencyPipe,
+    GuildConfigEditModalComponent
+    // EarningEditModalComponent removed
   ]
 })
 export class GuildConfigListComponent implements OnInit, OnDestroy {
@@ -61,29 +60,23 @@ export class GuildConfigListComponent implements OnInit, OnDestroy {
   loadingConfig: boolean = false; 
   configError: string | null = null;
 
-  // Earnings State
-  earnings: Earning[] = [];
-  loadingEarnings: boolean = false; 
-  earningsError: string | null = null;
-
   // Modal State
   isConfigEditModalVisible: boolean = false;
-  isEarningModalVisible: boolean = false;
-  selectedEarningForEdit: Earning | null = null;
+  // Properties related to earnings modal removed
 
-  // Make Array.isArray available to the template
-  isArray = Array.isArray;
+  // isArray is no longer needed if only used for earnings display
+  // isArray = Array.isArray; 
 
   constructor(
-    private router: Router,
+    private router: Router, // Router might be used for navigation if needed
     private guildConfigService: GuildConfigService,
-    private earningsService: EarningsService,
+    // earningsService removed
     private authService: AuthService 
   ) {
     this.selectedGuildId$ = this.guildConfigService.selectedGuildId$;
   }
 
-  objectKeys = Object.keys;
+  objectKeys = Object.keys; // Keep if used for guildConfig display
 
   ngOnInit(): void {
     console.log('GuildConfigListComponent: Initializing...');
@@ -97,7 +90,7 @@ export class GuildConfigListComponent implements OnInit, OnDestroy {
           this.loadDataForGuild(guildId);
         } else {
            this.loadingConfig = false;
-           this.loadingEarnings = false;
+           // loadingEarnings removed
            console.log('GuildConfigListComponent: No guild selected.');
         }
       })
@@ -113,7 +106,7 @@ export class GuildConfigListComponent implements OnInit, OnDestroy {
   loadDataForGuild(guildId: string): void {
     console.log(`GuildConfigListComponent: Loading data for guild ${guildId}`);
     this.loadGuildConfig(guildId);
-    this.loadEarnings(guildId);
+    // loadEarnings call removed
   }
 
   resetState(): void {
@@ -121,12 +114,8 @@ export class GuildConfigListComponent implements OnInit, OnDestroy {
       this.guildConfig = null;
       this.loadingConfig = true; 
       this.configError = null;
-      this.earnings = [];
-      this.loadingEarnings = true; 
-      this.earningsError = null;
+      // Earnings related properties reset removed
       this.isConfigEditModalVisible = false;
-      this.isEarningModalVisible = false;
-      this.selectedEarningForEdit = null;
   }
 
   loadGuildConfig(id: string): void {
@@ -155,31 +144,7 @@ export class GuildConfigListComponent implements OnInit, OnDestroy {
     });
   }
 
-  loadEarnings(id: string): void {
-    console.log(`GuildConfigListComponent: Loading earnings for guild ${id}...`);
-    this.loadingEarnings = true;
-    this.earningsError = null;
-    this.earningsService.getGuildEarnings(id).pipe(
-        takeUntil(this.destroy$)
-    ).subscribe({
-        next: (earningsData: Earning[]) => {
-            this.earnings = earningsData;
-            this.loadingEarnings = false;
-            console.log(`GuildConfigListComponent: Earnings loaded for guild ${id}:`, earningsData);
-        },
-        error: (err: any) => {
-            console.error(`GuildConfigListComponent: Error loading earnings for guild ${id}:`, err);
-            if (err.status === 404 || err?.message?.includes('not found')) {
-                 this.earningsError = null; 
-                 this.earnings = []; 
-                 console.log(`GuildConfigListComponent: No earnings found for guild ${id}.`);
-            } else {
-                this.earningsError = err.message || `Failed to load earnings for guild ${id}.`;
-            }
-            this.loadingEarnings = false;
-        }
-    });
-  }
+  // loadEarnings method removed
 
   openEditConfigModal(): void {
     if (!this.currentGuildId) return;
@@ -193,15 +158,15 @@ export class GuildConfigListComponent implements OnInit, OnDestroy {
         this.configError = "Cannot delete config: Select a guild first.";
         return;
     }
-
-    if (confirm(`Are you sure you want to delete the entire configuration for Guild ${this.currentGuildId}? This will also delete associated earnings records and is irreversible!`)) {
+    // Ensure confirmation message reflects that only config is deleted if earnings are separate
+    if (confirm(`Are you sure you want to delete the entire configuration for Guild ${this.currentGuildId}? This is irreversible!`)) {
       this.loadingConfig = true;
       this.guildConfigService.deleteGuildConfig(this.currentGuildId).subscribe({
         next: () => {
           this.loadingConfig = false;
           console.log(`GuildConfigListComponent: Configuration for guild ${this.currentGuildId} deleted successfully.`);
           this.guildConfig = null;
-          this.earnings = [];
+          // this.earnings = []; // Removed as earnings are handled separately
           this.configError = "Configuration deleted successfully.";
         },
         error: (err: any) => {
@@ -223,56 +188,12 @@ export class GuildConfigListComponent implements OnInit, OnDestroy {
     }
   }
 
-  openAddEarningModal(): void {
-      if (!this.currentGuildId) return;
-      this.selectedEarningForEdit = null; 
-      this.isEarningModalVisible = true;
-      console.log(`GuildConfigListComponent: Opening earning modal in add mode for guild ${this.currentGuildId}`);
-  }
+  // Methods related to earnings modal and operations removed:
+  // openAddEarningModal, openEditEarningModal, deleteEarning, onEarningSaved
 
-  openEditEarningModal(earning: Earning): void {
-      if (!this.currentGuildId) return;
-      this.selectedEarningForEdit = { ...earning }; 
-      this.isEarningModalVisible = true;
-      console.log(`GuildConfigListComponent: Opening earning modal in edit mode for earning ID ${earning.id}`);
-  }
-
-  deleteEarning(earning: Earning): void {
-      if (!this.currentGuildId || !earning.id) { 
-          console.error("Cannot delete earning - Guild ID or Earning ID missing.");
-          this.earningsError = "Cannot delete earning: Missing required ID.";
-          return;
-      }
-      if (confirm(`Are you sure you want to delete the earning record from ${earning.date} for user ${earning.user_mention}?`)) {
-          this.loadingEarnings = true; 
-          this.earningsService.deleteEarning(this.currentGuildId, earning.id).subscribe({
-              next: () => {
-                  console.log(`GuildConfigListComponent: Earning record ${earning.id} deleted successfully.`);
-                  if (this.currentGuildId) {
-                      this.loadEarnings(this.currentGuildId); 
-                  } else {
-                      this.loadingEarnings = false;
-                  }
-              },
-              error: (err: any) => {
-                  console.error(`GuildConfigListComponent: Error deleting earning ${earning.id}:`, err);
-                  this.earningsError = err.message || 'Failed to delete earning record.';
-                  this.loadingEarnings = false;
-              }
-          });
-      }
-  }
-
-  onEarningSaved(savedEarning: Earning | null): void {
-      this.isEarningModalVisible = false;
-      if (savedEarning && this.currentGuildId) {
-          console.log('GuildConfigListComponent: Earning saved event received. Reloading earnings.');
-          this.loadEarnings(this.currentGuildId); 
-      } else {
-          console.log('GuildConfigListComponent: Earning modal closed without saving.');
-      }
-  }
-
+  // getCommissionRoles might still be used by the template if guildConfig is complex.
+  // If not, it can be removed. For now, keeping it. 
+  // (The HTML provided earlier was simplified and might not show its usage)
   getCommissionRoles(): { [roleId: string]: any } | null {
       return this.guildConfig?.commission_settings?.roles ?? null;
   }

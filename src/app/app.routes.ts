@@ -30,19 +30,24 @@ export const routes: Routes = [
         loadChildren: () => import('./views/theme/routes').then((m) => m.routes)
       },
       {
-        path: 'guild-management', // Guild config/earnings management
-        loadChildren: () => import('./views/guild-management/guild-management.routes').then((m) => m.routes),
-        // Further role-based activation can be handled within guild-management.routes if needed
+        path: 'guild-configurations', // Updated path
+        loadComponent: () => 
+          import('./views/guild-management/guild-config-list/guild-config-list.component').then(m => m.GuildConfigListComponent),
+        data: { title: 'Guild Configurations' }
       },
       {
-        path: 'user-management', // User management (requires admin privileges)
-        loadChildren: () => import('./views/user-management/user-management.routes').then((m) => m.routes),
-        canActivate: [adminGuard], // Add functional adminGuard for admin-only access
-        data: {
-          title: 'User Management'
-        }
+        path: 'earnings-records', // New path for earnings
+        loadComponent: () => 
+          import('./views/guild-management/earnings-list/earnings-list.component').then(m => m.EarningsListComponent),
+        data: { title: 'Earnings Records' }
       },
-      // Add other authenticated routes here (e.g., charts, widgets, base UI elements)
+      {
+        path: 'user-management',
+        canActivate: [adminGuard],
+        loadComponent: () => 
+          import('./views/user-management/user-list/user-list.component').then(m => m.UserListComponent),
+        data: { title: 'User Management' }
+      },
       {
         path: 'base',
         loadChildren: () => import('./views/base/routes').then((m) => m.routes)
@@ -56,10 +61,6 @@ export const routes: Routes = [
         loadChildren: () => import('./views/forms/routes').then((m) => m.routes)
       },
       {
-        path: 'charts',
-        loadChildren: () => import('./views/charts/routes').then((m) => m.routes)
-      },
-      {
         path: 'icons',
         loadChildren: () => import('./views/icons/routes').then((m) => m.routes)
       },
@@ -71,46 +72,33 @@ export const routes: Routes = [
         path: 'widgets',
         loadChildren: () => import('./views/widgets/routes').then((m) => m.routes)
       },
-    ]
-  },
-  {
-    // Public routes (Login, Register)
-    // These should only be accessible when the user is *not* logged in
-    path: '',
-    canActivate: [publicGuard], // Use functional publicGuard
-    children: [
       {
-        path: 'login',
-        loadComponent: () => import('./views/pages/login/login.component').then(m => m.LoginComponent),
-        data: {
-          title: 'Login Page'
-        }
-      },
-      {
-        path: 'register',
-        loadComponent: () => import('./views/pages/register/register.component').then(m => m.RegisterComponent),
-        data: {
-          title: 'Register Page'
-        }
+        path: 'charts',
+        loadChildren: () => import('./views/charts/routes').then((m) => m.routes)
       }
+      // Remove or comment out the old '/guild-management' route if it existed as a separate entry
+      // For example:
+      // {
+      //   path: 'guild-management',
+      //   loadChildren: () => import('./views/guild-management/guild-management.module').then(m => m.GuildManagementModule)
+      // },
     ]
   },
   {
-    // Standalone error pages (accessible regardless of login status)
-    path: '404',
-    loadComponent: () => import('./views/pages/page404/page404.component').then(m => m.Page404Component),
+    path: 'login',
+    canActivate: [publicGuard], // Protect login page if user is already authenticated
+    loadComponent: () => import('./views/pages/login/login.component').then(m => m.LoginComponent),
     data: {
-      title: 'Page 404'
+      title: 'Login Page'
     }
   },
   {
-    path: '500',
-    loadComponent: () => import('./views/pages/page500/page500.component').then(m => m.Page500Component),
+    path: 'register',
+    canActivate: [publicGuard],
+    loadComponent: () => import('./views/pages/register/register.component').then(m => m.RegisterComponent),
     data: {
-      title: 'Page 500'
+      title: 'Register Page'
     }
   },
-  // Wildcard route: Matches any path not defined above.
-  // Redirects to the 404 page.
-  { path: '**', redirectTo: '404' }
+  { path: '**', redirectTo: 'dashboard' } // Wildcard route for a 404 page or redirect
 ];

@@ -2,7 +2,7 @@
   <c-col xs="12">
     <!-- Message shown when NO guild is selected -->
     <c-alert color="info" *ngIf="!(selectedGuildId$ | async)">
-      Please select a guild from the dropdown in the header to manage its configuration and earnings.
+      Please select a guild from the dropdown in the header to manage its configuration.
     </c-alert>
 
     <!-- Main content area shown ONLY when a guild is selected -->
@@ -192,82 +192,6 @@
         </c-card-body>
       </c-card>
 
-      <!-- Earnings Section -->
-      <c-card class="mb-4">
-         <c-card-header>
-           <strong>Earnings Records for {{ currentGuildId }}</strong>
-           <div class="float-end">
-             <button cButton color="success" variant="outline" size="sm" (click)="openAddEarningModal()" [disabled]="loadingEarnings || !guildConfig" title="{{ !guildConfig ? 'Create Guild Config first' : 'Add New Earning' }}">
-               <svg cIcon name="cilPlus" size="sm"></svg> Add Earning
-             </button>
-           </div>
-         </c-card-header>
-         <c-card-body>
-            <div *ngIf="loadingEarnings" class="text-center py-3"><c-spinner aria-hidden="true" size="sm"></c-spinner> Loading Earnings...</div>
-            <c-alert color="danger" *ngIf="!loadingEarnings && earningsError">{{ earningsError }}</c-alert>
-            
-            <div *ngIf="!loadingEarnings && !earningsError && earnings.length === 0 && guildConfig" class="text-center py-3">
-              <c-card class="shadow-sm">
-                <c-card-body class="text-center">
-                  <svg cIcon name="cilInbox" size="xxl" class="text-muted mb-2"></svg>
-                  <h5 class="card-title">No earnings recorded yet.</h5>
-                  <p class="card-text">Click <strong>“Add Earning”</strong> to get started.</p>
-                  <button cButton color="success" (click)="openAddEarningModal()" [disabled]="!guildConfig">
-                    <svg cIcon name="cilPlus" size="sm" class="me-1"></svg>Add Earning
-                  </button>
-                </c-card-body>
-              </c-card>
-            </div>
-
-            <div *ngIf="!loadingConfig && !guildConfig && !configError" class="text-center py-3 text-muted">
-                <svg cIcon name="cilSettings" size="xxl" class="text-warning mb-2"></svg>
-                <h5 class="text-warning">Configuration Needed</h5>
-                <p>Cannot load earnings until a guild configuration is created.</p>
-                 <button cButton color="primary" variant="ghost" size="lg" class="mt-2" (click)="openEditConfigModal()">
-                    <svg cIcon name="cilPlus" size="lg" class="me-1"></svg> Create Guild Configuration
-                </button>
-            </div>
-
-            @if (!loadingEarnings && !earningsError && earnings.length > 0) {
-              <table cTable class="mb-0 border" hover responsive striped align="middle">
-                <thead cTableColor="light">
-                  <tr>
-                    <th>Date</th><th>User</th><th>Role</th><th>Model(s)</th><th>Shift</th><th>Period</th><th>Hours</th><th>Gross Rev.</th><th>Total Cut</th><th>Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  @for (earning of earnings; track earning.id) {
-                    <tr>
-                      <td>{{ earning.date }}</td>
-                      <td>{{ earning.user_mention }}</td>
-                      <td>{{ earning.role }}</td>
-                      <td>
-                        <ng-container *ngIf="isArray(earning.models) && earning.models.length > 0; else noEarningModels">
-                           <span *ngFor="let model of earning.models" class="badge bg-secondary me-1 mb-1">{{ model }}</span>
-                        </ng-container>
-                        <ng-template #noEarningModels>-</ng-template>
-                      </td>
-                      <td>{{ earning.shift }}</td>
-                      <td>{{ earning.period }}</td>
-                      <td>{{ earning.hours_worked }}</td>
-                      <td>{{ earning.gross_revenue | currency }}</td>
-                      <td>{{ earning.total_cut | currency }}</td>
-                      <td>
-                        <button cButton color="primary" variant="outline" size="sm" (click)="openEditEarningModal(earning)" title="Edit Earning">
-                          <svg cIcon name="cilPencil" size="sm"></svg>
-                        </button>
-                        <button cButton color="danger" variant="outline" size="sm" class="ms-1" (click)="deleteEarning(earning)" title="Delete Earning">
-                          <svg cIcon name="cilTrash" size="sm"></svg>
-                        </button>
-                      </td>
-                    </tr>
-                  }
-                </tbody>
-              </table>
-            }
-         </c-card-body>
-      </c-card>
-
     </ng-container> 
   </c-col>
 </c-row>
@@ -282,12 +206,3 @@
   </app-guild-config-edit-modal>
 }
 
-<!-- Earning Add/Edit Modal -->
-@if (isEarningModalVisible && currentGuildId) {
-  <app-earning-edit-modal
-    [(visible)]="isEarningModalVisible"
-    [guildId]="currentGuildId"
-    [earningToEdit]="selectedEarningForEdit" 
-    (earningSaved)="onEarningSaved($event)">
-  </app-earning-edit-modal>
-}
