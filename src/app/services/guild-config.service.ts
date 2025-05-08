@@ -55,7 +55,7 @@ export interface AvailableGuild {
 })
 export class GuildConfigService {
 
-  private apiUrl = '/api/config'; // Base path for config endpoints
+  private apiUrl = '/api/guild-configs'; // Corrected base path for config endpoints
 
   private selectedGuildIdSource = new BehaviorSubject<string | null>(null);
   selectedGuildId$ = this.selectedGuildIdSource.asObservable();
@@ -73,15 +73,7 @@ export class GuildConfigService {
 
   getAvailableGuilds(): Observable<AvailableGuild[]> {
     console.log('GuildConfigService: Fetching available guilds...');
-    // *** Changed type assertion to <any[]> temporarily for raw logging ***
-    return this.http.get<any[]>(this.apiUrl).pipe(
-      // *** Added tap to log RAW response ***
-      tap(rawResponse => console.log('GuildConfigService RAW Response:', JSON.stringify(rawResponse))),
-      map((configs: any[]) => configs.map(config => ({ // Keep map logic, but use any for input config
-        id: config?.id, // Access the 'id' field directly as sent by backend controller
-        name: config?.name // Access the 'name' field directly as sent by backend controller
-      }))),
-      tap(mappedGuilds => console.log('GuildConfigService Mapped Data:', JSON.stringify(mappedGuilds))),
+    return this.http.get<AvailableGuild[]>(`${this.apiUrl}/available-guilds`).pipe(
       tap(guilds => console.log(`GuildConfigService: Found ${guilds.length} available guilds.`)),
       catchError(this.handleError)
     );
@@ -117,7 +109,7 @@ export class GuildConfigService {
     }
     console.log(`GuildConfigService: Updating config for guild ${guildId}...`);
     const { _id, ...configData } = config;
-    configData.guild_id = guildId;
+    configData.guild_id = guildId; // Ensure payload guild_id matches path param
     return this.http.put<GuildConfig>(`${this.apiUrl}/${guildId}`, configData).pipe(
       catchError(this.handleError)
     );
