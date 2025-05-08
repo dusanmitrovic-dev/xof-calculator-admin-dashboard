@@ -55,7 +55,7 @@ export interface AvailableGuild {
 })
 export class GuildConfigService {
 
-  private apiUrl = '/api/guild-configs'; // Corrected base path for config endpoints
+  private apiUrl = '/api/config'; // Consolidated API URL for all config operations
 
   private selectedGuildIdSource = new BehaviorSubject<string | null>(null);
   selectedGuildId$ = this.selectedGuildIdSource.asObservable();
@@ -73,10 +73,9 @@ export class GuildConfigService {
 
   getAvailableGuilds(): Observable<AvailableGuild[]> {
     console.log('GuildConfigService: Fetching available guilds from ', this.apiUrl);
-    // Assuming the backend returns an array of objects with at least id and name fields at the root endpoint
     return this.http.get<any[]>(this.apiUrl).pipe(
       map((configs: any[]) => configs.map(config => ({
-        id: config.id, // Assuming backend sends 'id' (as guild_id) and 'name' (as agency_name or chosen display name)
+        id: config.id, 
         name: config.name 
       }))),
       tap(guilds => console.log(`GuildConfigService: Found ${guilds.length} available guilds after mapping.`)),
@@ -90,14 +89,14 @@ export class GuildConfigService {
       console.error('GuildConfigService: getGuildConfig called with empty guildId.');
       return throwError(() => new Error('Guild ID cannot be empty'));
     }
-    console.log(`GuildConfigService: Fetching config for guild ${guildId}...`);
+    console.log(`GuildConfigService: Fetching config for guild ${guildId} from ${this.apiUrl}/${guildId}`);
     return this.http.get<GuildConfig>(`${this.apiUrl}/${guildId}`).pipe(
       catchError(this.handleError)
     );
   }
 
   createGuildConfig(config: GuildConfig): Observable<GuildConfig> {
-    console.log(`GuildConfigService: Creating config for guild ${config.guild_id}...`);
+    console.log(`GuildConfigService: Creating config for guild ${config.guild_id} at ${this.apiUrl}`);
     const { _id, ...configData } = config;
     if (!configData.guild_id) {
        console.warn('GuildConfigService: createGuildConfig called without guild_id in payload, relying on API structure.');
@@ -112,9 +111,9 @@ export class GuildConfigService {
       console.error('GuildConfigService: updateGuildConfig called with empty guildId.');
       return throwError(() => new Error('Guild ID cannot be empty for update'));
     }
-    console.log(`GuildConfigService: Updating config for guild ${guildId}...`);
+    console.log(`GuildConfigService: Updating config for guild ${guildId} at ${this.apiUrl}/${guildId}`);
     const { _id, ...configData } = config;
-    configData.guild_id = guildId; // Ensure payload guild_id matches path param
+    configData.guild_id = guildId; 
     return this.http.put<GuildConfig>(`${this.apiUrl}/${guildId}`, configData).pipe(
       catchError(this.handleError)
     );
@@ -125,7 +124,7 @@ export class GuildConfigService {
        console.error('GuildConfigService: deleteGuildConfig called with empty guildId.');
       return throwError(() => new Error('Guild ID cannot be empty for delete'));
     }
-    console.log(`GuildConfigService: Deleting config for guild ${guildId}...`);
+    console.log(`GuildConfigService: Deleting config for guild ${guildId} at ${this.apiUrl}/${guildId}`);
     return this.http.delete<{ message?: string; msg?: string }>(`${this.apiUrl}/${guildId}`).pipe(
       catchError(this.handleError)
     );
@@ -136,7 +135,7 @@ export class GuildConfigService {
        console.error('GuildConfigService: getGuildConfigField called with empty guildId or field.');
       return throwError(() => new Error('Guild ID and field name are required'));
     }
-    console.log(`GuildConfigService: Getting field '${field}' for guild ${guildId}...`);
+    console.log(`GuildConfigService: Getting field '${field}' for guild ${guildId} from ${this.apiUrl}/${guildId}/${field}`);
     return this.http.get<{ [key: string]: T }>(`${this.apiUrl}/${guildId}/${field}`).pipe(
       map(response => response[field]),
       catchError(this.handleError)
@@ -148,7 +147,7 @@ export class GuildConfigService {
       console.error('GuildConfigService: updateGuildConfigField called with empty guildId or field.');
       return throwError(() => new Error('Guild ID and field name are required'));
     }
-    console.log(`GuildConfigService: Updating field '${field}' for guild ${guildId}...`);
+    console.log(`GuildConfigService: Updating field '${field}' for guild ${guildId} at ${this.apiUrl}/${guildId}/${field}`);
     const payload = { value };
     return this.http.put<GuildConfig>(`${this.apiUrl}/${guildId}/${field}`, payload).pipe(
       catchError(this.handleError)
