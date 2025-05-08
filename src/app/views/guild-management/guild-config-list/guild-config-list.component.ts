@@ -19,13 +19,11 @@ import { IconDirective } from '@coreui/icons-angular';
 
 // Import services and interfaces
 import { GuildConfigService, GuildConfig } from '../../../services/guild-config.service';
-// EarningsService and Earning interface removed as they are no longer used here
 import { AuthService } from '../../../auth/auth.service';
 
 // Import the modal components
 import { GuildConfigEditModalComponent } from '../guild-config-edit-modal/guild-config-edit-modal.component';
 import { CommonModule, CurrencyPipe } from '@angular/common';
-// EarningEditModalComponent removed as it's no longer used here
 
 @Component({
   selector: 'app-guild-config-list',
@@ -45,7 +43,6 @@ import { CommonModule, CurrencyPipe } from '@angular/common';
     UtilitiesModule,
     CurrencyPipe,
     GuildConfigEditModalComponent
-    // EarningEditModalComponent removed
   ]
 })
 export class GuildConfigListComponent implements OnInit, OnDestroy {
@@ -62,21 +59,17 @@ export class GuildConfigListComponent implements OnInit, OnDestroy {
 
   // Modal State
   isConfigEditModalVisible: boolean = false;
-  // Properties related to earnings modal removed
-
-  // isArray is no longer needed if only used for earnings display
-  // isArray = Array.isArray; 
+  currentEditSection: string = 'full'; // Default to 'full' for creating or general edit
 
   constructor(
-    private router: Router, // Router might be used for navigation if needed
+    private router: Router, 
     private guildConfigService: GuildConfigService,
-    // earningsService removed
     private authService: AuthService 
   ) {
     this.selectedGuildId$ = this.guildConfigService.selectedGuildId$;
   }
 
-  objectKeys = Object.keys; // Keep if used for guildConfig display
+  objectKeys = Object.keys; 
 
   ngOnInit(): void {
     console.log('GuildConfigListComponent: Initializing...');
@@ -90,7 +83,6 @@ export class GuildConfigListComponent implements OnInit, OnDestroy {
           this.loadDataForGuild(guildId);
         } else {
            this.loadingConfig = false;
-           // loadingEarnings removed
            console.log('GuildConfigListComponent: No guild selected.');
         }
       })
@@ -106,7 +98,6 @@ export class GuildConfigListComponent implements OnInit, OnDestroy {
   loadDataForGuild(guildId: string): void {
     console.log(`GuildConfigListComponent: Loading data for guild ${guildId}`);
     this.loadGuildConfig(guildId);
-    // loadEarnings call removed
   }
 
   resetState(): void {
@@ -114,8 +105,8 @@ export class GuildConfigListComponent implements OnInit, OnDestroy {
       this.guildConfig = null;
       this.loadingConfig = true; 
       this.configError = null;
-      // Earnings related properties reset removed
       this.isConfigEditModalVisible = false;
+      this.currentEditSection = 'full'; // Reset edit section
   }
 
   loadGuildConfig(id: string): void {
@@ -144,12 +135,11 @@ export class GuildConfigListComponent implements OnInit, OnDestroy {
     });
   }
 
-  // loadEarnings method removed
-
-  openEditConfigModal(): void {
+  openEditConfigModal(section: string = 'full'): void {
     if (!this.currentGuildId) return;
+    this.currentEditSection = section;
     this.isConfigEditModalVisible = true;
-    console.log(`GuildConfigListComponent: Opening config edit modal for guild ${this.currentGuildId}`);
+    console.log(`GuildConfigListComponent: Opening config edit modal for guild ${this.currentGuildId}, section: ${section}`);
   }
 
   deleteGuildConfig(): void {
@@ -158,7 +148,6 @@ export class GuildConfigListComponent implements OnInit, OnDestroy {
         this.configError = "Cannot delete config: Select a guild first.";
         return;
     }
-    // Ensure confirmation message reflects that only config is deleted if earnings are separate
     if (confirm(`Are you sure you want to delete the entire configuration for Guild ${this.currentGuildId}? This is irreversible!`)) {
       this.loadingConfig = true;
       this.guildConfigService.deleteGuildConfig(this.currentGuildId).subscribe({
@@ -166,7 +155,6 @@ export class GuildConfigListComponent implements OnInit, OnDestroy {
           this.loadingConfig = false;
           console.log(`GuildConfigListComponent: Configuration for guild ${this.currentGuildId} deleted successfully.`);
           this.guildConfig = null;
-          // this.earnings = []; // Removed as earnings are handled separately
           this.configError = "Configuration deleted successfully.";
         },
         error: (err: any) => {
@@ -188,12 +176,6 @@ export class GuildConfigListComponent implements OnInit, OnDestroy {
     }
   }
 
-  // Methods related to earnings modal and operations removed:
-  // openAddEarningModal, openEditEarningModal, deleteEarning, onEarningSaved
-
-  // getCommissionRoles might still be used by the template if guildConfig is complex.
-  // If not, it can be removed. For now, keeping it. 
-  // (The HTML provided earlier was simplified and might not show its usage)
   getCommissionRoles(): { [roleId: string]: any } | null {
       return this.guildConfig?.commission_settings?.roles ?? null;
   }

@@ -12,9 +12,6 @@
         <c-card-header>
           <strong>Guild Configuration for {{ currentGuildId }}</strong>
           <div class="float-end">
-              <button cButton color="primary" variant="outline" size="sm" (click)="openEditConfigModal()" [disabled]="loadingConfig">
-                <svg cIcon name="cilPencil" size="sm" title="Edit/Create Config"></svg> {{ guildConfig ? 'Edit' : 'Create' }} Config
-              </button>
               <button cButton color="danger" variant="outline" size="sm" class="ms-2" (click)="deleteGuildConfig()" [disabled]="loadingConfig || !guildConfig" title="Delete Entire Guild Config">
                  <svg cIcon name="cilTrash" size="sm"></svg> Delete Config
               </button>
@@ -28,7 +25,7 @@
            <!-- No Config Found State -->
            <div *ngIf="!loadingConfig && !configError && !guildConfig" class="text-center py-3">
              No configuration found for this guild.
-             <button cButton color="success" variant="ghost" size="sm" class="ms-2" (click)="openEditConfigModal()">
+             <button cButton color="success" variant="ghost" size="sm" class="ms-2" (click)="openEditConfigModal('full')">
                  <svg cIcon name="cilPlus" size="sm"></svg> Create One?
              </button>
            </div>
@@ -37,7 +34,14 @@
            <div *ngIf="!loadingConfig && !configError && guildConfig">
               <!-- General Info Card -->
               <c-card class="mb-3">
-                <c-card-header>General Info</c-card-header>
+                <c-card-header>
+                  General Info
+                  <div class="float-end">
+                    <button cButton color="primary" variant="outline" size="xs" (click)="openEditConfigModal('general_info')" [disabled]="loadingConfig">
+                      <svg cIcon name="cilPencil" size="xs"></svg> Modify
+                    </button>
+                  </div>
+                </c-card-header>
                 <c-card-body>
                   <c-row class="mb-2 border-bottom pb-1 align-items-center">
                     <c-col sm="3" class="fw-semibold">Guild ID</c-col>
@@ -56,7 +60,14 @@
 
               <!-- Display Settings Card -->
               <c-card class="mb-3">
-                <c-card-header>Display Settings</c-card-header>
+                <c-card-header>
+                  Display Settings
+                  <div class="float-end">
+                    <button cButton color="primary" variant="outline" size="xs" (click)="openEditConfigModal('display_settings')" [disabled]="loadingConfig">
+                      <svg cIcon name="cilPencil" size="xs"></svg> Modify
+                    </button>
+                  </div>
+                </c-card-header>
                 <c-card-body>
                   <c-row class="mb-2 border-bottom pb-1 align-items-center">
                     <c-col sm="3" class="fw-semibold">Models</c-col>
@@ -114,7 +125,14 @@
 
               <!-- Bonus Rules Card -->
               <c-card class="mb-3">
-                <c-card-header>Bonus Rules</c-card-header>
+                <c-card-header>
+                  Bonus Rules
+                  <div class="float-end">
+                    <button cButton color="primary" variant="outline" size="xs" (click)="openEditConfigModal('bonus_rules')" [disabled]="loadingConfig">
+                      <svg cIcon name="cilPencil" size="xs"></svg> Modify
+                    </button>
+                  </div>
+                </c-card-header>
                 <c-card-body>
                   @if (guildConfig.bonus_rules && guildConfig.bonus_rules.length > 0) {
                     <table cTable class="table table-striped table-hover">
@@ -144,7 +162,14 @@
 
               <!-- Role Commissions Card -->
               <c-card class="mb-3">
-                <c-card-header>Role Commissions</c-card-header>
+                <c-card-header>
+                  Role Commissions
+                  <div class="float-end">
+                    <button cButton color="primary" variant="outline" size="xs" (click)="openEditConfigModal('commission_settings_roles')" [disabled]="loadingConfig">
+                      <svg cIcon name="cilPencil" size="xs"></svg> Modify
+                    </button>
+                  </div>
+                </c-card-header>
                 <c-card-body>
                   @if (guildConfig.commission_settings.roles && objectKeys(guildConfig.commission_settings.roles).length > 0) {
                     <ul class="list-unstyled mb-0">
@@ -163,7 +188,14 @@
 
               <!-- User Overrides Card -->
               <c-card class="mb-3">
-                <c-card-header>User Overrides</c-card-header>
+                <c-card-header>
+                  User Overrides
+                  <div class="float-end">
+                    <button cButton color="primary" variant="outline" size="xs" (click)="openEditConfigModal('commission_settings_users')" [disabled]="loadingConfig">
+                      <svg cIcon name="cilPencil" size="xs"></svg> Modify
+                    </button>
+                  </div>
+                </c-card-header>
                 <c-card-body>
                   @if (guildConfig.commission_settings.users && objectKeys(guildConfig.commission_settings.users).length > 0) {
                     <ul class="list-unstyled mb-0">
@@ -202,6 +234,7 @@
     [(visible)]="isConfigEditModalVisible"
     [guildId]="currentGuildId" 
     [guildConfig]="guildConfig" 
+    [editSection]="currentEditSection" 
     (configSaved)="onConfigSaved($event)">
   </app-guild-config-edit-modal>
 }
