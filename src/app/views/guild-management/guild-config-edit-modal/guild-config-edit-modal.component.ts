@@ -118,6 +118,8 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
     if (!this.configForm) { 
         this.configForm = this.buildForm();
     }
+    // Call reset before patching to ensure a clean state, especially for display_settings defaults
+    this.configForm.reset(); 
 
     this.setConditionalValidators();
 
@@ -131,32 +133,30 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
         case 'commission_settings_users': sectionTitlePart = 'User Overrides'; break;
         default: sectionTitlePart = 'Guild Configuration';
       }
-      // Use this.guildId for the title if guildConfig.guild_id is somehow unavailable
       this.title = `Edit ${sectionTitlePart} (${this.guildConfig.guild_id || this.guildId})`; 
-      this.patchForm(this.guildConfig);
+      this.patchForm(this.guildConfig); // This will set the correct values from DB
       this.configForm.get('guild_id')?.disable();
     } else {
       this.title = 'Create New Guild Configuration';
       this.editSection = 'full';
-      this.configForm.reset();
+      // models, shifts, periods, bonus_rules, commission_settings are already cleared by configForm.reset()
       this.models.clear();
       this.shifts.clear();
       this.periods.clear();
       this.bonus_rules.clear();
       this.clearCommissionControls();
       
-      // When creating, use this.guildId if provided (e.g. from a selected guild in a list that doesn't have a config yet)
-      // Otherwise, it will be empty and require user input.
       this.configForm.get('guild_id')?.setValue(this.guildId || ''); 
       this.configForm.get('guild_id')?.enable();
+      // Set defaults ONLY for creation mode AFTER reset and BEFORE patching (if any)
       this.configForm.get('display_settings')?.patchValue({
         ephemeral_responses: false,
         show_average: true,
-        agency_name: 'Agency',
+        agency_name: 'Agency', // Default for new creations
         show_ids: true,
-        bot_name: 'Shift Calculator'
+        bot_name: 'Shift Calculator' // Default for new creations
       });
-      this.setConditionalValidators();
+      this.setConditionalValidators(); // Re-apply validators for creation mode
     }
   }
 
@@ -190,10 +190,10 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
 
  private patchForm(config: GuildConfig): void {
     if (!config || !this.configForm) return;
-
+    // Note: configForm.reset() was called in prepareFormForMode before this
     this.configForm.patchValue({
-      guild_id: config.guild_id, // This should be reliable from the fetched config
-      display_settings: config.display_settings || {},
+      guild_id: config.guild_id, 
+      display_settings: config.display_settings || {}, // Ensure this patches the actual DB values
     });
     this.configForm.get('guild_id')?.disable(); 
 
@@ -324,7 +324,7 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
     this.errorMessage = null;
     const formValue = this.configForm.getRawValue(); 
     const saveData: GuildConfig = {
-      guild_id: formValue.guild_id, // This will be from the disabled field, patched from guildConfig
+      guild_id: formValue.guild_id, 
       models: formValue.models || [],
       shifts: formValue.shifts || [],
       periods: formValue.periods || [],
@@ -343,10 +343,8 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
     let saveObservable: Observable<GuildConfig>;
 
     if (!this.isEditMode) { 
-      // guild_id for creation comes from the enabled formValue.guild_id
       saveObservable = this.guildConfigService.createGuildConfig(saveData);
     } else { 
-      // IMPORTANT: Use this.guildId (the @Input) for the update path parameter
       if (!this.guildId) {
         this.isLoading = false;
         this.errorMessage = 'Guild ID is missing. Cannot update configuration.';
@@ -443,10 +441,12 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
     this.editSection = 'full'; 
 
     if (this.configForm) {
-        this.configForm.reset();
+        this.configForm.reset(); // Reset all form values to their initial state or null
         this.guild_id_control?.enable();
+        
+        // Clear conditional validators
         this.configForm.get('guild_id')?.clearValidators();
-        this.configForm.get('guild_id')?.setValidators([Validators.pattern('^[0-9]+$')]);
+        this.configForm.get('guild_id')?.setValidators([Validators.pattern('^[0-9]+$')]); 
         this.configForm.get('models')?.clearValidators();
         this.configForm.get('shifts')?.clearValidators();
         this.configForm.get('periods')?.clearValidators();
@@ -455,18 +455,15 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
         this.configForm.get('shifts')?.updateValueAndValidity();
         this.configForm.get('periods')?.updateValueAndValidity();
 
+        // Clear arrays
         this.models?.clear();
         this.shifts?.clear();
         this.periods?.clear();
         this.bonus_rules?.clear();
         this.clearCommissionControls();
-        this.configForm.get('display_settings')?.patchValue({
-            ephemeral_responses: false,
-            show_average: true,
-            agency_name: 'Agency',
-            show_ids: true,
-            bot_name: 'Shift Calculator'
-        });
+        
+        // DO NOT patch display_settings with defaults here, 
+        // prepareFormForMode will handle defaults for CREATION or patch from guildConfig for EDIT.
     }
   }
 }
