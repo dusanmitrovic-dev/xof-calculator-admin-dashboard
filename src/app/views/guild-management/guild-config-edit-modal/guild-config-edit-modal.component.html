@@ -188,7 +188,7 @@
               <c-col md="3">
                 <label cLabel [for]="'bonus_to_' + i" class="small">To ($)</label>
                 <input cFormControl type="number" [id]="'bonus_to_' + i" formControlName="to" required min="0"
-                       [class.is-invalid]="(ruleGroup.get('to')?.invalid && (ruleGroup.get('to')?.dirty || ruleG                roup.get('to')?.touched)) || ruleGroup.hasError('toLessThanFrom')">
+                       [class.is-invalid]="(ruleGroup.get('to')?.invalid && (ruleGroup.get('to')?.dirty || ruleGroup.get('to')?.touched)) || ruleGroup.hasError('toLessThanFrom')">
                 <c-form-feedback [valid]="false" *ngIf="ruleGroup.get('to')?.invalid && (ruleGroup.get('to')?.dirty || ruleGroup.get('to')?.touched)">
                   <div *ngIf="ruleGroup.get('to')?.hasError('required')">Required.</div>
                   <div *ngIf="ruleGroup.get('to')?.hasError('min')">Min 0.</div>
@@ -264,7 +264,7 @@
               </div>
             </ng-container>
             
-            <hr *ngIf="(editSection === 'full' || editSection === 'commission_settings_roles') && (editSection === 'full' || editSection === 'commission_settings_users')">
+            <hr *ngIf="editSection === 'full'">
 
             <!-- Users -->
             <ng-container *ngIf="editSection === 'full' || editSection === 'commission_settings_users'">
