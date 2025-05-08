@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, Output, EventEmitter, OnInit, OnChanges, SimpleChanges } from '@angular/core';
+// Import ChangeDetectorRef
+import { Component, Input, Output, EventEmitter, OnInit, OnChanges, SimpleChanges, ChangeDetectorRef } from '@angular/core'; 
 import { AbstractControl, FormBuilder, FormGroup, FormArray, Validators, ReactiveFormsModule, FormControl } from '@angular/forms';
 import { Observable } from 'rxjs';
 
@@ -60,7 +61,8 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
 
   constructor(
     private fb: FormBuilder,
-    private guildConfigService: GuildConfigService
+    private guildConfigService: GuildConfigService,
+    private changeDetectorRef: ChangeDetectorRef // Inject ChangeDetectorRef
   ) { }
 
   ngOnInit(): void {
@@ -148,6 +150,11 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
       console.log(`[LOG_MODAL_PREPARE_FORM_EDIT] Patching form with guildConfig.guild_id: "${this.guildConfig.guild_id}"`);
       this.patchForm(this.guildConfig);
       this.configForm.get('guild_id')?.disable();
+      
+      // --- Trigger change detection after patching --- 
+      this.changeDetectorRef.detectChanges(); 
+      console.log('[LOG_MODAL_PREPARE_FORM_EDIT] Manually triggered change detection after patch.');
+
     } else {
       this.title = 'Create New Guild Configuration';
       this.editSection = 'full';
@@ -168,6 +175,9 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
         bot_name: 'Shift Calculator'
       });
       this.setConditionalValidators();
+      // --- Trigger change detection after setting defaults for create --- 
+      this.changeDetectorRef.detectChanges();
+      console.log('[LOG_MODAL_PREPARE_FORM_CREATE] Manually triggered change detection after setting defaults.');
     }
   }
 
