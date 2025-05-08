@@ -72,9 +72,14 @@ export class GuildConfigService {
   }
 
   getAvailableGuilds(): Observable<AvailableGuild[]> {
-    console.log('GuildConfigService: Fetching available guilds...');
-    return this.http.get<AvailableGuild[]>(`${this.apiUrl}/available-guilds`).pipe(
-      tap(guilds => console.log(`GuildConfigService: Found ${guilds.length} available guilds.`)),
+    console.log('GuildConfigService: Fetching available guilds from ', this.apiUrl);
+    // Assuming the backend returns an array of objects with at least id and name fields at the root endpoint
+    return this.http.get<any[]>(this.apiUrl).pipe(
+      map((configs: any[]) => configs.map(config => ({
+        id: config.id, // Assuming backend sends 'id' (as guild_id) and 'name' (as agency_name or chosen display name)
+        name: config.name 
+      }))),
+      tap(guilds => console.log(`GuildConfigService: Found ${guilds.length} available guilds after mapping.`)),
       catchError(this.handleError)
     );
   }
