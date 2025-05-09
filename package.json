@@ -37,6 +37,7 @@
     "@coreui/icons": "^3.0.1",
     "@coreui/icons-angular": "~5.4.5",
     "@coreui/utils": "^2.0.2",
+    "@ng-bootstrap/ng-bootstrap": "^18.0.0",
     "@types/jwt-decode": "^2.2.1",
     "bcryptjs": "^3.0.2",
     "chart.js": "^4.4.8",

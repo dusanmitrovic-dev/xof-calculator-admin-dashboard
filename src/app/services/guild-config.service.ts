@@ -3,6 +3,23 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, throwError, BehaviorSubject, map, catchError, tap } from 'rxjs';
 
 // --- Interfaces matching DB structure ---
+export interface Model {
+  name: string;
+  payout: number;
+  commission: number;
+}
+
+export interface Shift {
+  name: string;
+  multiplier: number;
+}
+
+export interface Period {
+  name: string;
+  startDate: string; // Store as ISO string date (YYYY-MM-DD)
+  endDate: string;   // Store as ISO string date (YYYY-MM-DD)
+}
+
 export interface BonusRule {
   from: number;
   to: number;
@@ -34,9 +51,9 @@ export interface CommissionSettings {
 export interface GuildConfig {
   _id?: string; // Provided by MongoDB
   guild_id: string; // Discord Guild ID
-  models: string[];
-  shifts: string[];
-  periods: string[];
+  models: Model[];
+  shifts: Shift[];
+  periods: Period[];
   bonus_rules: BonusRule[];
   display_settings: DisplaySettings;
   commission_settings: CommissionSettings;

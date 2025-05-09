@@ -1,12 +1,35 @@
+import { CommonModule } from '@angular/common';
 import { Component, Input, OnInit, Output, EventEmitter } from '@angular/core';
-import { FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
-import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
-import { GuildConfig } from '../../../services/guild-config.service'; // Assuming path
+import { FormBuilder, FormGroup, FormArray, Validators, ReactiveFormsModule } from '@angular/forms';
+import { NgbActiveModal, NgbModalModule } from '@ng-bootstrap/ng-bootstrap';
+// import { GuildConfig } from '../../../services/guild-config.service'; // Path might differ based on actual structure
+
+// CoreUI Modules for UI consistency if needed, though ng-bootstrap is primary for modal itself
+import {
+  ButtonModule,
+  FormModule,
+  GridModule,
+  ModalModule as CoreUIModalModule, // Alias to avoid conflict if NgbModal is also ModalModule
+  CardModule
+} from '@coreui/angular';
+import { IconDirective } from '@coreui/icons-angular';
 
 @Component({
   selector: 'app-guild-config-msp-edit-modal',
   templateUrl: './guild-config-msp-edit-modal.component.html',
-  styleUrls: ['./guild-config-msp-edit-modal.component.scss']
+  styleUrls: ['./guild-config-msp-edit-modal.component.scss'],
+  standalone: true,
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    NgbModalModule, // For NgbActiveModal
+    ButtonModule,   // CoreUI Button
+    FormModule,     // CoreUI Form controls, if used directly in template
+    GridModule,     // CoreUI Grid
+    CoreUIModalModule, // CoreUI Modal for header/footer styling if applicable
+    CardModule,
+    IconDirective
+  ]
 })
 export class GuildConfigMspEditModalComponent implements OnInit {
   @Input() guildId!: string;
@@ -19,7 +42,7 @@ export class GuildConfigMspEditModalComponent implements OnInit {
   mspForm!: FormGroup;
 
   constructor(
-    public activeModal: NgbActiveModal,
+    public activeModal: NgbActiveModal, // Injected by NgbModal service
     private fb: FormBuilder
   ) {}
 
@@ -85,49 +108,42 @@ export class GuildConfigMspEditModalComponent implements OnInit {
     this.periods.removeAt(index);
   }
 
-  setFormArrayData(formArray: FormArray, data: any[]): void {
-    if (data && data.length > 0) {
-      // Clear out existing items
-      while (formArray.length !== 0) {
-        formArray.removeAt(0);
-      }
-      // Add new items
-      data.forEach(item => {
-        if (formArray === this.models) {
-          formArray.push(this.fb.group({
-            name: [item.name || '', Validators.required],
-            payout: [item.payout || 0, [Validators.required, Validators.min(0)]],
-            commission: [item.commission || 0, [Validators.required, Validators.min(0)]]
-          }));
-        } else if (formArray === this.shifts) {
-          formArray.push(this.fb.group({
-            name: [item.name || '', Validators.required],
-            multiplier: [item.multiplier || 1, [Validators.required, Validators.min(0)]]
-          }));
-        } else if (formArray === this.periods) {
-          formArray.push(this.fb.group({
-            name: [item.name || '', Validators.required],
-            startDate: [item.startDate ? new Date(item.startDate).toISOString().split('T')[0] : '', Validators.required],
-            endDate: [item.endDate ? new Date(item.endDate).toISOString().split('T')[0] : '', Validators.required]
-          }));
-        }
-      });
-    } else {
-        // Clear out existing items if data is null or empty
-        while (formArray.length !== 0) {
-            formArray.removeAt(0);
-        }
+  private setFormArrayData(formArray: FormArray, data: any[] | undefined): void {
+    data = data || []; // Ensure data is an array
+    // Clear out existing items
+    while (formArray.length !== 0) {
+      formArray.removeAt(0);
     }
+    // Add new items
+    data.forEach(item => {
+      if (formArray === this.models) {
+        formArray.push(this.fb.group({
+          name: [item.name || '', Validators.required],
+          payout: [item.payout || 0, [Validators.required, Validators.min(0)]],
+          commission: [item.commission || 0, [Validators.required, Validators.min(0)]]
+        }));
+      } else if (formArray === this.shifts) {
+        formArray.push(this.fb.group({
+          name: [item.name || '', Validators.required],
+          multiplier: [item.multiplier || 1, [Validators.required, Validators.min(0)]]
+        }));
+      } else if (formArray === this.periods) {
+        formArray.push(this.fb.group({
+          name: [item.name || '', Validators.required],
+          startDate: [item.startDate ? new Date(item.startDate).toISOString().split('T')[0] : '', Validators.required],
+          endDate: [item.endDate ? new Date(item.endDate).toISOString().split('T')[0] : '', Validators.required]
+        }));
+      }
+    });
   }
 
   save(): void {
     if (this.mspForm.valid) {
-      this.mspSaved.emit(this.mspForm.value);
-      this.activeModal.close(this.mspForm.value);
+      this.mspSaved.emit(this.mspForm.value); // Emit event if someone is listening
+      this.activeModal.close(this.mspForm.value); // Close modal and return data
     } else {
-      console.error('MSP Form is invalid:', this.mspForm.errors);
-      // Optionally, mark all fields as touched to show errors
-      this.mspForm.markAllAsTouched();
+      console.error('MSP Form is invalid:', this.mspForm.value, this.mspForm.errors);
+      this.mspForm.markAllAsTouched(); // Mark all fields to display validation errors
     }
   }
 

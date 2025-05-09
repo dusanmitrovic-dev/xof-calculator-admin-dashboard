@@ -35,70 +35,24 @@
         </c-card>
       </ng-container>
 
-      <!-- Basic Definitions (Models, Shifts, Periods) - ONLY SHOWN FOR FULL EDIT -->
+      <!-- Button to open MSP Edit Modal - ONLY SHOWN FOR FULL EDIT -->
       <ng-container *ngIf="editSection === 'full'">
         <c-card class="mb-3">
           <c-card-header>Basic Definitions (Models, Shifts, Periods)</c-card-header>
-          <c-card-body>
-            <!-- Models -->
-            <div class="mb-3">
-              <label cLabel class="fw-semibold mb-2">Models</label>
-              <div class="d-flex flex-wrap align-items-center border rounded p-2">
-                <span *ngFor="let modelCtrl of models.controls; let i=index" class="badge bg-primary me-2 mb-2 p-2 d-flex align-items-center">
-                  {{ modelCtrl.value }}
-                  <button cButtonClose type="button" class="ms-2" (click)="removeItem(models, i)" [white]="true" title="Remove {{modelCtrl.value}}"></button>
-                </span>
-                <div class="input-group" style="max-width: 200px;">
-                  <input #modelInput cFormControl type="text" placeholder="Add Model" 
-                         (keyup.enter)="handleItemAdd(models, modelInput)" 
-                         (blur)="handleItemAddOnBlur(models, modelInput)"/>
-                  <button cButton type="button" color="secondary" variant="outline" 
-                          (click)="handleItemAdd(models, modelInput)" 
-                          [disabled]="!modelInput.value.trim()">+ Add</button>
-                </div>
-              </div>
-              <div *ngIf="models.invalid && models.touched && models.hasError('required') && editSection === 'full'" class="text-danger small mt-1">At least one model is required.</div>
+          <c-card-body class="text-center">
+            <p class="mb-2">Manage the core payout models, work shifts, and earning periods for this guild.</p>
+            <button cButton type="button" color="info" variant="outline" (click)="openMspSettingsModal()">
+              <svg cIcon name="cilSettings" class="me-2"></svg>Manage Models, Shifts & Periods
+            </button>
+            <!-- Display current MSP counts or a brief summary if desired -->
+            <div class="mt-2 small text-muted">
+                <span class="me-3">Models: {{ currentMspData.models?.length || 0 }}</span>
+                <span class="me-3">Shifts: {{ currentMspData.shifts?.length || 0 }}</span>
+                <span>Periods: {{ currentMspData.periods?.length || 0 }}</span>
             </div>
-
-            <!-- Shifts -->
-            <div class="mb-3">
-              <label cLabel class="fw-semibold mb-2">Shifts</label>
-              <div class="d-flex flex-wrap align-items-center border rounded p-2">
-                <span *ngFor="let shiftCtrl of shifts.controls; let i=index" class="badge bg-info me-2 mb-2 p-2 d-flex align-items-center">
-                  {{ shiftCtrl.value }}
-                  <button cButtonClose type="button" class="ms-2" (click)="removeItem(shifts, i)" [white]="true" title="Remove {{shiftCtrl.value}}"></button>
-                </span>
-                <div class="input-group" style="max-width: 200px;">
-                  <input #shiftInput cFormControl type="text" placeholder="Add Shift" 
-                         (keyup.enter)="handleItemAdd(shifts, shiftInput)" 
-                         (blur)="handleItemAddOnBlur(shifts, shiftInput)"/>
-                  <button cButton type="button" color="secondary" variant="outline" 
-                          (click)="handleItemAdd(shifts, shiftInput)" 
-                          [disabled]="!shiftInput.value.trim()">+ Add</button>
-                </div>
-              </div>
-               <div *ngIf="shifts.invalid && shifts.touched && shifts.hasError('required') && editSection === 'full'" class="text-danger small mt-1">At least one shift is required.</div>
-            </div>
-
-            <!-- Periods -->
-            <div>
-              <label cLabel class="fw-semibold mb-2">Periods</label>
-              <div class="d-flex flex-wrap align-items-center border rounded p-2">
-                <span *ngFor="let periodCtrl of periods.controls; let i=index" class="badge bg-warning text-dark me-2 mb-2 p-2 d-flex align-items-center">
-                  {{ periodCtrl.value }}
-                  <button cButtonClose type="button" class="ms-2" (click)="removeItem(periods, i)" title="Remove {{periodCtrl.value}}"></button>
-                </span>
-                <div class="input-group" style="max-width: 200px;">
-                  <input #periodInput cFormControl type="text" placeholder="Add Period" 
-                         (keyup.enter)="handleItemAdd(periods, periodInput)" 
-                         (blur)="handleItemAddOnBlur(periods, periodInput)"/>
-                  <button cButton type="button" color="secondary" variant="outline" 
-                          (click)="handleItemAdd(periods, periodInput)" 
-                          [disabled]="!periodInput.value.trim()">+ Add</button>
-                </div>
-              </div>
-              <div *ngIf="periods.invalid && periods.touched && periods.hasError('required') && editSection === 'full'" class="text-danger small mt-1">At least one period is required.</div>
-            </div>
+             <div *ngIf="submitAttempted && editSection === 'full' && (!currentMspData.models?.length || !currentMspData.shifts?.length || !currentMspData.periods?.length)" class="text-danger small mt-1">
+                Models, Shifts, and Periods are required. Please configure them using the button above.
+             </div>
           </c-card-body>
         </c-card>
       </ng-container>
@@ -325,7 +279,7 @@
         <button (click)="closeModal()" cButton color="secondary" variant="outline" class="me-2">
             <svg cIcon name="cilBan" size="sm" class="me-1"></svg>Cancel
         </button>
-        <button cButton color="primary" type="submit" (click)="saveChanges()" [disabled]="isLoading || (configForm && configForm.invalid && !configForm.dirty && isEditMode) || (configForm && configForm.invalid && submitAttempted)">
+        <button cButton color="primary" type="submit" (click)="saveChanges()" [disabled]="isLoading || (configForm && configForm.invalid && !configForm.dirty && isEditMode) || (configForm && configForm.invalid && submitAttempted) || (editSection === 'full' && (!currentMspData.models?.length || !currentMspData.shifts?.length || !currentMspData.periods?.length) && submitAttempted)">
             <c-spinner *ngIf="isLoading" component="span" size="sm" aria-hidden="true" class="me-1"></c-spinner>
             <svg *ngIf="!isLoading" cIcon [name]="isEditMode ? 'cilSave' : 'cilPlus'" size="sm" class="me-1"></svg>
             {{ isLoading ? 'Saving...' : (isEditMode ? 'Save Changes' : 'Create Config') }}

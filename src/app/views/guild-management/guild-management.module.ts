@@ -42,13 +42,14 @@ import { IconDirective } from '@coreui/icons-angular';
 @NgModule({
   declarations: [
     GuildConfigListComponent, 
-    GuildConfigEditModalComponent, 
-    EarningEditModalComponent // Declare Earning Modal
+    // GuildConfigEditModalComponent, // Removed as it is standalone
+    EarningEditModalComponent // Declare Earning Modal - Check if it should be standalone too
   ],
   imports: [
     CommonModule, // Provides *ngIf, *ngFor, json pipe, currency pipe, etc.
     ReactiveFormsModule, // For modal forms
     RouterModule.forChild(routes),
+    GuildConfigEditModalComponent, // Imported as it is standalone
     // CoreUI Modules needed by GuildConfigListComponent & its modals
     AlertComponent,
     BadgeComponent,
