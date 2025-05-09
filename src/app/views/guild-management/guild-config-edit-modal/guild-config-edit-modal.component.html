@@ -35,8 +35,8 @@
         </c-card>
       </ng-container>
 
-      <!-- Basic Definitions (Models, Shifts, Periods) -->
-      <ng-container *ngIf="editSection === 'full' || editSection === 'general_info'">
+      <!-- Basic Definitions (Models, Shifts, Periods) - ONLY SHOWN FOR FULL EDIT -->
+      <ng-container *ngIf="editSection === 'full'">
         <c-card class="mb-3">
           <c-card-header>Basic Definitions (Models, Shifts, Periods)</c-card-header>
           <c-card-body>
@@ -57,7 +57,7 @@
                           [disabled]="!modelInput.value.trim()">+ Add</button>
                 </div>
               </div>
-              <div *ngIf="models.invalid && models.touched && models.hasError('required') && (editSection === 'full' || editSection === 'general_info')" class="text-danger small mt-1">At least one model is required.</div>
+              <div *ngIf="models.invalid && models.touched && models.hasError('required') && editSection === 'full'" class="text-danger small mt-1">At least one model is required.</div>
             </div>
 
             <!-- Shifts -->
@@ -77,7 +77,7 @@
                           [disabled]="!shiftInput.value.trim()">+ Add</button>
                 </div>
               </div>
-               <div *ngIf="shifts.invalid && shifts.touched && shifts.hasError('required') && (editSection === 'full' || editSection === 'general_info')" class="text-danger small mt-1">At least one shift is required.</div>
+               <div *ngIf="shifts.invalid && shifts.touched && shifts.hasError('required') && editSection === 'full'" class="text-danger small mt-1">At least one shift is required.</div>
             </div>
 
             <!-- Periods -->
@@ -97,18 +97,19 @@
                           [disabled]="!periodInput.value.trim()">+ Add</button>
                 </div>
               </div>
-              <div *ngIf="periods.invalid && periods.touched && periods.hasError('required') && (editSection === 'full' || editSection === 'general_info')" class="text-danger small mt-1">At least one period is required.</div>
+              <div *ngIf="periods.invalid && periods.touched && periods.hasError('required') && editSection === 'full'" class="text-danger small mt-1">At least one period is required.</div>
             </div>
           </c-card-body>
         </c-card>
       </ng-container>
 
       <!-- Display Settings & Names Card -->
-      <ng-container *ngIf="editSection === 'full' || editSection === 'display_settings'">
+      <ng-container *ngIf="editSection === 'full' || editSection === 'general_info' || editSection === 'display_settings'">
         <c-card class="mb-3">
           <c-card-header>Display Customization</c-card-header>
           <c-card-body formGroupName="display_settings">
-            <c-row class="mb-3">
+            <!-- Agency Name & Bot Name - Shown for 'full' or 'general_info' -->
+            <c-row class="mb-3" *ngIf="editSection === 'full' || editSection === 'general_info'">
               <c-col md="6">
                 <label cLabel for="agency_name" class="fw-semibold">Agency Name</label>
                 <input cFormControl type="text" id="agency_name" formControlName="agency_name" required maxlength="50"
@@ -130,9 +131,10 @@
                 </c-form-feedback>
               </c-col>
             </c-row>
-            <!-- These toggles are primarily for 'display_settings' or 'full' -->
+
+            <!-- Output Settings (Toggles) - Shown for 'full' or 'display_settings' -->
             <ng-container *ngIf="editSection === 'full' || editSection === 'display_settings'">
-              <hr>
+              <hr *ngIf="editSection === 'full'">
               <label class="fw-semibold mb-2">Output Settings</label>
               <c-row>
                 <c-col md="6" class="mb-2">
