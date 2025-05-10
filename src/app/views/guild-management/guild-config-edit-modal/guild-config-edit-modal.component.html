@@ -46,11 +46,11 @@
             </button>
             <!-- Display current MSP counts or a brief summary if desired -->
             <div class="mt-2 small text-muted">
-                <span class="me-3">Models: {{ currentMspData.models?.length || 0 }}</span>
-                <span class="me-3">Shifts: {{ currentMspData.shifts?.length || 0 }}</span>
-                <span>Periods: {{ currentMspData.periods?.length || 0 }}</span>
+                <span class="me-3">Models: {{ currentMspData.models.length || 0 }}</span>
+                <span class="me-3">Shifts: {{ currentMspData.shifts.length || 0 }}</span>
+                <span>Periods: {{ currentMspData.periods.length || 0 }}</span>
             </div>
-             <div *ngIf="submitAttempted && editSection === 'full' && (!currentMspData.models?.length || !currentMspData.shifts?.length || !currentMspData.periods?.length)" class="text-danger small mt-1">
+             <div *ngIf="submitAttempted && editSection === 'full' && (!currentMspData.models.length || !currentMspData.shifts.length || !currentMspData.periods.length)" class="text-danger small mt-1">
                 Models, Shifts, and Periods are required. Please configure them using the button above.
              </div>
           </c-card-body>
@@ -279,7 +279,7 @@
         <button (click)="closeModal()" cButton color="secondary" variant="outline" class="me-2">
             <svg cIcon name="cilBan" size="sm" class="me-1"></svg>Cancel
         </button>
-        <button cButton color="primary" type="submit" (click)="saveChanges()" [disabled]="isLoading || (configForm && configForm.invalid && !configForm.dirty && isEditMode) || (configForm && configForm.invalid && submitAttempted) || (editSection === 'full' && (!currentMspData.models?.length || !currentMspData.shifts?.length || !currentMspData.periods?.length) && submitAttempted)">
+        <button cButton color="primary" type="submit" (click)="saveChanges()" [disabled]="isLoading || (configForm && configForm.invalid && !configForm.dirty && isEditMode) || (configForm && configForm.invalid && submitAttempted) || (editSection === 'full' && (!currentMspData.models.length || !currentMspData.shifts.length || !currentMspData.periods.length) && submitAttempted)">
             <c-spinner *ngIf="isLoading" component="span" size="sm" aria-hidden="true" class="me-1"></c-spinner>
             <svg *ngIf="!isLoading" cIcon [name]="isEditMode ? 'cilSave' : 'cilPlus'" size="sm" class="me-1"></svg>
             {{ isLoading ? 'Saving...' : (isEditMode ? 'Save Changes' : 'Create Config') }}
