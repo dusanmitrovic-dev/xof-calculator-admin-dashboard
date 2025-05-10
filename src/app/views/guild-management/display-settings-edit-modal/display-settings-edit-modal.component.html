@@ -1,0 +1,56 @@
+<div class="modal-header">
+  <h4 class="modal-title">Edit Display Settings</h4>
+  <button type="button" class="btn-close" aria-label="Close" (click)="dismiss()"></button>
+</div>
+<div class="modal-body">
+  <form [formGroup]="displaySettingsForm" (ngSubmit)="save()">
+    <c-row class="mb-3">
+      <c-col sm="8">
+        <label cLabel for="agency_name">Agency Name</label>
+        <input cFormControl id="agency_name" type="text" formControlName="agency_name" />
+        <div *ngIf="displaySettingsForm.get('agency_name')?.invalid && displaySettingsForm.get('agency_name')?.touched" class="text-danger form-text">
+          Agency name is required.
+        </div>
+      </c-col>
+      <c-col sm="4">
+        <label cLabel for="bot_name">Bot Name</label>
+        <input cFormControl id="bot_name" type="text" formControlName="bot_name" />
+        <div *ngIf="displaySettingsForm.get('bot_name')?.invalid && displaySettingsForm.get('bot_name')?.touched" class="text-danger form-text">
+          Bot name is required.
+        </div>
+      </c-col>
+    </c-row>
+
+    <c-row class="mb-3">
+      <c-col sm="12">
+        <c-form-check>
+          <input cFormCheckInput id="ephemeral_responses" type="checkbox" formControlName="ephemeral_responses" />
+          <label cFormCheckLabel for="ephemeral_responses">Use Ephemeral Responses</label>
+        </c-form-check>
+      </c-col>
+    </c-row>
+
+    <c-row class="mb-3">
+      <c-col sm="12">
+        <c-form-check>
+          <input cFormCheckInput id="show_average" type="checkbox" formControlName="show_average" />
+          <label cFormCheckLabel for="show_average">Show Average in Reports</label>
+        </c-form-check>
+      </c-col>
+    </c-row>
+
+    <c-row class="mb-3">
+      <c-col sm="12">
+        <c-form-check>
+          <input cFormCheckInput id="show_ids" type="checkbox" formControlName="show_ids" />
+          <label cFormCheckLabel for="show_ids">Show IDs in Reports</label>
+        </c-form-check>
+      </c-col>
+    </c-row>
+
+  </form>
+</div>
+<div class="modal-footer">
+  <button type="button" class="btn btn-secondary" (click)="dismiss()">Cancel</button>
+  <button type="button" class="btn btn-primary" (click)="save()" [disabled]="!displaySettingsForm.valid">Save Display Settings</button>
+</div>
