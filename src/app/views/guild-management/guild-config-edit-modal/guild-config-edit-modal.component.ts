@@ -1,10 +1,8 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, Output, EventEmitter, OnInit, OnChanges, SimpleChanges, ChangeDetectorRef, Inject } from '@angular/core'; 
+import { Component, Input, Output, EventEmitter, OnInit, OnChanges, SimpleChanges, ChangeDetectorRef } from '@angular/core'; 
 import { AbstractControl, FormBuilder, FormGroup, FormArray, Validators, ReactiveFormsModule, FormControl } from '@angular/forms';
 import { Observable } from 'rxjs';
-import { GuildConfigService, GuildConfig, BonusRule, CommissionSettings, DisplaySettings, Model, Shift, Period } from '../../../services/guild-config.service';
-import { NgbModal, NgbModalModule } from '@ng-bootstrap/ng-bootstrap'; // Ensure NgbModalModule is imported if needed at component level for providers
-import { GuildConfigMspEditModalComponent } from '../guild-config-msp-edit-modal/guild-config-msp-edit-modal.component';
+import { GuildConfigService, GuildConfig, BonusRule, CommissionSettings, DisplaySettings } from '../../../services/guild-config.service';
 
 import {
   AlertModule,
@@ -12,18 +10,11 @@ import {
   CardModule, 
   FormModule,
   GridModule,
-  ModalModule as CoreUIModalModule, // Aliased to avoid conflict
+  ModalModule,
   SpinnerModule,
   UtilitiesModule
 } from '@coreui/angular';
 import { IconDirective } from '@coreui/icons-angular'; 
-
-// Interface for the data returned by the MSP modal
-interface MspModalResult {
-  models: Model[];
-  shifts: Shift[];
-  periods: Period[];
-}
 
 @Component({
   selector: 'app-guild-config-edit-modal',
@@ -33,7 +24,7 @@ interface MspModalResult {
   imports: [
     CommonModule,
     ReactiveFormsModule,
-    CoreUIModalModule, // For CoreUI modal structure
+    ModalModule,
     ButtonModule,
     FormModule,
     SpinnerModule,
@@ -41,14 +32,13 @@ interface MspModalResult {
     GridModule,
     UtilitiesModule,
     CardModule, 
-    IconDirective,
-    NgbModalModule // Provides NgbModal service if not provided in root
+    IconDirective 
   ]
 })
 export class GuildConfigEditModalComponent implements OnInit, OnChanges {
 
   @Input() visible: boolean = false;
-  @Input() guildConfig: GuildConfig | null = null; 
+  @Input() guildConfig: GuildConfig | null = null;
   @Input() guildId: string | null = null;
   @Input() editSection: string = 'full'; 
   @Output() visibleChange = new EventEmitter<boolean>();
@@ -60,12 +50,6 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
   title: string = 'Create Guild Configuration';
   submitAttempted: boolean = false;
 
-  private currentMspData: MspModalResult = {
-    models: [],
-    shifts: [],
-    periods: []
-  };
-
   get isEditMode(): boolean {
     return !!this.guildConfig;
   }
@@ -75,9 +59,7 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
   constructor(
     private fb: FormBuilder,
     private guildConfigService: GuildConfigService,
-    private changeDetectorRef: ChangeDetectorRef,
-    // @Inject(NgbModal) private modalService: NgbModal // This is how you might do it if tree-shaking is too aggressive
-    private modalService: NgbModal // Standard injection
+    private changeDetectorRef: ChangeDetectorRef
   ) { }
 
   ngOnInit(): void {
@@ -96,14 +78,30 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
 
   private setConditionalValidators(): void {
     const guildIdCtrl = this.configForm.get('guild_id');
+    const modelsCtrl = this.configForm.get('models');
+    const shiftsCtrl = this.configForm.get('shifts');
+    const periodsCtrl = this.configForm.get('periods');
+
     guildIdCtrl?.clearValidators();
+    modelsCtrl?.clearValidators();
+    shiftsCtrl?.clearValidators();
+    periodsCtrl?.clearValidators();
+
     guildIdCtrl?.setValidators([Validators.pattern('^[0-9]+$')]);
 
     if (!this.isEditMode || this.editSection === 'full') { 
       guildIdCtrl?.addValidators(Validators.required);
+      if (this.editSection === 'full') {
+        modelsCtrl?.setValidators(Validators.required);
+        shiftsCtrl?.setValidators(Validators.required);
+        periodsCtrl?.setValidators(Validators.required);
+      }
     }
     
     guildIdCtrl?.updateValueAndValidity();
+    modelsCtrl?.updateValueAndValidity();
+    shiftsCtrl?.updateValueAndValidity();
+    periodsCtrl?.updateValueAndValidity();
     this.configForm.get('display_settings.agency_name')?.updateValueAndValidity();
     this.configForm.get('display_settings.bot_name')?.updateValueAndValidity();
   }
@@ -122,11 +120,6 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
 
     if (this.isEditMode && this.guildConfig) {
       this.patchForm(this.guildConfig);
-      this.currentMspData = {
-        models: JSON.parse(JSON.stringify(this.guildConfig.models || [])),
-        shifts: JSON.parse(JSON.stringify(this.guildConfig.shifts || [])),
-        periods: JSON.parse(JSON.stringify(this.guildConfig.periods || []))
-      };
       this.configForm.get('guild_id')?.disable();
       let sectionTitlePart = 'Guild Configuration';
       switch(this.editSection) {
@@ -141,7 +134,6 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
     } else {
       this.title = 'Create New Guild Configuration';
       this.editSection = 'full'; 
-      this.currentMspData = { models: [], shifts: [], periods: [] }; 
       this.configForm.get('guild_id')?.enable();
       this.configForm.get('guild_id')?.setValue(this.guildId || currentRawValue.guild_id || ''); 
       this.configForm.get('display_settings')?.patchValue({
@@ -151,6 +143,9 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
         show_ids: true,
         bot_name: 'Shift Calculator'
       });
+      this.models.clear();
+      this.shifts.clear();
+      this.periods.clear();
       this.bonus_rules.clear();
       this.clearCommissionControls();
     }
@@ -161,6 +156,9 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
   private buildForm(): FormGroup {
     return this.fb.group({
       guild_id: [{ value: '', disabled: false }, [Validators.pattern('^[0-9]+$')]],
+      models: this.fb.array([]),
+      shifts: this.fb.array([]),
+      periods: this.fb.array([]),
       bonus_rules: this.fb.array([]),
       display_settings: this.buildDisplaySettingsForm(),
       commission_settings: this.buildCommissionSettingsForm(),
@@ -183,32 +181,34 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
       });
   }
 
- private patchForm(config: GuildConfig): void {
+  private patchForm(config: GuildConfig): void {
     this.configForm.patchValue({ // Patch top-level controls
       guild_id: config.guild_id,
     });
-    this.configForm.get('guild_id')?.disable(); 
-<<<<<<< HEAD
-=======
+    this.configForm.get('guild_id')?.disable();
 
-    // Explicitly patch the display_settings FormGroup
     const displaySettingsForm = this.configForm.get('display_settings');
     if (displaySettingsForm) {
-      if (config.display_settings) {
-        displaySettingsForm.patchValue(config.display_settings);
-      } else {
-        // If config.display_settings is null or undefined,
-        // reset to defaults from buildDisplaySettingsForm.
-        displaySettingsForm.reset(this.buildDisplaySettingsForm().getRawValue());
-      }
+      // Get the default structure and values
+      const defaultDisplayValues = this.buildDisplaySettingsForm().getRawValue();
+      
+      // Merge: Start with defaults, then override with whatever is in config.display_settings
+      displaySettingsForm.patchValue({
+        ...defaultDisplayValues,
+        ...(config.display_settings || {}) // If config.display_settings is null/undefined, spread an empty object
+      });
     }
 
     this.setFormArrayData(this.models, config.models);
     this.setFormArrayData(this.shifts, config.shifts);
     this.setFormArrayData(this.periods, config.periods);
->>>>>>> 3d8fcd2 (update stable)
     this.patchBonusRules(config.bonus_rules);
     this.patchCommissionSettings(config.commission_settings);
+  }
+
+  private setFormArrayData(formArray: FormArray, data: string[] | undefined): void {
+      formArray.clear();
+      (data || []).forEach(item => formArray.push(this.fb.control(item, Validators.required)));
   }
 
   private patchBonusRules(rules: BonusRule[] | undefined): void {
@@ -262,9 +262,36 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
   }
 
   get guild_id_control(): FormControl { return this.configForm.get('guild_id') as FormControl; }
+  get models(): FormArray { return this.configForm.get('models') as FormArray; }
+  get shifts(): FormArray { return this.configForm.get('shifts') as FormArray; }
+  get periods(): FormArray { return this.configForm.get('periods') as FormArray; }
   get bonus_rules(): FormArray { return this.configForm.get('bonus_rules') as FormArray; }
   get commissionRoles(): FormGroup { return this.configForm.get('commission_settings.roles') as FormGroup; }
   get commissionUsers(): FormGroup { return this.configForm.get('commission_settings.users') as FormGroup; }
+
+  addItemManually(array: FormArray, value: string): void {
+    if (value) {
+        array.push(this.fb.control(value, Validators.required));
+        array.markAsDirty();
+        array.updateValueAndValidity();
+    }
+  }
+
+  handleItemAdd(array: FormArray, input: HTMLInputElement): void {
+    const value = input.value.trim();
+    if (value) {
+      this.addItemManually(array, value);
+      input.value = '';
+    }
+  }
+
+  handleItemAddOnBlur(array: FormArray, input: HTMLInputElement): void {
+    const value = input.value.trim();
+    if (value) {
+      this.addItemManually(array, value);
+      input.value = ''; 
+    }
+  }
 
   removeItem(array: FormArray, index: number): void {
     array.removeAt(index);
@@ -284,32 +311,6 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
     this.bonus_rules.markAsDirty();
   }
 
-  openMspSettingsModal(): void {
-    const modalRef = this.modalService.open(GuildConfigMspEditModalComponent, {
-      size: 'lg',
-      centered: true,
-      backdrop: 'static',
-      keyboard: false
-    });
-
-    modalRef.componentInstance.guildId = this.configForm.get('guild_id')?.value || this.guildId;
-    modalRef.componentInstance.currentModels = JSON.parse(JSON.stringify(this.currentMspData.models));
-    modalRef.componentInstance.currentShifts = JSON.parse(JSON.stringify(this.currentMspData.shifts));
-    modalRef.componentInstance.currentPeriods = JSON.parse(JSON.stringify(this.currentMspData.periods));
-
-    modalRef.result.then(
-      (result: MspModalResult) => {
-        this.currentMspData.models = result.models;
-        this.currentMspData.shifts = result.shifts;
-        this.currentMspData.periods = result.periods;
-        this.changeDetectorRef.detectChanges(); 
-      },
-      (reason: any) => {
-        console.log('MSP Modal dismissed:', reason);
-      }
-    );
-  }
-
   saveChanges(): void {
     this.submitAttempted = true; 
     this.configForm.markAllAsTouched();
@@ -318,12 +319,6 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
     if (this.configForm.invalid) {
       this.displayFormErrors();
       return;
-    }
-
-    if (this.editSection === 'full' && (!this.currentMspData.models.length || !this.currentMspData.shifts.length || !this.currentMspData.periods.length)) {
-        this.errorMessage = 'Models, Shifts, and Periods are required for a full configuration. Please add them via the MSP settings.';
-        this.isLoading = false;
-        return;
     }
 
     this.isLoading = true;
@@ -344,9 +339,9 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
     };
 
     if (this.editSection === 'full') {
-      saveData.models = this.currentMspData.models;
-      saveData.shifts = this.currentMspData.shifts;
-      saveData.periods = this.currentMspData.periods;
+      saveData.models = formValue.models || [];
+      saveData.shifts = formValue.shifts || [];
+      saveData.periods = formValue.periods || [];
       saveData.display_settings = formValue.display_settings || defaultDisplaySettings;
       saveData.bonus_rules = (formValue.bonus_rules || []).map((rule: any) => ({ from: Number(rule.from), to: Number(rule.to), amount: Number(rule.amount) }));
       saveData.commission_settings = this.prepareCommissionSettingsPayload(formValue.commission_settings);
@@ -370,7 +365,7 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
     } else if (this.editSection === 'commission_settings_roles') {
         const formCommRoles = formValue.commission_settings.roles;
         saveData.commission_settings = {
-            ...(this.guildConfig?.commission_settings || { roles: {}, users: {} }), 
+            ...(this.guildConfig?.commission_settings || { roles: {}, users: {} }), // Preserve users and other parts
             roles: formCommRoles ? 
                    Object.fromEntries(Object.entries(formCommRoles).map(([k, v]: [string, any]) => [k, { commission_percentage: Number(v.commission_percentage) }])) 
                    : {}
@@ -378,7 +373,7 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
     } else if (this.editSection === 'commission_settings_users') {
         const formCommUsers = formValue.commission_settings.users;
         saveData.commission_settings = {
-            ...(this.guildConfig?.commission_settings || { roles: {}, users: {} }), 
+            ...(this.guildConfig?.commission_settings || { roles: {}, users: {} }), // Preserve roles and other parts
             users: formCommUsers ? 
                    Object.fromEntries(Object.entries(formCommUsers).map(([k, v]: [string, any]) => {
                        const userVal: any = { override_role: v.override_role ?? false };
@@ -396,9 +391,9 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
     if (!this.isEditMode) {
       const createPayload: GuildConfig = {
         guild_id: saveData.guild_id!,
-        models: this.currentMspData.models,
-        shifts: this.currentMspData.shifts,
-        periods: this.currentMspData.periods,
+        models: saveData.models || [],
+        shifts: saveData.shifts || [],
+        periods: saveData.periods || [],
         bonus_rules: saveData.bonus_rules || [],
         display_settings: saveData.display_settings || defaultDisplaySettings,
         commission_settings: saveData.commission_settings || {roles: {}, users: {}}
@@ -411,11 +406,8 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
         return;
       }
       const updatePayload: GuildConfig = {
-        ...(this.guildConfig as GuildConfig), 
-        ...saveData,                       
-        models: this.currentMspData.models, 
-        shifts: this.currentMspData.shifts,
-        periods: this.currentMspData.periods,
+        ...(this.guildConfig as GuildConfig),
+        ...saveData,
         guild_id: this.guildId
       };
       if (saveData._id) updatePayload._id = saveData._id;
@@ -426,12 +418,6 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
     saveObservable.subscribe({
       next: (savedConfig: GuildConfig) => {
         this.isLoading = false;
-        this.guildConfig = { ...savedConfig }; 
-        this.currentMspData = { 
-            models: JSON.parse(JSON.stringify(savedConfig.models || [])),
-            shifts: JSON.parse(JSON.stringify(savedConfig.shifts || [])),
-            periods: JSON.parse(JSON.stringify(savedConfig.periods || []))
-        };
         this.configSaved.emit(savedConfig);
         this.closeModal(false);
       },
@@ -518,24 +504,22 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
     
     if (this.configForm) {
         const wasEditMode = this.isEditMode;
+        // Store a deep copy of potentially complex objects if they are to be restored
         const originalDisplaySettings = this.isEditMode && this.guildConfig?.display_settings ? JSON.parse(JSON.stringify(this.guildConfig.display_settings)) : null;
+        const originalModels = this.isEditMode && this.guildConfig ? [...this.guildConfig.models] : [];
+        const originalShifts = this.isEditMode && this.guildConfig ? [...this.guildConfig.shifts] : [];
+        const originalPeriods = this.isEditMode && this.guildConfig ? [...this.guildConfig.periods] : [];
         const originalBonusRules = this.isEditMode && this.guildConfig?.bonus_rules ? JSON.parse(JSON.stringify(this.guildConfig.bonus_rules)) : [];
         const originalCommissionSettings = this.isEditMode && this.guildConfig?.commission_settings ? JSON.parse(JSON.stringify(this.guildConfig.commission_settings)) : { roles: {}, users: {} };
-
-        this.currentMspData = {
-            models: this.guildConfig && this.guildConfig.models ? JSON.parse(JSON.stringify(this.guildConfig.models)) : [],
-            shifts: this.guildConfig && this.guildConfig.shifts ? JSON.parse(JSON.stringify(this.guildConfig.shifts)) : [],
-            periods: this.guildConfig && this.guildConfig.periods ? JSON.parse(JSON.stringify(this.guildConfig.periods)) : []
-        };
 
         this.configForm.reset();
 
         if (wasEditMode && this.guildConfig) {
-            this.patchForm(this.guildConfig); 
+            this.patchForm(this.guildConfig); // repopulate with original data for this edit session
             this.configForm.get('guild_id')?.disable();
-        } else { 
+        } else { // Create mode defaults
             this.configForm.get('guild_id')?.enable();
-            this.configForm.get('guild_id')?.setValue(this.guildConfig?.guild_id || this.guildId || ''); 
+            this.configForm.get('guild_id')?.setValue(this.guildConfig?.guild_id || ''); // Use guildConfig.guild_id if somehow available, else empty
             this.configForm.get('display_settings')?.patchValue(originalDisplaySettings || {
                 ephemeral_responses: false,
                 show_average: true,
@@ -543,6 +527,9 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
                 show_ids: true,
                 bot_name: 'Shift Calculator'
             });
+            this.setFormArrayData(this.models, originalModels);
+            this.setFormArrayData(this.shifts, originalShifts);
+            this.setFormArrayData(this.periods, originalPeriods);
             this.patchBonusRules(originalBonusRules);
             this.patchCommissionSettings(originalCommissionSettings);
         }
