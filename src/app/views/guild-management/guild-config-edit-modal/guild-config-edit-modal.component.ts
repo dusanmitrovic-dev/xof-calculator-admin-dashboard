@@ -184,11 +184,29 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
   }
 
  private patchForm(config: GuildConfig): void {
-    this.configForm.patchValue({
+    this.configForm.patchValue({ // Patch top-level controls
       guild_id: config.guild_id,
-      display_settings: config.display_settings || {},
     });
     this.configForm.get('guild_id')?.disable(); 
+<<<<<<< HEAD
+=======
+
+    // Explicitly patch the display_settings FormGroup
+    const displaySettingsForm = this.configForm.get('display_settings');
+    if (displaySettingsForm) {
+      if (config.display_settings) {
+        displaySettingsForm.patchValue(config.display_settings);
+      } else {
+        // If config.display_settings is null or undefined,
+        // reset to defaults from buildDisplaySettingsForm.
+        displaySettingsForm.reset(this.buildDisplaySettingsForm().getRawValue());
+      }
+    }
+
+    this.setFormArrayData(this.models, config.models);
+    this.setFormArrayData(this.shifts, config.shifts);
+    this.setFormArrayData(this.periods, config.periods);
+>>>>>>> 3d8fcd2 (update stable)
     this.patchBonusRules(config.bonus_rules);
     this.patchCommissionSettings(config.commission_settings);
   }
