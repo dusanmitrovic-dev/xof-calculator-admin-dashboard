@@ -123,6 +123,14 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
     this.currentMspData = { models: [], shifts: [], periods: [] }; // Reset MSP data
 
     if (this.isEditMode && this.guildConfig) {
+      // Explicitly patch display settings if in 'general_info' edit mode right after reset
+      if (this.editSection === 'general_info' && this.guildConfig.display_settings) {
+        this.configForm.get('display_settings')?.patchValue({
+          agency_name: this.guildConfig.display_settings.agency_name,
+          bot_name: this.guildConfig.display_settings.bot_name
+        });
+      }
+      // Then call patchForm for the rest of the config data
       this.patchForm(this.guildConfig);
       this.configForm.get('guild_id')?.disable();
       let sectionTitlePart = 'Guild Configuration';
@@ -382,9 +390,9 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
       saveData.bonus_rules = (formValue.bonus_rules || []).map((rule: any) => ({ from: Number(rule.from), to: Number(rule.to), amount: Number(rule.amount) }));
       saveData.commission_settings = this.prepareCommissionSettingsPayload(formValue.commission_settings);
     } else if (this.editSection === 'general_info') {
-      const originalDisplay = this.guildConfig?.display_settings || defaultDisplaySettings;
+      // When saving general_info, take the values from the form
       saveData.display_settings = {
-        ...originalDisplay,
+        ...(this.guildConfig?.display_settings || defaultDisplaySettings), // Start with existing or defaults
         agency_name: formValue.display_settings.agency_name,
         bot_name: formValue.display_settings.bot_name
       };
@@ -570,6 +578,14 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
         this.configForm.reset();
 
         if (wasEditMode && originalGuildConfig) {
+             // Explicitly patch display settings if in 'general_info' edit mode right after reset
+            if (this.editSection === 'general_info' && originalGuildConfig.display_settings) {
+              this.configForm.get('display_settings')?.patchValue({
+                agency_name: originalGuildConfig.display_settings.agency_name,
+                bot_name: originalGuildConfig.display_settings.bot_name
+              });
+            }
+            // Then call patchForm for the rest of the config data
             this.patchForm(originalGuildConfig); 
             this.configForm.get('guild_id')?.disable();
         } else { 
