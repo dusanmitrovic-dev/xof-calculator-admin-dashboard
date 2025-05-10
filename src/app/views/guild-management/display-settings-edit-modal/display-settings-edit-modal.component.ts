@@ -11,7 +11,7 @@ import {
   CardModule,
   ModalModule as CoreUIModalModule
 } from '@coreui/angular';
-import { IconDirective } from '@coreui/icons-angular';
+// import { IconDirective } from '@coreui/icons-angular'; // Removed unused import
 
 export interface DisplaySettings {
   ephemeral_responses: boolean;
@@ -24,7 +24,7 @@ export interface DisplaySettings {
 @Component({
   selector: 'app-display-settings-edit-modal',
   templateUrl: './display-settings-edit-modal.component.html',
-  // styleUrls: ['./display-settings-edit-modal.component.scss'], // We'll create this next
+  // styleUrls: ['./display-settings-edit-modal.component.scss'],
   standalone: true,
   imports: [
     CommonModule,
@@ -34,8 +34,8 @@ export interface DisplaySettings {
     FormModule,
     GridModule,
     CardModule,
-    CoreUIModalModule,
-    IconDirective
+    CoreUIModalModule
+    // IconDirective removed from imports array
   ]
 })
 export class DisplaySettingsEditModalComponent implements OnInit {
