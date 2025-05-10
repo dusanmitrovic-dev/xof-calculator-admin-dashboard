@@ -40,7 +40,6 @@
     "@ng-bootstrap/ng-bootstrap": "^18.0.0",
     "@types/jwt-decode": "^2.2.1",
     "bcryptjs": "^3.0.2",
-    "bootstrap": "^5.3.6",
     "chart.js": "^4.4.8",
     "jsonwebtoken": "^9.0.2",
     "jwt-decode": "^4.0.0",
