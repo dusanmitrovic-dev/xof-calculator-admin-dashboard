@@ -115,21 +115,20 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
     this.isLoading = false;
     this.submitAttempted = false;
 
+    // It's crucial that buildForm() is called *before* this.guildConfig is used by it in ngOnInit.
+    // If guildConfig is already present during ngOnInit, buildForm will use it.
+    // If guildConfig arrives later (via ngOnChanges), patchForm will handle populating the existing form.
     if (!this.configForm) {
-        this.configForm = this.buildForm();
+        this.configForm = this.buildForm(); // buildForm now uses this.guildConfig if available
     }
 
-    // Reset the form before populating it with data
-    this.configForm.reset();
+    // Reset the form before populating it with data, especially if guildConfig was not available at build time.
+    this.configForm.reset(); 
     this.currentMspData = { models: [], shifts: [], periods: [] }; // Reset MSP data
 
     if (this.isEditMode && this.guildConfig) {
-      // Store original config for later reference
-      this.originalConfig = JSON.parse(JSON.stringify(this.guildConfig));
-      
-      // Patch all the form with existing data - this ensures we start with real values
-      this.patchForm(this.guildConfig);
-      
+      this.originalConfig = JSON.parse(JSON.stringify(this.guildConfig)); // Deep copy
+      this.patchForm(this.guildConfig); // Apply data to the form
       this.configForm.get('guild_id')?.disable();
       let sectionTitlePart = 'Guild Configuration';
       switch(this.editSection) {
@@ -147,12 +146,14 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
       this.originalConfig = null;
       this.configForm.get('guild_id')?.enable();
       this.configForm.get('guild_id')?.setValue(this.guildId || '');
+      
+      // Set default values for a new configuration
       this.configForm.get('display_settings')?.patchValue({
         ephemeral_responses: false,
         show_average: true,
-        agency_name: 'Agency2',
+        agency_name: 'Agency', // Default for new config
         show_ids: true,
-        bot_name: 'Shift Calculator'
+        bot_name: 'Shift Calculator' // Default for new config
       });
       this.models.clear();
       this.shifts.clear();
@@ -165,27 +166,42 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
   }
 
   private buildForm(): FormGroup {
+    const initialGuildId = this.guildConfig?.guild_id || '';
+    const initialModels = this.guildConfig?.models?.map(m => this.fb.control(m.name, Validators.required)) || [];
+    const initialShifts = this.guildConfig?.shifts?.map(s => this.fb.control(s.name, Validators.required)) || [];
+    const initialPeriods = this.guildConfig?.periods?.map(p => this.fb.control(p.name, Validators.required)) || [];
+    const initialBonusRules = this.guildConfig?.bonus_rules?.map(rule => 
+        this.fb.group({
+            from: [rule.from, [Validators.required, Validators.min(0)]],
+            to: [rule.to, [Validators.required, Validators.min(0)]],
+            amount: [rule.amount, [Validators.required, Validators.min(0)]]
+        }, { validators: this.bonusRuleValidator })
+    ) || [];
+
     return this.fb.group({
-      guild_id: [{ value: '', disabled: false }, [Validators.pattern('^[0-9]+$')]],
-      models: this.fb.array([]), // FormArray for strings (e.g., names)
-      shifts: this.fb.array([]), // FormArray for strings
-      periods: this.fb.array([]), // FormArray for strings
-      bonus_rules: this.fb.array([]),
+      guild_id: [{ value: initialGuildId, disabled: !!this.guildConfig }, [Validators.pattern('^[0-9]+$')]],
+      models: this.fb.array(initialModels), 
+      shifts: this.fb.array(initialShifts),
+      periods: this.fb.array(initialPeriods),
+      bonus_rules: this.fb.array(initialBonusRules),
       display_settings: this.buildDisplaySettingsForm(),
       commission_settings: this.buildCommissionSettingsForm(),
     });
   }
 
   private buildDisplaySettingsForm(): FormGroup {
+      // Initial values for display settings come from guildConfig if available, or defaults.
+      const ds = this.guildConfig?.display_settings;
       return this.fb.group({
-          ephemeral_responses: [this.guildConfig?.display_settings.ephemeral_responses, Validators.required],
-          show_average: [this.guildConfig?.display_settings.show_average, Validators.required],
-          agency_name: [this.guildConfig?.display_settings.agency_name, [Validators.required, Validators.maxLength(50)]],
-          show_ids: [this.guildConfig?.display_settings.show_ids, Validators.required],
-          bot_name: [this.guildConfig?.display_settings.bot_name, [Validators.required, Validators.maxLength(50)]]
+          ephemeral_responses: [ds?.ephemeral_responses ?? false, Validators.required],
+          show_average: [ds?.show_average ?? true, Validators.required],
+          agency_name: [ds?.agency_name ?? 'Agency', [Validators.required, Validators.maxLength(50)]],
+          show_ids: [ds?.show_ids ?? true, Validators.required],
+          bot_name: [ds?.bot_name ?? 'Shift Calculator', [Validators.required, Validators.maxLength(50)]]
       });
   }
   private buildCommissionSettingsForm(): FormGroup {
+      // Commission settings are more complex and typically patched in patchForm
       return this.fb.group({
           roles: this.fb.group({}),
           users: this.fb.group({})
@@ -193,43 +209,43 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
   }
 
   private patchForm(config: GuildConfig): void {
-    this.configForm.patchValue({ // Patch top-level controls
-      guild_id: config.guild_id,
-    });
-    this.configForm.get('guild_id')?.disable();
+    // guild_id is set in buildForm and disabled if in edit mode, so no need to patch here.
+    // However, if the form was built without guildConfig, ensure guild_id is patched.
+    if (!this.configForm.get('guild_id')?.value) {
+        this.configForm.get('guild_id')?.patchValue(config.guild_id);
+    }
+    if (this.isEditMode) {
+        this.configForm.get('guild_id')?.disable();
+    }
 
     const displaySettingsForm = this.configForm.get('display_settings');
     if (displaySettingsForm && config.display_settings) {
-      // Use real display settings from database instead of merging with defaults
       displaySettingsForm.patchValue(config.display_settings);
     }
 
-    // Populate currentMspData for template display
     this.currentMspData = {
         models: config.models || [],
         shifts: config.shifts || [],
         periods: config.periods || [],
     };
 
-    // Populate FormArrays with string names for editing
+    // FormArrays are now initialized in buildForm if guildConfig is present.
+    // If guildConfig was not present at buildForm, or to ensure consistency, we can still call these.
     this.setFormArrayData(this.models, config.models);
     this.setFormArrayData(this.shifts, config.shifts);
     this.setFormArrayData(this.periods, config.periods);
-    
     this.patchBonusRules(config.bonus_rules);
+    
     this.patchCommissionSettings(config.commission_settings);
   }
 
-  // Assuming Model, Shift, Period types have a 'name' property
-  private setFormArrayData(formArray: FormArray, data: { name: string }[] | string[] | undefined): void {
+  private setFormArrayData(formArray: FormArray, data: { name: string }[] | undefined): void {
       formArray.clear();
       (data || []).forEach(item => {
-          if (typeof item === 'string') {
-            formArray.push(this.fb.control(item, Validators.required));
-          } else if (item && typeof item.name === 'string') { // Check if item and item.name exist
+          // Assuming item is always of type { name: string } as per Model, Shift, Period definitions
+          if (item && typeof item.name === 'string') { 
             formArray.push(this.fb.control(item.name, Validators.required));
           }
-          // Add else if or error handling if items are not strings or {name: string}
       });
   }
 
@@ -367,7 +383,7 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
     const defaultDisplaySettings: DisplaySettings = {
       ephemeral_responses: false,
       show_average: true,
-      agency_name: 'Agency4',
+      agency_name: 'Agency',
       show_ids: true,
       bot_name: 'Shift Calculator'
     };
@@ -605,6 +621,20 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
       this.bonus_rules.clear();
       this.clearCommissionControls();
       
+      // Re-initialize display_settings to defaults after reset if not in edit mode or no guildConfig
+      if (!this.isEditMode || !this.guildConfig) {
+        this.configForm.get('display_settings')?.patchValue({
+            ephemeral_responses: false,
+            show_average: true,
+            agency_name: 'Agency',
+            show_ids: true,
+            bot_name: 'Shift Calculator'
+        });
+      } else if (this.guildConfig && this.guildConfig.display_settings) {
+        // If in edit mode and guildConfig is available, patch with those display_settings
+        this.configForm.get('display_settings')?.patchValue(this.guildConfig.display_settings);
+      }
+
       this.setConditionalValidators();
     }
   }
