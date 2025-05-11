@@ -51,10 +51,10 @@ export class DisplaySettingsEditModalComponent implements OnInit {
 
   ngOnInit(): void {
     this.displaySettingsForm = this.fb.group({
-      ephemeral_responses: [this.currentDisplaySettings?.ephemeral_responses || false, Validators.required],
-      show_average: [this.currentDisplaySettings?.show_average || true, Validators.required],
+      ephemeral_responses: [this.currentDisplaySettings?.ephemeral_responses ?? false, Validators.required],
+      show_average: [this.currentDisplaySettings?.show_average ?? true, Validators.required],
       agency_name: [this.currentDisplaySettings?.agency_name || 'Agency', Validators.required],
-      show_ids: [this.currentDisplaySettings?.show_ids || true, Validators.required],
+      show_ids: [this.currentDisplaySettings?.show_ids ?? true, Validators.required],
       bot_name: [this.currentDisplaySettings?.bot_name || 'Shift Calculator', Validators.required]
     });
   }
