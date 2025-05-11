@@ -6,181 +6,193 @@
     </button>
   </c-modal-header>
   <c-modal-body>
-    <c-alert color="danger" *ngIf="errorMessage" class="mb-3">
+    <c-alert color="danger" *ngIf="errorMessage && !isEditingDisplaySettingsSubFlow" class="mb-3">
       {{ errorMessage }}
     </c-alert>
 
-    <form *ngIf="configForm" [formGroup]="configForm" (ngSubmit)="saveChanges()" novalidate>
+    <!-- Main form content, hidden if in display settings sub-flow -->
+    <ng-container *ngIf="!isEditingDisplaySettingsSubFlow">
+      <form *ngIf="configForm" [formGroup]="configForm" (ngSubmit)="saveChanges()" novalidate>
 
-      <!-- Guild ID -->
-      <ng-container *ngIf="editSection === 'full' || isEditMode">
-        <c-card class="mb-3">
-          <c-card-header>Guild Identification</c-card-header>
-          <c-card-body>
-            <div class="mb-0" *ngIf="!isEditMode && editSection === 'full'">
-              <label cLabel for="guild_id" class="fw-semibold">Guild ID</label>
-              <input cFormControl type="text" id="guild_id" formControlName="guild_id" required
-                     placeholder="Enter Discord Guild ID"
-                     [class.is-invalid]="guild_id_control.invalid && (guild_id_control.dirty || guild_id_control.touched)">
-              <c-form-feedback [valid]="false" *ngIf="guild_id_control.invalid && (guild_id_control.dirty || guild_id_control.touched)">
-                <div *ngIf="guild_id_control.hasError('required')">Guild ID is required.</div>
-                <div *ngIf="guild_id_control.hasError('pattern')">Guild ID must be a sequence of numbers.</div>
-              </c-form-feedback>
-            </div>
-            <div class="mb-0" *ngIf="isEditMode && guildConfig">
-              <label cLabel class="fw-semibold">Guild ID</label>
-              <input cFormControl type="text" [value]="guildConfig.guild_id" readonly disabled>
-            </div>
-          </c-card-body>
-        </c-card>
-      </ng-container>
-
-      <!-- Button to open MSP Edit Modal -->
-      <ng-container *ngIf="editSection === 'full'">
-        <c-card class="mb-3">
-          <c-card-header>Basic Definitions (Models, Shifts, Periods)</c-card-header>
-          <c-card-body class="text-center">
-            <p class="mb-2">Manage the core payout models, work shifts, and earning periods.</p>
-            <button cButton type="button" color="info" variant="outline" (click)="openMspSettingsModal()">
-              <svg cIcon name="cilSettings" class="me-2"></svg>Manage Models, Shifts & Periods
-            </button>
-            <div class="mt-2 small text-muted">
-                <span class="me-3">Models: {{ currentMspData.models.length || 0 }}</span>
-                <span class="me-3">Shifts: {{ currentMspData.shifts.length || 0 }}</span>
-                <span>Periods: {{ currentMspData.periods.length || 0 }}</span>
-            </div>
-             <div *ngIf="submitAttempted && editSection === 'full' && (!currentMspData.models.length || !currentMspData.shifts.length || !currentMspData.periods.length)" class="text-danger small mt-1">
-                Models, Shifts, and Periods are required. Please configure them.
-             </div>
-          </c-card-body>
-        </c-card>
-      </ng-container>
-      
-      <!-- Button to open Display Settings Modal -->
-      <ng-container *ngIf="editSection === 'full'">
-        <c-card class="mb-3">
-          <c-card-header>Display & Bot Customization</c-card-header>
-          <c-card-body class="text-center">
-            <p class="mb-2">Customize bot name, agency name, and how information is displayed.</p>
-            <button cButton type="button" color="info" variant="outline" (click)="openDisplaySettingsModal()">
-              <svg cIcon name="cilPaint" class="me-2"></svg>Edit Display Settings
-            </button>
-            <div *ngIf="currentDisplaySettings" class="mt-2 small text-muted">
-              <p class="mb-1">
-                Current Bot: <strong>{{ currentDisplaySettings.bot_name || 'N/A' }}</strong> for Agency: <strong>{{ currentDisplaySettings.agency_name || 'N/A' }}</strong>
-              </p>
-              <p class="mb-0">
-                Ephemeral: {{ currentDisplaySettings.ephemeral_responses ? 'Yes' : 'No' }} | 
-                Show Average: {{ currentDisplaySettings.show_average ? 'Yes' : 'No' }} | 
-                Show IDs: {{ currentDisplaySettings.show_ids ? 'Yes' : 'No' }}
-              </p>
-            </div>
-          </c-card-body>
-        </c-card>
-      </ng-container>
-
-      <!-- Bonus Rules Card -->
-      <ng-container *ngIf="editSection === 'full' || editSection === 'bonus_rules'">
-        <c-card class="mb-3">
-          <c-card-header>
-            Bonus Rules
-            <button cButton type="button" color="success" variant="outline" size="sm" class="float-end" (click)="addBonusRule()">
-              <svg cIcon name="cilPlus" size="sm"></svg> Add Rule
-            </button>
-          </c-card-header>
-          <c-card-body formArrayName="bonus_rules">
-             <div *ngIf="bonus_rules.controls.length === 0" class="text-center text-muted py-3">
-              <svg cIcon name="cilMoney" size="xl" class="mb-2"></svg>
-              <p>No bonus rules defined.</p>
-            </div>
-            <div *ngFor="let ruleGroup of bonus_rules.controls; let i=index" [formGroupName]="i" class="row g-3 align-items-center mb-3 p-2 border rounded position-relative">
-              <c-col md="3">
-                <label cLabel [for]="'bonus_from_' + i" class="small">From ($)</label>
-                <input cFormControl type="number" [id]="'bonus_from_' + i" formControlName="from" required min="0">
-              </c-col>
-              <c-col md="3">
-                <label cLabel [for]="'bonus_to_' + i" class="small">To ($)</label>
-                <input cFormControl type="number" [id]="'bonus_to_' + i" formControlName="to" required min="0">
-                 <c-form-feedback [valid]="false" *ngIf="ruleGroup.hasError('toLessThanFrom') && !ruleGroup.get('to')?.hasError('required')">
-                   'To' must be >= 'From'.
+        <!-- Guild ID -->
+        <ng-container *ngIf="editSection === 'full' || isEditMode">
+          <c-card class="mb-3">
+            <c-card-header>Guild Identification</c-card-header>
+            <c-card-body>
+              <div class="mb-0" *ngIf="!isEditMode && editSection === 'full'">
+                <label cLabel for="guild_id" class="fw-semibold">Guild ID</label>
+                <input cFormControl type="text" id="guild_id" formControlName="guild_id" required
+                      placeholder="Enter Discord Guild ID"
+                      [class.is-invalid]="guild_id_control.invalid && (guild_id_control.dirty || guild_id_control.touched)">
+                <c-form-feedback [valid]="false" *ngIf="guild_id_control.invalid && (guild_id_control.dirty || guild_id_control.touched)">
+                  <div *ngIf="guild_id_control.hasError('required')">Guild ID is required.</div>
+                  <div *ngIf="guild_id_control.hasError('pattern')">Guild ID must be a sequence of numbers.</div>
                 </c-form-feedback>
-              </c-col>
-              <c-col md="3">
-                <label cLabel [for]="'bonus_amount_' + i" class="small">Bonus ($)</label>
-                <input cFormControl type="number" [id]="'bonus_amount_' + i" formControlName="amount" required min="0">
-              </c-col>
-              <c-col md="2">
-                <strong class="text-success d-block mt-4">{{ ruleGroup.get('amount')?.value | currency }}</strong>
-              </c-col>
-              <c-col md="1" class="text-end">
-                <button cButton type="button" color="danger" variant="ghost" size="sm" class="p-1 mt-3" (click)="removeBonusRule(i)" title="Remove Rule">
-                  <svg cIcon name="cilTrash" size="lg"></svg>
-                </button>
-              </c-col>
-            </div>
-          </c-card-body>
-        </c-card>
-      </ng-container>
-
-      <!-- Commission Settings Card -->
-      <ng-container *ngIf="editSection === 'full' || editSection === 'commission_settings_roles' || editSection === 'commission_settings_users'">
-        <c-card class="mb-3">
-          <c-card-header>Commission Settings</c-card-header>
-          <c-card-body formGroupName="commission_settings">
-            <ng-container *ngIf="editSection === 'full' || editSection === 'commission_settings_roles'">
-              <div class="mb-3">
-                <h6 class="fw-semibold mb-1">By Role (%)</h6>
-                <div formGroupName="roles">
-                  <div *ngIf="commissionRoles && objectKeys(commissionRoles.controls).length > 0; else noRolesDefined">
-                    <c-row *ngFor="let roleId of objectKeys(commissionRoles.controls)" class="g-2 mb-2 align-items-center p-2 border rounded" [formGroupName]="roleId">
-                      <c-col sm="4">
-                        <label class="col-form-label text-truncate">Role: <code class="text-primary">{{ roleId }}</code></label>
-                      </c-col>
-                      <c-col sm="8">
-                        <div class="input-group">
-                           <input cFormControl type="number" formControlName="commission_percentage" required min="0" max="100">
-                           <span class="input-group-text">%</span>
-                        </div>
-                      </c-col>
-                    </c-row>
-                  </div>
-                  <ng-template #noRolesDefined><p class="text-muted">No role commissions defined.</p></ng-template>
-                </div>
               </div>
-            </ng-container>
-            <hr *ngIf="editSection === 'full'">
-            <ng-container *ngIf="editSection === 'full' || editSection === 'commission_settings_users'">
-              <div>
-                <h6 class="fw-semibold mb-1">By User (Overrides)</h6>
-                <div formGroupName="users">
-                  <div *ngIf="commissionUsers && objectKeys(commissionUsers.controls).length > 0; else noUsersDefined">
-                    <div *ngFor="let userId of objectKeys(commissionUsers.controls)" class="p-2 border rounded mb-2" [formGroupName]="userId">
-                      <label class="col-form-label text-truncate fw-medium">User: <code class="text-info">{{ userId }}</code></label>
-                      <c-row class="g-3 align-items-center">
-                        <c-col sm="6">
-                          <label [for]="'hourly_rate_' + userId" class="small">Hourly Rate ($)</label>
-                          <input cFormControl type="number" [id]="'hourly_rate_' + userId" formControlName="hourly_rate" min="0">
+              <div class="mb-0" *ngIf="isEditMode && guildConfig">
+                <label cLabel class="fw-semibold">Guild ID</label>
+                <input cFormControl type="text" [value]="guildConfig.guild_id" readonly disabled>
+              </div>
+            </c-card-body>
+          </c-card>
+        </ng-container>
+
+        <!-- Button to open MSP Edit Modal -->
+        <ng-container *ngIf="editSection === 'full'">
+          <c-card class="mb-3">
+            <c-card-header>Basic Definitions (Models, Shifts, Periods)</c-card-header>
+            <c-card-body class="text-center">
+              <p class="mb-2">Manage the core payout models, work shifts, and earning periods.</p>
+              <button cButton type="button" color="info" variant="outline" (click)="openMspSettingsModal()">
+                <svg cIcon name="cilSettings" class="me-2"></svg>Manage Models, Shifts & Periods
+              </button>
+              <div class="mt-2 small text-muted">
+                  <span class="me-3">Models: {{ currentMspData.models.length || 0 }}</span>
+                  <span class="me-3">Shifts: {{ currentMspData.shifts.length || 0 }}</span>
+                  <span>Periods: {{ currentMspData.periods.length || 0 }}</span>
+              </div>
+              <div *ngIf="submitAttempted && editSection === 'full' && (!currentMspData.models.length || !currentMspData.shifts.length || !currentMspData.periods.length)" class="text-danger small mt-1">
+                  Models, Shifts, and Periods are required. Please configure them.
+              </div>
+            </c-card-body>
+          </c-card>
+        </ng-container>
+        
+        <!-- Button to open Display Settings Modal (only if full edit) -->
+        <ng-container *ngIf="editSection === 'full'">
+          <c-card class="mb-3">
+            <c-card-header>Display & Bot Customization</c-card-header>
+            <c-card-body class="text-center">
+              <p class="mb-2">Customize bot name, agency name, and how information is displayed.</p>
+              <button cButton type="button" color="info" variant="outline" (click)="openDisplaySettingsModal()">
+                <svg cIcon name="cilPaint" class="me-2"></svg>Edit Display Settings
+              </button>
+              <div *ngIf="currentDisplaySettings" class="mt-2 small text-muted">
+                <p class="mb-1">
+                  Current Bot: <strong>{{ currentDisplaySettings.bot_name || 'N/A' }}</strong> for Agency: <strong>{{ currentDisplaySettings.agency_name || 'N/A' }}</strong>
+                </p>
+                <p class="mb-0">
+                  Ephemeral: {{ currentDisplaySettings.ephemeral_responses ? 'Yes' : 'No' }} | 
+                  Show Average: {{ currentDisplaySettings.show_average ? 'Yes' : 'No' }} | 
+                  Show IDs: {{ currentDisplaySettings.show_ids ? 'Yes' : 'No' }}
+                </p>
+              </div>
+            </c-card-body>
+          </c-card>
+        </ng-container>
+
+        <!-- Bonus Rules Card -->
+        <ng-container *ngIf="editSection === 'full' || editSection === 'bonus_rules'">
+          <c-card class="mb-3">
+            <c-card-header>
+              Bonus Rules
+              <button cButton type="button" color="success" variant="outline" size="sm" class="float-end" (click)="addBonusRule()">
+                <svg cIcon name="cilPlus" size="sm"></svg> Add Rule
+              </button>
+            </c-card-header>
+            <c-card-body formArrayName="bonus_rules">
+              <div *ngIf="bonus_rules.controls.length === 0" class="text-center text-muted py-3">
+                <svg cIcon name="cilMoney" size="xl" class="mb-2"></svg>
+                <p>No bonus rules defined.</p>
+              </div>
+              <div *ngFor="let ruleGroup of bonus_rules.controls; let i=index" [formGroupName]="i" class="row g-3 align-items-center mb-3 p-2 border rounded position-relative">
+                <c-col md="3">
+                  <label cLabel [for]="'bonus_from_' + i" class="small">From ($)</label>
+                  <input cFormControl type="number" [id]="'bonus_from_' + i" formControlName="from" required min="0">
+                </c-col>
+                <c-col md="3">
+                  <label cLabel [for]="'bonus_to_' + i" class="small">To ($)</label>
+                  <input cFormControl type="number" [id]="'bonus_to_' + i" formControlName="to" required min="0">
+                  <c-form-feedback [valid]="false" *ngIf="ruleGroup.hasError('toLessThanFrom') && !ruleGroup.get('to')?.hasError('required')">
+                    'To' must be >= 'From'.
+                  </c-form-feedback>
+                </c-col>
+                <c-col md="3">
+                  <label cLabel [for]="'bonus_amount_' + i" class="small">Bonus ($)</label>
+                  <input cFormControl type="number" [id]="'bonus_amount_' + i" formControlName="amount" required min="0">
+                </c-col>
+                <c-col md="2">
+                  <strong class="text-success d-block mt-4">{{ ruleGroup.get('amount')?.value | currency }}</strong>
+                </c-col>
+                <c-col md="1" class="text-end">
+                  <button cButton type="button" color="danger" variant="ghost" size="sm" class="p-1 mt-3" (click)="removeBonusRule(i)" title="Remove Rule">
+                    <svg cIcon name="cilTrash" size="lg"></svg>
+                  </button>
+                </c-col>
+              </div>
+            </c-card-body>
+          </c-card>
+        </ng-container>
+
+        <!-- Commission Settings Card -->
+        <ng-container *ngIf="editSection === 'full' || editSection === 'commission_settings_roles' || editSection === 'commission_settings_users'">
+          <c-card class="mb-3">
+            <c-card-header>Commission Settings</c-card-header>
+            <c-card-body formGroupName="commission_settings">
+              <ng-container *ngIf="editSection === 'full' || editSection === 'commission_settings_roles'">
+                <div class="mb-3">
+                  <h6 class="fw-semibold mb-1">By Role (%)</h6>
+                  <div formGroupName="roles">
+                    <div *ngIf="commissionRoles && objectKeys(commissionRoles.controls).length > 0; else noRolesDefined">
+                      <c-row *ngFor="let roleId of objectKeys(commissionRoles.controls)" class="g-2 mb-2 align-items-center p-2 border rounded" [formGroupName]="roleId">
+                        <c-col sm="4">
+                          <label class="col-form-label text-truncate">Role: <code class="text-primary">{{ roleId }}</code></label>
                         </c-col>
-                        <c-col sm="6" class="pt-4">
-                          <c-form-check>
-                            <input cFormCheckInput type="checkbox" formControlName="override_role" [id]="'override_role_' + userId">
-                            <label cFormCheckLabel [for]="'override_role_' + userId">Override Role %?</label>
-                          </c-form-check>
+                        <c-col sm="8">
+                          <div class="input-group">
+                            <input cFormControl type="number" formControlName="commission_percentage" required min="0" max="100">
+                            <span class="input-group-text">%</span>
+                          </div>
                         </c-col>
                       </c-row>
                     </div>
+                    <ng-template #noRolesDefined><p class="text-muted">No role commissions defined.</p></ng-template>
                   </div>
-                  <ng-template #noUsersDefined><p class="text-muted">No user overrides defined.</p></ng-template>
                 </div>
-              </div>
-            </ng-container>
-          </c-card-body>
-        </c-card>
-      </ng-container>
+              </ng-container>
+              <hr *ngIf="editSection === 'full'">
+              <ng-container *ngIf="editSection === 'full' || editSection === 'commission_settings_users'">
+                <div>
+                  <h6 class="fw-semibold mb-1">By User (Overrides)</h6>
+                  <div formGroupName="users">
+                    <div *ngIf="commissionUsers && objectKeys(commissionUsers.controls).length > 0; else noUsersDefined">
+                      <div *ngFor="let userId of objectKeys(commissionUsers.controls)" class="p-2 border rounded mb-2" [formGroupName]="userId">
+                        <label class="col-form-label text-truncate fw-medium">User: <code class="text-info">{{ userId }}</code></label>
+                        <c-row class="g-3 align-items-center">
+                          <c-col sm="6">
+                            <label [for]="'hourly_rate_' + userId" class="small">Hourly Rate ($)</label>
+                            <input cFormControl type="number" [id]="'hourly_rate_' + userId" formControlName="hourly_rate" min="0">
+                          </c-col>
+                          <c-col sm="6" class="pt-4">
+                            <c-form-check>
+                              <input cFormCheckInput type="checkbox" formControlName="override_role" [id]="'override_role_' + userId">
+                              <label cFormCheckLabel [for]="'override_role_' + userId">Override Role %?</label>
+                            </c-form-check>
+                          </c-col>
+                        </c-row>
+                      </div>
+                    </div>
+                    <ng-template #noUsersDefined><p class="text-muted">No user overrides defined.</p></ng-template>
+                  </div>
+                </div>
+              </ng-container>
+            </c-card-body>
+          </c-card>
+        </ng-container>
+      </form>
+    </ng-container>
 
-    </form>
+    <!-- Placeholder/Loading message for display settings sub-flow -->
+    <div *ngIf="isEditingDisplaySettingsSubFlow && isLoading" class="text-center">
+      <c-spinner></c-spinner>
+      <p>Loading Display Settings...</p>
+    </div>
+    <c-alert color="info" *ngIf="isEditingDisplaySettingsSubFlow && !isLoading">
+        Opening display settings editor...
+    </c-alert>
+
   </c-modal-body>
-  <c-modal-footer class="justify-content-between">
+  <c-modal-footer class="justify-content-between" *ngIf="!isEditingDisplaySettingsSubFlow">
     <div>
         <span *ngIf="configForm?.invalid && submitAttempted && !isLoading" class="text-danger small align-middle">
             <svg cIcon name="cilWarning" size="sm" class="me-1"></svg>Please correct the errors.
@@ -190,7 +202,11 @@
         <button (click)="closeModal()" cButton color="secondary" variant="outline" class="me-2">
             <svg cIcon name="cilBan" size="sm" class="me-1"></svg>Cancel
         </button>
-        <button cButton color="primary" type="submit" (click)="saveChanges()" [disabled]="isLoading || (configForm && configForm.invalid && !configForm.dirty && isEditMode) || (configForm && configForm.invalid && submitAttempted) || (editSection === 'full' && (!currentMspData.models.length || !currentMspData.shifts.length || !currentMspData.periods.length) && submitAttempted)">
+        <button cButton color="primary" type="submit" (click)="saveChanges()" 
+                [disabled]="isLoading || 
+                            (configForm && configForm.invalid && !configForm.dirty && isEditMode && editSection === 'full') || 
+                            (configForm && configForm.invalid && submitAttempted) || 
+                            (editSection === 'full' && (!currentMspData.models.length || !currentMspData.shifts.length || !currentMspData.periods.length) && submitAttempted)">
             <c-spinner *ngIf="isLoading" component="span" size="sm" aria-hidden="true" class="me-1"></c-spinner>
             <svg *ngIf="!isLoading" cIcon [name]="isEditMode ? 'cilSave' : 'cilPlus'" size="sm" class="me-1"></svg>
             {{ isLoading ? 'Saving...' : (isEditMode ? 'Save Changes' : 'Create Config') }}
