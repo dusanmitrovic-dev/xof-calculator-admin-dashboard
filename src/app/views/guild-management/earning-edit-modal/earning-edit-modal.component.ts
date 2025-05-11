@@ -16,7 +16,8 @@ import {
 } from '@coreui/angular';
 
 import { EarningsService, Earning } from '../../../services/earnings.service';
-import { GuildConfigService, GuildConfig, Model, Shift, Period } from '../../../services/guild-config.service'; // Import Model, Shift, Period
+// GuildConfig is now correctly typed with string[] for models, shifts, periods
+import { GuildConfigService, GuildConfig } from '../../../services/guild-config.service'; 
 
 @Component({
   selector: 'app-earning-edit-modal',
@@ -95,9 +96,10 @@ export class EarningEditModalComponent implements OnInit, OnChanges {
 
     if (this.guildConfig) {
         console.log('EarningModal: Using provided guildConfig for options:', this.guildConfig);
-        this.availableModels = this.guildConfig.models?.map((m: Model) => m.name) || [];
-        this.availableShifts = this.guildConfig.shifts?.map((s: Shift) => s.name) || [];
-        this.availablePeriods = this.guildConfig.periods?.map((p: Period) => p.name) || [];
+        // Directly use the string arrays from guildConfig
+        this.availableModels = this.guildConfig.models || [];
+        this.availableShifts = this.guildConfig.shifts || [];
+        this.availablePeriods = this.guildConfig.periods || [];
         
         if (this.isEditMode && this.earningToEdit) {
             this.patchForm(this.earningToEdit);

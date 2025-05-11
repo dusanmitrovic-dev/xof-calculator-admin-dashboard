@@ -3,21 +3,23 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, throwError, BehaviorSubject, map, catchError, tap } from 'rxjs';
 
 // --- Interfaces matching DB structure ---
-export interface Model {
+// Note: Model, Shift, Period interfaces here are for potential broader use,
+// but within GuildConfig, they are stored as string arrays as per backend schema.
+export interface Model { // This interface can be kept for other uses if Models have more details elsewhere
   name: string;
-  payout: number;
-  commission: number;
+  payout?: number; // Made optional as it's not in GuildConfig.models
+  commission?: number; // Made optional
 }
 
-export interface Shift {
+export interface Shift { // Kept for other uses
   name: string;
-  multiplier: number;
+  multiplier?: number; // Made optional
 }
 
-export interface Period {
+export interface Period { // Kept for other uses
   name: string;
-  startDate: string; // Store as ISO string date (YYYY-MM-DD)
-  endDate: string;   // Store as ISO string date (YYYY-MM-DD)
+  startDate?: string; // Made optional
+  endDate?: string;   // Made optional
 }
 
 export interface BonusRule {
@@ -51,12 +53,13 @@ export interface CommissionSettings {
 export interface GuildConfig {
   _id?: string; // Provided by MongoDB
   guild_id: string; // Discord Guild ID
-  models: Model[];
-  shifts: Shift[];
-  periods: Period[];
+  models: string[]; // Changed to string array
+  shifts: string[]; // Changed to string array
+  periods: string[]; // Changed to string array
   bonus_rules: BonusRule[];
   display_settings: DisplaySettings;
   commission_settings: CommissionSettings;
+  roles: { [roleId: string]: number };
 }
 // --- End Interfaces ---
 
@@ -116,13 +119,10 @@ export class GuildConfigService {
   }
 
   createGuildConfig(config: GuildConfig): Observable<GuildConfig> {
-    // Uses POST /api/config - handled by createOrUpdateGuildConfig on backend
-    const targetUrl = `${this.apiUrl}/${config.guild_id}`; // Backend POST expects guild_id in URL 
+    // Uses POST /api/config/:guild_id - handled by createOrUpdateGuildConfig on backend
+    const targetUrl = `${this.apiUrl}/${config.guild_id}`; 
     console.log(`GuildConfigService: Creating config for guild ${config.guild_id} at ${targetUrl}`);
     const { _id, ...configData } = config;
-    if (!configData.guild_id) {
-       console.warn('GuildConfigService: createGuildConfig called without guild_id in payload, relying on API structure.');
-    }
     return this.http.post<GuildConfig>(targetUrl, configData).pipe(
       catchError(this.handleError)
     );
@@ -134,19 +134,44 @@ export class GuildConfigService {
       console.error('GuildConfigService: updateGuildConfig called with empty guildId.');
       return throwError(() => new Error('Guild ID cannot be empty for update'));
     }
-    console.log(`[LOG_SERVICE_UPDATE_PARAM] GuildConfigService: updateGuildConfig - guildId PARAMETER is: "${guildId}" (length: ${guildId?.length})`);
-    
     const { _id, ...payload } = configDataToSave;
     payload.guild_id = guildId; 
 
     const targetUrl = `${this.apiUrl}/${guildId}`;
     console.log(`[LOG_SERVICE_UPDATE_URL] GuildConfigService: Updating config using POST. Target URL: "${targetUrl}"`); 
-
-    // --- Use POST instead of PUT --- 
     return this.http.post<GuildConfig>(targetUrl, payload).pipe(
       catchError(this.handleError)
     );
   }
+
+  updateModels(guildId: string, models: string[]): Observable<GuildConfig> {
+    return this.updateGuildConfigField(guildId, 'models', models);
+  }
+
+  updateShifts(guildId: string, shifts: string[]): Observable<GuildConfig> {
+    return this.updateGuildConfigField(guildId, 'shifts', shifts);
+  }
+
+  updatePeriods(guildId: string, periods: string[]): Observable<GuildConfig> {
+    return this.updateGuildConfigField(guildId, 'periods', periods);
+  }
+
+  updateBonusRules(guildId: string, bonus_rules: BonusRule[]): Observable<GuildConfig> {
+    return this.updateGuildConfigField(guildId, 'bonus_rules', bonus_rules);
+  }
+
+  updateDisplaySettings(guildId: string, display_settings: DisplaySettings): Observable<GuildConfig> {
+    return this.updateGuildConfigField(guildId, 'display_settings', display_settings);
+  }
+
+  updateCommissionSettings(guildId: string, commission_settings: CommissionSettings): Observable<GuildConfig> {
+    return this.updateGuildConfigField(guildId, 'commission_settings', commission_settings);
+  }
+
+  updateRoles(guildId: string, roles: { [roleId: string]: number }): Observable<GuildConfig> {
+    return this.updateGuildConfigField(guildId, 'roles', roles);
+  }
+
 
   deleteGuildConfig(guildId: string): Observable<{ message?: string; msg?: string }> {
     if (!guildId) {
@@ -174,15 +199,15 @@ export class GuildConfigService {
   }
 
   updateGuildConfigField(guildId: string, field: keyof GuildConfig, value: any): Observable<GuildConfig> {
-    // Uses PUT /api/config/:guild_id/:field as defined in backend routes
+    // Backend expects PUT /api/config/:guild_id/:field
     if (!guildId || !field) {
       console.error('GuildConfigService: updateGuildConfigField called with empty guildId or field.');
       return throwError(() => new Error('Guild ID and field name are required'));
     }
     const targetUrl = `${this.apiUrl}/${guildId}/${field}`;
-    console.log(`GuildConfigService: Updating field '${field}' for guild ${guildId} at ${targetUrl}`);
-    const payload = { value };
-    return this.http.put<GuildConfig>(targetUrl, payload).pipe(
+    console.log(`GuildConfigService: Updating field '${field}' for guild ${guildId} with PUT to ${targetUrl}`);
+    const payload = { value }; // Backend expects { "value": <new_value> }
+    return this.http.put<GuildConfig>(targetUrl, payload).pipe( // Changed from PATCH to PUT
       catchError(this.handleError)
     );
   }

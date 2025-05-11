@@ -68,7 +68,7 @@
                     <c-col sm="3" class="fw-semibold">Models</c-col>
                     <c-col sm="6">
                       <ng-container *ngIf="guildConfig.models && guildConfig.models.length > 0; else noModels">
-                        <span *ngFor="let model of guildConfig.models" class="badge bg-info me-1 mb-1">{{ model.name }}</span>
+                        <span *ngFor="let model of guildConfig.models" class="badge bg-info me-1 mb-1">{{ model }}</span>
                       </ng-container>
                       <ng-template #noModels>-</ng-template>
                     </c-col>
@@ -82,7 +82,7 @@
                     <c-col sm="3" class="fw-semibold">Shifts</c-col>
                     <c-col sm="6">
                       <ng-container *ngIf="guildConfig.shifts && guildConfig.shifts.length > 0; else noShifts">
-                        <span *ngFor="let shift of guildConfig.shifts" class="badge bg-info me-1 mb-1">{{ shift.name }}</span>
+                        <span *ngFor="let shift of guildConfig.shifts" class="badge bg-info me-1 mb-1">{{ shift }}</span>
                       </ng-container>
                       <ng-template #noShifts>-</ng-template>
                     </c-col>
@@ -96,7 +96,7 @@
                     <c-col sm="3" class="fw-semibold">Periods</c-col>
                     <c-col sm="6">
                       <ng-container *ngIf="guildConfig.periods && guildConfig.periods.length > 0; else noPeriods">
-                        <span *ngFor="let period of guildConfig.periods" class="badge bg-info me-1 mb-1">{{ period.name }}</span>
+                        <span *ngFor="let period of guildConfig.periods" class="badge bg-info me-1 mb-1">{{ period }}</span>
                       </ng-container>
                       <ng-template #noPeriods>-</ng-template>
                     </c-col>
