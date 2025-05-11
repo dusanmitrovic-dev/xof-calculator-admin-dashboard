@@ -54,8 +54,6 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
   submitAttempted: boolean = false;
   originalConfig: GuildConfig | null = null;
   isEditingDisplaySettingsSubFlow: boolean = false;
-  // currentMspData is not directly used for form values anymore, form arrays are authoritative.
-  // It can be removed if no other logic depends on it after refactoring saveChanges.
   currentMspData: { models: Model[], shifts: Shift[], periods: Period[] } = { models: [], shifts: [], periods: [] }; 
   currentDisplaySettings: DisplaySettingsModalData | null = null;
 
@@ -83,7 +81,7 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
     if (changes['visible'] && this.visible) {
       this.isEditingDisplaySettingsSubFlow = false;
       this.prepareFormForMode();
-      if (this.isEditMode && this.editSection === 'display_settings') { // Removed general_info from here
+      if (this.isEditMode && this.editSection === 'display_settings') { 
         this.handleDisplaySettingsSubFlow();
       }
     } else if (this.visible && (changes['guildConfig'] || changes['guildId'] || changes['editSection'])) {
@@ -196,7 +194,6 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
         this.configForm = this.buildForm();
     }
     this.configForm.reset();
-    // this.currentMspData = { models: [], shifts: [], periods: [] }; // See comment above
 
     if (this.isEditMode && this.guildConfig) {
       this.originalConfig = JSON.parse(JSON.stringify(this.guildConfig));
@@ -243,8 +240,8 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
       case 'commission_settings_users':
         this.title = `Manage User Overrides for ${baseTitle}`;
         break;
-      case 'general_info': // Retained for potential direct access to display settings part from list
-      case 'display_settings': // This will trigger the sub-flow
+      case 'general_info': 
+      case 'display_settings': 
          this.title = `Manage Display Settings for ${baseTitle}`;
          break;
       default:
@@ -284,7 +281,6 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
         this.configForm.get('guild_id')?.disable();
     }
     this.currentDisplaySettings = { ...(config.display_settings || this.getDefaultDisplaySettings()) };
-    // this.currentMspData = { models: config.models || [], shifts: config.shifts || [], periods: config.periods || [] }; // See comment above
     this.setFormArrayData(this.models, config.models);
     this.setFormArrayData(this.shifts, config.shifts);
     this.setFormArrayData(this.periods, config.periods);
@@ -300,8 +296,6 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
         this.currentDisplaySettings = result;
         this.configForm.markAsDirty(); 
         console.log('Display settings updated locally:', result);
-        // If editSection is 'display_settings', we might want to save immediately here, or let the main save button handle it.
-        // For now, it updates currentDisplaySettings, and main save will pick it up.
       },
       (reason) => { console.log(`Display settings modal dismissed: ${reason}`); }
     );
@@ -416,11 +410,6 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
     this.bonus_rules.markAsDirty();
   }
 
-  // This method is no longer used by the new template structure
-  // openMspSettingsModal(): void {
-  //   console.warn('openMspSettingsModal clicked - Placeholder, actual MSP modal to be implemented/invoked here.');
-  // }
-
   saveChanges(): void {
     this.submitAttempted = true;
     this.configForm.markAllAsTouched(); 
@@ -434,12 +423,11 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
     this.isLoading = true;
     this.errorMessage = null;
     const formValue = this.configForm.getRawValue();
-    let saveData: Partial<GuildConfig> = { guild_id: formValue.guild_id }; // guild_id is from form only for new configs
+    let saveData: Partial<GuildConfig> = { guild_id: formValue.guild_id }; 
 
     if (this.isEditMode && this.originalConfig) {
-      saveData = JSON.parse(JSON.stringify(this.originalConfig)); // Start with the original for updates
+      saveData = JSON.parse(JSON.stringify(this.originalConfig)); 
     } else {
-      // For new configurations, initialize all parts that are not section-specific to defaults or empty.
       saveData.display_settings = { ...this.getDefaultDisplaySettings() };
       saveData.models = [];
       saveData.shifts = [];
@@ -448,11 +436,9 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
       saveData.commission_settings = { roles: {}, users: {} };
     }
     
-    // Always ensure display_settings are from currentDisplaySettings if available, otherwise from original or default
     saveData.display_settings = { ...(this.currentDisplaySettings || this.originalConfig?.display_settings || this.getDefaultDisplaySettings()) };
     if (this.isEditMode && this.guildConfig?._id) saveData._id = this.guildConfig._id;
 
-    // Apply changes based on editSection
     switch (this.editSection) {
       case 'full':
         saveData.models = (formValue.models || []).map((name: string) => ({ name } as Model));
@@ -481,8 +467,6 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
         if (!saveData.commission_settings) saveData.commission_settings = { roles: {}, users: {} };
         saveData.commission_settings.users = this.prepareCommissionUsersPayload(formValue.commission_settings.users);
         break;
-      // 'display_settings' and 'general_info' are handled by their sub-flow or separate save logic if needed.
-      // Here we assume they might update currentDisplaySettings which is then picked up above.
     }
 
     let saveObservable: Observable<GuildConfig>;
@@ -494,7 +478,6 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
     }
 
     if (!this.isEditMode || !this.originalConfig) {
-      // Create new config ensuring all fields are present even if editing a section for a new guild
       const createPayload: GuildConfig = {
         guild_id: effectiveGuildId,
         models: saveData.models || [],
@@ -507,16 +490,14 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
       if (saveData._id) createPayload._id = saveData._id; 
       saveObservable = this.guildConfigService.createGuildConfig(createPayload);
     } else { 
-      // Update existing config: merge original with section-specific changes
       const updatePayload: GuildConfig = {
-        ...(this.originalConfig as GuildConfig), // Cast as originalConfig is guaranteed here for edit mode
-        guild_id: effectiveGuildId, // Ensure correct guildId
-        display_settings: saveData.display_settings, // Already handled above to take currentDisplaySettings
-        // Apply section-specific updates from saveData, falling back to original if not in saveData (e.g. if not 'full' edit)
-        models: this.editSection === 'models' || this.editSection === 'full' ? saveData.models : this.originalConfig.models,
-        shifts: this.editSection === 'shifts' || this.editSection === 'full' ? saveData.shifts : this.originalConfig.shifts,
-        periods: this.editSection === 'periods' || this.editSection === 'full' ? saveData.periods : this.originalConfig.periods,
-        bonus_rules: this.editSection === 'bonus_rules' || this.editSection === 'full' ? saveData.bonus_rules : this.originalConfig.bonus_rules,
+        ...(this.originalConfig as GuildConfig), 
+        guild_id: effectiveGuildId, 
+        display_settings: saveData.display_settings!, // Assert as DisplaySettings is always set
+        models: (this.editSection === 'models' || this.editSection === 'full') ? saveData.models! : this.originalConfig.models,
+        shifts: (this.editSection === 'shifts' || this.editSection === 'full') ? saveData.shifts! : this.originalConfig.shifts,
+        periods: (this.editSection === 'periods' || this.editSection === 'full') ? saveData.periods! : this.originalConfig.periods,
+        bonus_rules: (this.editSection === 'bonus_rules' || this.editSection === 'full') ? saveData.bonus_rules! : this.originalConfig.bonus_rules,
         commission_settings: (this.editSection === 'commission_settings_roles' || this.editSection === 'commission_settings_users' || this.editSection === 'full') 
                            ? { ...this.originalConfig.commission_settings, ...saveData.commission_settings } 
                            : this.originalConfig.commission_settings,
@@ -622,9 +603,7 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
     this.errorMessage = null;
     this.submitAttempted = false;
     this.isEditingDisplaySettingsSubFlow = false;
-    // this.currentMspData = { models: [], shifts: [], periods: [] }; // See comment above
     this.originalConfig = null;
-    // Reset currentDisplaySettings based on guildConfig only if guildConfig is present, otherwise use default.
     this.currentDisplaySettings = this.guildConfig?.display_settings ? 
                                   { ...this.guildConfig.display_settings } : 
                                   this.getDefaultDisplaySettings(); 
