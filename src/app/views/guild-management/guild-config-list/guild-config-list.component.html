@@ -32,28 +32,15 @@
 
            <!-- Config Display State (guildConfig is guaranteed non-null here) -->
            <div *ngIf="!loadingConfig && !configError && guildConfig">
-              <!-- General Info Card -->
+              <!-- General Info Card - Only Guild ID, no Modify button -->
               <c-card class="mb-3">
                 <c-card-header>
                   General Info
-                  <div class="float-end">
-                    <button cButton color="primary" variant="outline" size="sm" (click)="openEditConfigModal('display_settings')" [disabled]="loadingConfig">
-                      <svg cIcon name="cilPencil" size="sm"></svg> Modify
-                    </button>
-                  </div>
                 </c-card-header>
                 <c-card-body>
-                  <c-row class="mb-2 border-bottom pb-1 align-items-center">
+                  <c-row class="align-items-center">
                     <c-col sm="3" class="fw-semibold">Guild ID</c-col>
                     <c-col sm="9"><strong>{{ guildConfig.guild_id }}</strong></c-col>
-                  </c-row>
-                  <c-row class="mb-2 border-bottom pb-1 align-items-center">
-                     <c-col sm="3" class="fw-semibold">Agency Name</c-col>
-                     <c-col sm="9">{{ guildConfig.display_settings.agency_name || 'Not Set' }}</c-col>
-                  </c-row>
-                  <c-row class="align-items-center">
-                     <c-col sm="3" class="fw-semibold">Bot Name</c-col>
-                     <c-col sm="9">{{ guildConfig.display_settings.bot_name || 'Not Set' }}</c-col>
                   </c-row>
                 </c-card-body>
               </c-card>
@@ -135,10 +122,10 @@
                 </c-card-body>
               </c-card>
 
-              <!-- Display Settings Card -->
+              <!-- Display Settings Card - Now includes Agency and Bot Name -->
               <c-card class="mb-3">
                 <c-card-header>
-                  Display Settings (Bot Behavior)
+                  Display Settings (Bot, Agency, Behavior)
                   <div class="float-end">
                     <button cButton color="primary" variant="outline" size="sm" (click)="openEditConfigModal('display_settings')" [disabled]="loadingConfig">
                       <svg cIcon name="cilPencil" size="sm"></svg> Modify
@@ -146,30 +133,37 @@
                   </div>
                 </c-card-header>
                 <c-card-body>
-                  <c-row class="align-items-center">
-                    <c-col sm="12">
-                        <ul class="list-unstyled mb-0 mt-2">
-                          <li class="mb-1">Ephemeral Responses: 
-                            <span class="badge" [ngClass]="guildConfig.display_settings.ephemeral_responses ? 'bg-success' : 'bg-secondary'">
-                              <svg cIcon [name]="guildConfig.display_settings.ephemeral_responses ? 'cilCheckCircle' : 'cilXCircle'" size="sm" class="me-1"></svg>
-                              {{ guildConfig.display_settings.ephemeral_responses ? 'Yes' : 'No' }}
-                            </span>
-                          </li>
-                          <li class="mb-1">Show Average: 
-                            <span class="badge" [ngClass]="guildConfig.display_settings.show_average ? 'bg-success' : 'bg-secondary'">
-                              <svg cIcon [name]="guildConfig.display_settings.show_average ? 'cilCheckCircle' : 'cilXCircle'" size="sm" class="me-1"></svg>
-                              {{ guildConfig.display_settings.show_average ? 'Yes' : 'No' }}
-                            </span>
-                          </li>
-                          <li>Show IDs: 
-                            <span class="badge" [ngClass]="guildConfig.display_settings.show_ids ? 'bg-success' : 'bg-secondary'">
-                              <svg cIcon [name]="guildConfig.display_settings.show_ids ? 'cilCheckCircle' : 'cilXCircle'" size="sm" class="me-1"></svg>
-                              {{ guildConfig.display_settings.show_ids ? 'Yes' : 'No' }}
-                            </span>
-                          </li>
-                        </ul>
-                    </c-col>
-                  </c-row>
+                  <dl class="row mb-0">
+                    <dt class="col-sm-3 fw-semibold">Agency Name</dt>
+                    <dd class="col-sm-9">{{ guildConfig.display_settings.agency_name || 'Not Set' }}</dd>
+                    
+                    <dt class="col-sm-3 fw-semibold">Bot Name</dt>
+                    <dd class="col-sm-9">{{ guildConfig.display_settings.bot_name || 'Not Set' }}</dd>
+
+                    <dt class="col-sm-3 fw-semibold">Ephemeral Responses</dt>
+                    <dd class="col-sm-9">
+                      <span class="badge" [ngClass]="guildConfig.display_settings.ephemeral_responses ? 'bg-success' : 'bg-secondary'">
+                        <svg cIcon [name]="guildConfig.display_settings.ephemeral_responses ? 'cilCheckCircle' : 'cilXCircle'" size="sm" class="me-1"></svg>
+                        {{ guildConfig.display_settings.ephemeral_responses ? 'Yes' : 'No' }}
+                      </span>
+                    </dd>
+
+                    <dt class="col-sm-3 fw-semibold">Show Average</dt>
+                    <dd class="col-sm-9">
+                      <span class="badge" [ngClass]="guildConfig.display_settings.show_average ? 'bg-success' : 'bg-secondary'">
+                        <svg cIcon [name]="guildConfig.display_settings.show_average ? 'cilCheckCircle' : 'cilXCircle'" size="sm" class="me-1"></svg>
+                        {{ guildConfig.display_settings.show_average ? 'Yes' : 'No' }}
+                      </span>
+                    </dd>
+
+                    <dt class="col-sm-3 fw-semibold">Show IDs</dt>
+                    <dd class="col-sm-9">
+                      <span class="badge" [ngClass]="guildConfig.display_settings.show_ids ? 'bg-success' : 'bg-secondary'">
+                        <svg cIcon [name]="guildConfig.display_settings.show_ids ? 'cilCheckCircle' : 'cilXCircle'" size="sm" class="me-1"></svg>
+                        {{ guildConfig.display_settings.show_ids ? 'Yes' : 'No' }}
+                      </span>
+                    </dd>
+                  </dl>
                 </c-card-body>
               </c-card>
 
