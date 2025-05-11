@@ -62,38 +62,48 @@
               <c-card class="mb-3">
                 <c-card-header>
                   Basic Definitions
-                  <div class="float-end">
-                    <button cButton color="primary" variant="outline" size="sm" (click)="openEditConfigModal('full')" [disabled]="loadingConfig">
-                      <svg cIcon name="cilSettings" size="sm"></svg> Manage
-                    </button>
-                  </div>
                 </c-card-header>
                 <c-card-body>
                   <c-row class="mb-2 border-bottom pb-1 align-items-center">
                     <c-col sm="3" class="fw-semibold">Models</c-col>
-                    <c-col sm="9">
+                    <c-col sm="6">
                       <ng-container *ngIf="guildConfig.models && guildConfig.models.length > 0; else noModels">
                         <span *ngFor="let model of guildConfig.models" class="badge bg-info me-1 mb-1">{{ model.name }}</span>
                       </ng-container>
                       <ng-template #noModels>-</ng-template>
                     </c-col>
+                    <c-col sm="3" class="text-end">
+                      <button cButton color="primary" variant="outline" size="sm" (click)="openEditConfigModal('models')" [disabled]="loadingConfig">
+                        <svg cIcon name="cilPencil" size="sm"></svg> Modify
+                      </button>
+                    </c-col>
                   </c-row>
                   <c-row class="mb-2 border-bottom pb-1 align-items-center">
                     <c-col sm="3" class="fw-semibold">Shifts</c-col>
-                    <c-col sm="9">
+                    <c-col sm="6">
                       <ng-container *ngIf="guildConfig.shifts && guildConfig.shifts.length > 0; else noShifts">
                         <span *ngFor="let shift of guildConfig.shifts" class="badge bg-info me-1 mb-1">{{ shift.name }}</span>
                       </ng-container>
                       <ng-template #noShifts>-</ng-template>
                     </c-col>
+                    <c-col sm="3" class="text-end">
+                      <button cButton color="primary" variant="outline" size="sm" (click)="openEditConfigModal('shifts')" [disabled]="loadingConfig">
+                        <svg cIcon name="cilPencil" size="sm"></svg> Modify
+                      </button>
+                    </c-col>
                   </c-row>
                   <c-row class="mb-0 align-items-center"> <!-- Removed border-bottom and mb-2 for the last item in this card -->
                     <c-col sm="3" class="fw-semibold">Periods</c-col>
-                    <c-col sm="9">
+                    <c-col sm="6">
                       <ng-container *ngIf="guildConfig.periods && guildConfig.periods.length > 0; else noPeriods">
                         <span *ngFor="let period of guildConfig.periods" class="badge bg-info me-1 mb-1">{{ period.name }}</span>
                       </ng-container>
                       <ng-template #noPeriods>-</ng-template>
+                    </c-col>
+                    <c-col sm="3" class="text-end">
+                      <button cButton color="primary" variant="outline" size="sm" (click)="openEditConfigModal('periods')" [disabled]="loadingConfig">
+                        <svg cIcon name="cilPencil" size="sm"></svg> Modify
+                      </button>
                     </c-col>
                   </c-row>
                 </c-card-body>
