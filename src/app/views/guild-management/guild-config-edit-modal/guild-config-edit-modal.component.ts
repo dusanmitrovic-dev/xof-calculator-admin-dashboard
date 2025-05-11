@@ -2,7 +2,6 @@ import { CommonModule } from '@angular/common';
 import { Component, Input, Output, EventEmitter, OnInit, OnChanges, SimpleChanges, ChangeDetectorRef } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, FormArray, Validators, ReactiveFormsModule, FormControl } from '@angular/forms';
 import { Observable } from 'rxjs';
-// GuildConfigService now provides GuildConfig with string[] for models, shifts, periods
 import { GuildConfigService, GuildConfig, BonusRule, CommissionSettings, DisplaySettings } from '../../../services/guild-config.service';
 import { NgbModal, NgbModalModule } from '@ng-bootstrap/ng-bootstrap';
 import { DisplaySettingsEditModalComponent, DisplaySettings as DisplaySettingsModalData } from '../display-settings-edit-modal/display-settings-edit-modal.component';
@@ -44,7 +43,7 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
   @Input() visible: boolean = false;
   @Input() guildConfig: GuildConfig | null = null;
   @Input() guildId: string | null = null;
-  @Input() editSection: string = 'full'; // Can be 'full', 'models', 'shifts', 'periods', 'bonus_rules', etc.
+  @Input() editSection: string = 'full';
   @Output() visibleChange = new EventEmitter<boolean>();
   @Output() configSaved = new EventEmitter<GuildConfig | null>();
 
@@ -174,7 +173,8 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
     if (!this.configForm) {
         this.configForm = this.buildForm();
     }
-    this.configForm.reset();
+    this.configForm.reset(); // Reset the entire form
+    this.clearAllFormArraysAndGroups(); // Clear specific parts more explicitly
 
     if (this.isEditMode && this.guildConfig) {
       this.originalConfig = JSON.parse(JSON.stringify(this.guildConfig)); // Deep copy
@@ -186,11 +186,7 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
       this.currentDisplaySettings = this.getDefaultDisplaySettings();
       this.configForm.get('guild_id')?.enable();
       this.configForm.get('guild_id')?.setValue(this.guildId || '');
-      this.models.clear();
-      this.shifts.clear();
-      this.periods.clear();
-      this.bonus_rules.clear();
-      this.clearCommissionControls();
+      // Ensure default empty state for create mode is handled by buildForm and patchForm with null config
     }
     this.updateTitle();
     this.setConditionalValidators();
@@ -221,6 +217,9 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
       case 'commission_settings_users':
         this.title = `Manage User Overrides for ${baseTitle}`;
         break;
+      case 'top_level_roles': // New section title
+        this.title = `Manage General Role Settings for ${baseTitle}`;
+        break;
       case 'general_info': 
       case 'display_settings': 
          this.title = `Manage Display Settings for ${baseTitle}`;
@@ -244,6 +243,7 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
         }, { validators: this.bonusRuleValidator })
       ) || []),
       commission_settings: this.buildCommissionSettingsForm(),
+      roles: this.fb.group({}) // New FormGroup for top_level_roles
     });
   }
 
@@ -254,7 +254,16 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
       });
   }
 
-  private patchForm(config: GuildConfig): void {
+  private patchForm(config: GuildConfig | null): void {
+    if (!config) {
+        this.configForm.reset();
+        this.clearAllFormArraysAndGroups();
+        this.currentDisplaySettings = this.getDefaultDisplaySettings();
+        this.configForm.get('guild_id')?.enable();
+        this.configForm.get('guild_id')?.setValue(this.guildId || '');
+        return;
+    }
+
     if (!this.configForm.get('guild_id')?.value) {
         this.configForm.get('guild_id')?.patchValue(config.guild_id);
     }
@@ -267,6 +276,21 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
     this.setStringArrayData(this.periods, config.periods);
     this.patchBonusRules(config.bonus_rules);
     this.patchCommissionSettings(config.commission_settings);
+    this.patchTopLevelRoles(config.roles); // New patch method for top-level roles
+  }
+
+  private patchTopLevelRoles(rolesData: { [roleId: string]: number } | undefined): void {
+    const rolesFormGroup = this.topLevelRoles;
+    // Clear existing controls
+    Object.keys(rolesFormGroup.controls).forEach(key => rolesFormGroup.removeControl(key));
+
+    if (rolesData) {
+      Object.entries(rolesData).forEach(([roleId, value]) => {
+        if (roleId) { // Ensure roleId is valid
+          rolesFormGroup.addControl(roleId, this.fb.control(value, [Validators.required, Validators.pattern('^[0-9]+$')]));
+        }
+      });
+    }
   }
 
   openDisplaySettingsModal(): void {
@@ -312,7 +336,7 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
   private patchCommissionSettings(settings: CommissionSettings | undefined): void {
     const rolesGroup = this.commissionRoles;
     const usersGroup = this.commissionUsers;
-    this.clearCommissionControls();
+    this.clearCommissionControls(); // Clears only commission_settings.roles and .users
     if (settings?.roles) {
       Object.entries(settings.roles).forEach(([roleId, roleSetting]) => {
          if (roleId && roleSetting != null) {
@@ -334,11 +358,25 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
     }
   }
 
+  private clearAllFormArraysAndGroups(): void {
+    this.models.clear();
+    this.shifts.clear();
+    this.periods.clear();
+    this.bonus_rules.clear();
+    this.clearCommissionControls();
+    this.clearTopLevelRolesControls();
+  }
+
   private clearCommissionControls(): void {
     const rolesGroup = this.commissionRoles;
     const usersGroup = this.commissionUsers;
     if (rolesGroup) Object.keys(rolesGroup.controls).forEach(key => rolesGroup.removeControl(key));
     if (usersGroup) Object.keys(usersGroup.controls).forEach(key => usersGroup.removeControl(key));
+  }
+
+  private clearTopLevelRolesControls(): void {
+    const rolesGroup = this.topLevelRoles;
+    if (rolesGroup) Object.keys(rolesGroup.controls).forEach(key => rolesGroup.removeControl(key));
   }
 
   get guild_id_control(): FormControl { return this.configForm.get('guild_id') as FormControl; }
@@ -348,6 +386,7 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
   get bonus_rules(): FormArray { return this.configForm.get('bonus_rules') as FormArray; }
   get commissionRoles(): FormGroup { return this.configForm.get('commission_settings.roles') as FormGroup; }
   get commissionUsers(): FormGroup { return this.configForm.get('commission_settings.users') as FormGroup; }
+  get topLevelRoles(): FormGroup { return this.configForm.get('roles') as FormGroup; } // New getter for top-level roles
 
   addItemManually(array: FormArray, value: string): void {
     if (value) {
@@ -424,7 +463,7 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
             bonus_rules: (formValue.bonus_rules || []).map((rule: any) => ({ from: Number(rule.from), to: Number(rule.to), amount: Number(rule.amount) })),
             display_settings: { ...(this.currentDisplaySettings || this.originalConfig?.display_settings || this.getDefaultDisplaySettings()) },
             commission_settings: this.prepareCommissionSettingsPayload(formValue.commission_settings),
-            roles: (this.isEditMode && this.originalConfig) ? this.originalConfig.roles : {},
+            roles: this.prepareTopLevelRolesPayload(formValue.roles), // Use formValue for roles
           };
           if (this.isEditMode && this.guildConfig?._id) createOrUpdatePayload._id = this.guildConfig._id;
 
@@ -464,7 +503,7 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
           const newCommissionRoles = this.prepareCommissionRolesPayload(formValue.commission_settings.roles);
           const fullCommissionSettingsPayload: CommissionSettings = {
             roles: newCommissionRoles,
-            users: (this.originalConfig?.commission_settings?.users || {}) // Preserve existing users
+            users: (this.originalConfig?.commission_settings?.users || {}) 
           };
           saveObservable = this.guildConfigService.updateCommissionSettings(effectiveGuildId, fullCommissionSettingsPayload);
           break;
@@ -473,10 +512,16 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
         {
           const newCommissionUsers = this.prepareCommissionUsersPayload(formValue.commission_settings.users);
           const fullCommissionSettingsPayload: CommissionSettings = {
-            roles: (this.originalConfig?.commission_settings?.roles || {}), // Preserve existing roles
+            roles: (this.originalConfig?.commission_settings?.roles || {}), 
             users: newCommissionUsers
           };
           saveObservable = this.guildConfigService.updateCommissionSettings(effectiveGuildId, fullCommissionSettingsPayload);
+          break;
+        }
+      case 'top_level_roles': // New case for dedicated top-level roles update
+        {
+          const rolesPayload = this.prepareTopLevelRolesPayload(formValue.roles);
+          saveObservable = this.guildConfigService.updateRoles(effectiveGuildId, rolesPayload);
           break;
         }
     }
@@ -539,6 +584,20 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
     };
   }
 
+  private prepareTopLevelRolesPayload(formRoles: any): { [roleId: string]: number } {
+    const roles: { [roleId: string]: number } = {};
+    if (formRoles) {
+      Object.keys(formRoles).forEach(roleId => {
+        // Ensure the value is a number before assigning
+        const val = Number(formRoles[roleId]);
+        if (!isNaN(val)) {
+            roles[roleId] = val;
+        }
+      });
+    }
+    return roles;
+  }
+
   private displayFormErrors(): void {
       let errorMessages: string[] = [];
       const findErrorsRecursive = (control: AbstractControl | null, path: string) => {
@@ -593,12 +652,8 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
                                   this.getDefaultDisplaySettings(); 
 
     if (this.configForm) {
-      this.configForm.reset();
-      this.models.clear();
-      this.shifts.clear();
-      this.periods.clear();
-      this.bonus_rules.clear();
-      this.clearCommissionControls();
+      this.configForm.reset(); // Full reset
+      this.clearAllFormArraysAndGroups(); // Explicit clear of dynamic parts
       this.setConditionalValidators();
     }
   }

@@ -36,11 +36,11 @@
               <c-card class="mb-3">
                 <c-card-header>
                   General Info
-                  <div class="float-end">
+                  <!-- <div class="float-end">
                     <button cButton color="primary" variant="outline" size="sm" (click)="openEditConfigModal('general_info')" [disabled]="loadingConfig">
                       <svg cIcon name="cilPencil" size="sm"></svg> Modify
                     </button>
-                  </div>
+                  </div> -->
                 </c-card-header>
                 <c-card-body>
                   <c-row class="mb-2 border-bottom pb-1 align-items-center">
@@ -92,7 +92,7 @@
                       </button>
                     </c-col>
                   </c-row>
-                  <c-row class="mb-0 align-items-center"> <!-- Removed border-bottom and mb-2 for the last item in this card -->
+                  <c-row class="mb-0 align-items-center"> 
                     <c-col sm="3" class="fw-semibold">Periods</c-col>
                     <c-col sm="6">
                       <ng-container *ngIf="guildConfig.periods && guildConfig.periods.length > 0; else noPeriods">
@@ -106,6 +106,32 @@
                       </button>
                     </c-col>
                   </c-row>
+                </c-card-body>
+              </c-card>
+
+              <!-- Top-Level Roles Card (New) -->
+              <c-card class="mb-3">
+                <c-card-header>
+                  General Role Settings (Numeric Values)
+                  <div class="float-end">
+                    <button cButton color="primary" variant="outline" size="sm" (click)="openEditConfigModal('top_level_roles')" [disabled]="loadingConfig">
+                      <svg cIcon name="cilTags" size="sm"></svg> Modify
+                    </button>
+                  </div>
+                </c-card-header>
+                <c-card-body>
+                  @if (guildConfig.roles && objectKeys(guildConfig.roles).length > 0) {
+                    <ul class="list-unstyled mb-0">
+                      @for (roleId of objectKeys(guildConfig.roles); track roleId) {
+                        <li class="border-bottom pb-1 mb-1">Role ID <code class="text-info">{{ roleId }}</code>: <strong class="text-success">{{ guildConfig.roles[roleId] }}</strong></li>
+                      }
+                    </ul>
+                  } @else {
+                    <div class="text-center text-muted py-3">
+                      <svg cIcon name="cilBan" size="xl" class="mb-2"></svg>
+                      <p>No general role settings defined.</p>
+                    </div>
+                  }
                 </c-card-body>
               </c-card>
 
@@ -198,7 +224,7 @@
                   @if (guildConfig.commission_settings.roles && objectKeys(guildConfig.commission_settings.roles).length > 0) {
                     <ul class="list-unstyled mb-0">
                       @for (roleId of objectKeys(guildConfig.commission_settings.roles); track roleId) {
-                        <li class="border-bottom pb-1 mb-1">Role <code class="text-primary">{{ roleId }}</code>: <strong>{{ guildConfig.commission_settings.roles[roleId].commission_percentage }}%</strong></li>
+                        <li class="border-bottom pb-1 mb-1">Role ID <code class="text-primary">{{ roleId }}</code>: <strong>{{ guildConfig.commission_settings.roles[roleId].commission_percentage }}%</strong></li>
                       }
                     </ul>
                   } @else {
@@ -225,7 +251,7 @@
                     <ul class="list-unstyled mb-0">
                       @for (userId of objectKeys(guildConfig.commission_settings.users); track userId) {
                         <li class="border-bottom pb-1 mb-1">
-                           User <code class="text-info">{{ userId }}</code>:
+                           User ID <code class="text-info">{{ userId }}</code>:
                            @if (guildConfig.commission_settings.users[userId].hourly_rate != null) {
                              <span class="ms-2"> Hourly Rate: <strong>{{ guildConfig.commission_settings.users[userId].hourly_rate | currency }}</strong></span>
                            }

@@ -15,7 +15,7 @@
       <form *ngIf="configForm" [formGroup]="configForm" (ngSubmit)="saveChanges()" novalidate>
 
         <!-- Guild ID -->
-        <ng-container *ngIf="editSection === 'full' || (isEditMode && editSection !== 'models' && editSection !== 'shifts' && editSection !== 'periods')">
+        <ng-container *ngIf="editSection === 'full' || (isEditMode && editSection !== 'models' && editSection !== 'shifts' && editSection !== 'periods' && editSection !== 'top_level_roles')">
           <c-card class="mb-3">
             <c-card-header>Guild Identification</c-card-header>
             <c-card-body>
@@ -124,7 +124,7 @@
           </c-card>
         </ng-container>
         
-        <!-- Button to open Display Settings Modal (only if full edit or display_settings edit) -->
+        <!-- Button to open Display Settings Modal -->
         <ng-container *ngIf="editSection === 'full' || editSection === 'display_settings'">
           <c-card class="mb-3">
             <c-card-header>Display & Bot Customization</c-card-header>
@@ -143,6 +143,34 @@
                   Show IDs: {{ currentDisplaySettings.show_ids ? 'Yes' : 'No' }}
                 </p>
               </div>
+            </c-card-body>
+          </c-card>
+        </ng-container>
+
+        <!-- Top-Level Roles Management -->
+        <ng-container *ngIf="editSection === 'full' || editSection === 'top_level_roles'">
+          <c-card class="mb-3">
+            <c-card-header>General Role Settings (Numeric)</c-card-header>
+            <c-card-body formGroupName="roles">
+              <div *ngIf="topLevelRoles && objectKeys(topLevelRoles.controls).length > 0; else noTopLevelRolesDefined">
+                <c-row *ngFor="let roleId of objectKeys(topLevelRoles.controls)" class="g-2 mb-2 align-items-center p-2 border rounded" [formGroupName]="roleId">
+                  <c-col sm="4">
+                    <label class="col-form-label text-truncate">Role ID: <code class="text-info">{{ roleId }}</code></label>
+                  </c-col>
+                  <c-col sm="8">
+                    <input cFormControl type="number" [formControlName]="roleId" required placeholder="Enter numeric value">
+                    <c-form-feedback [valid]="false" *ngIf="topLevelRoles.get(roleId)?.hasError('required')">
+                      Value is required.
+                    </c-form-feedback>
+                    <c-form-feedback [valid]="false" *ngIf="topLevelRoles.get(roleId)?.hasError('pattern')">
+                      Value must be a number.
+                    </c-form-feedback>
+                  </c-col>
+                </c-row>
+              </div>
+              <ng-template #noTopLevelRolesDefined>
+                <p class="text-muted">No general role settings defined. These are typically pre-configured or managed by system.</p>
+              </ng-template>
             </c-card-body>
           </c-card>
         </ng-container>
@@ -199,10 +227,10 @@
                 <div class="mb-3">
                   <h6 class="fw-semibold mb-1">By Role (%)</h6>
                   <div formGroupName="roles">
-                    <div *ngIf="commissionRoles && objectKeys(commissionRoles.controls).length > 0; else noRolesDefined">
+                    <div *ngIf="commissionRoles && objectKeys(commissionRoles.controls).length > 0; else noCommissionRolesDefined">
                       <c-row *ngFor="let roleId of objectKeys(commissionRoles.controls)" class="g-2 mb-2 align-items-center p-2 border rounded" [formGroupName]="roleId">
                         <c-col sm="4">
-                          <label class="col-form-label text-truncate">Role: <code class="text-primary">{{ roleId }}</code></label>
+                          <label class="col-form-label text-truncate">Role ID: <code class="text-primary">{{ roleId }}</code></label>
                         </c-col>
                         <c-col sm="8">
                           <div class="input-group">
@@ -212,18 +240,19 @@
                         </c-col>
                       </c-row>
                     </div>
-                    <ng-template #noRolesDefined><p class="text-muted">No role commissions defined.</p></ng-template>
+                    <ng-template #noCommissionRolesDefined><p class="text-muted">No role commissions defined.</p></ng-template>
                   </div>
                 </div>
               </ng-container>
+              <!-- Corrected *ngIf for the <hr> tag -->
               <hr *ngIf="editSection === 'full'">
               <ng-container *ngIf="editSection === 'full' || editSection === 'commission_settings_users'">
                 <div>
                   <h6 class="fw-semibold mb-1">By User (Overrides)</h6>
                   <div formGroupName="users">
-                    <div *ngIf="commissionUsers && objectKeys(commissionUsers.controls).length > 0; else noUsersDefined">
+                    <div *ngIf="commissionUsers && objectKeys(commissionUsers.controls).length > 0; else noCommissionUsersDefined">
                       <div *ngFor="let userId of objectKeys(commissionUsers.controls)" class="p-2 border rounded mb-2" [formGroupName]="userId">
-                        <label class="col-form-label text-truncate fw-medium">User: <code class="text-info">{{ userId }}</code></label>
+                        <label class="col-form-label text-truncate fw-medium">User ID: <code class="text-info">{{ userId }}</code></label>
                         <c-row class="g-3 align-items-center">
                           <c-col sm="6">
                             <label [for]="'hourly_rate_' + userId" class="small">Hourly Rate ($)</label>
@@ -238,7 +267,7 @@
                         </c-row>
                       </div>
                     </div>
-                    <ng-template #noUsersDefined><p class="text-muted">No user overrides defined.</p></ng-template>
+                    <ng-template #noCommissionUsersDefined><p class="text-muted">No user overrides defined.</p></ng-template>
                   </div>
                 </div>
               </ng-container>
