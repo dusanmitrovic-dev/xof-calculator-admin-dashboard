@@ -15,7 +15,7 @@
       <form *ngIf="configForm" [formGroup]="configForm" (ngSubmit)="saveChanges()" novalidate>
 
         <!-- Guild ID -->
-        <ng-container *ngIf="editSection === 'full' || isEditMode">
+        <ng-container *ngIf="editSection === 'full' || (isEditMode && editSection !== 'models' && editSection !== 'shifts' && editSection !== 'periods')">
           <c-card class="mb-3">
             <c-card-header>Guild Identification</c-card-header>
             <c-card-body>
@@ -37,29 +37,95 @@
           </c-card>
         </ng-container>
 
-        <!-- Button to open MSP Edit Modal -->
-        <ng-container *ngIf="editSection === 'full'">
+        <!-- Models Management -->
+        <ng-container *ngIf="editSection === 'full' || editSection === 'models'">
           <c-card class="mb-3">
-            <c-card-header>Basic Definitions (Models, Shifts, Periods)</c-card-header>
-            <c-card-body class="text-center">
-              <p class="mb-2">Manage the core payout models, work shifts, and earning periods.</p>
-              <button cButton type="button" color="info" variant="outline" (click)="openMspSettingsModal()">
-                <svg cIcon name="cilSettings" class="me-2"></svg>Manage Models, Shifts & Periods
-              </button>
-              <div class="mt-2 small text-muted">
-                  <span class="me-3">Models: {{ currentMspData.models.length || 0 }}</span>
-                  <span class="me-3">Shifts: {{ currentMspData.shifts.length || 0 }}</span>
-                  <span>Periods: {{ currentMspData.periods.length || 0 }}</span>
+            <c-card-header>Manage Models</c-card-header>
+            <c-card-body formArrayName="models">
+              <div class="mb-3">
+                <label cLabel for="newModelName" class="fw-semibold">Add New Model</label>
+                <div class="input-group">
+                  <input cFormControl type="text" id="newModelName" placeholder="Enter model name" #newModelInput 
+                         (blur)="handleItemAddOnBlur(models, newModelInput)"
+                         (keydown.enter)="handleItemAdd(models, newModelInput); $event.preventDefault()">
+                  <button cButton type="button" color="success" variant="outline" (click)="handleItemAdd(models, newModelInput)">
+                    <svg cIcon name="cilPlus" size="sm"></svg> Add Model
+                  </button>
+                </div>
               </div>
-              <div *ngIf="submitAttempted && editSection === 'full' && (!currentMspData.models.length || !currentMspData.shifts.length || !currentMspData.periods.length)" class="text-danger small mt-1">
-                  Models, Shifts, and Periods are required. Please configure them.
+              <div *ngIf="models.controls.length === 0" class="text-center text-muted py-3">
+                <p>No models defined.</p>
+              </div>
+              <div *ngFor="let modelCtrl of models.controls; let i=index" class="d-flex justify-content-between align-items-center mb-2 p-2 border rounded">
+                <span>{{ modelCtrl.value }}</span>
+                <button cButton type="button" color="danger" variant="ghost" size="sm" (click)="removeItem(models, i)" title="Remove Model">
+                  <svg cIcon name="cilTrash" size="lg"></svg>
+                </button>
+              </div>
+            </c-card-body>
+          </c-card>
+        </ng-container>
+
+        <!-- Shifts Management -->
+        <ng-container *ngIf="editSection === 'full' || editSection === 'shifts'">
+          <c-card class="mb-3">
+            <c-card-header>Manage Shifts</c-card-header>
+            <c-card-body formArrayName="shifts">
+              <div class="mb-3">
+                <label cLabel for="newShiftName" class="fw-semibold">Add New Shift</label>
+                <div class="input-group">
+                  <input cFormControl type="text" id="newShiftName" placeholder="Enter shift name" #newShiftInput 
+                         (blur)="handleItemAddOnBlur(shifts, newShiftInput)"
+                         (keydown.enter)="handleItemAdd(shifts, newShiftInput); $event.preventDefault()">
+                  <button cButton type="button" color="success" variant="outline" (click)="handleItemAdd(shifts, newShiftInput)">
+                    <svg cIcon name="cilPlus" size="sm"></svg> Add Shift
+                  </button>
+                </div>
+              </div>
+              <div *ngIf="shifts.controls.length === 0" class="text-center text-muted py-3">
+                <p>No shifts defined.</p>
+              </div>
+              <div *ngFor="let shiftCtrl of shifts.controls; let i=index" class="d-flex justify-content-between align-items-center mb-2 p-2 border rounded">
+                <span>{{ shiftCtrl.value }}</span>
+                <button cButton type="button" color="danger" variant="ghost" size="sm" (click)="removeItem(shifts, i)" title="Remove Shift">
+                  <svg cIcon name="cilTrash" size="lg"></svg>
+                </button>
+              </div>
+            </c-card-body>
+          </c-card>
+        </ng-container>
+
+        <!-- Periods Management -->
+        <ng-container *ngIf="editSection === 'full' || editSection === 'periods'">
+          <c-card class="mb-3">
+            <c-card-header>Manage Periods</c-card-header>
+            <c-card-body formArrayName="periods">
+              <div class="mb-3">
+                <label cLabel for="newPeriodName" class="fw-semibold">Add New Period</label>
+                <div class="input-group">
+                  <input cFormControl type="text" id="newPeriodName" placeholder="Enter period name" #newPeriodInput 
+                         (blur)="handleItemAddOnBlur(periods, newPeriodInput)"
+                         (keydown.enter)="handleItemAdd(periods, newPeriodInput); $event.preventDefault()">
+                  <button cButton type="button" color="success" variant="outline" (click)="handleItemAdd(periods, newPeriodInput)">
+                    <svg cIcon name="cilPlus" size="sm"></svg> Add Period
+                  </button>
+                </div>
+              </div>
+              <div *ngIf="periods.controls.length === 0" class="text-center text-muted py-3">
+                <p>No periods defined.</p>
+              </div>
+              <div *ngFor="let periodCtrl of periods.controls; let i=index" class="d-flex justify-content-between align-items-center mb-2 p-2 border rounded">
+                <span>{{ periodCtrl.value }}</span>
+                <button cButton type="button" color="danger" variant="ghost" size="sm" (click)="removeItem(periods, i)" title="Remove Period">
+                  <svg cIcon name="cilTrash" size="lg"></svg>
+                </button>
               </div>
             </c-card-body>
           </c-card>
         </ng-container>
         
-        <!-- Button to open Display Settings Modal (only if full edit) -->
-        <ng-container *ngIf="editSection === 'full'">
+        <!-- Button to open Display Settings Modal (only if full edit or display_settings edit) -->
+        <ng-container *ngIf="editSection === 'full' || editSection === 'display_settings'">
           <c-card class="mb-3">
             <c-card-header>Display & Bot Customization</c-card-header>
             <c-card-body class="text-center">
@@ -205,8 +271,7 @@
         <button cButton color="primary" type="submit" (click)="saveChanges()" 
                 [disabled]="isLoading || 
                             (configForm && configForm.invalid && !configForm.dirty && isEditMode && editSection === 'full') || 
-                            (configForm && configForm.invalid && submitAttempted) || 
-                            (editSection === 'full' && (!currentMspData.models.length || !currentMspData.shifts.length || !currentMspData.periods.length) && submitAttempted)">
+                            (configForm && configForm.invalid && submitAttempted)">
             <c-spinner *ngIf="isLoading" component="span" size="sm" aria-hidden="true" class="me-1"></c-spinner>
             <svg *ngIf="!isLoading" cIcon [name]="isEditMode ? 'cilSave' : 'cilPlus'" size="sm" class="me-1"></svg>
             {{ isLoading ? 'Saving...' : (isEditMode ? 'Save Changes' : 'Create Config') }}
