@@ -252,9 +252,9 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
   private buildForm(): FormGroup {
     return this.fb.group({
       guild_id: [{ value: this.guildConfig?.guild_id || '', disabled: !!this.guildConfig }, [Validators.pattern('^[0-9]+$')]],
-      models: this.fb.array(this.guildConfig?.models?.map(m => this.fb.control(m.name, Validators.required)) || []),
-      shifts: this.fb.array(this.guildConfig?.shifts?.map(s => this.fb.control(s.name, Validators.required)) || []),
-      periods: this.fb.array(this.guildConfig?.periods?.map(p => this.fb.control(p.name, Validators.required)) || []),
+      models: this.fb.array(this.guildConfig?.models?.map(m => this.fb.control(m.name)) || []),
+      shifts: this.fb.array(this.guildConfig?.shifts?.map(s => this.fb.control(s.name)) || []),
+      periods: this.fb.array(this.guildConfig?.periods?.map(p => this.fb.control(p.name)) || []),
       bonus_rules: this.fb.array(this.guildConfig?.bonus_rules?.map(rule =>
         this.fb.group({
           from: [rule.from, [Validators.required, Validators.min(0)]],
