@@ -186,7 +186,6 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
       this.currentDisplaySettings = this.getDefaultDisplaySettings();
       this.configForm.get('guild_id')?.enable();
       this.configForm.get('guild_id')?.setValue(this.guildId || '');
-      // Ensure default empty state for create mode is handled by buildForm and patchForm with null config
     }
     this.updateTitle();
     this.setConditionalValidators();
@@ -217,10 +216,9 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
       case 'commission_settings_users':
         this.title = `Manage User Overrides for ${baseTitle}`;
         break;
-      case 'top_level_roles': // New section title
+      case 'top_level_roles':
         this.title = `Manage General Role Settings for ${baseTitle}`;
         break;
-      case 'general_info': 
       case 'display_settings': 
          this.title = `Manage Display Settings for ${baseTitle}`;
          break;
@@ -243,7 +241,7 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
         }, { validators: this.bonusRuleValidator })
       ) || []),
       commission_settings: this.buildCommissionSettingsForm(),
-      roles: this.fb.group({}) // New FormGroup for top_level_roles
+      roles: this.fb.group({}) 
     });
   }
 
@@ -276,17 +274,16 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
     this.setStringArrayData(this.periods, config.periods);
     this.patchBonusRules(config.bonus_rules);
     this.patchCommissionSettings(config.commission_settings);
-    this.patchTopLevelRoles(config.roles); // New patch method for top-level roles
+    this.patchTopLevelRoles(config.roles); 
   }
 
   private patchTopLevelRoles(rolesData: { [roleId: string]: number } | undefined): void {
     const rolesFormGroup = this.topLevelRoles;
-    // Clear existing controls
     Object.keys(rolesFormGroup.controls).forEach(key => rolesFormGroup.removeControl(key));
 
     if (rolesData) {
       Object.entries(rolesData).forEach(([roleId, value]) => {
-        if (roleId) { // Ensure roleId is valid
+        if (roleId) { 
           rolesFormGroup.addControl(roleId, this.fb.control(value, [Validators.required, Validators.pattern('^[0-9]+$')]));
         }
       });
@@ -336,7 +333,7 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
   private patchCommissionSettings(settings: CommissionSettings | undefined): void {
     const rolesGroup = this.commissionRoles;
     const usersGroup = this.commissionUsers;
-    this.clearCommissionControls(); // Clears only commission_settings.roles and .users
+    this.clearCommissionControls(); 
     if (settings?.roles) {
       Object.entries(settings.roles).forEach(([roleId, roleSetting]) => {
          if (roleId && roleSetting != null) {
@@ -386,7 +383,7 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
   get bonus_rules(): FormArray { return this.configForm.get('bonus_rules') as FormArray; }
   get commissionRoles(): FormGroup { return this.configForm.get('commission_settings.roles') as FormGroup; }
   get commissionUsers(): FormGroup { return this.configForm.get('commission_settings.users') as FormGroup; }
-  get topLevelRoles(): FormGroup { return this.configForm.get('roles') as FormGroup; } // New getter for top-level roles
+  get topLevelRoles(): FormGroup { return this.configForm.get('roles') as FormGroup; }
 
   addItemManually(array: FormArray, value: string): void {
     if (value) {
@@ -463,7 +460,7 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
             bonus_rules: (formValue.bonus_rules || []).map((rule: any) => ({ from: Number(rule.from), to: Number(rule.to), amount: Number(rule.amount) })),
             display_settings: { ...(this.currentDisplaySettings || this.originalConfig?.display_settings || this.getDefaultDisplaySettings()) },
             commission_settings: this.prepareCommissionSettingsPayload(formValue.commission_settings),
-            roles: this.prepareTopLevelRolesPayload(formValue.roles), // Use formValue for roles
+            roles: this.prepareTopLevelRolesPayload(formValue.roles), 
           };
           if (this.isEditMode && this.guildConfig?._id) createOrUpdatePayload._id = this.guildConfig._id;
 
@@ -518,7 +515,7 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
           saveObservable = this.guildConfigService.updateCommissionSettings(effectiveGuildId, fullCommissionSettingsPayload);
           break;
         }
-      case 'top_level_roles': // New case for dedicated top-level roles update
+      case 'top_level_roles': 
         {
           const rolesPayload = this.prepareTopLevelRolesPayload(formValue.roles);
           saveObservable = this.guildConfigService.updateRoles(effectiveGuildId, rolesPayload);
@@ -588,7 +585,6 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
     const roles: { [roleId: string]: number } = {};
     if (formRoles) {
       Object.keys(formRoles).forEach(roleId => {
-        // Ensure the value is a number before assigning
         const val = Number(formRoles[roleId]);
         if (!isNaN(val)) {
             roles[roleId] = val;
@@ -652,8 +648,8 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
                                   this.getDefaultDisplaySettings(); 
 
     if (this.configForm) {
-      this.configForm.reset(); // Full reset
-      this.clearAllFormArraysAndGroups(); // Explicit clear of dynamic parts
+      this.configForm.reset(); 
+      this.clearAllFormArraysAndGroups(); 
       this.setConditionalValidators();
     }
   }
