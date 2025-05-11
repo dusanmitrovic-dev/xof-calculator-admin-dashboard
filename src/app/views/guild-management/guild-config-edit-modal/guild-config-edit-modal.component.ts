@@ -54,11 +54,11 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
   submitAttempted: boolean = false;
   originalConfig: GuildConfig | null = null;
   isEditingDisplaySettingsSubFlow: boolean = false;
-  // This will hold the latest state of display settings, whether from init or sub-modal result.
+  // This holds the LATEST state of display settings, whether from init or sub-modal result.
   currentDisplaySettings!: DisplaySettingsModalData; 
 
   get isEditMode(): boolean {
-    return !!this.guildConfig;
+    return !!this.guildConfig; // Based on the initial @Input
   }
 
   objectKeys = Object.keys;
@@ -72,8 +72,7 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
 
   ngOnInit(): void {
     this.configForm = this.buildForm();
-    // Initial value for currentDisplaySettings based on input or defaults.
-    // prepareFormForMode will refine this further if guildConfig is present.
+    // Initial value for currentDisplaySettings. prepareFormForMode will refine this.
     this.currentDisplaySettings = {
       ...this.getDefaultDisplaySettings(),
       ...(this.guildConfig?.display_settings || {}),
@@ -84,6 +83,7 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
     if (changes['visible'] && this.visible) {
       this.isEditingDisplaySettingsSubFlow = false;
       this.prepareFormForMode(); 
+      // Check isEditMode (based on initial guildConfig) before attempting sub-flow
       if (this.isEditMode && this.editSection === 'display_settings') { 
         this.handleDisplaySettingsSubFlow();
       }
@@ -96,18 +96,30 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
     }
   }
 
-  // Helper to get the definitive initial settings for the sub-modal
+  // Helper to get the definitive initial settings for the sub-modal, based on DB state if available.
   private getInitialDisplaySettingsForSubModal(): DisplaySettingsModalData {
-    return {
-      ...this.getDefaultDisplaySettings(),
-      ...(this.originalConfig?.display_settings || {}), // Prioritize originalConfig (DB snapshot)
-    };
+    if (this.isEditMode && this.originalConfig) {
+      // If editing, merge defaults with the original (DB snapshot) display settings
+      return {
+        ...this.getDefaultDisplaySettings(),
+        ...(this.originalConfig?.display_settings || {}),
+      };
+    } else {
+      // If creating new, or originalConfig isn't set (shouldn't happen if isEditMode is true), use defaults.
+      return this.getDefaultDisplaySettings();
+    }
   }
 
   private handleDisplaySettingsSubFlow(): void {
+    // Ensure originalConfig is available if in edit mode, as effectiveGuildId depends on it.
+    if (this.isEditMode && !this.originalConfig) {
+        this.errorMessage = "Original configuration data is missing. Cannot edit display settings.";
+        this.closeModal();
+        return;
+    }
     const effectiveGuildId = this.originalConfig?.guild_id;
     if (!effectiveGuildId) {
-        this.errorMessage = "Guild ID is missing (originalConfig not set). Cannot edit display settings.";
+        this.errorMessage = "Guild ID is missing. Cannot edit display settings.";
         this.closeModal();
         return;
     }
@@ -137,10 +149,10 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
   }
 
   openDisplaySettingsModal(): void { // Called when editSection is 'full'
-    if (!this.originalConfig) {
-        // Should not happen if 'full' edit is for an existing config, but as a safeguard
-        console.error("Original config not available for editing display settings.");
-        this.currentDisplaySettings = this.getDefaultDisplaySettings(); // Fallback for safety if sub-modal were to open
+    if (this.isEditMode && !this.originalConfig) {
+        this.errorMessage = "Original configuration data is missing. Cannot edit display settings.";
+        // Potentially close or show an error, but don't proceed to open sub-modal without originalConfig if editing.
+        return;
     }
     const modalRef = this.modalService.open(DisplaySettingsEditModalComponent, { centered: true, backdrop: 'static' });
     
@@ -209,8 +221,8 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
     this.clearAllFormArraysAndGroups();
 
     if (this.isEditMode && this.guildConfig) { // Check this.guildConfig for initial mode detection
-      this.originalConfig = JSON.parse(JSON.stringify(this.guildConfig)); // Create snapshot
-      // Initialize currentDisplaySettings based on the definitive originalConfig
+      this.originalConfig = JSON.parse(JSON.stringify(this.guildConfig)); 
+      // Set currentDisplaySettings based on originalConfig, which is the snapshot from DB for this session
       this.currentDisplaySettings = {
         ...this.getDefaultDisplaySettings(),
         ...(this.originalConfig?.display_settings || {}), 
@@ -238,7 +250,6 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
       case 'full':
         this.title = this.isEditMode && guildIdentifier ? `Edit Guild Configuration (${guildIdentifier})` : 'Create New Guild Configuration';
         break;
-      // ... other cases ...
       case 'models':
         this.title = `Manage Models for ${baseTitle}`;
         break;
@@ -301,6 +312,7 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
         return;
     }
     
+    // Guild ID is set and disabled in prepareFormForMode for existing configs
     this.setStringArrayData(this.models, config.models);
     this.setStringArrayData(this.shifts, config.shifts);
     this.setStringArrayData(this.periods, config.periods);
@@ -477,7 +489,8 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
             shifts: (formValue.shifts || []).map((name: string) => name), 
             periods: (formValue.periods || []).map((name: string) => name), 
             bonus_rules: (formValue.bonus_rules || []).map((rule: any) => ({ from: Number(rule.from), to: Number(rule.to), amount: Number(rule.amount) })),
-            display_settings: { ...this.currentDisplaySettings } as DisplaySettings, // Uses the updated currentDisplaySettings
+            // currentDisplaySettings holds the definitive, merged state of display settings
+            display_settings: { ...this.currentDisplaySettings } as DisplaySettings,
             commission_settings: this.prepareCommissionSettingsPayload(formValue.commission_settings),
             roles: this.prepareTopLevelRolesPayload(formValue.roles), 
           };
@@ -490,7 +503,6 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
           }
           break;
         }
-      // ... other cases (models, shifts, etc.) ...
       case 'models':
         {
           const models: string[] = formValue.models || [];
