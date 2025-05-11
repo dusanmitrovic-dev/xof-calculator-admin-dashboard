@@ -36,11 +36,11 @@
               <c-card class="mb-3">
                 <c-card-header>
                   General Info
-                  <!-- <div class="float-end">
-                    <button cButton color="primary" variant="outline" size="sm" (click)="openEditConfigModal('general_info')" [disabled]="loadingConfig">
+                  <div class="float-end">
+                    <button cButton color="primary" variant="outline" size="sm" (click)="openEditConfigModal('display_settings')" [disabled]="loadingConfig">
                       <svg cIcon name="cilPencil" size="sm"></svg> Modify
                     </button>
-                  </div> -->
+                  </div>
                 </c-card-header>
                 <c-card-body>
                   <c-row class="mb-2 border-bottom pb-1 align-items-center">
@@ -109,7 +109,7 @@
                 </c-card-body>
               </c-card>
 
-              <!-- Top-Level Roles Card (New) -->
+              <!-- Top-Level Roles Card -->
               <c-card class="mb-3">
                 <c-card-header>
                   General Role Settings (Numeric Values)
@@ -138,7 +138,7 @@
               <!-- Display Settings Card -->
               <c-card class="mb-3">
                 <c-card-header>
-                  Display Settings
+                  Display Settings (Bot Behavior)
                   <div class="float-end">
                     <button cButton color="primary" variant="outline" size="sm" (click)="openEditConfigModal('display_settings')" [disabled]="loadingConfig">
                       <svg cIcon name="cilPencil" size="sm"></svg> Modify
