@@ -157,7 +157,6 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
     const guildIdCtrl = this.configForm.get('guild_id');
     guildIdCtrl?.clearValidators();
     guildIdCtrl?.setValidators([Validators.pattern('^[0-9]+$')]);
-    // Guild ID is required only if creating a new config (not in edit mode for 'full', or always when creating new)
     if (!this.isEditMode && this.editSection === 'full') { 
       guildIdCtrl?.addValidators(Validators.required);
     }
@@ -175,17 +174,16 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
     this.configForm.reset();
     this.clearAllFormArraysAndGroups();
 
-    // Determine if we are in edit mode based on the presence of guildConfig
     const isInEditMode = !!this.guildConfig;
 
     if (isInEditMode && this.guildConfig) {
       this.originalConfig = JSON.parse(JSON.stringify(this.guildConfig));
       this.currentDisplaySettings = {
         ...this.getDefaultDisplaySettings(),
-        ...(this.originalConfig.display_settings || {}),
+        ...(this.originalConfig?.display_settings || {}), // Corrected: Added optional chaining
       };
       this.patchForm(this.originalConfig); 
-      this.configForm.get('guild_id')?.setValue(this.originalConfig.guild_id, { emitEvent: false });
+      this.configForm.get('guild_id')?.setValue(this.originalConfig?.guild_id, { emitEvent: false }); // Corrected: Added optional chaining
       this.configForm.get('guild_id')?.disable();
     } else {
       this.originalConfig = null;
@@ -194,13 +192,12 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
       this.configForm.get('guild_id')?.enable();
       this.configForm.get('guild_id')?.setValue(this.guildId || '');
     }
-    this.updateTitle(); // Update title based on current mode (edit/create)
+    this.updateTitle();
     this.setConditionalValidators();
     this.changeDetectorRef.detectChanges();
   }
 
   private updateTitle(): void {
-    // Use originalConfig to determine guild_id in edit mode, as guildConfig input might change
     const guildIdentifier = this.originalConfig?.guild_id || this.guildId;
     const baseTitle = this.isEditMode && guildIdentifier ? `Guild ${guildIdentifier}` : 'New Guild Configuration';
     
@@ -239,7 +236,7 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
 
   private buildForm(): FormGroup {
     return this.fb.group({
-      guild_id: [{ value: '', disabled: false }, [Validators.pattern('^[0-9]+$')]], // Initial state, enabled
+      guild_id: [{ value: '', disabled: false }, [Validators.pattern('^[0-9]+$')]],
       models: this.fb.array([]),
       shifts: this.fb.array([]),
       periods: this.fb.array([]),
@@ -262,15 +259,11 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
         this.clearAllFormArraysAndGroups();
         this.patchTopLevelRoles(undefined);
         this.patchCommissionSettings(undefined);
-        // Guild ID should be enabled for new config
         const guildIdCtrl = this.configForm.get('guild_id');
         guildIdCtrl?.enable();
         guildIdCtrl?.setValue(this.guildId || '');
         return;
     }
-
-    // For existing config, guild_id is patched by prepareFormForMode and then disabled
-    // this.configForm.patchValue({ guild_id: config.guild_id }, { emitEvent: false });
     
     this.setStringArrayData(this.models, config.models);
     this.setStringArrayData(this.shifts, config.shifts);
@@ -444,7 +437,6 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
     this.isLoading = true;
     this.errorMessage = null;
     const formValue = this.configForm.getRawValue();
-    // Use originalConfig.guild_id if in edit mode, otherwise formValue.guild_id for new
     const effectiveGuildId = (this.isEditMode && this.originalConfig) ? this.originalConfig.guild_id : formValue.guild_id;
 
     if (!effectiveGuildId) {
