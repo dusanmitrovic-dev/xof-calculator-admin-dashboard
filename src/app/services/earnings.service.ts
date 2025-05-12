@@ -1,7 +1,8 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core'; // Import inject
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { Observable, throwError } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { Observable, throwError, forkJoin, of } from 'rxjs'; // Import forkJoin, of
+import { catchError, map, switchMap, defaultIfEmpty } from 'rxjs/operators'; // Import switchMap, defaultIfEmpty
+import { UserService, AvailableGuild } from './user.service'; // Import UserService and AvailableGuild
 
 // Define an interface for the Earning structure
 export interface Earning {
@@ -29,22 +30,66 @@ interface DeleteResponse {
 })
 export class EarningsService {
   private apiUrl = '/api/earnings'; // Base URL
+  private userService = inject(UserService); // Inject UserService
 
   constructor(private http: HttpClient) { }
 
   /**
    * GET /api/earnings/:guild_id
    * Fetches all earning records for a specific guild.
+   * Renamed from getGuildEarnings to avoid confusion with the new method
    */
-  getGuildEarnings(guildId: string): Observable<Earning[]> {
+  getEarningsForGuild(guildId: string): Observable<Earning[]> {
     if (!guildId) {
       return throwError(() => new Error('Guild ID cannot be empty when fetching earnings.'));
     }
     console.log(`EarningsService: Fetching earnings for guild ${guildId}...`);
     return this.http.get<Earning[]>(`${this.apiUrl}/${guildId}`).pipe(
-      catchError(this.handleError)
+      map(earnings => earnings || []), // Ensure array even if null/undefined returned
+      catchError(err => {
+          console.error(`EarningsService: Error fetching earnings for guild ${guildId}:`, err.message);
+          // Return an empty array for this specific guild on error to allow forkJoin to complete
+          return of([]);
+      })
     );
   }
+
+  /**
+   * Fetches earnings for all available guilds and combines them.
+   */
+  getAllEarningsAcrossGuilds(): Observable<Earning[]> {
+    console.log('EarningsService: Fetching all earnings across all guilds...');
+    return this.userService.getAvailableGuildIds().pipe(
+        switchMap((guilds: AvailableGuild[]) => {
+            console.log(`EarningsService: Found ${guilds.length} available guilds.`);
+            if (!guilds || guilds.length === 0) {
+                // No guilds found, return an empty array immediately
+                return of([]);
+            }
+
+            // Create an array of Observables, each fetching earnings for one guild
+            const earningsObservables = guilds.map(guild =>
+                this.getEarningsForGuild(guild.guild_id)
+            );
+
+            // Use forkJoin to run all fetches in parallel and combine results
+            // forkJoin emits an array containing the results of each inner observable
+            // We use defaultIfEmpty([]) in case the earningsObservables array is empty,
+            // although the previous check should prevent this.
+            return forkJoin(earningsObservables).pipe(
+                defaultIfEmpty([] as Earning[][]) // Ensure forkJoin emits even if input is empty
+            );
+        }),
+        map((arrayOfEarningsArrays: Earning[][]) => {
+            // Flatten the array of arrays into a single array of Earning objects
+            const allEarnings = arrayOfEarningsArrays.flat();
+            console.log(`EarningsService: Total earnings fetched across all guilds: ${allEarnings.length}`);
+            return allEarnings;
+        }),
+        catchError(this.handleError) // Catch errors from userService.getAvailableGuildIds or the overall process
+    );
+}
+
 
   /**
    * POST /api/earnings/:guild_id
@@ -103,7 +148,7 @@ export class EarningsService {
    * Updated URL to match backend route definition.
    */
   deleteEarning(guildId: string, earningId: string): Observable<DeleteResponse> {
-    // Note: guildId is kept as an argument for potential future checks or context, 
+    // Note: guildId is kept as an argument for potential future checks or context,
     // but it's not used in the URL per the current route definition.
     if (!earningId) {
       return throwError(() => new Error('Earning ID cannot be empty for delete.'));

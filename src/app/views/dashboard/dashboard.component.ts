@@ -1,29 +1,28 @@
-import { DOCUMENT, NgStyle } from '@angular/common';
-import { Component, DestroyRef, effect, inject, OnInit, Renderer2, signal, WritableSignal } from '@angular/core';
-import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { ChartOptions } from 'chart.js';
+import { Component, OnInit, inject } from '@angular/core';
+import { UntypedFormControl, UntypedFormGroup, ReactiveFormsModule } from '@angular/forms';
+import { EarningsService, Earning } from '../../services/earnings.service';
+import { map } from 'rxjs/operators';
+
+// Import CoreUI components
 import {
-  AvatarComponent,
-  ButtonDirective,
-  ButtonGroupComponent,
-  CardBodyComponent,
-  CardComponent,
-  CardFooterComponent,
-  CardHeaderComponent,
-  ColComponent,
-  FormCheckLabelDirective,
-  GutterDirective,
-  ProgressBarDirective,
-  ProgressComponent,
+  ContainerComponent,
   RowComponent,
-  TableDirective,
-  TextColorDirective
+  ColComponent,
+  CardComponent,
+  CardHeaderComponent,
+  CardBodyComponent,
+  CardFooterComponent,
+  ProgressComponent,
+  ProgressBarComponent,
+  TextColorDirective,
+  GutterDirective // Import GutterDirective
 } from '@coreui/angular';
 import { ChartjsComponent } from '@coreui/angular-chartjs';
-import { IconDirective } from '@coreui/icons-angular';
 
-import { WidgetsBrandComponent } from '../widgets/widgets-brand/widgets-brand.component';
+// Import Custom Widget Components (Update paths if necessary)
 import { WidgetsDropdownComponent } from '../widgets/widgets-dropdown/widgets-dropdown.component';
+import { WidgetsBrandComponent } from '../widgets/widgets-brand/widgets-brand.component';
+
 import { DashboardChartsData, IChartProps } from './dashboard-charts-data';
 
 interface IUser {
@@ -41,149 +40,120 @@ interface IUser {
 }
 
 @Component({
-    templateUrl: 'dashboard.component.html',
-    styleUrls: ['dashboard.component.scss'],
-    // imports: [WidgetsDropdownComponent, TextColorDirective, CardComponent, CardBodyComponent, RowComponent, ColComponent, ButtonDirective, IconDirective, ReactiveFormsModule, ButtonGroupComponent, FormCheckLabelDirective, ChartjsComponent, NgStyle, CardFooterComponent, GutterDirective, ProgressBarDirective, ProgressComponent, WidgetsBrandComponent, CardHeaderComponent, TableDirective, AvatarComponent]
+  templateUrl: 'dashboard.component.html',
+  styleUrls: ['dashboard.component.scss'],
+  standalone: true,
+  imports: [
+    ReactiveFormsModule,
+    ContainerComponent,
+    RowComponent,
+    ColComponent,
+    CardComponent,
+    CardHeaderComponent,
+    CardBodyComponent,
+    CardFooterComponent,
+    ProgressComponent,
+    ProgressBarComponent,
+    ChartjsComponent,
+    WidgetsDropdownComponent,
+    WidgetsBrandComponent,
+    TextColorDirective,
+    GutterDirective // Add GutterDirective here
+  ]
 })
 export class DashboardComponent implements OnInit {
-
-  readonly #destroyRef: DestroyRef = inject(DestroyRef);
-  readonly #document: Document = inject(DOCUMENT);
-  readonly #renderer: Renderer2 = inject(Renderer2);
-  readonly #chartsData: DashboardChartsData = inject(DashboardChartsData);
+  private earningsService = inject(EarningsService);
+  chartsData: DashboardChartsData;
+  public uniqueUserCount: number = 0;
 
   public users: IUser[] = [
-    {
-      name: 'Yiorgos Avraamu',
-      state: 'New',
-      registered: 'Jan 1, 2021',
-      country: 'Us',
-      usage: 50,
-      period: 'Jun 11, 2021 - Jul 10, 2021',
-      payment: 'Mastercard',
-      activity: '10 sec ago',
-      avatar: './assets/images/avatars/1.jpg',
-      status: 'success',
-      color: 'success'
-    },
-    {
-      name: 'Avram Tarasios',
-      state: 'Recurring ',
-      registered: 'Jan 1, 2021',
-      country: 'Br',
-      usage: 10,
-      period: 'Jun 11, 2021 - Jul 10, 2021',
-      payment: 'Visa',
-      activity: '5 minutes ago',
-      avatar: './assets/images/avatars/2.jpg',
-      status: 'danger',
-      color: 'info'
-    },
-    {
-      name: 'Quintin Ed',
-      state: 'New',
-      registered: 'Jan 1, 2021',
-      country: 'In',
-      usage: 74,
-      period: 'Jun 11, 2021 - Jul 10, 2021',
-      payment: 'Stripe',
-      activity: '1 hour ago',
-      avatar: './assets/images/avatars/3.jpg',
-      status: 'warning',
-      color: 'warning'
-    },
-    {
-      name: 'Enéas Kwadwo',
-      state: 'Sleep',
-      registered: 'Jan 1, 2021',
-      country: 'Fr',
-      usage: 98,
-      period: 'Jun 11, 2021 - Jul 10, 2021',
-      payment: 'Paypal',
-      activity: 'Last month',
-      avatar: './assets/images/avatars/4.jpg',
-      status: 'secondary',
-      color: 'danger'
-    },
-    {
-      name: 'Agapetus Tadeáš',
-      state: 'New',
-      registered: 'Jan 1, 2021',
-      country: 'Es',
-      usage: 22,
-      period: 'Jun 11, 2021 - Jul 10, 2021',
-      payment: 'ApplePay',
-      activity: 'Last week',
-      avatar: './assets/images/avatars/5.jpg',
-      status: 'success',
-      color: 'primary'
-    },
-    {
-      name: 'Friderik Dávid',
-      state: 'New',
-      registered: 'Jan 1, 2021',
-      country: 'Pl',
-      usage: 43,
-      period: 'Jun 11, 2021 - Jul 10, 2021',
-      payment: 'Amex',
-      activity: 'Yesterday',
-      avatar: './assets/images/avatars/6.jpg',
-      status: 'info',
-      color: 'dark'
-    }
+     { name: 'Yiorgos Avraamu', state: 'New', registered: 'Jan 1, 2023', country: 'Us', usage: 50, period: 'Jun 11, 2023 - Jul 10, 2023', payment: 'Mastercard', activity: '10 sec ago', avatar: './assets/images/avatars/1.jpg', status: 'success', color: 'success' },
+     { name: 'Avram Tarasios', state: 'Recurring', registered: 'Jan 1, 2023', country: 'Br', usage: 10, period: 'Jun 11, 2023 - Jul 10, 2023', payment: 'Visa', activity: '5 minutes ago', avatar: './assets/images/avatars/2.jpg', status: 'danger', color: 'danger' },
+     { name: 'Quintin Roup', state: 'New', registered: 'Jan 1, 2023', country: 'In', usage: 74, period: 'Jun 11, 2023 - Jul 10, 2023', payment: 'Stripe', activity: '1 hour ago', avatar: './assets/images/avatars/3.jpg', status: 'warning', color: 'warning' },
+     { name: 'Enéas Kwadwo', state: 'Sleep', registered: 'Jan 1, 2023', country: 'Fr', usage: 98, period: 'Jun 11, 2023 - Jul 10, 2023', payment: 'Paypal', activity: 'Last month', avatar: './assets/images/avatars/4.jpg', status: 'secondary', color: 'secondary' },
+     { name: 'Agapetus Tadeáš', state: 'New', registered: 'Jan 1, 2023', country: 'Es', usage: 22, period: 'Jun 11, 2023 - Jul 10, 2023', payment: 'ApplePay', activity: 'Last week', avatar: './assets/images/avatars/5.jpg', status: 'success', color: 'success' },
+     { name: 'Friderik Dávid', state: 'New', registered: 'Jan 1, 2023', country: 'Pl', usage: 43, period: 'Jun 11, 2023 - Jul 10, 2023', payment: 'Amex', activity: 'Yesterday', avatar: './assets/images/avatars/6.jpg', status: 'info', color: 'info' }
   ];
 
-  public mainChart: IChartProps = { type: 'line' };
-  public mainChartRef: WritableSignal<any> = signal(undefined);
-  #mainChartRefEffect = effect(() => {
-    if (this.mainChartRef()) {
-      this.setChartStyles();
-    }
-  });
+  public mainChart!: IChartProps;
   public chart: Array<IChartProps> = [];
-  public trafficRadioGroup = new FormGroup({
-    trafficRadio: new FormControl('Month')
+  public trafficRadioGroup = new UntypedFormGroup({
+    trafficRadio: new UntypedFormControl('Month')
   });
+
+  constructor(chartsData: DashboardChartsData) {
+    this.chartsData = chartsData;
+  }
 
   ngOnInit(): void {
     this.initCharts();
-    this.updateChartOnColorModeChange();
+    this.fetchUniqueUserCount();
   }
 
   initCharts(): void {
-    this.mainChart = this.#chartsData.mainChart;
+    this.mainChart = this.chartsData.mainChart;
   }
 
   setTrafficPeriod(value: string): void {
     this.trafficRadioGroup.setValue({ trafficRadio: value });
-    this.#chartsData.initMainChart(value);
+    this.chartsData.initMainChart(value);
     this.initCharts();
+  }
+
+  fetchUniqueUserCount(): void {
+    this.earningsService.getAllEarningsAcrossGuilds().pipe(
+      map((allEarnings: Earning[]) => {
+        if (!Array.isArray(allEarnings)) {
+            console.error("Expected an array of all earnings, received:", allEarnings);
+            return 0;
+        }
+        const userMentions = allEarnings
+            .map(e => e.user_mention)
+            .filter(mention => mention != null);
+
+        const uniqueUserMentions = new Set(userMentions);
+        return uniqueUserMentions.size;
+      })
+    ).subscribe({
+        next: (count: number) => {
+            this.uniqueUserCount = count;
+            console.log('Unique user count across all guilds:', this.uniqueUserCount);
+        },
+        error: (err: any) => {
+            console.error('Error fetching earnings across guilds for unique user count:', err);
+            this.uniqueUserCount = 0;
+        }
+    });
   }
 
   handleChartRef($chartRef: any) {
     if ($chartRef) {
-      this.mainChartRef.set($chartRef);
+      this.mainChart['chart'] = $chartRef;
     }
   }
 
-  updateChartOnColorModeChange() {
-    const unListen = this.#renderer.listen(this.#document.documentElement, 'ColorSchemeChange', () => {
-      this.setChartStyles();
-    });
-
-    this.#destroyRef.onDestroy(() => {
-      unListen();
-    });
+  handleChartDatasetAtEvent(event: any) {
+    console.log(event);
   }
 
-  setChartStyles() {
-    if (this.mainChartRef()) {
-      setTimeout(() => {
-        const options: ChartOptions = { ...this.mainChart.options };
-        const scales = this.#chartsData.getScales();
-        this.mainChartRef().options.scales = { ...options.scales, ...scales };
-        this.mainChartRef().update();
-      });
-    }
+  handleChartElementAtEvent(event: any) {
+    console.log(event);
+  }
+
+  handleChartElementsAtEvent(event: any) {
+    console.log(event);
+  }
+
+  get chartBarData() {
+      return {
+          labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
+          datasets: [
+              {
+                  label: 'Sample Data',
+                  backgroundColor: '#f87979',
+                  data: [40, 20, 12, 39, 10, 40, 39]
+              }
+          ]
+      };
   }
 }

@@ -19,7 +19,7 @@ import {
 import { IconDirective } from '@coreui/icons-angular';
 
 // Services and Interfaces
-import { GuildConfigService, GuildConfig } from '../../../services/guild-config.service'; // To get selected guild and its config
+import { GuildConfigService, GuildConfig } from '../../../services/guild-config.service';
 import { EarningsService, Earning } from '../../../services/earnings.service';
 import { AuthService } from '../../../auth/auth.service';
 
@@ -29,7 +29,6 @@ import { EarningEditModalComponent } from '../earning-edit-modal/earning-edit-mo
 @Component({
   selector: 'app-earnings-list',
   templateUrl: './earnings-list.component.html',
-  // styleUrls: ['./earnings-list.component.scss'], // Add if you create a SCSS file
   standalone: true,
   imports: [
     CommonModule,
@@ -52,28 +51,27 @@ export class EarningsListComponent implements OnInit, OnDestroy {
 
   selectedGuildId$: Observable<string | null>;
   currentGuildId: string | null = null;
-  guildConfig: GuildConfig | null = null; // Store guild config to check if earnings can be added/loaded
+  guildConfig: GuildConfig | null = null;
   private destroy$ = new Subject<void>();
 
   earnings: Earning[] = [];
   loadingEarnings: boolean = false;
   earningsError: string | null = null;
-  loadingConfig: boolean = false; // For fetching the related guild config
+  loadingConfig: boolean = false;
 
   isEarningModalVisible: boolean = false;
   selectedEarningForEdit: Earning | null = null;
 
-  // Properties for Delete Confirmation Modal
   isDeleteModalVisible: boolean = false;
   earningToDelete: Earning | null = null;
 
-  isArray = Array.isArray; // Helper for template
-  objectKeys = Object.keys; // Helper for template, if needed
+  isArray = Array.isArray;
+  objectKeys = Object.keys;
 
   constructor(
     private guildConfigService: GuildConfigService,
     private earningsService: EarningsService,
-    private authService: AuthService // Keep if user permissions affect earnings view/actions
+    private authService: AuthService
   ) {
     this.selectedGuildId$ = this.guildConfigService.selectedGuildId$;
   }
@@ -107,8 +105,8 @@ export class EarningsListComponent implements OnInit, OnDestroy {
     this.earningsError = null;
     this.isEarningModalVisible = false;
     this.selectedEarningForEdit = null;
-    this.isDeleteModalVisible = false; // Reset delete modal state
-    this.earningToDelete = null; // Reset delete selection
+    this.isDeleteModalVisible = false;
+    this.earningToDelete = null;
   }
 
   loadInitialData(guildId: string): void {
@@ -119,10 +117,10 @@ export class EarningsListComponent implements OnInit, OnDestroy {
       next: (config) => {
         this.guildConfig = config;
         this.loadingConfig = false;
-        if (config) { // Only load earnings if config exists
+        if (config) {
           this.loadEarnings(guildId);
         } else {
-          this.loadingEarnings = false; // No config, so no earnings to load
+          this.loadingEarnings = false;
           this.earningsError = 'Guild configuration must exist to manage earnings.';
         }
       },
@@ -139,18 +137,17 @@ export class EarningsListComponent implements OnInit, OnDestroy {
   loadEarnings(guildId: string): void {
     this.loadingEarnings = true;
     this.earningsError = null;
-    this.earningsService.getGuildEarnings(guildId).pipe(
+    this.earningsService.getEarningsForGuild(guildId).pipe(
       takeUntil(this.destroy$)
     ).subscribe({
       next: (earningsData: Earning[]) => {
-        console.log('[EarningsListComponent] Received earnings data:', earningsData);
         this.earnings = earningsData;
         this.loadingEarnings = false;
       },
       error: (err: any) => {
         console.error('[EarningsListComponent] Error loading earnings:', err);
         if (err.status === 404 || err?.message?.includes('not found')) {
-          this.earningsError = null; // Don't show error for 404
+          this.earningsError = null;
           this.earnings = [];
         } else {
           this.earningsError = err.message || `Failed to load earnings for guild ${guildId}.`;
@@ -161,7 +158,7 @@ export class EarningsListComponent implements OnInit, OnDestroy {
   }
 
   openAddEarningModal(): void {
-    if (!this.currentGuildId || !this.guildConfig) { // Ensure config exists before adding earning
+    if (!this.currentGuildId || !this.guildConfig) {
         this.earningsError = "A guild configuration must exist before adding earnings.";
         return;
     }
@@ -175,33 +172,24 @@ export class EarningsListComponent implements OnInit, OnDestroy {
     this.isEarningModalVisible = true;
   }
 
-  // --- Methods for Delete Confirmation Modal ---
   openDeleteConfirmModal(earning: Earning): void {
-    this.earningToDelete = earning; // Set the earning to be deleted
-    this.isDeleteModalVisible = true; // Show the modal
+    this.earningToDelete = earning;
+    this.isDeleteModalVisible = true;
   }
 
-  // New handler for the modal's (visibleChange) event
   handleDeleteModalVisibleChange(visible: boolean): void {
     this.isDeleteModalVisible = visible;
     if (!visible) {
-      // Modal is closing, clear the earningToDelete
-      // Delay slightly to allow animations and avoid race conditions if modal re-opens quickly
       setTimeout(() => {
         this.earningToDelete = null;
-      }, 150); // A small delay, adjust if needed
+      }, 150);
     }
   }
 
-  // New method to explicitly close the modal (called by cancel/close buttons)
   closeDeleteModal(): void {
     this.isDeleteModalVisible = false;
-    // The (visibleChange) event will trigger handleDeleteModalVisibleChange
-    // which will then set earningToDelete to null.
   }
   
-  // Old cancelDelete can be removed or call closeDeleteModal.
-  // For safety, let's ensure it calls the new method.
   cancelDelete(): void {
     this.closeDeleteModal();
   }
@@ -209,46 +197,38 @@ export class EarningsListComponent implements OnInit, OnDestroy {
   confirmDelete(): void {
     if (!this.earningToDelete || !this.currentGuildId || !this.earningToDelete.id) {
       this.earningsError = "Cannot delete earning: Missing required information.";
-      this.closeDeleteModal(); // Close modal using the new method
+      this.closeDeleteModal();
       return;
     }
 
     const guildId = this.currentGuildId;
-    const earningId = this.earningToDelete.id; // Keep a reference before it's nulled
+    const earningId = this.earningToDelete.id;
 
     this.loadingEarnings = true;
     this.earningsError = null;
-    // this.isDeleteModalVisible = false; // No longer set directly here
 
     this.earningsService.deleteEarning(guildId, earningId).subscribe({
       next: () => {
-        console.log(`[EarningsListComponent] Successfully deleted earning ID: ${earningId}`);
-        this.loadEarnings(guildId); // Refresh list
-        // this.earningToDelete = null; // No longer set directly here
-        this.closeDeleteModal(); // Close modal properly
+        this.loadEarnings(guildId);
+        this.closeDeleteModal();
       },
       error: (err: any) => {
-        console.error(`[EarningsListComponent] Error deleting earning ID: ${earningId}`, err);
         this.earningsError = err.message || 'Failed to delete earning record.';
         this.loadingEarnings = false;
-        // this.earningToDelete = null; // No longer set directly here
-        this.closeDeleteModal(); // Close modal properly even on error
+        this.closeDeleteModal();
       }
     });
   }
-  // --- End Delete Confirmation Methods ---
 
   onEarningSaved(savedEarning: Earning | null): void {
     this.isEarningModalVisible = false;
+    // Corrected typo and added null check
     if (savedEarning && this.currentGuildId) {
       this.loadEarnings(this.currentGuildId);
     }
   }
 
-  // --- ADDED: Explicit trackBy function ---
   trackById(index: number, item: Earning): string {
-    // Ensure item and item.id exist before trying to access id
-    return item?.id ?? `index-${index}`; // Fallback to index if id is somehow missing
+    return item?.id ?? `index-${index}`;
   }
-  // --- END ADDITION ---
 }

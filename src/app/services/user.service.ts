@@ -31,6 +31,14 @@ interface DeleteResponse {
   msg?: string;
 }
 
+// Interface for the response from getAvailableGuildIds
+// Assuming the backend returns an array of objects with at least guild_id
+export interface AvailableGuild {
+    guild_id: string;
+    // Add other properties if needed, based on GuildConfig model
+    guild_name?: string;
+}
+
 
 @Injectable({
   providedIn: 'root'
@@ -102,6 +110,18 @@ export class UserService {
      return this.http.get<User>(`${this.apiUrl}/me`).pipe(
         catchError(this.handleError)
      );
+  }
+
+  /**
+   * GET /api/users/managed-guilds/available
+   * Gets a list of all available guild configurations (containing guild_id).
+   */
+  getAvailableGuildIds(): Observable<AvailableGuild[]> {
+    console.log('UserService: Fetching available guild IDs...');
+    return this.http.get<AvailableGuild[]>(`${this.apiUrl}/managed-guilds/available`).pipe(
+        map(guilds => guilds || []), // Ensure it returns an array even if null/undefined
+        catchError(this.handleError)
+    );
   }
 
 
