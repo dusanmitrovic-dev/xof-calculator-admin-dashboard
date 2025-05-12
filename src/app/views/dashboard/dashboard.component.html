@@ -1,183 +1,154 @@
 <c-container class="pb-4">
-  <!-- Widgets Dropdown -->
-  <app-widgets-dropdown />
-
-  <!-- Main Chart -->
-  <c-row>
-    <c-col>
-      <c-card class="mb-4">
-        <c-card-header>
-          Traffic
-        </c-card-header>
-        <c-card-body>
-          <c-chart
-            class="chart"
-            type="line"
-            [data]="chartBarData"
-            (getDatasetAtEvent)="handleChartDatasetAtEvent($event)"
-            (getElementAtEvent)="handleChartElementAtEvent($event)"
-            (getElementsAtEvent)="handleChartElementsAtEvent($event)"
-          >
-            Main chart
-          </c-chart>
-        </c-card-body>
-        <c-card-footer>
-          <c-row class="text-center" [md]="5" [gutter]="4">
-            <c-col class="mb-sm-2 mb-0">
-              <div class="text-body-secondary">Visits</div>
-              <div class="fw-semibold text-truncate">29.703 Users (40%)</div>
-              <c-progress class="mt-2" thin>
-                <c-progress-bar color="success" [value]="40" />
-              </c-progress>
-            </c-col>
-            <c-col class="mb-sm-2 mb-0">
-              <div class="text-body-secondary">Unique</div>
-              <div class="fw-semibold text-truncate">24.093 Users (20%)</div>
-              <c-progress class="mt-2" thin>
-                <c-progress-bar color="info" [value]="20" />
-              </c-progress>
-            </c-col>
-            <c-col class="mb-sm-2 mb-0">
-              <div class="text-body-secondary">Pageviews</div>
-              <div class="fw-semibold text-truncate">78.706 Views (60%)</div>
-              <c-progress class="mt-2" thin>
-                <c-progress-bar color="warning" [value]="60" />
-              </c-progress>
-            </c-col>
-            <c-col class="mb-sm-2 mb-0">
-              <div class="text-body-secondary">New Users</div>
-              <div class="fw-semibold text-truncate">22.123 Users (80%)</div>
-              <c-progress class="mt-2" thin>
-                <c-progress-bar color="danger" [value]="80" />
-              </c-progress>
-            </c-col>
-            <c-col class="mb-sm-2 mb-0 d-md-block">
-              <div class="text-body-secondary">Bounce Rate</div>
-              <div class="fw-semibold text-truncate">40.15%</div>
-              <c-progress class="mt-2" thin>
-                <c-progress-bar [value]="40" />
-              </c-progress>
-            </c-col>
-          </c-row>
-        </c-card-footer>
-      </c-card>
+  <!-- Summary Widgets -->
+  <c-row [gutter]="{gy: 4}" class="mb-4">
+    <c-col [xs]="12" [sm]="6" [lg]="3">
+      <c-widget-stat-a color="primary" title="Total Guilds">
+        <span class="fs-3 fw-semibold">{{ summaryStats.totalGuilds }}</span>
+        <ng-template cTemplateId="widgetActionTemplate">
+          <button cButton color="transparent" class="p-0 text-white">
+            <svg cIcon name="cilSettings" title="Settings button"></svg>
+          </button>
+        </ng-template>
+      </c-widget-stat-a>
+    </c-col>
+    <c-col [xs]="12" [sm]="6" [lg]="3">
+      <c-widget-stat-a color="info" title="Total Coins Earned">
+        <span class="fs-3 fw-semibold">{{ summaryStats.totalCoinsEarned }}</span>
+      </c-widget-stat-a>
+    </c-col>
+    <c-col [xs]="12" [sm]="6" [lg]="3">
+      <c-widget-stat-a color="warning" title="Top Earning Guild">
+        <span class="fs-6 fw-semibold">{{ summaryStats.topGuild?.name || 'N/A' }}</span>
+        <div class="fs-5">{{ summaryStats.topGuild?.coins || 0 }} coins</div>
+      </c-widget-stat-a>
+    </c-col>
+    <c-col [xs]="12" [sm]="6" [lg]="3">
+      <c-widget-stat-a color="danger" title="Avg Coins per Message">
+        <span class="fs-3 fw-semibold">{{ summaryStats.avgCoinsPerMessage | number:'1.2-2' }}</span>
+      </c-widget-stat-a>
     </c-col>
   </c-row>
 
-  <!-- Widgets Brand -->
-  <app-widgets-brand [withCharts]="true" />
-
-  <!-- Stat Cards / Additional Info -->
-  <c-row>
-    <c-col [md]="12">
-      <c-card class="mb-4">
-        <c-card-header>
-          Traffic &amp; Sales
-        </c-card-header>
+  <!-- Data Visualizations -->
+  <c-row class="mb-4">
+    <c-col [md]="7">
+      <c-card>
+        <c-card-header>Coins Earned Over Time</c-card-header>
         <c-card-body>
-          <c-row>
-            <c-col [sm]="6">
-              <c-row>
-                <c-col [xs]="6">
-                  <div class="border-start border-start-4 border-start-info py-1 px-3 mb-3">
-                    <div class="text-body-secondary text-truncate small">New Clients</div>
-                    <div class="fs-5 fw-semibold">9,123</div>
-                  </div>
-                </c-col>
-                <c-col [xs]="6">
-                  <div class="border-start border-start-4 border-start-danger py-1 px-3 mb-3">
-                    <div class="text-body-secondary text-truncate small">Recurring Clients</div>
-                    <div class="fs-5 fw-semibold">22,643</div>
-                  </div>
-                </c-col>
-              </c-row>
-              <hr class="mt-0" />
-              <div class="mb-3">
-                <div class="text-body-secondary">Monday</div>
-                <c-progress class="mt-2" thin>
-                  <c-progress-bar color="success" [value]="34" />
-                  <c-progress-bar color="warning" [value]="78" />
-                </c-progress>
-              </div>
-              <div class="mb-3">
-                <div class="text-body-secondary">Tuesday</div>
-                <c-progress class="mt-2" thin>
-                  <c-progress-bar color="success" [value]="56" />
-                  <c-progress-bar color="warning" [value]="94" />
-                </c-progress>
-              </div>
-              <!-- Add more days as needed -->
+          <c-chart type="line" [data]="earningsOverTimeChartData"></c-chart>
+        </c-card-body>
+      </c-card>
+    </c-col>
+    <c-col [md]="5">
+      <c-card>
+        <c-card-header>Top 5 Guilds by Earnings</c-card-header>
+        <c-card-body>
+          <c-chart type="bar" [data]="topGuildsChartData"></c-chart>
+        </c-card-body>
+      </c-card>
+    </c-col>
+    <!-- Add Pie chart if needed -->
+    <!--
+    <c-col [md]="4">
+      <c-card>
+        <c-card-header>Earnings Distribution</c-card-header>
+        <c-card-body>
+          <c-chart type="pie" [data]="earningsDistributionChartData"></c-chart>
+        </c-card-body>
+      </c-card>
+    </c-col>
+    -->
+  </c-row>
+
+  <!-- Recent Earnings Table & Config Health -->
+  <c-row>
+    <c-col [md]="8">
+      <c-card class="mb-4">
+        <c-card-header>Recent Earnings Records</c-card-header>
+        <c-card-body>
+          <!-- Add Filters Here (Example) -->
+          <c-row class="mb-3">
+            <c-col [md]="4">
+              <label cLabel for="guildFilter">Filter by Guild:</label>
+              <input cFormControl type="text" id="guildFilter" placeholder="Guild Name" [(ngModel)]="filters.guild" (input)="applyFilters()"/>
             </c-col>
-            <c-col [sm]="6">
-              <c-row>
-                <c-col [xs]="6">
-                  <div class="border-start border-start-4 border-start-warning py-1 px-3 mb-3">
-                    <div class="text-body-secondary text-truncate small">Pageviews</div>
-                    <div class="fs-5 fw-semibold">78,623</div>
-                  </div>
-                </c-col>
-                <c-col [xs]="6">
-                  <div class="border-start border-start-4 border-start-success py-1 px-3 mb-3">
-                    <div class="text-body-secondary text-truncate small">Organic</div>
-                    <div class="fs-5 fw-semibold">49,123</div>
-                  </div>
-                </c-col>
-              </c-row>
-              <hr class="mt-0" />
-              <!-- Placeholder for other stats or a small chart -->
-              <div class="mb-3">
-                <div class="text-body-secondary">Social Media</div>
-              </div>
-              <ul class="list-group list-group-flush">
-                <li class="list-group-item d-flex justify-content-between align-items-center border-0 px-0">
-                  <div>
-                    <svg cIcon name="cibFacebook" size="xl" class="me-2 text-primary"></svg>
-                    Facebook
-                  </div>
-                  <strong>1.2K <span class="text-body-secondary small">(+12%)</span></strong>
-                </li>
-                <li class="list-group-item d-flex justify-content-between align-items-center border-0 px-0">
-                  <div>
-                    <svg cIcon name="cibTwitter" size="xl" class="me-2 text-info"></svg>
-                    Twitter
-                  </div>
-                  <strong>800 <span class="text-body-secondary small">(+5%)</span></strong>
-                </li>
-                <!-- Add more social media stats -->
-              </ul>
+            <c-col [md]="4">
+              <label cLabel for="userFilter">Filter by User:</label>
+              <input cFormControl type="text" id="userFilter" placeholder="User ID" [(ngModel)]="filters.user" (input)="applyFilters()"/>
+            </c-col>
+            <c-col [md]="4">
+              <label cLabel for="dateFilter">Date Range:</label>
+              <input cFormControl type="date" id="dateFilter" [(ngModel)]="filters.date" (input)="applyFilters()" />
             </c-col>
           </c-row>
-          <br />
-          <!-- If you have a table for recent activity or users -->
-          <!--
-          <h5>Recent Guild Activity</h5>
+
           <table [responsive]="true" cTable hover>
             <thead>
               <tr>
-                <th scope="col">Guild</th>
-                <th scope="col">Activity</th>
+                <th scope="col">Guild ID</th>
+                <th scope="col">User ID</th>
+                <th scope="col">Message</th>
+                <th scope="col">Coins Earned</th>
                 <th scope="col">Date</th>
-                <th scope="col">Status</th>
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td>Awesome Guild</td>
-                <td>New Earning Recorded</td>
-                <td>2024-07-30</td>
-                <td><c-badge color="success">Completed</c-badge></td>
+              <tr *ngFor="let earning of filteredEarnings | slice:0:10">
+                <td>{{ earning.guildId }}</td>
+                <td>{{ earning.userId }}</td>
+                <td class="text-truncate" style="max-width: 150px;">{{ earning.message }}</td>
+                <td>{{ earning.coinsEarned }}</td>
+                <td>{{ earning.date | date:'medium' }}</td>
               </tr>
-              <tr>
-                <td>Warriors Guild</td>
-                <td>Config Updated</td>
-                <td>2024-07-29</td>
-                <td><c-badge color="info">In Progress</c-badge></td>
+              <tr *ngIf="filteredEarnings.length === 0">
+                <td colspan="5" class="text-center">No records found.</td>
               </tr>
             </tbody>
           </table>
-          -->
+          <button cButton color="primary" variant="outline" routerLink="/guild-management/earnings">
+            View Full Earnings Table
+          </button>
         </c-card-body>
       </c-card>
     </c-col>
+
+    <c-col [md]="4">
+      <c-card class="mb-4">
+        <c-card-header>Configuration Health</c-card-header>
+        <c-card-body>
+          <ul class="list-group list-group-flush">
+            <li class="list-group-item d-flex justify-content-between align-items-center" *ngIf="configHealth.missingPrefix > 0">
+              <a routerLink="/guild-management/config">Guilds Missing Prefix</a>
+              <c-badge color="danger" shape="rounded-pill">{{ configHealth.missingPrefix }}</c-badge>
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-center" *ngIf="configHealth.noRoles > 0">
+              <a routerLink="/guild-management/config">Guilds Without Allowed Roles</a>
+              <c-badge color="warning" shape="rounded-pill">{{ configHealth.noRoles }}</c-badge>
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-center" *ngIf="configHealth.noChannels > 0">
+              <a routerLink="/guild-management/config">Guilds Without Allowed Channels</a>
+              <c-badge color="warning" shape="rounded-pill">{{ configHealth.noChannels }}</c-badge>
+            </li>
+             <li class="list-group-item text-center" *ngIf="configHealth.missingPrefix === 0 && configHealth.noRoles === 0 && configHealth.noChannels === 0">
+              <svg cIcon name="cilCheckCircle" size="xl" class="text-success me-2"></svg>
+              All Configurations Look Good!
+            </li>
+          </ul>
+        </c-card-body>
+      </c-card>
+       <!-- Bonus: Notifications/Recent Changes -->
+       <!--
+       <c-card class="mb-4">
+         <c-card-header>Recent Activity</c-card-header>
+         <c-card-body>
+           <ul class="list-group list-group-flush">
+             <li class="list-group-item">User 'Admin' updated config for 'Awesome Guild'</li>
+             <li class="list-group-item">New earning recorded for User '12345'</li>
+           </ul>
+         </c-card-body>
+       </c-card>
+       -->
+    </c-col>
   </c-row>
+
 </c-container>
