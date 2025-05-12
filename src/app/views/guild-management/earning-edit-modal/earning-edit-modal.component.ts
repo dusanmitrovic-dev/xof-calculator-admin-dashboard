@@ -16,7 +16,6 @@ import {
 } from '@coreui/angular';
 
 import { EarningsService, Earning } from '../../../services/earnings.service';
-// GuildConfig is now correctly typed with string[] for models, shifts, periods
 import { GuildConfigService, GuildConfig } from '../../../services/guild-config.service'; 
 
 @Component({
@@ -45,7 +44,7 @@ export class EarningEditModalComponent implements OnInit, OnChanges {
   @Output() visibleChange = new EventEmitter<boolean>();
   @Output() earningSaved = new EventEmitter<Earning | null>();
 
-  earningForm!: FormGroup; // Defined in OnInit
+  earningForm!: FormGroup;
   isLoading: boolean = false;
   errorMessage: string | null = null;
   title: string = 'Add Earning Record';
@@ -68,49 +67,47 @@ export class EarningEditModalComponent implements OnInit, OnChanges {
   ngOnInit(): void {
     console.log('[EarningModal] ngOnInit: Initializing form.');
     this.earningForm = this.buildForm();
+    // If modal is intended to be visible upon init (e.g. parent sets visible=true before this runs)
+    // call prepareModal to set initial state if form is ready.
+    if (this.visible) {
+        console.log('[EarningModal] ngOnInit: Modal is visible, calling prepareModal.');
+        this.prepareModal();
+    }
   }
 
   ngOnChanges(changes: SimpleChanges): void {
     console.log('[EarningModal] ngOnChanges triggered. Changes:', JSON.stringify(changes));
 
+    // Ensure form is initialized before proceeding with logic that depends on it.
+    if (!this.earningForm) {
+        console.log('[EarningModal] ngOnChanges: Form not yet initialized by ngOnInit, skipping actions.');
+        return;
+    }
+
     if (changes['visible']) { 
         console.log('[EarningModal] ngOnChanges: "visible" property changed to', this.visible);
         if (this.visible) { 
-            if (!this.earningForm) {
-                console.log('[EarningModal] ngOnChanges: Form not yet built (ngOnInit might not have run or form was destroyed), building now.');
-                this.earningForm = this.buildForm();
-            }
-            console.log('[EarningModal] ngOnChanges: Calling prepareModal() because "visible" became true.');
+            console.log('[EarningModal] ngOnChanges: Calling prepareModal() because "visible" became true and form exists.');
             this.prepareModal();
         } else { 
-            if (this.earningForm) {
-                console.log('[EarningModal] ngOnChanges: Calling resetModalState() because "visible" became false.');
-                this.resetModalState();
-            } else {
-                console.log('[EarningModal] ngOnChanges: "visible" became false, but form not initialized/already reset, so no further reset action needed.');
-            }
+            console.log('[EarningModal] ngOnChanges: Calling resetModalState() because "visible" became false and form exists.');
+            this.resetModalState();
         }
-    } else if (this.visible && this.earningForm) {
-        // If modal is already visible and other inputs change
+    } else if (this.visible) {
+        // If modal is already visible and other inputs change (and form exists)
         if (changes['earningToEdit'] || changes['guildId'] || changes['guildConfig']) {
             console.log('[EarningModal] ngOnChanges: Other relevant inputs changed while visible. Calling prepareModal(). Changed inputs:', JSON.stringify(changes));
             this.prepareModal();
         }
-    } else {
-        // This case might occur if inputs change but the modal is not visible, or form isn't ready.
-        console.log('[EarningModal] ngOnChanges: No primary action taken (e.g. modal not visible or form not ready for other input changes).');
     }
   }
 
   private prepareModal(): void {
+    // This function now assumes this.earningForm is already initialized by ngOnInit
     if (!this.earningForm) {
-        console.warn('[EarningModal] prepareModal called but earningForm was not ready. Attempting to build it now.');
-        this.earningForm = this.buildForm();
-        if (!this.earningForm) { 
-            console.error('[EarningModal] CRITICAL: EarningForm could not be built in prepareModal.');
-            this.errorMessage = "CRITICAL: Form could not be initialized.";
-            return;
-        }
+        console.error('[EarningModal] CRITICAL: prepareModal called but earningForm was not initialized by ngOnInit.');
+        this.errorMessage = "CRITICAL: Form could not be initialized.";
+        return;
     }
 
     console.log(`[EarningModal] prepareModal: Preparing. Mode: ${this.isEditMode ? 'Edit' : 'Add'}, Input GuildID: ${this.guildId}`);
@@ -126,7 +123,7 @@ export class EarningEditModalComponent implements OnInit, OnChanges {
     }
     
     this.earningForm.get('guild_id')?.setValue(this.guildId); 
-    this.earningForm.get('guild_id')?.markAsDirty(); // Explicitly mark as dirty
+    this.earningForm.get('guild_id')?.markAsDirty(); 
     console.log('[EarningModal] guild_id control value after setValue:', this.earningForm.get('guild_id')?.value);
     console.log('[EarningModal] guild_id control status (before disable):', this.earningForm.get('guild_id')?.status);
     this.earningForm.get('guild_id')?.disable();
