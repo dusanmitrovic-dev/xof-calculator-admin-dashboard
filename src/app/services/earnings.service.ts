@@ -14,7 +14,7 @@ export interface Earning {
   period: string;
   shift: string;
   role: string;
-  models: string;    // Change to string[] if multiple models allowed
+  models: string[];    // Change to string[] if multiple models allowed
   hours_worked: number;
   user_mention: string; // Discord user mention string
 }

@@ -161,7 +161,7 @@ export class EarningEditModalComponent implements OnInit, OnChanges {
       date: [this.getTodayDateString(), Validators.required],
       user_mention: ['', Validators.required],
       role: ['', Validators.required],
-      models: ['', Validators.required], 
+      models: [[], [Validators.required, Validators.minLength(1)]], 
       shift: ['', Validators.required],
       period: ['', Validators.required],
       hours_worked: [null, [Validators.required, Validators.min(0.1), Validators.pattern(/^\d*\.?\d+$/)]],
@@ -176,7 +176,9 @@ export class EarningEditModalComponent implements OnInit, OnChanges {
     const patchedValues = {
       ...earning,
       date: earning.date ? this.formatDateForInput(earning.date) : this.getTodayDateString(),
-      models: this.availableModels.includes(earning.models) ? earning.models : '', 
+      models: Array.isArray(earning.models) 
+              ? earning.models.filter(m => this.availableModels.includes(m)) 
+              : (this.availableModels.includes(earning.models as string) ? [earning.models] : []),
       shift: this.availableShifts.includes(earning.shift) ? earning.shift : '',
       period: this.availablePeriods.includes(earning.period) ? earning.period : ''
     };

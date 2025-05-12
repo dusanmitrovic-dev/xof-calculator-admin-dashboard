@@ -68,15 +68,13 @@
       
       <!-- Models Dropdown -->
       <div class="mb-3 row">
-        <label cLabel for="models" class="col-sm-3 col-form-label">Model</label>
-        <div class="col-sm-9">
-           <select cSelect id="models" formControlName="models" required
+        <label cLabel for="models" class="col-sm-3 col-form-label">Models</label> <div class="col-sm-9">
+           <select cSelect id="models" formControlName="models" required multiple
                    [class.is-invalid]="earningForm.get('models')?.invalid && (earningForm.get('models')?.dirty || earningForm.get('models')?.touched)">
-               <option value="" disabled>Select a model</option>
                <option *ngFor="let model of availableModels" [value]="model">{{ model }}</option>
            </select>
             <div *ngIf="earningForm.get('models')?.invalid && (earningForm.get('models')?.dirty || earningForm.get('models')?.touched)" class="invalid-feedback">
-                 Model is required.
+                 At least one model is required.
             </div>
         </div>
       </div>
