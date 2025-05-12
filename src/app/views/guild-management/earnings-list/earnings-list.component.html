@@ -60,7 +60,7 @@
                   <th>Date</th>
                   <th>User</th>
                   <th>Role</th>
-                  <th>Model(s)</th>
+                  <th>Model</th> <!-- Changed Header from Model(s) to Model -->
                   <th>Shift</th>
                   <th>Period</th>
                   <th>Hours</th>
@@ -74,11 +74,9 @@
                   <td>{{ earning.date }}</td>
                   <td>{{ earning.user_mention }}</td>
                   <td>{{ earning.role }}</td>
-                  <td>
-                    <ng-container *ngIf="isArray(earning.models) && earning.models.length > 0; else noEarningModels">
-                        <span *ngFor="let model of earning.models" class="badge bg-secondary me-1 mb-1">{{ model }}</span>
-                    </ng-container>
-                    <ng-template #noEarningModels>-</ng-template>
+                  <td> <!-- Updated column display -->
+                    <span *ngIf="earning.models" class="badge bg-secondary">{{ earning.models }}</span>
+                    <span *ngIf="!earning.models">-</span>
                   </td>
                   <td>{{ earning.shift }}</td>
                   <td>{{ earning.period }}</td>
