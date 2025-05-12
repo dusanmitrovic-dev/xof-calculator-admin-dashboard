@@ -199,4 +199,11 @@ export class EarningsListComponent implements OnInit, OnDestroy {
       this.loadEarnings(this.currentGuildId);
     }
   }
+
+  // --- ADDED: Explicit trackBy function ---
+  trackById(index: number, item: Earning): string {
+    // Ensure item and item.id exist before trying to access id
+    return item?.id ?? `index-${index}`; // Fallback to index if id is somehow missing
+  }
+  // --- END ADDITION ---
 }
