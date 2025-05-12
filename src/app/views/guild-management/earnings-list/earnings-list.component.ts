@@ -9,6 +9,7 @@ import {
   AlertModule,
   ButtonModule,
   CardModule,
+  DropdownModule, // <-- Added
   GridModule,
   SpinnerModule,
   TableModule,
@@ -36,6 +37,7 @@ import { EarningEditModalComponent } from '../earning-edit-modal/earning-edit-mo
     GridModule,
     AlertModule,
     CardModule,
+    DropdownModule, // <-- Added
     SpinnerModule,
     ButtonModule,
     TableModule,

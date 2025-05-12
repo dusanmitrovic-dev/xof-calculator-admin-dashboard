@@ -60,7 +60,7 @@
                   <th>Date</th>
                   <th>User</th>
                   <th>Role</th>
-                  <th>Model</th> <!-- Changed Header from Model(s) to Model -->
+                  <th>Models</th> <!-- Updated Header -->
                   <th>Shift</th>
                   <th>Period</th>
                   <th>Hours</th>
@@ -76,9 +76,23 @@
                   <td>{{ earning.date }}</td>
                   <td>{{ earning.user_mention }}</td>
                   <td>{{ earning.role }}</td>
-                  <td> <!-- Updated column display -->
-                    <span *ngIf="earning.models" class="badge bg-secondary">{{ earning.models }}</span>
-                    <span *ngIf="!earning.models">-</span>
+                  <td>
+                    <ng-container *ngIf="earning.models && earning.models.length > 0; else noModels">
+                      <c-dropdown alignment="end">
+                        <button cButton cDropdownToggle color="secondary" variant="outline" size="sm">
+                          {{ earning.models.length }} {{ earning.models.length === 1 ? 'Model' : 'Models' }}
+                        </button>
+                        <ul cDropdownMenu>
+                          <li *ngFor="let model of earning.models">
+                             <!-- Use cDropdownItem but make it look non-interactive -->
+                             <span cDropdownItem class="disabled" style="cursor: default; color: inherit;">{{ model }}</span>
+                          </li>
+                        </ul>
+                      </c-dropdown>
+                    </ng-container>
+                    <ng-template #noModels>
+                      <span>-</span>
+                    </ng-template>
                   </td>
                   <td>{{ earning.shift }}</td>
                   <td>{{ earning.period }}</td>
