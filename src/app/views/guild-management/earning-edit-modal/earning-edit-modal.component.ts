@@ -66,82 +66,98 @@ export class EarningEditModalComponent implements OnInit, OnChanges {
   ) { }
 
   ngOnInit(): void {
-    // Initialize the form here
+    console.log('[EarningModal] ngOnInit: Initializing form.');
     this.earningForm = this.buildForm();
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    // Check if visible is true and the form has been initialized
-    if (changes['visible'] && this.visible && this.earningForm) {
-        this.prepareModal();
-    } 
-    // Handle other input changes only if visible and form exists
-    else if (this.visible && this.earningForm && (changes['earningToEdit'] || changes['guildId'] || changes['guildConfig'])) {
-        this.prepareModal();
-    }
-    // Handle closing the modal
-    else if (changes['visible'] && !this.visible && this.earningForm) {
-        this.resetModalState();
+    console.log('[EarningModal] ngOnChanges triggered. Changes:', JSON.stringify(changes));
+
+    if (changes['visible']) { 
+        console.log('[EarningModal] ngOnChanges: "visible" property changed to', this.visible);
+        if (this.visible) { 
+            if (!this.earningForm) {
+                console.log('[EarningModal] ngOnChanges: Form not yet built (ngOnInit might not have run or form was destroyed), building now.');
+                this.earningForm = this.buildForm();
+            }
+            console.log('[EarningModal] ngOnChanges: Calling prepareModal() because "visible" became true.');
+            this.prepareModal();
+        } else { 
+            if (this.earningForm) {
+                console.log('[EarningModal] ngOnChanges: Calling resetModalState() because "visible" became false.');
+                this.resetModalState();
+            } else {
+                console.log('[EarningModal] ngOnChanges: "visible" became false, but form not initialized/already reset, so no further reset action needed.');
+            }
+        }
+    } else if (this.visible && this.earningForm) {
+        // If modal is already visible and other inputs change
+        if (changes['earningToEdit'] || changes['guildId'] || changes['guildConfig']) {
+            console.log('[EarningModal] ngOnChanges: Other relevant inputs changed while visible. Calling prepareModal(). Changed inputs:', JSON.stringify(changes));
+            this.prepareModal();
+        }
+    } else {
+        // This case might occur if inputs change but the modal is not visible, or form isn't ready.
+        console.log('[EarningModal] ngOnChanges: No primary action taken (e.g. modal not visible or form not ready for other input changes).');
     }
   }
 
   private prepareModal(): void {
-    // Guard clause: If form isn't initialized yet, exit.
     if (!this.earningForm) {
-        console.warn('EarningModal: prepareModal called before form initialization.');
-        return; 
+        console.warn('[EarningModal] prepareModal called but earningForm was not ready. Attempting to build it now.');
+        this.earningForm = this.buildForm();
+        if (!this.earningForm) { 
+            console.error('[EarningModal] CRITICAL: EarningForm could not be built in prepareModal.');
+            this.errorMessage = "CRITICAL: Form could not be initialized.";
+            return;
+        }
     }
 
-    console.log(`EarningModal: Preparing. Mode: ${this.isEditMode ? 'Edit' : 'Add'}, GuildID: ${this.guildId}`);
+    console.log(`[EarningModal] prepareModal: Preparing. Mode: ${this.isEditMode ? 'Edit' : 'Add'}, Input GuildID: ${this.guildId}`);
     this.errorMessage = null;
     this.isLoading = false;
     
-    if (this.earningForm) { 
-      this.earningForm.reset(); 
-    } else { 
-      this.earningForm = this.buildForm();
-    }
+    this.earningForm.reset(); // Reset first to clear previous state
 
     if (!this.guildId) {
-      this.errorMessage = "Error: Guild ID is required.";
+      this.errorMessage = "Error: Guild ID is required for prepareModal.";
+      console.error("[EarningModal] prepareModal: this.guildId is null or undefined.");
       return;
     }
     
-    this.earningForm.get('guild_id')?.setValue(this.guildId);
-    // --- ADDED CONSOLE LOG ---
+    this.earningForm.get('guild_id')?.setValue(this.guildId); 
+    this.earningForm.get('guild_id')?.markAsDirty(); // Explicitly mark as dirty
     console.log('[EarningModal] guild_id control value after setValue:', this.earningForm.get('guild_id')?.value);
-    console.log('[EarningModal] guild_id control status:', this.earningForm.get('guild_id')?.status);
-    // --- END CONSOLE LOG ---
+    console.log('[EarningModal] guild_id control status (before disable):', this.earningForm.get('guild_id')?.status);
     this.earningForm.get('guild_id')?.disable();
+    console.log('[EarningModal] guild_id control status (after disable):', this.earningForm.get('guild_id')?.status);
 
-    // Populate dropdown options from GuildConfig
     if (this.guildConfig) {
-        console.log('EarningModal: Using provided guildConfig for options:', this.guildConfig);
+        console.log('[EarningModal] Using provided guildConfig for options:', this.guildConfig);
         this.availableModels = this.guildConfig.models || [];
         this.availableShifts = this.guildConfig.shifts || [];
         this.availablePeriods = this.guildConfig.periods || [];
     } else {
-        console.warn('EarningModal: guildConfig not provided. Form options might be limited.');
+        console.warn('[EarningModal] guildConfig not provided. Dropdown options might be limited.');
         this.availableModels = [];
         this.availableShifts = [];
         this.availablePeriods = [];
     }
 
-    // Patch form based on mode (Add vs Edit)
     if (this.isEditMode && this.earningToEdit) {
       this.title = `Edit Earning Record (ID: ${this.earningToEdit.id})`;
-      this.patchForm(this.earningToEdit); // Patch form *after* setting dropdown options
-      this.earningForm.get('id')?.setValue(this.earningToEdit.id); // Set the ID for edit mode
+      this.patchForm(this.earningToEdit); 
+      this.earningForm.get('id')?.setValue(this.earningToEdit.id);
       this.earningForm.get('id')?.disable(); 
     } else {
       this.title = 'Add New Earning Record';
-      // Set default date for new records
       this.earningForm.patchValue({ date: this.getTodayDateString() });
-      this.earningForm.get('id')?.disable(); // ID is disabled in add mode too
+      this.earningForm.get('id')?.disable(); 
     }
   }
 
   private buildForm(): FormGroup {
+    console.log('[EarningModal] buildForm: Creating new FormGroup instance.');
     return this.fb.group({
       id: [{ value: null, disabled: true }],
       guild_id: [{ value: null, disabled: true }, Validators.required],
@@ -159,9 +175,7 @@ export class EarningEditModalComponent implements OnInit, OnChanges {
 
   private patchForm(earning: Earning): void {
     if (!earning || !this.earningForm) return;
-    console.log('EarningModal: Patching form with:', earning);
-    // Ensure the value for 'models' exists in availableModels, etc.
-    // If not, reset it to prevent errors if config changed since earning was saved
+    console.log('[EarningModal] Patching form with:', earning);
     const patchedValues = {
       ...earning,
       date: earning.date ? this.formatDateForInput(earning.date) : this.getTodayDateString(),
@@ -181,7 +195,6 @@ export class EarningEditModalComponent implements OnInit, OnChanges {
     if (this.earningForm.invalid) {
       this.errorMessage = 'Please correct the errors in the form.';
       console.warn('EarningModal: Form validation failed.', this.earningForm.controls);
-      // Log specific errors
       Object.keys(this.earningForm.controls).forEach(key => {
         const controlErrors = this.earningForm.get(key)?.errors;
         if (controlErrors != null) {
@@ -198,21 +211,20 @@ export class EarningEditModalComponent implements OnInit, OnChanges {
     this.isLoading = true;
     this.errorMessage = null;
 
-    const formValue = this.earningForm.getRawValue(); // Use getRawValue to include disabled fields like ID
+    const formValue = this.earningForm.getRawValue(); 
 
     const earningPayload: Earning = {
       ...formValue,
       hours_worked: Number(formValue.hours_worked),
       gross_revenue: Number(formValue.gross_revenue),
       total_cut: Number(formValue.total_cut),
-      guild_id: this.guildId // Make sure this is the string guildId
+      guild_id: this.guildId 
     };
 
     let saveObservable: Observable<Earning>;
 
     if (this.isEditMode && earningPayload.id) {
       console.log('EarningModal: Updating earning:', earningPayload);
-      // Create update payload excluding non-editable fields
       const updateData: Partial<Earning> = {
           date: earningPayload.date,
           user_mention: earningPayload.user_mention,
@@ -226,7 +238,6 @@ export class EarningEditModalComponent implements OnInit, OnChanges {
       };
       saveObservable = this.earningsService.updateEarningByCustomId(earningPayload.id, updateData);
     } else {
-      // Generate ID only if creating a new record
       earningPayload.id = this.generateCustomId(); 
       console.log('EarningModal: Creating earning:', earningPayload);
       saveObservable = this.earningsService.createEarning(this.guildId, earningPayload);
@@ -238,7 +249,7 @@ export class EarningEditModalComponent implements OnInit, OnChanges {
       next: (savedEarning: Earning) => {
         console.log('EarningModal: Save successful', savedEarning);
         this.earningSaved.emit(savedEarning);
-        this.closeModal(false); // Close modal but don't emit null again
+        this.closeModal(false); 
       },
       error: (err: any) => {
         this.errorMessage = err?.message || 'Failed to save earning record.';
@@ -251,30 +262,24 @@ export class EarningEditModalComponent implements OnInit, OnChanges {
     this.visible = false;
     this.visibleChange.emit(false);
     if (emitNull) {
-      // Only emit null if explicitly closing via Cancel or X button
       this.earningSaved.emit(null);
     }
-    // Don't call resetModalState here, ngOnChanges handles it when visible becomes false
   }
 
-  // This method might be redundant if the parent handles visibleChange correctly
   handleVisibleChange(isVisible: boolean): void {
      if (this.visible !== isVisible) {
          this.visible = isVisible;
          this.visibleChange.emit(isVisible);
-         // Reset state should happen based on ngOnChanges when visible turns false
      }
    }
 
   private resetModalState(): void {
-    console.log('EarningModal: Resetting state');
+    console.log('[EarningModal] Resetting state');
     this.isLoading = false;
     this.errorMessage = null;
     this.earningToEdit = null;
-    // Reset form only if it exists
     if (this.earningForm) {
         this.earningForm.reset();
-        // Re-patch defaults needed after reset
         this.earningForm.patchValue({ date: this.getTodayDateString() });
         if (this.guildId) {
             this.earningForm.get('guild_id')?.setValue(this.guildId);
@@ -290,7 +295,6 @@ export class EarningEditModalComponent implements OnInit, OnChanges {
 
   private getTodayDateString(): string {
       const today = new Date();
-      // Adjust for timezone offset to get local date string correctly
       const offset = today.getTimezoneOffset();
       const localDate = new Date(today.getTime() - (offset*60*1000));
       return localDate.toISOString().split('T')[0];
@@ -298,14 +302,9 @@ export class EarningEditModalComponent implements OnInit, OnChanges {
 
   private formatDateForInput(dateString: string | Date): string {
       try {
-          // Try parsing directly, assuming it might be YYYY-MM-DD already
           let date = new Date(dateString);
-          // If direct parsing fails or results in invalid date, try adjusting for timezone if needed
           if (isNaN(date.getTime()) && typeof dateString === 'string') { 
-              // Handle potential MM/DD/YYYY or other formats if necessary, 
-              // or assume it's UTC and needs adjustment
-              // For simplicity, assume input string is intended as local date
-               date = new Date(dateString + 'T00:00:00'); // Treat as local time
+               date = new Date(dateString + 'T00:00:00');
           }
 
           if (!isNaN(date.getTime())) {
