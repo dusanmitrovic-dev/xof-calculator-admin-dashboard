@@ -135,12 +135,17 @@ export class EarningsListComponent implements OnInit, OnDestroy {
       takeUntil(this.destroy$)
     ).subscribe({
       next: (earningsData: Earning[]) => {
+        // --- ADDED CONSOLE LOG ---
+        console.log('[EarningsListComponent] Received earnings data:', earningsData);
+        // --- END CONSOLE LOG ---
         this.earnings = earningsData;
         this.loadingEarnings = false;
       },
       error: (err: any) => {
+        // Log the raw error as well
+        console.error('[EarningsListComponent] Error loading earnings:', err);
         if (err.status === 404 || err?.message?.includes('not found')) {
-          this.earningsError = null;
+          this.earningsError = null; // Don't show error for 404
           this.earnings = [];
         } else {
           this.earningsError = err.message || `Failed to load earnings for guild ${guildId}.`;
