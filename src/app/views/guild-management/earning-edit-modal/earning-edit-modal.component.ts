@@ -114,7 +114,11 @@ export class EarningEditModalComponent implements OnInit, OnChanges {
     this.errorMessage = null;
     this.isLoading = false;
     
-    this.earningForm.reset(); // Reset first to clear previous state
+    // Reset form with default values (including empty models array)
+    this.earningForm.reset({
+      date: this.getTodayDateString(),
+      models: [] // Explicitly reset models to an empty array
+    }); 
 
     if (!this.guildId) {
       this.errorMessage = "Error: Guild ID is required for prepareModal.";
@@ -123,9 +127,8 @@ export class EarningEditModalComponent implements OnInit, OnChanges {
     }
     
     this.earningForm.get('guild_id')?.setValue(this.guildId); 
-    this.earningForm.get('guild_id')?.markAsDirty(); 
+    // No need to mark guild_id as dirty on init
     console.log('[EarningModal] guild_id control value after setValue:', this.earningForm.get('guild_id')?.value);
-    console.log('[EarningModal] guild_id control status (before disable):', this.earningForm.get('guild_id')?.status);
     this.earningForm.get('guild_id')?.disable();
     console.log('[EarningModal] guild_id control status (after disable):', this.earningForm.get('guild_id')?.status);
 
@@ -148,9 +151,11 @@ export class EarningEditModalComponent implements OnInit, OnChanges {
       this.earningForm.get('id')?.disable(); 
     } else {
       this.title = 'Add New Earning Record';
-      this.earningForm.patchValue({ date: this.getTodayDateString() });
+      // Date and models already set during reset
       this.earningForm.get('id')?.disable(); 
     }
+     // Ensure the models field validity is checked after potential patching
+    this.earningForm.get('models')?.updateValueAndValidity(); 
   }
 
   private buildForm(): FormGroup {
@@ -173,16 +178,64 @@ export class EarningEditModalComponent implements OnInit, OnChanges {
   private patchForm(earning: Earning): void {
     if (!earning || !this.earningForm) return;
     console.log('[EarningModal] Patching form with:', earning);
+    
+    // Ensure models is always an array when patching
+    let modelsToPatch: string[] = [];
+    if (Array.isArray(earning.models)) {
+        modelsToPatch = earning.models.filter(m => this.availableModels.includes(m));
+    } else if (typeof earning.models === 'string' && this.availableModels.includes(earning.models)) {
+        modelsToPatch = [earning.models]; // Convert legacy string to array if valid
+    } else {
+        console.warn('[EarningModal] Invalid or empty models data in earning record:', earning.models);
+    }
+
     const patchedValues = {
-      ...earning,
+      ...earning, // Spread other earning properties
       date: earning.date ? this.formatDateForInput(earning.date) : this.getTodayDateString(),
-      models: Array.isArray(earning.models) 
-              ? earning.models.filter(m => this.availableModels.includes(m)) 
-              : (this.availableModels.includes(earning.models as string) ? [earning.models] : []),
+      models: modelsToPatch, // Use the sanitized array
       shift: this.availableShifts.includes(earning.shift) ? earning.shift : '',
       period: this.availablePeriods.includes(earning.period) ? earning.period : ''
     };
     this.earningForm.patchValue(patchedValues);
+  }
+  
+  /**
+   * Checks if a model is currently selected in the form.
+   * @param model The model name to check.
+   * @returns True if the model is selected, false otherwise.
+   */
+  isModelSelected(model: string): boolean {
+    const selectedModels = this.earningForm?.get('models')?.value as string[];
+    return selectedModels?.includes(model) ?? false;
+  }
+
+  /**
+   * Adds or removes a model from the form's selected models array.
+   * @param model The model name to toggle.
+   */
+  toggleModelSelection(model: string): void {
+    const modelsControl = this.earningForm?.get('models');
+    if (!modelsControl) return;
+
+    let selectedModels: string[] = modelsControl.value ? [...modelsControl.value] : [];
+    const index = selectedModels.indexOf(model);
+
+    if (index > -1) {
+      // Model is currently selected, remove it
+      selectedModels.splice(index, 1);
+    } else {
+      // Model is not selected, add it
+      selectedModels.push(model);
+    }
+
+    // Update the form control value
+    modelsControl.setValue(selectedModels);
+    // Mark as dirty and touched to trigger validation and visual updates
+    modelsControl.markAsDirty();
+    modelsControl.markAsTouched();
+    console.log('Toggled model:', model, 'New selection:', selectedModels);
+    // Explicitly update validity after changing the value programmatically
+    modelsControl.updateValueAndValidity(); 
   }
 
   saveChanges(): void {
@@ -191,13 +244,15 @@ export class EarningEditModalComponent implements OnInit, OnChanges {
         return;
     }
     this.earningForm.markAllAsTouched();
+    
+    // Check validity after marking as touched
     if (this.earningForm.invalid) {
       this.errorMessage = 'Please correct the errors in the form.';
-      console.warn('EarningModal: Form validation failed.', this.earningForm.controls);
+      console.warn('EarningModal: Form validation failed.');
       Object.keys(this.earningForm.controls).forEach(key => {
-        const controlErrors = this.earningForm.get(key)?.errors;
-        if (controlErrors != null) {
-          console.error('Key:', key, 'Error:', controlErrors);
+        const control = this.earningForm.get(key);
+        if (control && control.invalid) {
+          console.error(`Key: ${key}, Status: ${control.status}, Errors:`, control.errors);
         }
       });
       return;
@@ -278,8 +333,11 @@ export class EarningEditModalComponent implements OnInit, OnChanges {
     this.errorMessage = null;
     this.earningToEdit = null;
     if (this.earningForm) {
-        this.earningForm.reset();
-        this.earningForm.patchValue({ date: this.getTodayDateString() });
+        // Reset form with default values, including empty models array
+        this.earningForm.reset({
+          date: this.getTodayDateString(),
+          models: [] 
+        }); 
         if (this.guildId) {
             this.earningForm.get('guild_id')?.setValue(this.guildId);
             this.earningForm.get('guild_id')?.disable();

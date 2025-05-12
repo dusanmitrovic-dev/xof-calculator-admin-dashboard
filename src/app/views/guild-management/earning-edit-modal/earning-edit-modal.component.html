@@ -66,16 +66,31 @@
         </div>
       </div>
       
-      <!-- Models Dropdown -->
+      <!-- Models Buttons -->
       <div class="mb-3 row">
-        <label cLabel for="models" class="col-sm-3 col-form-label">Models</label> <div class="col-sm-9">
-           <select cSelect id="models" formControlName="models" required multiple
-                   [class.is-invalid]="earningForm.get('models')?.invalid && (earningForm.get('models')?.dirty || earningForm.get('models')?.touched)">
-               <option *ngFor="let model of availableModels" [value]="model">{{ model }}</option>
-           </select>
-            <div *ngIf="earningForm.get('models')?.invalid && (earningForm.get('models')?.dirty || earningForm.get('models')?.touched)" class="invalid-feedback">
-                 At least one model is required.
-            </div>
+        <label cLabel class="col-sm-3 col-form-label">Models</label>
+        <div class="col-sm-9">
+           <div 
+             [class.is-invalid]="earningForm.get('models')?.invalid && (earningForm.get('models')?.dirty || earningForm.get('models')?.touched)"
+             [class.needs-validation]="earningForm.get('models')?.invalid && (earningForm.get('models')?.dirty || earningForm.get('models')?.touched)"
+           >
+             <button 
+               *ngFor="let model of availableModels" 
+               cButton 
+               type="button" 
+               [color]="isModelSelected(model) ? 'success' : 'primary'" 
+               (click)="toggleModelSelection(model)"
+               class="me-2 mb-2 btn-sm" 
+               variant="outline" 
+               [active]="isModelSelected(model)">
+                 {{ model }}
+             </button>
+          </div>
+          <!-- Hidden input to help with validation styling if needed, or just use the div above -->
+          <input type="hidden" formControlName="models"> 
+          <div *ngIf="earningForm.get('models')?.invalid && (earningForm.get('models')?.dirty || earningForm.get('models')?.touched)" class="invalid-feedback d-block">
+               At least one model must be selected.
+          </div>
         </div>
       </div>
 
