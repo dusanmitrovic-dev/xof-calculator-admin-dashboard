@@ -45,7 +45,7 @@ export class EarningEditModalComponent implements OnInit, OnChanges {
   @Output() visibleChange = new EventEmitter<boolean>();
   @Output() earningSaved = new EventEmitter<Earning | null>();
 
-  earningForm!: FormGroup;
+  earningForm!: FormGroup; // Defined in OnInit
   isLoading: boolean = false;
   errorMessage: string | null = null;
   title: string = 'Add Earning Record';
@@ -66,25 +66,41 @@ export class EarningEditModalComponent implements OnInit, OnChanges {
   ) { }
 
   ngOnInit(): void {
+    // Initialize the form here
     this.earningForm = this.buildForm();
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['visible'] && this.visible) {
+    // Check if visible is true and the form has been initialized
+    if (changes['visible'] && this.visible && this.earningForm) {
         this.prepareModal();
-    } else if (this.visible && (changes['earningToEdit'] || changes['guildId'] || changes['guildConfig'])) {
+    } 
+    // Handle other input changes only if visible and form exists
+    else if (this.visible && this.earningForm && (changes['earningToEdit'] || changes['guildId'] || changes['guildConfig'])) {
         this.prepareModal();
     }
-    else if (changes['visible'] && !this.visible) {
+    // Handle closing the modal
+    else if (changes['visible'] && !this.visible && this.earningForm) {
         this.resetModalState();
     }
   }
 
   private prepareModal(): void {
+    // Guard clause: If form isn't initialized yet, exit.
+    if (!this.earningForm) {
+        console.warn('EarningModal: prepareModal called before form initialization.');
+        return; 
+    }
+
     console.log(`EarningModal: Preparing. Mode: ${this.isEditMode ? 'Edit' : 'Add'}, GuildID: ${this.guildId}`);
     this.errorMessage = null;
     this.isLoading = false;
-    this.earningForm.reset(); 
+    
+    if (this.earningForm) { 
+      this.earningForm.reset(); 
+    } else { 
+      this.earningForm = this.buildForm();
+    }
 
     if (!this.guildId) {
       this.errorMessage = "Error: Guild ID is required.";
@@ -92,18 +108,18 @@ export class EarningEditModalComponent implements OnInit, OnChanges {
     }
     
     this.earningForm.get('guild_id')?.setValue(this.guildId);
+    // --- ADDED CONSOLE LOG ---
+    console.log('[EarningModal] guild_id control value after setValue:', this.earningForm.get('guild_id')?.value);
+    console.log('[EarningModal] guild_id control status:', this.earningForm.get('guild_id')?.status);
+    // --- END CONSOLE LOG ---
     this.earningForm.get('guild_id')?.disable();
 
+    // Populate dropdown options from GuildConfig
     if (this.guildConfig) {
         console.log('EarningModal: Using provided guildConfig for options:', this.guildConfig);
-        // Directly use the string arrays from guildConfig
         this.availableModels = this.guildConfig.models || [];
         this.availableShifts = this.guildConfig.shifts || [];
         this.availablePeriods = this.guildConfig.periods || [];
-        
-        if (this.isEditMode && this.earningToEdit) {
-            this.patchForm(this.earningToEdit);
-        }
     } else {
         console.warn('EarningModal: guildConfig not provided. Form options might be limited.');
         this.availableModels = [];
@@ -111,16 +127,17 @@ export class EarningEditModalComponent implements OnInit, OnChanges {
         this.availablePeriods = [];
     }
 
+    // Patch form based on mode (Add vs Edit)
     if (this.isEditMode && this.earningToEdit) {
       this.title = `Edit Earning Record (ID: ${this.earningToEdit.id})`;
-      if (this.guildConfig) { 
-          this.patchForm(this.earningToEdit);
-      }
+      this.patchForm(this.earningToEdit); // Patch form *after* setting dropdown options
+      this.earningForm.get('id')?.setValue(this.earningToEdit.id); // Set the ID for edit mode
       this.earningForm.get('id')?.disable(); 
     } else {
       this.title = 'Add New Earning Record';
+      // Set default date for new records
       this.earningForm.patchValue({ date: this.getTodayDateString() });
-      this.earningForm.get('id')?.disable(); 
+      this.earningForm.get('id')?.disable(); // ID is disabled in add mode too
     }
   }
 
@@ -143,17 +160,34 @@ export class EarningEditModalComponent implements OnInit, OnChanges {
   private patchForm(earning: Earning): void {
     if (!earning || !this.earningForm) return;
     console.log('EarningModal: Patching form with:', earning);
-    this.earningForm.patchValue({
+    // Ensure the value for 'models' exists in availableModels, etc.
+    // If not, reset it to prevent errors if config changed since earning was saved
+    const patchedValues = {
       ...earning,
-      date: earning.date ? this.formatDateForInput(earning.date) : this.getTodayDateString()
-    });
+      date: earning.date ? this.formatDateForInput(earning.date) : this.getTodayDateString(),
+      models: this.availableModels.includes(earning.models) ? earning.models : '', 
+      shift: this.availableShifts.includes(earning.shift) ? earning.shift : '',
+      period: this.availablePeriods.includes(earning.period) ? earning.period : ''
+    };
+    this.earningForm.patchValue(patchedValues);
   }
 
   saveChanges(): void {
+    if (!this.earningForm) {
+        this.errorMessage = 'Form not initialized.';
+        return;
+    }
     this.earningForm.markAllAsTouched();
     if (this.earningForm.invalid) {
       this.errorMessage = 'Please correct the errors in the form.';
-      console.warn('EarningModal: Form validation failed.', this.earningForm.errors);
+      console.warn('EarningModal: Form validation failed.', this.earningForm.controls);
+      // Log specific errors
+      Object.keys(this.earningForm.controls).forEach(key => {
+        const controlErrors = this.earningForm.get(key)?.errors;
+        if (controlErrors != null) {
+          console.error('Key:', key, 'Error:', controlErrors);
+        }
+      });
       return;
     }
     if (!this.guildId) { 
@@ -164,20 +198,21 @@ export class EarningEditModalComponent implements OnInit, OnChanges {
     this.isLoading = true;
     this.errorMessage = null;
 
-    const formValue = this.earningForm.getRawValue();
+    const formValue = this.earningForm.getRawValue(); // Use getRawValue to include disabled fields like ID
 
     const earningPayload: Earning = {
       ...formValue,
       hours_worked: Number(formValue.hours_worked),
       gross_revenue: Number(formValue.gross_revenue),
       total_cut: Number(formValue.total_cut),
-      guild_id: this.guildId 
+      guild_id: this.guildId // Make sure this is the string guildId
     };
 
     let saveObservable: Observable<Earning>;
 
     if (this.isEditMode && earningPayload.id) {
       console.log('EarningModal: Updating earning:', earningPayload);
+      // Create update payload excluding non-editable fields
       const updateData: Partial<Earning> = {
           date: earningPayload.date,
           user_mention: earningPayload.user_mention,
@@ -191,6 +226,7 @@ export class EarningEditModalComponent implements OnInit, OnChanges {
       };
       saveObservable = this.earningsService.updateEarningByCustomId(earningPayload.id, updateData);
     } else {
+      // Generate ID only if creating a new record
       earningPayload.id = this.generateCustomId(); 
       console.log('EarningModal: Creating earning:', earningPayload);
       saveObservable = this.earningsService.createEarning(this.guildId, earningPayload);
@@ -202,7 +238,7 @@ export class EarningEditModalComponent implements OnInit, OnChanges {
       next: (savedEarning: Earning) => {
         console.log('EarningModal: Save successful', savedEarning);
         this.earningSaved.emit(savedEarning);
-        this.closeModal(false);
+        this.closeModal(false); // Close modal but don't emit null again
       },
       error: (err: any) => {
         this.errorMessage = err?.message || 'Failed to save earning record.';
@@ -215,19 +251,18 @@ export class EarningEditModalComponent implements OnInit, OnChanges {
     this.visible = false;
     this.visibleChange.emit(false);
     if (emitNull) {
+      // Only emit null if explicitly closing via Cancel or X button
       this.earningSaved.emit(null);
     }
-    this.resetModalState();
+    // Don't call resetModalState here, ngOnChanges handles it when visible becomes false
   }
 
+  // This method might be redundant if the parent handles visibleChange correctly
   handleVisibleChange(isVisible: boolean): void {
      if (this.visible !== isVisible) {
          this.visible = isVisible;
          this.visibleChange.emit(isVisible);
-         if (!isVisible) {
-             this.earningSaved.emit(null);
-             this.resetModalState();
-         }
+         // Reset state should happen based on ngOnChanges when visible turns false
      }
    }
 
@@ -236,11 +271,15 @@ export class EarningEditModalComponent implements OnInit, OnChanges {
     this.isLoading = false;
     this.errorMessage = null;
     this.earningToEdit = null;
+    // Reset form only if it exists
     if (this.earningForm) {
         this.earningForm.reset();
+        // Re-patch defaults needed after reset
         this.earningForm.patchValue({ date: this.getTodayDateString() });
-        this.earningForm.get('guild_id')?.setValue(this.guildId);
-        this.earningForm.get('guild_id')?.disable();
+        if (this.guildId) {
+            this.earningForm.get('guild_id')?.setValue(this.guildId);
+            this.earningForm.get('guild_id')?.disable();
+        }
         this.earningForm.get('id')?.disable();
     }
   }
@@ -251,16 +290,30 @@ export class EarningEditModalComponent implements OnInit, OnChanges {
 
   private getTodayDateString(): string {
       const today = new Date();
-      return today.toISOString().split('T')[0];
+      // Adjust for timezone offset to get local date string correctly
+      const offset = today.getTimezoneOffset();
+      const localDate = new Date(today.getTime() - (offset*60*1000));
+      return localDate.toISOString().split('T')[0];
   }
 
   private formatDateForInput(dateString: string | Date): string {
       try {
-          const date = new Date(dateString);
+          // Try parsing directly, assuming it might be YYYY-MM-DD already
+          let date = new Date(dateString);
+          // If direct parsing fails or results in invalid date, try adjusting for timezone if needed
+          if (isNaN(date.getTime()) && typeof dateString === 'string') { 
+              // Handle potential MM/DD/YYYY or other formats if necessary, 
+              // or assume it's UTC and needs adjustment
+              // For simplicity, assume input string is intended as local date
+               date = new Date(dateString + 'T00:00:00'); // Treat as local time
+          }
+
           if (!isNaN(date.getTime())) {
-              return date.toISOString().split('T')[0];
+              const offset = date.getTimezoneOffset();
+              const localDate = new Date(date.getTime() - (offset*60*1000));
+              return localDate.toISOString().split('T')[0];
           } else {
-               console.warn(`EarningModal: Invalid date received: ${dateString}`);
+               console.warn(`EarningModal: Invalid date received: ${dateString}, using today.`);
                return this.getTodayDateString();
           }
       } catch (e) {
