@@ -103,7 +103,7 @@
                     <button cButton color="primary" variant="outline" size="sm" (click)="openEditEarningModal(earning)" title="Edit Earning">
                       <svg cIcon name="cilPencil" size="sm"></svg>
                     </button>
-                    <button cButton color="danger" variant="outline" size="sm" class="ms-1" (click)="deleteEarning(earning)" title="Delete Earning">
+                    <button cButton color="danger" variant="outline" size="sm" class="ms-1" (click)="openDeleteConfirmModal(earning)" title="Delete Earning">
                       <svg cIcon name="cilTrash" size="sm"></svg>
                     </button>
                   </td>
@@ -125,3 +125,22 @@
   [earningToEdit]="selectedEarningForEdit" 
   (earningSaved)="onEarningSaved($event)">
 </app-earning-edit-modal>
+
+<!-- Delete Confirmation Modal -->
+<c-modal id="deleteConfirmModal" [visible]="isDeleteModalVisible" (visibleChange)="cancelDelete()"> 
+  <c-modal-header>
+    <h5 cModalTitle>Confirm Deletion</h5>
+    <button (click)="cancelDelete()" cButtonClose></button>
+  </c-modal-header>
+  <c-modal-body *ngIf="earningToDelete">
+    Are you sure you want to delete the earning record from <strong>{{ earningToDelete.date }}</strong> for user <strong>{{ earningToDelete.user_mention }}</strong>?
+  </c-modal-body>
+  <c-modal-footer>
+    <button (click)="cancelDelete()" cButton color="secondary">
+      Cancel
+    </button>
+    <button (click)="confirmDelete()" cButton color="danger">
+      Delete Earning
+    </button>
+  </c-modal-footer>
+</c-modal>
