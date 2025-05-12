@@ -13,17 +13,17 @@
     </c-col>
     <c-col [xs]="12" [sm]="6" [lg]="3">
       <c-widget-stat-a color="info" title="Total Coins Earned">
-        <span class="fs-3 fw-semibold">{{ summaryStats.totalCoinsEarned }}</span>
+        <span class="fs-3 fw-semibold">{{ summaryStats.totalCoinsEarned | number:'1.0-0' }}</span>
       </c-widget-stat-a>
     </c-col>
     <c-col [xs]="12" [sm]="6" [lg]="3">
       <c-widget-stat-a color="warning" title="Top Earning Guild">
-        <span class="fs-6 fw-semibold">{{ summaryStats.topGuild?.name || 'N/A' }}</span>
-        <div class="fs-5">{{ summaryStats.topGuild?.coins || 0 }} coins</div>
+        <span class="fs-6 fw-semibold text-truncate">{{ summaryStats.topGuild?.name || 'N/A' }}</span>
+        <div class="fs-5">{{ (summaryStats.topGuild?.coins || 0) | number:'1.0-0' }} coins</div>
       </c-widget-stat-a>
     </c-col>
     <c-col [xs]="12" [sm]="6" [lg]="3">
-      <c-widget-stat-a color="danger" title="Avg Coins per Message">
+      <c-widget-stat-a color="danger" title="Avg Coins per Earning">
         <span class="fs-3 fw-semibold">{{ summaryStats.avgCoinsPerMessage | number:'1.2-2' }}</span>
       </c-widget-stat-a>
     </c-col>
@@ -35,7 +35,7 @@
       <c-card>
         <c-card-header>Coins Earned Over Time</c-card-header>
         <c-card-body>
-          <c-chart type="line" [data]="earningsOverTimeChartData"></c-chart>
+          <c-chart type="line" [data]="earningsOverTimeChartData" [options]="lineChartOptions"></c-chart>
         </c-card-body>
       </c-card>
     </c-col>
@@ -43,65 +43,54 @@
       <c-card>
         <c-card-header>Top 5 Guilds by Earnings</c-card-header>
         <c-card-body>
-          <c-chart type="bar" [data]="topGuildsChartData"></c-chart>
+          <c-chart type="bar" [data]="topGuildsChartData" [options]="barChartOptions"></c-chart>
         </c-card-body>
       </c-card>
     </c-col>
-    <!-- Add Pie chart if needed -->
-    <!--
-    <c-col [md]="4">
-      <c-card>
-        <c-card-header>Earnings Distribution</c-card-header>
-        <c-card-body>
-          <c-chart type="pie" [data]="earningsDistributionChartData"></c-chart>
-        </c-card-body>
-      </c-card>
-    </c-col>
-    -->
   </c-row>
 
   <!-- Recent Earnings Table & Config Health -->
-  <c-row>
+  <c-row [gutter]="{gy: 4}">
     <c-col [md]="8">
       <c-card class="mb-4">
         <c-card-header>Recent Earnings Records</c-card-header>
         <c-card-body>
-          <!-- Add Filters Here (Example) -->
-          <c-row class="mb-3">
-            <c-col [md]="4">
+          <!-- Filters -->
+          <c-row class="mb-3" [gutter]="{gx: 2}">
+            <c-col [sm]="4">
               <label cLabel for="guildFilter">Filter by Guild:</label>
-              <input cFormControl type="text" id="guildFilter" placeholder="Guild Name" [(ngModel)]="filters.guild" (input)="applyFilters()"/>
+              <input cFormControl type="text" id="guildFilter" placeholder="Guild Name/ID" [(ngModel)]="filters.guild" (input)="applyFilters()"/>
             </c-col>
-            <c-col [md]="4">
+            <c-col [sm]="4">
               <label cLabel for="userFilter">Filter by User:</label>
-              <input cFormControl type="text" id="userFilter" placeholder="User ID" [(ngModel)]="filters.user" (input)="applyFilters()"/>
+              <input cFormControl type="text" id="userFilter" placeholder="User Mention" [(ngModel)]="filters.user" (input)="applyFilters()"/>
             </c-col>
-            <c-col [md]="4">
-              <label cLabel for="dateFilter">Date Range:</label>
+            <c-col [sm]="4">
+              <label cLabel for="dateFilter">Filter by Date:</label>
               <input cFormControl type="date" id="dateFilter" [(ngModel)]="filters.date" (input)="applyFilters()" />
             </c-col>
           </c-row>
 
-          <table [responsive]="true" cTable hover>
+          <!-- Table -->
+          <table [responsive]="true" cTable hover class="mb-3">
             <thead>
               <tr>
                 <th scope="col">Guild ID</th>
-                <th scope="col">User ID</th>
-                <th scope="col">Message</th>
+                <th scope="col">User</th>
                 <th scope="col">Coins Earned</th>
                 <th scope="col">Date</th>
               </tr>
             </thead>
             <tbody>
+              <!-- Use trackBy for performance if list gets long -->
               <tr *ngFor="let earning of filteredEarnings | slice:0:10">
-                <td>{{ earning.guildId }}</td>
-                <td>{{ earning.userId }}</td>
-                <td class="text-truncate" style="max-width: 150px;">{{ earning.message }}</td>
-                <td>{{ earning.coinsEarned }}</td>
-                <td>{{ earning.date | date:'medium' }}</td>
+                <td class="text-truncate" style="max-width: 120px;">{{ earning.guild_id }}</td> <!-- Use guild_id -->
+                <td class="text-truncate" style="max-width: 150px;">{{ earning.user_mention }}</td> <!-- Use user_mention -->
+                <td>{{ earning.total_cut | number:'1.0-0' }}</td> <!-- Use total_cut -->
+                <td>{{ earning.date | date:'yyyy-MM-dd HH:mm' }}</td>
               </tr>
               <tr *ngIf="filteredEarnings.length === 0">
-                <td colspan="5" class="text-center">No records found.</td>
+                <td colspan="4" class="text-center">No records found matching filters.</td>
               </tr>
             </tbody>
           </table>
@@ -136,19 +125,6 @@
           </ul>
         </c-card-body>
       </c-card>
-       <!-- Bonus: Notifications/Recent Changes -->
-       <!--
-       <c-card class="mb-4">
-         <c-card-header>Recent Activity</c-card-header>
-         <c-card-body>
-           <ul class="list-group list-group-flush">
-             <li class="list-group-item">User 'Admin' updated config for 'Awesome Guild'</li>
-             <li class="list-group-item">New earning recorded for User '12345'</li>
-           </ul>
-         </c-card-body>
-       </c-card>
-       -->
     </c-col>
   </c-row>
-
 </c-container>
