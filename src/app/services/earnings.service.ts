@@ -35,7 +35,6 @@ export class EarningsService {
   /**
    * GET /api/earnings/:guild_id
    * Fetches all earning records for a specific guild.
-   * Renamed from getGuildEarnings to match usage in component
    */
   getGuildEarnings(guildId: string): Observable<Earning[]> {
     if (!guildId) {
@@ -99,19 +98,19 @@ export class EarningsService {
   }
 
   /**
-   * DELETE /api/earnings/:guild_id/:earning_id (assuming this route exists)
-   * Deletes a specific earning record using guild ID and custom earning ID.
-   * Added this method to match usage in component.
+   * DELETE /api/earnings/entry/:earning_id
+   * Deletes a specific earning record using its custom earning ID.
+   * Updated URL to match backend route definition.
    */
   deleteEarning(guildId: string, earningId: string): Observable<DeleteResponse> {
-    if (!guildId || !earningId) {
-      return throwError(() => new Error('Guild ID and Earning ID cannot be empty for delete.'));
+    // Note: guildId is kept as an argument for potential future checks or context, 
+    // but it's not used in the URL per the current route definition.
+    if (!earningId) {
+      return throwError(() => new Error('Earning ID cannot be empty for delete.'));
     }
-    console.log(`EarningsService: Deleting earning with custom ID ${earningId} for guild ${guildId}...`);
-    // Adjust URL structure based on your actual API endpoint for deletion
-    // Common patterns: /api/earnings/:guild_id/:earning_id or /api/earnings/entry/:earning_id
-    // Assuming /api/earnings/:guild_id/:earning_id based on component usage
-    return this.http.delete<DeleteResponse>(`${this.apiUrl}/${guildId}/${earningId}`).pipe(
+    console.log(`EarningsService: Deleting earning with custom ID ${earningId}... (Guild context: ${guildId})`);
+    // Use the correct API endpoint: /api/earnings/entry/:earning_id
+    return this.http.delete<DeleteResponse>(`${this.apiUrl}/entry/${earningId}`).pipe(
       catchError(this.handleError)
     );
   }
@@ -122,7 +121,8 @@ export class EarningsService {
     if (error.error instanceof ErrorEvent) {
       errorMessage = `Network Error: ${error.message}`;
     } else {
-      errorMessage = `Server Error (Code: ${error.status}): ${error.error?.message || error.error?.msg || 'Unknown server error'}`;
+      // Try to get a more specific message from the backend error response
+      errorMessage = `Server Error (Code: ${error.status}): ${error.error?.msg || error.error?.message || 'Unknown server error'}`;
     }
     console.error('EarningsService Error:', errorMessage, error);
     return throwError(() => new Error(errorMessage));

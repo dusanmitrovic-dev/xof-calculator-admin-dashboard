@@ -127,16 +127,16 @@
 </app-earning-edit-modal>
 
 <!-- Delete Confirmation Modal -->
-<c-modal id="deleteConfirmModal" [visible]="isDeleteModalVisible" (visibleChange)="cancelDelete()"> 
+<c-modal id="deleteConfirmModal" [visible]="isDeleteModalVisible" (visibleChange)="handleDeleteModalVisibleChange($event)"> 
   <c-modal-header>
     <h5 cModalTitle>Confirm Deletion</h5>
-    <button (click)="cancelDelete()" cButtonClose></button>
+    <button (click)="closeDeleteModal()" cButtonClose></button>
   </c-modal-header>
   <c-modal-body *ngIf="earningToDelete">
     Are you sure you want to delete the earning record from <strong>{{ earningToDelete.date }}</strong> for user <strong>{{ earningToDelete.user_mention }}</strong>?
   </c-modal-body>
   <c-modal-footer>
-    <button (click)="cancelDelete()" cButton color="secondary">
+    <button (click)="closeDeleteModal()" cButton color="secondary">
       Cancel
     </button>
     <button (click)="confirmDelete()" cButton color="danger">

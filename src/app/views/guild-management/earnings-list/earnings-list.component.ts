@@ -9,7 +9,7 @@ import {
   AlertModule,
   ButtonModule,
   CardModule,
-  DropdownModule, // <-- Added
+  DropdownModule,
   GridModule,
   SpinnerModule,
   TableModule,
@@ -37,7 +37,7 @@ import { EarningEditModalComponent } from '../earning-edit-modal/earning-edit-mo
     GridModule,
     AlertModule,
     CardModule,
-    DropdownModule, // <-- Added
+    DropdownModule,
     SpinnerModule,
     ButtonModule,
     TableModule,
@@ -62,6 +62,10 @@ export class EarningsListComponent implements OnInit, OnDestroy {
 
   isEarningModalVisible: boolean = false;
   selectedEarningForEdit: Earning | null = null;
+
+  // Properties for Delete Confirmation Modal
+  isDeleteModalVisible: boolean = false;
+  earningToDelete: Earning | null = null;
 
   isArray = Array.isArray; // Helper for template
   objectKeys = Object.keys; // Helper for template, if needed
@@ -103,6 +107,8 @@ export class EarningsListComponent implements OnInit, OnDestroy {
     this.earningsError = null;
     this.isEarningModalVisible = false;
     this.selectedEarningForEdit = null;
+    this.isDeleteModalVisible = false; // Reset delete modal state
+    this.earningToDelete = null; // Reset delete selection
   }
 
   loadInitialData(guildId: string): void {
@@ -137,14 +143,11 @@ export class EarningsListComponent implements OnInit, OnDestroy {
       takeUntil(this.destroy$)
     ).subscribe({
       next: (earningsData: Earning[]) => {
-        // --- ADDED CONSOLE LOG ---
         console.log('[EarningsListComponent] Received earnings data:', earningsData);
-        // --- END CONSOLE LOG ---
         this.earnings = earningsData;
         this.loadingEarnings = false;
       },
       error: (err: any) => {
-        // Log the raw error as well
         console.error('[EarningsListComponent] Error loading earnings:', err);
         if (err.status === 404 || err?.message?.includes('not found')) {
           this.earningsError = null; // Don't show error for 404
@@ -172,28 +175,68 @@ export class EarningsListComponent implements OnInit, OnDestroy {
     this.isEarningModalVisible = true;
   }
 
-  deleteEarning(earning: Earning): void {
-    if (!this.currentGuildId || !earning.id) {
-      this.earningsError = "Cannot delete earning: Missing required ID.";
-      return;
-    }
-    if (confirm(`Are you sure you want to delete the earning record from ${earning.date} for user ${earning.user_mention}?`)) {
-      this.loadingEarnings = true;
-      this.earningsService.deleteEarning(this.currentGuildId, earning.id).subscribe({
-        next: () => {
-          if (this.currentGuildId) {
-            this.loadEarnings(this.currentGuildId);
-          } else {
-            this.loadingEarnings = false;
-          }
-        },
-        error: (err: any) => {
-          this.earningsError = err.message || 'Failed to delete earning record.';
-          this.loadingEarnings = false;
-        }
-      });
+  // --- Methods for Delete Confirmation Modal ---
+  openDeleteConfirmModal(earning: Earning): void {
+    this.earningToDelete = earning; // Set the earning to be deleted
+    this.isDeleteModalVisible = true; // Show the modal
+  }
+
+  // New handler for the modal's (visibleChange) event
+  handleDeleteModalVisibleChange(visible: boolean): void {
+    this.isDeleteModalVisible = visible;
+    if (!visible) {
+      // Modal is closing, clear the earningToDelete
+      // Delay slightly to allow animations and avoid race conditions if modal re-opens quickly
+      setTimeout(() => {
+        this.earningToDelete = null;
+      }, 150); // A small delay, adjust if needed
     }
   }
+
+  // New method to explicitly close the modal (called by cancel/close buttons)
+  closeDeleteModal(): void {
+    this.isDeleteModalVisible = false;
+    // The (visibleChange) event will trigger handleDeleteModalVisibleChange
+    // which will then set earningToDelete to null.
+  }
+  
+  // Old cancelDelete can be removed or call closeDeleteModal.
+  // For safety, let's ensure it calls the new method.
+  cancelDelete(): void {
+    this.closeDeleteModal();
+  }
+
+  confirmDelete(): void {
+    if (!this.earningToDelete || !this.currentGuildId || !this.earningToDelete.id) {
+      this.earningsError = "Cannot delete earning: Missing required information.";
+      this.closeDeleteModal(); // Close modal using the new method
+      return;
+    }
+
+    const guildId = this.currentGuildId;
+    const earningId = this.earningToDelete.id; // Keep a reference before it's nulled
+
+    this.loadingEarnings = true;
+    this.earningsError = null;
+    // this.isDeleteModalVisible = false; // No longer set directly here
+
+    this.earningsService.deleteEarning(guildId, earningId).subscribe({
+      next: () => {
+        console.log(`[EarningsListComponent] Successfully deleted earning ID: ${earningId}`);
+        this.loadEarnings(guildId); // Refresh list
+        // this.earningToDelete = null; // No longer set directly here
+        this.closeDeleteModal(); // Close modal properly
+      },
+      error: (err: any) => {
+        console.error(`[EarningsListComponent] Error deleting earning ID: ${earningId}`, err);
+        this.earningsError = err.message || 'Failed to delete earning record.';
+        this.loadingEarnings = false;
+        // this.earningToDelete = null; // No longer set directly here
+        this.closeDeleteModal(); // Close modal properly even on error
+      }
+    });
+  }
+  // --- End Delete Confirmation Methods ---
 
   onEarningSaved(savedEarning: Earning | null): void {
     this.isEarningModalVisible = false;
