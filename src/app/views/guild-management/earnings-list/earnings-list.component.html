@@ -70,7 +70,9 @@
                 </tr>
               </thead>
               <tbody>
-                <tr *ngFor="let earning of earnings; track earning.id">
+                <!-- --- UPDATED: Use trackBy: trackById --- -->
+                <tr *ngFor="let earning of earnings; trackBy: trackById">
+                <!-- --- END UPDATE --- -->
                   <td>{{ earning.date }}</td>
                   <td>{{ earning.user_mention }}</td>
                   <td>{{ earning.role }}</td>
