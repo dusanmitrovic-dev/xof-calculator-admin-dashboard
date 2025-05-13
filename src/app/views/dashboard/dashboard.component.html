@@ -1,130 +1,108 @@
-<c-container class="pb-4">
-  <!-- Summary Widgets -->
-  <c-row [gutter]="{gy: 4}" class="mb-4">
-    <c-col [xs]="12" [sm]="6" [lg]="3">
-      <c-widget-stat-a color="primary" title="Total Guilds">
-        <span class="fs-3 fw-semibold">{{ summaryStats.totalGuilds }}</span>
-        <ng-template cTemplateId="widgetActionTemplate">
-          <button cButton color="transparent" class="p-0 text-white">
-            <svg cIcon name="cilSettings" title="Settings button"></svg>
-          </button>
-        </ng-template>
-      </c-widget-stat-a>
-    </c-col>
-    <c-col [xs]="12" [sm]="6" [lg]="3">
-      <c-widget-stat-a color="info" title="Total Coins Earned">
-        <span class="fs-3 fw-semibold">{{ summaryStats.totalCoinsEarned | number:'1.0-0' }}</span>
-      </c-widget-stat-a>
-    </c-col>
-    <c-col [xs]="12" [sm]="6" [lg]="3">
-      <c-widget-stat-a color="warning" title="Top Earning Guild">
-        <span class="fs-6 fw-semibold text-truncate">{{ summaryStats.topGuild?.name || 'N/A' }}</span>
-        <div class="fs-5">{{ (summaryStats.topGuild?.coins || 0) | number:'1.0-0' }} coins</div>
-      </c-widget-stat-a>
-    </c-col>
-    <c-col [xs]="12" [sm]="6" [lg]="3">
-      <c-widget-stat-a color="danger" title="Avg Coins per Earning">
-        <span class="fs-3 fw-semibold">{{ summaryStats.avgCoinsPerMessage | number:'1.2-2' }}</span>
-      </c-widget-stat-a>
-    </c-col>
-  </c-row>
-
-  <!-- Data Visualizations -->
+<c-container fluid>
   <c-row class="mb-4">
-    <c-col [md]="7">
-      <c-card>
-        <c-card-header>Coins Earned Over Time</c-card-header>
-        <c-card-body>
-          <c-chart type="line" [data]="earningsOverTimeChartData" [options]="lineChartOptions"></c-chart>
-        </c-card-body>
-      </c-card>
+    <!-- KPI Cards -->
+    <c-col [xs]="12" [sm]="6" [lg]="4">
+      <c-widget-stat-a color="primary" title="Total Gross Revenue">
+        <!-- Assuming gross_revenue is calculated in component -->
+        <span class="fs-3 fw-semibold">{{ summaryStats.totalGrossRevenue | currency:'USD':'symbol':'1.0-0' }}</span>
+      </c-widget-stat-a>
     </c-col>
-    <c-col [md]="5">
+    <c-col [xs]="12" [sm]="6" [lg]="4">
+      <c-widget-stat-a color="info" title="Total Entries">
+        <span class="fs-3 fw-semibold">{{ summaryStats.totalEntries | number:'1.0-0' }}</span>
+      </c-widget-stat-a>
+    </c-col>
+    <c-col [xs]="12" [sm]="6" [lg]="4">
+      <c-widget-stat-a color="warning" title="Avg Cut per Entry">
+        <span class="fs-3 fw-semibold">{{ summaryStats.avgCutPerEntry | currency:'USD':'symbol':'1.2-2' }}</span>
+      </c-widget-stat-a>
+    </c-col>
+  </c-row>
+
+  <!-- Revenue Over Time Chart -->
+  <c-row class="mb-4">
+    <c-col>
       <c-card>
-        <c-card-header>Top 5 Guilds by Earnings</c-card-header>
+        <c-card-header>Revenue Over Time</c-card-header>
         <c-card-body>
-          <c-chart type="bar" [data]="topGuildsChartData" [options]="barChartOptions"></c-chart>
+          <!-- Assuming chart data is updated in component -->
+          <c-chart type="line" [data]="revenueOverTimeChartData" [options]="lineChartOptions"></c-chart>
         </c-card-body>
       </c-card>
     </c-col>
   </c-row>
 
-  <!-- Recent Earnings Table & Config Health -->
-  <c-row [gutter]="{gy: 4}">
-    <c-col [md]="8">
-      <c-card class="mb-4">
-        <c-card-header>Recent Earnings Records</c-card-header>
+  <!-- Recent Revenue Entries Table -->
+  <c-row class="mb-4">
+    <c-col>
+      <c-card>
+        <c-card-header>Recent Revenue Entries</c-card-header>
         <c-card-body>
-          <!-- Filters -->
-          <c-row class="mb-3" [gutter]="{gx: 2}">
-            <c-col [sm]="4">
-              <label cLabel for="guildFilter">Filter by Guild:</label>
-              <input cFormControl type="text" id="guildFilter" placeholder="Guild Name/ID" [(ngModel)]="filters.guild" (input)="applyFilters()"/>
-            </c-col>
-            <c-col [sm]="4">
-              <label cLabel for="userFilter">Filter by User:</label>
-              <input cFormControl type="text" id="userFilter" placeholder="User Mention" [(ngModel)]="filters.user" (input)="applyFilters()"/>
-            </c-col>
-            <c-col [sm]="4">
-              <label cLabel for="dateFilter">Filter by Date:</label>
-              <input cFormControl type="date" id="dateFilter" [(ngModel)]="filters.date" (input)="applyFilters()" />
-            </c-col>
-          </c-row>
-
-          <!-- Table -->
-          <table [responsive]="true" cTable hover class="mb-3">
-            <thead>
-              <tr>
-                <th scope="col">Guild ID</th>
-                <th scope="col">User</th>
-                <th scope="col">Coins Earned</th>
-                <th scope="col">Date</th>
-              </tr>
-            </thead>
-            <tbody>
-              <!-- Use trackBy for performance if list gets long -->
-              <tr *ngFor="let earning of filteredEarnings | slice:0:10">
-                <td class="text-truncate" style="max-width: 120px;">{{ earning.guild_id }}</td> <!-- Use guild_id -->
-                <td class="text-truncate" style="max-width: 150px;">{{ earning.user_mention }}</td> <!-- Use user_mention -->
-                <td>{{ earning.total_cut | number:'1.0-0' }}</td> <!-- Use total_cut -->
-                <td>{{ earning.date | date:'yyyy-MM-dd HH:mm' }}</td>
-              </tr>
-              <tr *ngIf="filteredEarnings.length === 0">
-                <td colspan="4" class="text-center">No records found matching filters.</td>
-              </tr>
-            </tbody>
-          </table>
-          <button cButton color="primary" variant="outline" routerLink="/guild-management/earnings">
-            View Full Earnings Table
-          </button>
-        </c-card-body>
-      </c-card>
-    </c-col>
-
-    <c-col [md]="4">
-      <c-card class="mb-4">
-        <c-card-header>Configuration Health</c-card-header>
-        <c-card-body>
-          <ul class="list-group list-group-flush">
-            <li class="list-group-item d-flex justify-content-between align-items-center" *ngIf="configHealth.missingPrefix > 0">
-              <a routerLink="/guild-management/config">Guilds Missing Prefix</a>
-              <c-badge color="danger" shape="rounded-pill">{{ configHealth.missingPrefix }}</c-badge>
-            </li>
-            <li class="list-group-item d-flex justify-content-between align-items-center" *ngIf="configHealth.noRoles > 0">
-              <a routerLink="/guild-management/config">Guilds Without Allowed Roles</a>
-              <c-badge color="warning" shape="rounded-pill">{{ configHealth.noRoles }}</c-badge>
-            </li>
-            <li class="list-group-item d-flex justify-content-between align-items-center" *ngIf="configHealth.noChannels > 0">
-              <a routerLink="/guild-management/config">Guilds Without Allowed Channels</a>
-              <c-badge color="warning" shape="rounded-pill">{{ configHealth.noChannels }}</c-badge>
-            </li>
-             <li class="list-group-item text-center" *ngIf="configHealth.missingPrefix === 0 && configHealth.noRoles === 0 && configHealth.noChannels === 0">
-              <svg cIcon name="cilCheckCircle" size="xl" class="text-success me-2"></svg>
-              All Configurations Look Good!
-            </li>
-          </ul>
+          <div class="table-responsive">
+            <table cTable class="table table-striped table-hover">
+              <thead>
+                <tr>
+                  <th scope="col">Date</th>
+                  <th scope="col">User</th>
+                  <th scope="col">Role</th>
+                  <th scope="col">Shift</th>
+                  <th scope="col">Revenue</th>
+                  <th scope="col">Cut</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let entry of recentRevenueEntries">
+                  <td>{{ entry.date | date:'yyyy-MM-dd' }}</td>
+                  <td>{{ entry.user_mention || entry.user_id || 'N/A' }}</td>
+                  <td>{{ entry.role || 'N/A' }}</td>
+                  <td>{{ entry.shift || 'N/A' }}</td>
+                  <td>{{ entry.gross_revenue | currency:'USD':'symbol':'1.0-0' }}</td> <!-- Assuming gross_revenue field -->
+                  <td>{{ entry.total_cut | currency:'USD':'symbol':'1.0-0' }}</td>
+                </tr>
+                <tr *ngIf="recentRevenueEntries.length === 0">
+                  <td colspan="6" class="text-center">No recent entries found.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </c-card-body>
       </c-card>
     </c-col>
   </c-row>
+
+  <!-- Quick Actions (Optional Placement) -->
+  <c-row class="mb-4">
+    <c-col class="text-center">
+      <button cButton color="primary" class="me-2" (click)="navigateToAddEntry()">Add Revenue Entry</button>
+      <button cButton color="secondary" (click)="navigateToViewAll()">View All Records</button>
+    </c-col>
+  </c-row>
+
 </c-container>
+
+<!-- Filters remain unchanged for now -->
+<c-card class="mb-4">
+  <c-card-header>Filter Earnings</c-card-header>
+  <c-card-body>
+    <form [formGroup]="filterForm" (ngSubmit)="applyFilters()">
+      <c-row class="g-3 align-items-end">
+        <c-col [md]="3">
+          <label cLabel for="guildFilter">Guild Name/ID</label>
+          <input cFormControl id="guildFilter" type="text" formControlName="guildFilter" />
+        </c-col>
+        <c-col [md]="3">
+          <label cLabel for="userFilter">User Mention</label>
+          <input cFormControl id="userFilter" type="text" formControlName="userFilter" />
+        </c-col>
+        <c-col [md]="3">
+          <label cLabel for="dateFilter">Date</label>
+          <input cFormControl id="dateFilter" type="date" formControlName="dateFilter" />
+        </c-col>
+        <c-col [md]="3">
+          <button cButton type="submit" color="primary" class="me-2">Apply Filters</button>
+          <button cButton type="button" color="secondary" (click)="resetFilters()">Reset</button>
+        </c-col>
+      </c-row>
+    </form>
+  </c-card-body>
+</c-card>
