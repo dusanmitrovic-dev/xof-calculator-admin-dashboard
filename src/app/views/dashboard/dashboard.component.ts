@@ -1,14 +1,13 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule, DatePipe, DecimalPipe, CurrencyPipe } from '@angular/common';
-import { ReactiveFormsModule, FormBuilder, FormGroup } from '@angular/forms'; // Import ReactiveFormsModule and FormBuilder
-import { Router } from '@angular/router'; // Router is used for navigation
+// Removed RouterLink as it's not used
+// Removed ReactiveFormsModule, FormBuilder, FormGroup as filters are removed
+// Removed Router as navigation buttons are removed
 import { ChartData, ChartOptions } from 'chart.js';
-import { catchError, of, switchMap, tap } from 'rxjs';
+import { catchError, of } from 'rxjs'; // Removed switchMap, tap as they might not be needed if fetchData is simplified
 
 // Import Services
 import { EarningsService, Earning } from '../../services/earnings.service';
-// GuildConfigService might still be needed if user/role data depends on it, but not directly for dashboard stats
-// import { GuildConfigService, AvailableGuild } from '../../services/guild-config.service';
 
 // Import CoreUI modules
 import {
@@ -17,22 +16,20 @@ import {
   CardHeaderComponent,
   CardBodyComponent,
   WidgetStatAComponent,
-  ButtonDirective,
+  // ButtonDirective, // Removed as buttons are gone
   SharedModule,
   TableDirective,
-  ColComponent, // Added ColComponent
-  RowComponent, // Added RowComponent
-  FormControlDirective, // Keep for filters
-  FormLabelDirective,  // Keep for filters
-  // InputGroupComponent, // Removed - not used in template
-  // InputGroupTextDirective, // Removed - not used in template
-  // CardFooterComponent // Removed - not used in template
+  ColComponent,
+  RowComponent,
+  // Removed FormControlDirective, FormLabelDirective as filters are gone
+  // Removed InputGroupComponent, InputGroupTextDirective as filters are gone
+  // Removed CardFooterComponent as buttons are gone
 } from '@coreui/angular';
 import { ChartjsComponent } from '@coreui/angular-chartjs';
 
 // Icon Import (optional, can be removed if no icons used)
 import { IconModule, IconSetService } from '@coreui/icons-angular';
-import { cilChartLine, cilPlus, cilList } from '@coreui/icons'; // Example icons
+import { cilChartLine } from '@coreui/icons'; // Removed unused icons cilPlus, cilList
 
 // Interface for the new summary statistics
 interface DashboardSummaryStats {
@@ -47,38 +44,37 @@ interface DashboardSummaryStats {
   standalone: true,
   imports: [
     CommonModule,
-    ReactiveFormsModule, // Added ReactiveFormsModule
-    // RouterLink, // Removed - not used directly in template (navigation is programmatic)
+    // Removed ReactiveFormsModule
+    // Removed RouterLink
     ContainerComponent,
     CardComponent,
     CardHeaderComponent,
     CardBodyComponent,
     WidgetStatAComponent,
-    ButtonDirective,
+    // Removed ButtonDirective
     SharedModule,
     ChartjsComponent,
     TableDirective,
-    ColComponent, // Added
-    RowComponent, // Added
-    FormControlDirective, // Keep
-    FormLabelDirective,  // Keep
-    // InputGroupComponent, // Removed
-    // InputGroupTextDirective, // Removed
-    // CardFooterComponent, // Removed
-    IconModule // Keep if icons are used
+    ColComponent,
+    RowComponent,
+    // Removed FormControlDirective
+    // Removed FormLabelDirective
+    // Removed InputGroupComponent
+    // Removed InputGroupTextDirective
+    // Removed CardFooterComponent
+    IconModule // Keep if icons are used in template (e.g., in widgets/cards)
   ],
-  providers: [DatePipe, DecimalPipe, CurrencyPipe, IconSetService] // Added CurrencyPipe
+  providers: [DatePipe, DecimalPipe, CurrencyPipe, IconSetService]
 })
 export class DashboardComponent implements OnInit {
   private earningsService = inject(EarningsService);
-  // private guildConfigService = inject(GuildConfigService); // Uncomment if needed
   private datePipe = inject(DatePipe);
-  private router = inject(Router); // Inject Router
-  private fb = inject(FormBuilder); // Inject FormBuilder
+  // Removed router injection
+  // Removed fb injection
   private iconSetService = inject(IconSetService); // Keep if icons are used
 
   allEarnings: Earning[] = [];
-  filteredEarnings: Earning[] = [];
+  // Removed filteredEarnings
   recentRevenueEntries: Earning[] = [];
 
   // Use the new interface for summary stats
@@ -88,8 +84,7 @@ export class DashboardComponent implements OnInit {
     avgCutPerEntry: 0
   };
 
-  // Form group for filters
-  filterForm: FormGroup;
+  // Removed filterForm
 
   revenueOverTimeChartData: ChartData<'line'> = { labels: [], datasets: [] };
 
@@ -100,7 +95,6 @@ export class DashboardComponent implements OnInit {
         y: {
             beginAtZero: true,
             ticks: {
-                // Optional: Format y-axis ticks as currency
                 callback: (value) => {
                     if (typeof value === 'number') {
                         return '$' + value.toLocaleString();
@@ -119,7 +113,6 @@ export class DashboardComponent implements OnInit {
                         label += ': ';
                     }
                     if (context.parsed.y !== null) {
-                       // Format tooltip value as currency
                        label += new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(context.parsed.y);
                     }
                     return label;
@@ -131,25 +124,17 @@ export class DashboardComponent implements OnInit {
 
 
   constructor() {
-    // Assign necessary icons
-    this.iconSetService.icons = { cilChartLine, cilPlus, cilList };
-
-    // Initialize the filter form
-    this.filterForm = this.fb.group({
-      guildFilter: [''],
-      userFilter: [''],
-      dateFilter: ['']
-    });
+    // Assign necessary icons (only chart icon needed now)
+    this.iconSetService.icons = { cilChartLine };
+    // Removed filterForm initialization
   }
 
   ngOnInit(): void {
     this.fetchData();
-    // Subscribe to form changes to apply filters automatically (optional)
-    // this.filterForm.valueChanges.subscribe(() => this.applyFilters());
+    // Removed subscription to filterForm changes
   }
 
   fetchData(): void {
-    // Simplified fetch - focusing only on earnings data for dashboard
     this.earningsService.getAllEarningsAcrossGuilds().pipe(
       catchError(err => {
           console.error('Error fetching all earnings:', err);
@@ -157,32 +142,31 @@ export class DashboardComponent implements OnInit {
       })
     ).subscribe((earnings: Earning[]) => {
         this.allEarnings = earnings;
-        // Calculate stats and prepare charts based on all data initially
+        // Calculate stats based on all data
         this.calculateSummaryStats(this.allEarnings);
+        // Prepare chart based on all data
         this.prepareRevenueChartData(this.allEarnings);
-        // Apply initial filters (or display all recent entries)
-        this.applyFilters();
+        // Populate recent entries directly from all data
+        this.populateRecentEntries(this.allEarnings);
     });
   }
 
-  // Updated to calculate new metrics based on provided earnings array
+  // Calculates summary stats based on provided earnings array
   calculateSummaryStats(earnings: Earning[]): void {
     this.summaryStats.totalGrossRevenue = earnings.reduce((sum, e) => sum + (e.gross_revenue || 0), 0);
     this.summaryStats.totalEntries = earnings.length;
     const totalCut = earnings.reduce((sum, e) => sum + (e.total_cut || 0), 0);
-    // Calculate average only if there are entries to avoid division by zero
     this.summaryStats.avgCutPerEntry = this.summaryStats.totalEntries > 0
       ? (totalCut / this.summaryStats.totalEntries)
       : 0;
   }
 
-  // Updated to plot Gross Revenue over time
+  // Plots Gross Revenue over time
   prepareRevenueChartData(earnings: Earning[]): void {
     const revenueByDate: { [key: string]: number } = {};
     earnings.forEach(e => {
-      // Ensure date is valid before transforming
       const dateStr = e.date ? this.datePipe.transform(e.date, 'yyyy-MM-dd') : null;
-      if (dateStr) { // Check if dateStr is not null
+      if (dateStr) {
           revenueByDate[dateStr] = (revenueByDate[dateStr] || 0) + (e.gross_revenue || 0);
       }
     });
@@ -190,10 +174,10 @@ export class DashboardComponent implements OnInit {
     const sortedDates = Object.keys(revenueByDate).sort((a, b) => new Date(a).getTime() - new Date(b).getTime());
 
     this.revenueOverTimeChartData = {
-      labels: sortedDates.map(date => this.datePipe.transform(date, 'MMM d')), // Format date labels for readability
+      labels: sortedDates.map(date => this.datePipe.transform(date, 'MMM d')),
       datasets: [
         {
-          label: 'Gross Revenue', // Updated label
+          label: 'Gross Revenue',
           data: sortedDates.map(date => revenueByDate[date]),
           borderColor: '#321fdb',
           tension: 0.1,
@@ -203,62 +187,20 @@ export class DashboardComponent implements OnInit {
     };
   }
 
-  // Applies filters based on form values
-  applyFilters(): void {
-    const { guildFilter, userFilter, dateFilter } = this.filterForm.value;
-    const guildFilterLower = guildFilter?.toLowerCase().trim();
-    const userFilterLower = userFilter?.toLowerCase().trim();
-
-    this.filteredEarnings = this.allEarnings.filter(earning => {
-      // TODO: Add guild name/ID filtering if needed (requires guild data mapping)
-      // const guildMatch = !guildFilterLower // ... add logic ...
-
-      const userMention = earning.user_mention?.toLowerCase() || '';
-      // Use the 'id' field (which is the custom ID) for filtering if user_mention is not present
-      const userIdMatch = earning.id?.toLowerCase().includes(userFilterLower) || false;
-      const userMatch = !userFilterLower || userMention.includes(userFilterLower) || userIdMatch;
-
-      // Ensure date exists before transforming
-      const earningDateStr = earning.date ? this.datePipe.transform(earning.date, 'yyyy-MM-dd') : null;
-      const dateMatch = !dateFilter || (earningDateStr === dateFilter);
-
-      // Combine matches - Add guildMatch if implemented
-      return userMatch && dateMatch; // && guildMatch;
-    });
-
-    // Update recent entries based on the filtered list (latest first)
-    this.recentRevenueEntries = this.filteredEarnings
-                                    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()) // Sort by date descending
+  // Populates the recent entries table
+  populateRecentEntries(earnings: Earning[]): void {
+    this.recentRevenueEntries = [...earnings] // Create a copy to avoid mutating the original array
+                                    .sort((a, b) => {
+                                      // Handle potential null/undefined dates during sort
+                                      const dateA = a.date ? new Date(a.date).getTime() : 0;
+                                      const dateB = b.date ? new Date(b.date).getTime() : 0;
+                                      return dateB - dateA; // Sort descending
+                                    })
                                     .slice(0, 10); // Take the latest 10
-
-     // Optionally: Recalculate stats and charts based on filtered data
-     // this.calculateSummaryStats(this.filteredEarnings);
-     // this.prepareRevenueChartData(this.filteredEarnings);
-     // Note: The current setup keeps stats/charts based on ALL data, filters only affect the "Recent Entries" table.
   }
 
-  // Resets the filter form and reapplies filters
-  resetFilters(): void {
-    this.filterForm.reset({
-      guildFilter: '',
-      userFilter: '',
-      dateFilter: ''
-    });
-    this.applyFilters();
-  }
-
-  // Placeholder navigation methods
-  navigateToAddEntry(): void {
-    console.log('Navigating to add revenue entry...');
-    // Example: this.router.navigate(['/revenue/add']); // Adjust route as needed
-    alert('Navigation to "Add Revenue Entry" page not yet implemented.');
-  }
-
-  navigateToViewAll(): void {
-    console.log('Navigating to view all records...');
-    // Example: this.router.navigate(['/revenue/records']); // Adjust route as needed
-    alert('Navigation to "View All Records" page not yet implemented.');
-     // Or potentially navigate to a dedicated 'earnings-list' or 'revenue-records' component/route
-     // Example: this.router.navigate(['/guild-management/earnings-list']); // If using existing structure
-  }
+  // Removed applyFilters method
+  // Removed resetFilters method
+  // Removed navigateToAddEntry method
+  // Removed navigateToViewAll method
 }
