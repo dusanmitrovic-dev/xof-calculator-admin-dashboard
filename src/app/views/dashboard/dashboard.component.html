@@ -1,26 +1,50 @@
 <c-container fluid>
   <c-row class="mb-4">
     <!-- KPI Cards -->
-    <!-- Adjusted col size from lg="4" to lg="3" to fit four widgets -->
     <c-col [xs]="12" [sm]="6" [lg]="3">
       <c-widget-stat-a color="primary" title="Total Gross Revenue">
-        <span class="fs-3 fw-semibold">{{ summaryStats.totalGrossRevenue | currency:'USD':'symbol':'1.0-0' }}</span>
+        <div class="d-flex align-items-center">
+          <c-icon name="cilDollar" size="xl" class="me-2"></c-icon>
+          <span class="fs-3 fw-semibold me-2">{{ summaryStats.totalGrossRevenue | currency:'USD':'symbol':'1.0-0' }}</span>
+          <ng-container *ngIf="summaryStats.totalGrossRevenueTrend && summaryStats.totalGrossRevenueTrend !== 'neutral'">
+            <c-icon 
+              [name]="summaryStats.totalGrossRevenueTrend === 'up' ? 'cilArrowTop' : 'cilArrowBottom'" 
+              [class]="summaryStats.totalGrossRevenueTrend === 'up' ? 'text-success' : 'text-danger'"
+              class="me-1">
+            </c-icon>
+            <span [class]="summaryStats.totalGrossRevenueTrend === 'up' ? 'text-success' : 'text-danger'" class="fs-6 fw-semibold">
+              {{ summaryStats.totalGrossRevenueDeltaPercentage }}
+            </span>
+          </ng-container>
+        </div>
       </c-widget-stat-a>
     </c-col>
-    <!-- Added Total Cut Widget -->
     <c-col [xs]="12" [sm]="6" [lg]="3">
       <c-widget-stat-a color="success" title="Total Cut">
-        <span class="fs-3 fw-semibold">{{ summaryStats.totalCut | currency:'USD':'symbol':'1.0-0' }}</span>
+        <div class="d-flex align-items-center">
+          <c-icon name="cilCalculator" size="xl" class="me-2"></c-icon>
+          <span class="fs-3 fw-semibold">{{ summaryStats.totalCut | currency:'USD':'symbol':'1.0-0' }}</span>
+        </div>
       </c-widget-stat-a>
     </c-col>
     <c-col [xs]="12" [sm]="6" [lg]="3">
       <c-widget-stat-a color="info" title="Total Entries">
-        <span class="fs-3 fw-semibold">{{ summaryStats.totalEntries | number:'1.0-0' }}</span>
+        <div class="d-flex align-items-center">
+          <c-icon name="cilListNumbered" size="xl" class="me-2"></c-icon>
+          <span class="fs-3 fw-semibold">{{ summaryStats.totalEntries | number:'1.0-0' }}</span>
+        </div>
       </c-widget-stat-a>
     </c-col>
     <c-col [xs]="12" [sm]="6" [lg]="3">
-      <c-widget-stat-a color="warning" title="Avg Cut per Entry">
-        <span class="fs-3 fw-semibold">{{ summaryStats.avgCutPerEntry | currency:'USD':'symbol':'1.2-2' }}</span>
+      <c-widget-stat-a 
+        color="warning" 
+        title="Avg Cut per Entry" 
+        cTooltip="Represents the average 'total cut' per individual 'entry' recorded. Calculated as Total Cut / Total Entries."
+        tooltipPlacement="top">
+        <div class="d-flex align-items-center">
+          <c-icon name="cilChartPie" size="xl" class="me-2"></c-icon>
+          <span class="fs-3 fw-semibold">{{ summaryStats.avgCutPerEntry | currency:'USD':'symbol':'1.2-2' }}</span>
+        </div>
       </c-widget-stat-a>
     </c-col>
   </c-row>
@@ -37,12 +61,32 @@
     </c-col>
   </c-row>
 
-  <!-- Recent Revenue Entries Table -->
+  <!-- Revenue Entries Table -->
   <c-row class="mb-4">
     <c-col>
       <c-card>
-        <c-card-header>Recent Revenue Entries</c-card-header>
+        <c-card-header>Revenue Entries</c-card-header>
         <c-card-body>
+          <!-- Toolbar: Search and Export -->
+          <c-row class="mb-3">
+            <c-col [sm]="8" [md]="9">
+              <c-input-group>
+                <span cInputGroupText>
+                  <c-icon name="cilSearch"></c-icon>
+                </span>
+                <input cFormControl
+                       placeholder="Search entries..."
+                       [(ngModel)]="searchTerm"
+                       (ngModelChange)="onSearchTermChange()"/>
+              </c-input-group>
+            </c-col>
+            <c-col [sm]="4" [md]="3" class="text-end">
+              <button cButton color="secondary" (click)="exportToCsv()">
+                <c-icon name="cilSave" class="me-1"></c-icon> Export
+              </button>
+            </c-col>
+          </c-row>
+
           <div class="table-responsive">
             <table cTable class="table table-striped table-hover">
               <thead>
@@ -56,8 +100,7 @@
                 </tr>
               </thead>
               <tbody>
-                <!-- Ensure you are using entry.parsedDate for the DatePipe -->
-                <tr *ngFor="let entry of recentRevenueEntries">
+                <tr *ngFor="let entry of displayableEntries">
                   <td>{{ entry.parsedDate | date:'shortDate' }}</td>
                   <td>{{ entry.user_mention || 'N/A' }}</td>
                   <td>{{ entry.role || 'N/A' }}</td>
@@ -65,12 +108,37 @@
                   <td>{{ entry.gross_revenue | currency:'USD':'symbol':'1.0-0' }}</td>
                   <td>{{ entry.total_cut | currency:'USD':'symbol':'1.0-0' }}</td>
                 </tr>
-                <tr *ngIf="recentRevenueEntries.length === 0">
-                  <td colspan="6" class="text-center">No recent entries found.</td>
+                <tr *ngIf="displayableEntries.length === 0">
+                  <td colspan="6" class="text-center">
+                    {{ searchTerm && searchTerm.trim() !== '' ? 'No entries match your search.' : 'No entries found.' }}
+                  </td>
                 </tr>
               </tbody>
             </table>
           </div>
+          <!-- Pagination Controls -->
+          <c-pagination 
+            *ngIf="totalPages > 1" 
+            align="end" 
+            aria-label="Table pagination">
+            <li cPageItem [disabled]="currentPage === 1">
+              <a cPageLink (click)="previousPage()" aria-label="Previous" role="button">
+                <span aria-hidden="true">&laquo;</span>
+                <span class="visually-hidden">Previous</span>
+              </a>
+            </li>
+            <li cPageItem *ngFor="let pageNum of [].constructor(totalPages); let i = index" 
+                [active]="currentPage === (i + 1)" 
+                (click)="goToPage(i + 1)" role="button">
+              <a cPageLink>{{ i + 1 }}</a>
+            </li>
+            <li cPageItem [disabled]="currentPage === totalPages">
+              <a cPageLink (click)="nextPage()" aria-label="Next" role="button">
+                <span aria-hidden="true">&raquo;</span>
+                <span class="visually-hidden">Next</span>
+              </a>
+            </li>
+          </c-pagination>
         </c-card-body>
       </c-card>
     </c-col>
