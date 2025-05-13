@@ -53,7 +53,8 @@
               <tbody>
                 <tr *ngFor="let entry of recentRevenueEntries">
                   <td>{{ entry.date | date:'yyyy-MM-dd' }}</td>
-                  <td>{{ entry.user_mention || entry.user_id || 'N/A' }}</td>
+                  <!-- Use the custom 'id' field as fallback if 'user_mention' is missing -->
+                  <td>{{ entry.user_mention || entry.id || 'N/A' }}</td>
                   <td>{{ entry.role || 'N/A' }}</td>
                   <td>{{ entry.shift || 'N/A' }}</td>
                   <td>{{ entry.gross_revenue | currency:'USD':'symbol':'1.0-0' }}</td> <!-- Assuming gross_revenue field -->
@@ -80,7 +81,7 @@
 
 </c-container>
 
-<!-- Filters remain unchanged for now -->
+<!-- Filters section -->
 <c-card class="mb-4">
   <c-card-header>Filter Earnings</c-card-header>
   <c-card-body>
@@ -91,7 +92,8 @@
           <input cFormControl id="guildFilter" type="text" formControlName="guildFilter" />
         </c-col>
         <c-col [md]="3">
-          <label cLabel for="userFilter">User Mention</label>
+          <!-- Changed label to reflect it filters by mention or ID -->
+          <label cLabel for="userFilter">User Mention / ID</label>
           <input cFormControl id="userFilter" type="text" formControlName="userFilter" />
         </c-col>
         <c-col [md]="3">
