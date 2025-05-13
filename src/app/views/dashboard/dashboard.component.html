@@ -1,51 +1,106 @@
 <c-container fluid>
+  <!-- Date Range Filter -->
+  <c-row class="mb-3 align-items-center">
+    <c-col [md]="9">
+      <h4 *ngIf="selectedGuildName" class="mb-0">Guild: {{ selectedGuildName }}</h4>
+    </c-col>
+    <c-col [md]="3" class="text-md-end">
+      <c-dropdown>
+        <button cButton cDropdownToggle color="secondary">
+          {{ selectedDateRangeLabel }}
+        </button>
+        <ul cDropdownMenu>
+          <li><a cDropdownItem (click)="setDateRange('7days')">Last 7 Days</a></li>
+          <li><a cDropdownItem (click)="setDateRange('30days')">Last 30 Days</a></li>
+          <li><a cDropdownItem (click)="setDateRange('90days')">Last 90 Days</a></li>
+          <li><a cDropdownItem (click)="setDateRange('all')">All Time</a></li>
+        </ul>
+      </c-dropdown>
+    </c-col>
+  </c-row>
+
+  <!-- KPI Cards -->
   <c-row class="mb-4">
-    <!-- KPI Cards -->
     <c-col [xs]="12" [sm]="6" [lg]="3">
-      <c-widget-stat-a color="primary" title="Total Gross Revenue">
-        <div class="d-flex align-items-center">
-          <c-icon name="cilDollar" size="xl" class="me-2"></c-icon>
-          <span class="fs-3 fw-semibold me-2">{{ summaryStats.totalGrossRevenue | currency:'USD':'symbol':'1.0-0' }}</span>
-          <ng-container *ngIf="summaryStats.totalGrossRevenueTrend && summaryStats.totalGrossRevenueTrend !== 'neutral'">
-            <c-icon 
-              [name]="summaryStats.totalGrossRevenueTrend === 'up' ? 'cilArrowTop' : 'cilArrowBottom'" 
-              [class]="summaryStats.totalGrossRevenueTrend === 'up' ? 'text-success' : 'text-danger'"
-              class="me-1">
-            </c-icon>
-            <span [class]="summaryStats.totalGrossRevenueTrend === 'up' ? 'text-success' : 'text-danger'" class="fs-6 fw-semibold">
-              {{ summaryStats.totalGrossRevenueDeltaPercentage }}
+      <div (click)="navigateToMetricDetail('totalGrossRevenue')" style="cursor: pointer;" role="button" [attr.aria-label]="'View details for Total Gross Revenue'">
+        <c-widget-stat-a color="primary">
+          <ng-template cTemplateId="widgetStatValueRef">
+            <span class="dashboard-card-title">Total Gross Revenue</span>
+          </ng-template>
+          <div class="d-flex align-items-center">
+            <c-icon name="cilDollar" size="xl" class="me-2"></c-icon>
+            <span class="fs-3 fw-semibold me-2">{{ summaryStats.totalGrossRevenue | currency:'USD':'symbol':'1.0-0' }}</span>
+            <ng-container *ngIf="summaryStats.totalGrossRevenueTrend?.trend && summaryStats.totalGrossRevenueTrend?.trend !== 'neutral'">
+              <c-icon
+                [name]="summaryStats.totalGrossRevenueTrend?.trend === 'up' ? 'cilArrowTop' : 'cilArrowBottom'"
+                [class]="'trend-indicator ' + (summaryStats.totalGrossRevenueTrend?.trend === 'up' ? 'positive' : 'negative')"
+                class="me-1">
+              </c-icon>
+              <span [class]="'trend-indicator ' + (summaryStats.totalGrossRevenueTrend?.trend === 'up' ? 'positive' : 'negative')" class="fs-6 fw-semibold">
+                {{ summaryStats.totalGrossRevenueTrend?.deltaPercentage }}
+              </span>
+            </ng-container>
+            <span *ngIf="summaryStats.totalGrossRevenueTrend?.trend === 'neutral'" class="trend-indicator neutral">{{ summaryStats.totalGrossRevenueTrend?.deltaPercentage }}</span>
+          </div>
+        </c-widget-stat-a>
+      </div>
+    </c-col>
+    <c-col [xs]="12" [sm]="6" [lg]="3">
+      <div (click)="navigateToMetricDetail('totalCut')" style="cursor: pointer;" role="button" [attr.aria-label]="'View details for Total Cut'">
+        <c-widget-stat-a color="success">
+          <ng-template cTemplateId="widgetStatValueRef">
+            <span class="dashboard-card-title">Total Cut</span>
+          </ng-template>
+          <div class="d-flex align-items-center">
+            <c-icon name="cilCalculator" size="xl" class="me-2"></c-icon>
+            <span class="fs-3 fw-semibold me-2">{{ summaryStats.totalCut | currency:'USD':'symbol':'1.0-0' }}</span>
+            <ng-container *ngIf="summaryStats.totalCutTrend?.trend && summaryStats.totalCutTrend?.trend !== 'neutral'">
+              <c-icon [name]="summaryStats.totalCutTrend?.trend === 'up' ? 'cilArrowTop' : 'cilArrowBottom'" [class]="'trend-indicator ' + (summaryStats.totalCutTrend?.trend === 'up' ? 'positive' : 'negative')" class="me-1"></c-icon>
+              <span [class]="'trend-indicator ' + (summaryStats.totalCutTrend?.trend === 'up' ? 'positive' : 'negative')" class="fs-6 fw-semibold">{{ summaryStats.totalCutTrend?.deltaPercentage }}</span>
+            </ng-container>
+             <span *ngIf="!summaryStats.totalCutTrend?.trend || summaryStats.totalCutTrend?.trend === 'neutral'" class="trend-indicator neutral">{{ summaryStats.totalCutTrend?.deltaPercentage }}</span>
+          </div>
+        </c-widget-stat-a>
+      </div>
+    </c-col>
+    <c-col [xs]="12" [sm]="6" [lg]="3">
+      <div (click)="navigateToMetricDetail('totalEntries')" style="cursor: pointer;" role="button" [attr.aria-label]="'View details for Total Entries'">
+        <c-widget-stat-a color="info">
+          <ng-template cTemplateId="widgetStatValueRef">
+            <span class="dashboard-card-title">Total Entries</span>
+          </ng-template>
+          <div class="d-flex align-items-center">
+            <c-icon name="cilListNumbered" size="xl" class="me-2"></c-icon>
+            <span class="fs-3 fw-semibold me-2">{{ summaryStats.totalEntries | number:'1.0-0' }}</span>
+            <ng-container *ngIf="summaryStats.totalEntriesTrend?.trend && summaryStats.totalEntriesTrend?.trend !== 'neutral'">
+              <c-icon [name]="summaryStats.totalEntriesTrend?.trend === 'up' ? 'cilArrowTop' : 'cilArrowBottom'" [class]="'trend-indicator ' + (summaryStats.totalEntriesTrend?.trend === 'up' ? 'positive' : 'negative')" class="me-1"></c-icon>
+              <span [class]="'trend-indicator ' + (summaryStats.totalEntriesTrend?.trend === 'up' ? 'positive' : 'negative')" class="fs-6 fw-semibold">{{ summaryStats.totalEntriesTrend?.deltaPercentage }}</span>
+            </ng-container>
+            <span *ngIf="!summaryStats.totalEntriesTrend?.trend || summaryStats.totalEntriesTrend?.trend === 'neutral'" class="trend-indicator neutral">{{ summaryStats.totalEntriesTrend?.deltaPercentage }}</span>
+          </div>
+        </c-widget-stat-a>
+      </div>
+    </c-col>
+    <c-col [xs]="12" [sm]="6" [lg]="3">
+      <div (click)="navigateToMetricDetail('avgCutPerEntry')" style="cursor: pointer;" role="button" [attr.aria-label]="'View details for Average Cut per Entry'">
+        <c-widget-stat-a color="warning">
+          <ng-template cTemplateId="widgetStatValueRef">
+            <span class="dashboard-card-title">
+              Avg Cut per Entry
+              <c-icon name="cilInfo" size="sm" class="ms-1" cTooltip="Represents the average 'total cut' (commission) per individual 'entry' recorded. Calculated as Total Cut / Total Entries." tooltipPlacement="top"></c-icon>
             </span>
-          </ng-container>
-        </div>
-      </c-widget-stat-a>
-    </c-col>
-    <c-col [xs]="12" [sm]="6" [lg]="3">
-      <c-widget-stat-a color="success" title="Total Cut">
-        <div class="d-flex align-items-center">
-          <c-icon name="cilCalculator" size="xl" class="me-2"></c-icon>
-          <span class="fs-3 fw-semibold">{{ summaryStats.totalCut | currency:'USD':'symbol':'1.0-0' }}</span>
-        </div>
-      </c-widget-stat-a>
-    </c-col>
-    <c-col [xs]="12" [sm]="6" [lg]="3">
-      <c-widget-stat-a color="info" title="Total Entries">
-        <div class="d-flex align-items-center">
-          <c-icon name="cilListNumbered" size="xl" class="me-2"></c-icon>
-          <span class="fs-3 fw-semibold">{{ summaryStats.totalEntries | number:'1.0-0' }}</span>
-        </div>
-      </c-widget-stat-a>
-    </c-col>
-    <c-col [xs]="12" [sm]="6" [lg]="3">
-      <c-widget-stat-a 
-        color="warning" 
-        title="Avg Cut per Entry" 
-        cTooltip="Represents the average 'total cut' per individual 'entry' recorded. Calculated as Total Cut / Total Entries."
-        tooltipPlacement="top">
-        <div class="d-flex align-items-center">
-          <c-icon name="cilChartPie" size="xl" class="me-2"></c-icon>
-          <span class="fs-3 fw-semibold">{{ summaryStats.avgCutPerEntry | currency:'USD':'symbol':'1.2-2' }}</span>
-        </div>
-      </c-widget-stat-a>
+          </ng-template>
+          <div class="d-flex align-items-center">
+            <c-icon name="cilChartPie" size="xl" class="me-2"></c-icon>
+            <span class="fs-3 fw-semibold me-2">{{ summaryStats.avgCutPerEntry | currency:'USD':'symbol':'1.2-2' }}</span>
+            <ng-container *ngIf="summaryStats.avgCutPerEntryTrend?.trend && summaryStats.avgCutPerEntryTrend?.trend !== 'neutral'">
+              <c-icon [name]="summaryStats.avgCutPerEntryTrend?.trend === 'up' ? 'cilArrowTop' : 'cilArrowBottom'" [class]="'trend-indicator ' + (summaryStats.avgCutPerEntryTrend?.trend === 'up' ? 'positive' : 'negative')" class="me-1"></c-icon>
+              <span [class]="'trend-indicator ' + (summaryStats.avgCutPerEntryTrend?.trend === 'up' ? 'positive' : 'negative')" class="fs-6 fw-semibold">{{ summaryStats.avgCutPerEntryTrend?.deltaPercentage }}</span>
+            </ng-container>
+            <span *ngIf="!summaryStats.avgCutPerEntryTrend?.trend || summaryStats.avgCutPerEntryTrend?.trend === 'neutral'" class="trend-indicator neutral">{{ summaryStats.avgCutPerEntryTrend?.deltaPercentage }}</span>
+          </div>
+        </c-widget-stat-a>
+      </div>
     </c-col>
   </c-row>
 
@@ -53,9 +108,28 @@
   <c-row class="mb-4">
     <c-col>
       <c-card>
-        <c-card-header>Revenue Over Time</c-card-header>
+        <c-card-header>
+          <div class="chart-legend-above">
+            Gross Revenue Over Time
+          </div>
+        </c-card-header>
         <c-card-body>
           <c-chart type="line" [data]="revenueOverTimeChartData" [options]="lineChartOptions"></c-chart>
+        </c-card-body>
+      </c-card>
+    </c-col>
+  </c-row>
+
+  <!-- Breakdown Section Placeholder -->
+  <c-row class="mb-4">
+    <c-col>
+      <c-card>
+        <c-card-header>Revenue Breakdown (Top Sources/Entries)</c-card-header>
+        <c-card-body>
+          <p class="text-medium-emphasis">
+            Detailed breakdown of revenue sources or most profitable entries will be displayed here.
+            (e.g., Top 5 users by revenue, Top 5 roles by cut). This section will be implemented with actual data in a future update.
+          </p>
         </c-card-body>
       </c-card>
     </c-col>
@@ -67,7 +141,6 @@
       <c-card>
         <c-card-header>Revenue Entries</c-card-header>
         <c-card-body>
-          <!-- Toolbar: Search and Export -->
           <c-row class="mb-3">
             <c-col [sm]="8" [md]="9">
               <c-input-group>
@@ -100,7 +173,7 @@
                 </tr>
               </thead>
               <tbody>
-                <tr *ngFor="let entry of displayableEntries">
+                <tr *ngFor="let entry of displayableEntries" (click)="navigateToEntryDetail(entry._id)" style="cursor: pointer;">
                   <td>{{ entry.parsedDate | date:'shortDate' }}</td>
                   <td>{{ entry.user_mention || 'N/A' }}</td>
                   <td>{{ entry.role || 'N/A' }}</td>
@@ -116,10 +189,9 @@
               </tbody>
             </table>
           </div>
-          <!-- Pagination Controls -->
-          <c-pagination 
-            *ngIf="totalPages > 1" 
-            align="end" 
+          <c-pagination
+            *ngIf="totalPages > 1"
+            align="end"
             aria-label="Table pagination">
             <li cPageItem [disabled]="currentPage === 1">
               <a cPageLink (click)="previousPage()" aria-label="Previous" role="button">
@@ -127,8 +199,8 @@
                 <span class="visually-hidden">Previous</span>
               </a>
             </li>
-            <li cPageItem *ngFor="let pageNum of [].constructor(totalPages); let i = index" 
-                [active]="currentPage === (i + 1)" 
+            <li cPageItem *ngFor="let pageNum of [].constructor(totalPages); let i = index"
+                [active]="currentPage === (i + 1)"
                 (click)="goToPage(i + 1)" role="button">
               <a cPageLink>{{ i + 1 }}</a>
             </li>
@@ -143,5 +215,4 @@
       </c-card>
     </c-col>
   </c-row>
-
 </c-container>

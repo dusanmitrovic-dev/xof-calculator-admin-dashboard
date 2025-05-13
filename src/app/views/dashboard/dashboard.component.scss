@@ -1,36 +1,99 @@
 @use "@coreui/coreui/scss/variables" as cui;
 @use "@coreui/coreui/scss/mixins/color-mode" as color-mode;
 
-// Improve text contrast on stat cards, especially in dark mode.
-@include color-mode.color-mode(dark) {
-  c-widget-stat-a {
-    .fs-3,
-    .fw-semibold,
-    .text-truncate {
-      color: var(--cui-white, #ffffff) !important; // Use a high-contrast white for the main value
-    }
+// General Dashboard Enhancements
+.dashboard-card-title {
+  font-size: 0.95rem; // Increased from default for better readability
+  font-weight: 500; // Slightly bolder
+  color: var(--cui-body-color); // Default body color for good contrast
+}
 
-    small.text-medium-emphasis {
-        color: var(--cui-gray-400, #adb5bd) !important; // Lighter gray for the title in dark mode
-    }
+// Metric Card Specific Styles
+c-widget-stat-a {
+  .text-medium-emphasis { // This is often used for the card title/label
+    font-size: 0.95rem !important; // Make label text slightly larger
+    font-weight: 500 !important;
+    color: var(--cui-body-color) !important; // Ensure good contrast for labels
+  }
 
-    // Specific adjustments if default theme colors don't provide enough background contrast for white text.
-    // This is a fallback if CoreUI's default dark variants aren't strong enough.
-    // &[color="primary"] { background-color: var(--cui-primary-darken, #26508C) !important; }
-    // &[color="success"] { background-color: var(--cui-success-darken, #1A683B) !important; }
-    // &[color="info"]    { background-color: var(--cui-info-darken, #287BAC) !important; }
-    // &[color="warning"] { background-color: var(--cui-warning-darken, #B37C00) !important; text-color: var(--cui-black, #000) !important; }
-    // For warning, if the background becomes too dark for black text, ensure text color is also adjusted.
+  .fs-3.fw-semibold { // This is often used for the main value
+    // Value font size is usually good, but ensure contrast
+    color: var(--cui-body-color) !important;
   }
 }
 
-// You can add more specific styles if needed for light mode, but CoreUI defaults are usually okay.
-// Example: Ensure text on warning widget (which is often yellow) is dark enough in light mode.
-c-widget-stat-a[color="warning"] {
-  .fs-3,
-  .fw-semibold,
-  .text-truncate,
-  small.text-medium-emphasis {
-    color: var(--cui-black, #000000) !important; // Ensure text is dark on light warning background
+// Dark Theme Adjustments
+@include color-mode.color-mode(dark) {
+  .dashboard-card-title {
+    color: var(--cui-white, #ffffff);
+  }
+
+  c-widget-stat-a {
+    .text-medium-emphasis { // Label in dark mode
+      color: var(--cui-gray-300, #d8dbe0) !important; // Brighter for dark backgrounds
+    }
+
+    .fs-3.fw-semibold { // Value in dark mode
+      color: var(--cui-white, #ffffff) !important; // Ensure value is bright white
+    }
+
+    // Ensure background of cards provides enough contrast if they use contextual colors
+    // Example: If a card has a specific background color in dark mode.
+    // &[color="primary"] {
+    //   .text-medium-emphasis, .fs-3.fw-semibold {
+    //     color: var(--cui-white, #ffffff) !important;
+    //   }
+    // }
+  }
+
+  // Specific fix for light blue text on dark backgrounds if CoreUI defaults are not sufficient
+  // This targets elements like "Total Gross Revenue" if they are specifically styled.
+  // For example, if a class `total-gross-revenue-label` was used:
+  // .total-gross-revenue-label {
+  //   color: var(--cui-gray-200, #e9ecef) !important; // Brighter than typical light blue
+  //   font-weight: bold !important; // Make it bold
+  // }
+}
+
+// Light Theme Adjustments (if necessary, CoreUI defaults are often sufficient)
+@include color-mode.color-mode(light) {
+  c-widget-stat-a {
+    .text-medium-emphasis { // Label in light mode
+        color: var(--cui-gray-700, #4f5d73) !important; // Ensure dark enough for light backgrounds
+    }
+    .fs-3.fw-semibold { // Value in light mode
+        color: var(--cui-body-color) !important;
+    }
+  }
+
+  // Ensure text on warning widget (which is often light yellow) is dark enough
+  c-widget-stat-a[color="warning"] {
+    .text-medium-emphasis,
+    .fs-3.fw-semibold {
+      color: var(--cui-black, #000000) !important; // Ensure text is dark on light warning background
+    }
+  }
+}
+
+// Chart specific styling for legend (will be used if legend is moved)
+.chart-legend-above {
+  text-align: center;
+  margin-bottom: 1rem;
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+
+// Ensure trend indicators are visible
+.trend-indicator {
+  font-size: 0.85rem;
+  margin-left: 0.25rem;
+  &.positive {
+    color: var(--cui-success);
+  }
+  &.negative {
+    color: var(--cui-danger);
+  }
+  &.neutral {
+    color: var(--cui-warning);
   }
 }
