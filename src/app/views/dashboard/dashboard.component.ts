@@ -3,16 +3,15 @@ import { CommonModule, DatePipe, DecimalPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { ChartData, ChartOptions } from 'chart.js';
+import { catchError, of, switchMap, tap } from 'rxjs';
 
 // Import Services
 import { EarningsService, Earning } from '../../services/earnings.service';
-import { GuildConfigService, GuildConfig } from '../../services/guild-config.service';
+import { GuildConfigService, AvailableGuild } from '../../services/guild-config.service'; // GuildConfig not needed here anymore
 
 // Import CoreUI modules
 import {
   ContainerComponent,
-  RowComponent,
-  ColComponent,
   CardComponent,
   CardHeaderComponent,
   CardBodyComponent,
@@ -23,21 +22,22 @@ import {
   BadgeComponent,
   FormControlDirective,
   FormLabelDirective,
-  GridModule // Import GridModule for gutter directive
-} from '@coreui/angular';
+  GridModule
+} from '@coreui/angular'; // Removed ListComponent and ListItemComponent
 import { ChartjsComponent } from '@coreui/angular-chartjs';
 
 // Icon Import
 import { IconModule, IconSetService } from '@coreui/icons-angular';
-import { cilSettings, cilCheckCircle } from '@coreui/icons';
+import { cilSettings, cilCheckCircle } from '@coreui/icons'; // cilCheckCircle might be unused now
 
 interface SummaryStats {
   totalGuilds: number;
   totalCoinsEarned: number;
   topGuild: { name: string | null; coins: number } | null;
-  avgCoinsPerMessage: number; // Note: This is avg per *earning record*, not message
+  avgCoinsPerMessage: number;
 }
 
+// Define the ConfigHealth interface
 interface ConfigHealth {
   missingPrefix: number;
   noRoles: number;
@@ -53,8 +53,6 @@ interface ConfigHealth {
     FormsModule,
     RouterLink,
     ContainerComponent,
-    // RowComponent, // Provided by GridModule
-    // ColComponent, // Provided by GridModule
     CardComponent,
     CardHeaderComponent,
     CardBodyComponent,
@@ -67,7 +65,8 @@ interface ConfigHealth {
     FormControlDirective,
     FormLabelDirective,
     IconModule,
-    GridModule // Replaced GutterDirective with GridModule
+    GridModule
+    // Removed ListComponent and ListItemComponent from here
   ],
   providers: [DatePipe, DecimalPipe, IconSetService]
 })
@@ -79,7 +78,7 @@ export class DashboardComponent implements OnInit {
 
   allEarnings: Earning[] = [];
   filteredEarnings: Earning[] = [];
-  allConfigs: GuildConfig[] = [];
+  availableGuilds: AvailableGuild[] = [];
 
   summaryStats: SummaryStats = {
     totalGuilds: 0,
@@ -88,6 +87,7 @@ export class DashboardComponent implements OnInit {
     avgCoinsPerMessage: 0
   };
 
+  // Initialize the configHealth property
   configHealth: ConfigHealth = {
     missingPrefix: 0,
     noRoles: 0,
@@ -100,71 +100,79 @@ export class DashboardComponent implements OnInit {
     date: ''
   };
 
-  // Chart Data Properties
-  earningsOverTimeChartData: ChartData = { labels: [], datasets: [] };
-  topGuildsChartData: ChartData = { labels: [], datasets: [] };
+  earningsOverTimeChartData: ChartData<'line'> = { labels: [], datasets: [] }; // Specify chart type
+  topGuildsChartData: ChartData<'bar'> = { labels: [], datasets: [] }; // Specify chart type
 
-  // Chart Options
-  lineChartOptions: ChartOptions = {
+  lineChartOptions: ChartOptions<'line'> = { // Specify chart type
     responsive: true,
     maintainAspectRatio: false,
   };
-  barChartOptions: ChartOptions = {
+  barChartOptions: ChartOptions<'bar'> = { // Specify chart type
     responsive: true,
     maintainAspectRatio: false,
     indexAxis: 'y',
   };
 
   constructor() {
+    // cilCheckCircle might be unneeded if ConfigHealth section is fully removed from HTML
     this.iconSetService.icons = { cilSettings, cilCheckCircle };
   }
 
   ngOnInit(): void {
     this.fetchData();
+    // TODO: Add logic here to fetch or calculate actual configHealth data
+    // For now, it's initialized with zeros.
   }
 
   fetchData(): void {
-    // Using getAllConfigs() - Ensure this method exists in GuildConfigService
-    this.guildConfigService.getAllConfigs().subscribe({
-      next: (configs: GuildConfig[]) => {
-        this.allConfigs = configs;
-        this.summaryStats.totalGuilds = configs.length;
-        this.calculateConfigHealth();
-        this.fetchEarnings(); // Fetch earnings only after configs are available
-      },
-      error: (err: any) => {
-         console.error('Error fetching guild configurations with getAllConfigs():', err);
-         // Handle error appropriately - maybe show a message to the user
-      }
+    this.guildConfigService.getAvailableGuilds().pipe(
+      tap(guilds => {
+        this.availableGuilds = guilds;
+        this.summaryStats.totalGuilds = guilds.length;
+        // Potential place to calculate configHealth based on guilds if needed
+        this.calculateConfigHealth(); // Example call
+      }),
+      switchMap(() => this.earningsService.getAllEarningsAcrossGuilds()),
+      catchError(err => {
+          console.error('Error fetching available guilds or all earnings:', err);
+          return of([]); // Return an empty array on error
+      })
+    ).subscribe((earnings: Earning[]) => {
+        this.allEarnings = earnings;
+        // Initial filter application should happen after data is ready
+        this.calculateSummaryStats(); // Calculate stats on full data
+        this.prepareChartData(); // Prepare charts on full data
+        this.applyFilters(); // Apply filters to display initial filtered view
     });
   }
 
-  fetchEarnings(): void {
-     this.earningsService.getAllEarningsAcrossGuilds().subscribe({
-      next: (earnings: Earning[]) => {
-        this.allEarnings = earnings;
-        this.filteredEarnings = [...this.allEarnings];
-        this.calculateSummaryStats();
-        this.prepareChartData();
-        this.applyFilters();
-      },
-      error: (err: any) => console.error('Error fetching earnings:', err)
-    });
+  // Placeholder method for calculating config health
+  calculateConfigHealth(): void {
+     // Example: Fetch config health data from a service or calculate based on availableGuilds
+     // This is just a placeholder to show where the logic might go.
+     // Replace with actual implementation.
+     console.log("Calculating or fetching config health (placeholder)...");
+     // Simulating data fetch/calculation
+     // this.configHealth = fetchedConfigHealthData;
   }
+
 
   calculateSummaryStats(): void {
     this.summaryStats.totalCoinsEarned = this.allEarnings.reduce((sum, e) => sum + (e.total_cut || 0), 0);
+    // Calculate average only if there are earnings to avoid division by zero
     this.summaryStats.avgCoinsPerMessage = this.allEarnings.length > 0
-      ? this.summaryStats.totalCoinsEarned / this.allEarnings.length
+      ? (this.summaryStats.totalCoinsEarned / this.allEarnings.length)
       : 0;
 
     const guildEarnings: { [key: string]: number } = {};
     this.allEarnings.forEach(e => {
-      guildEarnings[e.guild_id] = (guildEarnings[e.guild_id] || 0) + (e.total_cut || 0);
+      // Ensure guild_id is treated as a string key
+      const guildIdStr = String(e.guild_id);
+      guildEarnings[guildIdStr] = (guildEarnings[guildIdStr] || 0) + (e.total_cut || 0);
     });
 
     let topGuildId: string | null = null;
-    let maxCoins = 0;
+    let maxCoins = -Infinity; // Initialize with negative infinity to handle zero/negative coins
     for (const guildId in guildEarnings) {
       if (guildEarnings[guildId] > maxCoins) {
         maxCoins = guildEarnings[guildId];
@@ -172,11 +180,12 @@ export class DashboardComponent implements OnInit {
       }
     }
 
-    if (topGuildId) {
-      const topConfig = this.allConfigs.find(c => c.guild_id === topGuildId);
-      // Using camelCase properties for GuildConfig based on TS errors
+    if (topGuildId !== null) { // Check for null explicitly
+       // Ensure comparison uses the same type (string)
+      const topGuildInfo = this.availableGuilds.find(g => String(g.id) === topGuildId);
       this.summaryStats.topGuild = {
-        name: topConfig?.guildName || `Guild ${topGuildId}`,
+        // FIX: Corrected template literal syntax
+        name: topGuildInfo?.name || `Guild ${topGuildId}`, // Use topGuildId which is a string
         coins: maxCoins
       };
     } else {
@@ -184,49 +193,52 @@ export class DashboardComponent implements OnInit {
     }
   }
 
-  calculateConfigHealth(): void {
-    // Using camelCase properties for GuildConfig based on TS errors
-    this.configHealth.missingPrefix = this.allConfigs.filter(c => !c.prefix?.trim()).length;
-    this.configHealth.noRoles = this.allConfigs.filter(c => !c.allowedRoles || c.allowedRoles.length === 0).length;
-    this.configHealth.noChannels = this.allConfigs.filter(c => !c.allowedChannels || c.allowedChannels.length === 0).length;
-  }
 
+  // Added method
   prepareChartData(): void {
-    // 1. Earnings Over Time (Line Chart)
+    // Earnings Over Time Chart
     const earningsByDate: { [key: string]: number } = {};
     this.allEarnings.forEach(e => {
-      const dateStr = this.datePipe.transform(e.date, 'yyyy-MM-dd') || 'unknown';
-      earningsByDate[dateStr] = (earningsByDate[dateStr] || 0) + (e.total_cut || 0);
+      // Ensure date is valid before transforming
+      const dateStr = e.date ? this.datePipe.transform(e.date, 'yyyy-MM-dd') : 'unknown_date';
+      if (dateStr) { // Check if dateStr is not null
+          earningsByDate[dateStr] = (earningsByDate[dateStr] || 0) + (e.total_cut || 0);
+      }
     });
 
-    const sortedDates = Object.keys(earningsByDate).sort();
+    // Filter out 'unknown_date' before sorting and mapping
+    const validDates = Object.keys(earningsByDate).filter(date => date !== 'unknown_date').sort();
+
     this.earningsOverTimeChartData = {
-      labels: sortedDates,
+      labels: validDates,
       datasets: [
         {
           label: 'Coins Earned Daily',
-          data: sortedDates.map(date => earningsByDate[date]),
+          data: validDates.map(date => earningsByDate[date]),
           borderColor: '#321fdb',
-          tension: 0.1
+          tension: 0.1,
+          fill: false // Added for clarity in line charts
         }
       ]
     };
 
-    // 2. Top 5 Guilds by Earnings (Bar Chart)
+    // Top Guilds Chart
     const guildEarningsMap: { [key: string]: { name: string; coins: number } } = {};
     this.allEarnings.forEach(e => {
-       const config = this.allConfigs.find(c => c.guild_id === e.guild_id);
-       // Using camelCase properties for GuildConfig
-       const guildName = config?.guildName || `Guild ${e.guild_id}`;
-       if (!guildEarningsMap[e.guild_id]) {
-         guildEarningsMap[e.guild_id] = { name: guildName, coins: 0 };
+       // Ensure guild_id is treated as a string key
+       const guildIdStr = String(e.guild_id);
+       // Find guild info using string comparison
+       const guildInfo = this.availableGuilds.find(g => String(g.id) === guildIdStr);
+       const guildName = guildInfo?.name || `Guild ${guildIdStr}`; // Use guildIdStr if name not found
+       if (!guildEarningsMap[guildIdStr]) {
+         guildEarningsMap[guildIdStr] = { name: guildName, coins: 0 };
        }
-      guildEarningsMap[e.guild_id].coins += (e.total_cut || 0);
+       guildEarningsMap[guildIdStr].coins += (e.total_cut || 0);
     });
 
     const sortedGuilds = Object.values(guildEarningsMap)
                                 .sort((a, b) => b.coins - a.coins)
-                                .slice(0, 5);
+                                .slice(0, 5); // Get top 5
 
     this.topGuildsChartData = {
       labels: sortedGuilds.map(g => g.name),
@@ -234,29 +246,53 @@ export class DashboardComponent implements OnInit {
         {
           label: 'Total Coins Earned',
           data: sortedGuilds.map(g => g.coins),
-          backgroundColor: ['#321fdb', '#3399ff', '#2eb85c', '#f9b115', '#e55353'],
+          backgroundColor: [ // Example colors for top 5
+             '#321fdb',
+             '#3399ff',
+             '#2eb85c',
+             '#f9b115',
+             '#e55353'
+          ],
+          borderWidth: 1 // Added for clarity in bar charts
         }
       ]
     };
   }
 
+
+  // Added method
   applyFilters(): void {
-    const guildFilter = this.filters.guild?.toLowerCase();
-    const userFilter = this.filters.user?.toLowerCase();
-    const dateFilter = this.filters.date;
+    const guildFilter = this.filters.guild?.toLowerCase().trim();
+    const userFilter = this.filters.user?.toLowerCase().trim();
+    const dateFilter = this.filters.date; // Assuming date is already in 'yyyy-MM-dd' format or empty
 
     this.filteredEarnings = this.allEarnings.filter(earning => {
-      const guildConfig = this.allConfigs.find(c => c.guild_id === earning.guild_id);
-      // Using camelCase for GuildConfig
-      const guildName = guildConfig?.guildName?.toLowerCase() || '';
-      const userMention = earning.user_mention?.toLowerCase() || '';
-      const earningDateStr = this.datePipe.transform(earning.date, 'yyyy-MM-dd') || '';
+      // Ensure consistent string comparison for guild ID
+      const guildIdStr = String(earning.guild_id);
+      const guildInfo = this.availableGuilds.find(g => String(g.id) === guildIdStr);
+      const guildName = guildInfo?.name?.toLowerCase() || '';
 
-      const guildMatch = !guildFilter || guildName.includes(guildFilter) || earning.guild_id.toLowerCase().includes(guildFilter);
+      const userMention = earning.user_mention?.toLowerCase() || '';
+      // Ensure date exists before transforming
+      const earningDateStr = earning.date ? this.datePipe.transform(earning.date, 'yyyy-MM-dd') : '';
+      if (!earningDateStr && dateFilter) return false; // If date filter exists, but earning has no date, filter out
+
+      // Match checks
+      const guildMatch = !guildFilter || guildName.includes(guildFilter) || guildIdStr.toLowerCase().includes(guildFilter);
       const userMatch = !userFilter || userMention.includes(userFilter);
+      // Check date only if a date filter is provided
       const dateMatch = !dateFilter || earningDateStr === dateFilter;
 
       return guildMatch && userMatch && dateMatch;
     });
+
+     // NOTE: This dashboard setup calculates stats and charts based on ALL earnings.
+     // If you want the stats and charts to dynamically update based on filters,
+     // you would need to call calculation/preparation methods here using `this.filteredEarnings`.
+     // Example:
+     // this.calculateFilteredSummaryStats(this.filteredEarnings);
+     // this.prepareFilteredChartData(this.filteredEarnings);
+     // And create those corresponding methods.
   }
+
 }
