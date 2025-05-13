@@ -1,18 +1,24 @@
 <c-container fluid>
   <c-row class="mb-4">
     <!-- KPI Cards -->
-    <c-col [xs]="12" [sm]="6" [lg]="4">
+    <!-- Adjusted col size from lg="4" to lg="3" to fit four widgets -->
+    <c-col [xs]="12" [sm]="6" [lg]="3">
       <c-widget-stat-a color="primary" title="Total Gross Revenue">
-        <!-- Assuming gross_revenue is calculated in component -->
         <span class="fs-3 fw-semibold">{{ summaryStats.totalGrossRevenue | currency:'USD':'symbol':'1.0-0' }}</span>
       </c-widget-stat-a>
     </c-col>
-    <c-col [xs]="12" [sm]="6" [lg]="4">
+    <!-- Added Total Cut Widget -->
+    <c-col [xs]="12" [sm]="6" [lg]="3">
+      <c-widget-stat-a color="success" title="Total Cut">
+        <span class="fs-3 fw-semibold">{{ summaryStats.totalCut | currency:'USD':'symbol':'1.0-0' }}</span>
+      </c-widget-stat-a>
+    </c-col>
+    <c-col [xs]="12" [sm]="6" [lg]="3">
       <c-widget-stat-a color="info" title="Total Entries">
         <span class="fs-3 fw-semibold">{{ summaryStats.totalEntries | number:'1.0-0' }}</span>
       </c-widget-stat-a>
     </c-col>
-    <c-col [xs]="12" [sm]="6" [lg]="4">
+    <c-col [xs]="12" [sm]="6" [lg]="3">
       <c-widget-stat-a color="warning" title="Avg Cut per Entry">
         <span class="fs-3 fw-semibold">{{ summaryStats.avgCutPerEntry | currency:'USD':'symbol':'1.2-2' }}</span>
       </c-widget-stat-a>
@@ -25,7 +31,6 @@
       <c-card>
         <c-card-header>Revenue Over Time</c-card-header>
         <c-card-body>
-          <!-- Assuming chart data is updated in component -->
           <c-chart type="line" [data]="revenueOverTimeChartData" [options]="lineChartOptions"></c-chart>
         </c-card-body>
       </c-card>
@@ -51,12 +56,13 @@
                 </tr>
               </thead>
               <tbody>
+                <!-- Ensure you are using entry.parsedDate for the DatePipe -->
                 <tr *ngFor="let entry of recentRevenueEntries">
-                  <td>{{ entry.date | date:'yyyy-MM-dd' }}</td>
+                  <td>{{ entry.parsedDate | date:'shortDate' }}</td>
                   <td>{{ entry.user_mention || 'N/A' }}</td>
                   <td>{{ entry.role || 'N/A' }}</td>
                   <td>{{ entry.shift || 'N/A' }}</td>
-                  <td>{{ entry.gross_revenue | currency:'USD':'symbol':'1.0-0' }}</td> <!-- Assuming gross_revenue field -->
+                  <td>{{ entry.gross_revenue | currency:'USD':'symbol':'1.0-0' }}</td>
                   <td>{{ entry.total_cut | currency:'USD':'symbol':'1.0-0' }}</td>
                 </tr>
                 <tr *ngIf="recentRevenueEntries.length === 0">
