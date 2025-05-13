@@ -53,7 +53,7 @@
               <tbody>
                 <tr *ngFor="let entry of recentRevenueEntries">
                   <td>{{ entry.date | date:'yyyy-MM-dd' }}</td>
-                  <td>{{ entry.user_mention || entry.user_id || 'N/A' }}</td>
+                  <td>{{ entry.user_mention || 'N/A' }}</td>
                   <td>{{ entry.role || 'N/A' }}</td>
                   <td>{{ entry.shift || 'N/A' }}</td>
                   <td>{{ entry.gross_revenue | currency:'USD':'symbol':'1.0-0' }}</td> <!-- Assuming gross_revenue field -->
