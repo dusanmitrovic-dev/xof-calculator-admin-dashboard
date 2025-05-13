@@ -53,8 +53,7 @@
               <tbody>
                 <tr *ngFor="let entry of recentRevenueEntries">
                   <td>{{ entry.date | date:'yyyy-MM-dd' }}</td>
-                  <!-- Use the custom 'id' field as fallback if 'user_mention' is missing -->
-                  <td>{{ entry.user_mention || entry.id || 'N/A' }}</td>
+                  <td>{{ entry.user_mention || entry.user_id || 'N/A' }}</td>
                   <td>{{ entry.role || 'N/A' }}</td>
                   <td>{{ entry.shift || 'N/A' }}</td>
                   <td>{{ entry.gross_revenue | currency:'USD':'symbol':'1.0-0' }}</td> <!-- Assuming gross_revenue field -->
@@ -71,40 +70,4 @@
     </c-col>
   </c-row>
 
-  <!-- Quick Actions (Optional Placement) -->
-  <c-row class="mb-4">
-    <c-col class="text-center">
-      <button cButton color="primary" class="me-2" (click)="navigateToAddEntry()">Add Revenue Entry</button>
-      <button cButton color="secondary" (click)="navigateToViewAll()">View All Records</button>
-    </c-col>
-  </c-row>
-
 </c-container>
-
-<!-- Filters section -->
-<c-card class="mb-4">
-  <c-card-header>Filter Earnings</c-card-header>
-  <c-card-body>
-    <form [formGroup]="filterForm" (ngSubmit)="applyFilters()">
-      <c-row class="g-3 align-items-end">
-        <c-col [md]="3">
-          <label cLabel for="guildFilter">Guild Name/ID</label>
-          <input cFormControl id="guildFilter" type="text" formControlName="guildFilter" />
-        </c-col>
-        <c-col [md]="3">
-          <!-- Changed label to reflect it filters by mention or ID -->
-          <label cLabel for="userFilter">User Mention / ID</label>
-          <input cFormControl id="userFilter" type="text" formControlName="userFilter" />
-        </c-col>
-        <c-col [md]="3">
-          <label cLabel for="dateFilter">Date</label>
-          <input cFormControl id="dateFilter" type="date" formControlName="dateFilter" />
-        </c-col>
-        <c-col [md]="3">
-          <button cButton type="submit" color="primary" class="me-2">Apply Filters</button>
-          <button cButton type="button" color="secondary" (click)="resetFilters()">Reset</button>
-        </c-col>
-      </c-row>
-    </form>
-  </c-card-body>
-</c-card>
