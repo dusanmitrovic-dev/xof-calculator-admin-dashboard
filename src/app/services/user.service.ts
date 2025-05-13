@@ -36,7 +36,14 @@ interface DeleteResponse {
 export interface AvailableGuild {
     guild_id: string;
     // Add other properties if needed, based on GuildConfig model
-    guild_name?: string;
+    guild_name?: string; // Use the actual name property from backend if available
+}
+
+// Interface representing the actual structure returned by the backend
+interface BackendGuildConfig {
+    id: string; // Assuming the backend sends 'id'
+    name: string; // Assuming the backend sends 'name'
+    // Add other properties returned by the backend if needed
 }
 
 
@@ -118,8 +125,19 @@ export class UserService {
    */
   getAvailableGuildIds(): Observable<AvailableGuild[]> {
     console.log('UserService: Fetching available guild IDs...');
-    return this.http.get<AvailableGuild[]>(`${this.apiUrl}/managed-guilds/available`).pipe(
-        map(guilds => guilds || []), // Ensure it returns an array even if null/undefined
+    // Expect the backend to return objects like { id: string, name: string }
+    return this.http.get<BackendGuildConfig[]>(`${this.apiUrl}/managed-guilds/available`).pipe(
+        map(backendGuilds => {
+            // Handle null/undefined response
+            if (!backendGuilds) {
+                return [];
+            }
+            // Transform each backend guild object to match the AvailableGuild interface
+            return backendGuilds.map(guild => ({
+                guild_id: guild.id,       // Map 'id' to 'guild_id'
+                guild_name: guild.name    // Map 'name' to 'guild_name'
+            }));
+        }),
         catchError(this.handleError)
     );
   }
