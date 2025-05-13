@@ -130,31 +130,63 @@ export class DashboardComponent implements OnInit {
       cilArrowTop, cilArrowBottom, cilSearch, cilSave, cilInfo 
     };
 
+    // Helper to get CSS variable values
+    const getCssVar = (name: string) => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+
     this.lineChartOptions = {
       responsive: true,
       maintainAspectRatio: false,
       scales: {
         y: {
           beginAtZero: true,
-          title: { display: true, text: 'Revenue (USD)' },
-          ticks: {
-            callback: (value) => typeof value === 'number' ? '$' + value.toLocaleString() : value
+          title: {
+            display: true,
+            text: 'Revenue (USD)',
+            font: { size: 14, weight: 'bold' }, // Increased size and weight
+            color: getCssVar('--cui-body-color') // Use CSS var for dynamic color
           },
-          grid: { display: true, color: 'rgba(0,0,0,0.1)' }
+          ticks: {
+            callback: (value) => typeof value === 'number' ? '$' + value.toLocaleString() : value,
+            color: getCssVar('--cui-body-color') // Use CSS var for dynamic color
+          },
+          grid: {
+            display: true,
+            color: getCssVar('--cui-border-color-translucent') // Theme-aware grid color
+          }
         },
         x: {
-          title: { display: true, text: 'Date' },
-          grid: { display: false } 
+          title: {
+            display: true,
+            text: 'Date',
+            font: { size: 14, weight: 'bold' }, // Increased size and weight
+            color: getCssVar('--cui-body-color') // Use CSS var for dynamic color
+          },
+          ticks: {
+            color: getCssVar('--cui-body-color') // Use CSS var for dynamic color
+          },
+          grid: {
+            display: false, // Keep X-axis grid lines hidden as per original
+            // color: getCssVar('--cui-border-color-translucent') // If you want to show them
+          }
         }
       },
       plugins: {
         legend: {
-          display: false 
+          display: false, // Keep legend hidden for now, can be enabled if multiple datasets
+          labels: {
+            font: { size: 13, weight: 500 }, // Style for future use
+            color: getCssVar('--cui-body-color')
+          }
         },
         tooltip: {
           enabled: true,
           mode: 'index',
           intersect: false,
+          backgroundColor: getCssVar('--cui-body-bg'), // Use body-bg for tooltip background
+          titleColor: getCssVar('--cui-body-color'),
+          bodyColor: getCssVar('--cui-body-color'),
+          borderColor: getCssVar('--cui-border-color'),
+          borderWidth: 1,
           callbacks: {
             label: (context) => {
               let label = context.dataset.label || '';
@@ -184,7 +216,44 @@ export class DashboardComponent implements OnInit {
 
   ngOnInit(): void {
     this.fetchAndProcessAllData();
+    // Update chart options dynamically after view init when CSS variables are available
+    // This is a more robust way to ensure CSS vars are loaded.
+    setTimeout(() => this.updateChartColors(), 0);
   }
+
+  // Method to update chart colors based on current CSS variables
+  updateChartColors(): void {
+    const getCssVar = (name: string) => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+    if (this.lineChartOptions?.scales?.['y']?.title) {
+        (this.lineChartOptions.scales['y'].title.color as any) = getCssVar('--cui-body-color');
+    }
+    if (this.lineChartOptions?.scales?.['y']?.ticks) {
+        (this.lineChartOptions.scales['y'].ticks.color as any) = getCssVar('--cui-body-color');
+    }
+    if (this.lineChartOptions?.scales?.['y']?.grid) {
+        this.lineChartOptions.scales['y'].grid.color = getCssVar('--cui-border-color-translucent');
+    }
+    if (this.lineChartOptions?.scales?.['x']?.title) {
+        (this.lineChartOptions.scales['x'].title.color as any) = getCssVar('--cui-body-color');
+    }
+    if (this.lineChartOptions?.scales?.['x']?.ticks) {
+        (this.lineChartOptions.scales['x'].ticks.color as any) = getCssVar('--cui-body-color');
+    }
+    if (this.lineChartOptions?.plugins?.legend?.labels) {
+        (this.lineChartOptions.plugins.legend.labels.color as any) = getCssVar('--cui-body-color');
+    }
+    if (this.lineChartOptions?.plugins?.tooltip) {
+        (this.lineChartOptions.plugins.tooltip.backgroundColor as any) = getCssVar('--cui-body-bg');
+        (this.lineChartOptions.plugins.tooltip.titleColor as any) = getCssVar('--cui-body-color');
+        (this.lineChartOptions.plugins.tooltip.bodyColor as any) = getCssVar('--cui-body-color');
+        this.lineChartOptions.plugins.tooltip.borderColor = getCssVar('--cui-border-color');
+    }
+    // Trigger chart update if it's already rendered
+    if (this.revenueOverTimeChartData.datasets.length > 0) {
+        this.revenueOverTimeChartData = { ...this.revenueOverTimeChartData };
+    }
+  }
+
 
   private getInitialSummaryStats(): DashboardSummaryStats {
     return {
@@ -273,6 +342,8 @@ export class DashboardComponent implements OnInit {
     this.searchTerm = '';
     this.currentPage = 1;
     this.updateDataViews();
+    // Ensure chart colors are updated if the theme might have changed or for initial load after data set
+    setTimeout(() => this.updateChartColors(), 0);
   }
 
   updateDataViews(): void {
@@ -333,23 +404,18 @@ export class DashboardComponent implements OnInit {
       return { trend: 'neutral', deltaPercentage: '0.0%' };
     }
 
-    // Avoid division by zero if previousValue is 0 and currentValue is not (handled by first condition)
-    // but if previousValue became 0 due to mock data, ensure it's not zero for percentage calculation.
-    const safePreviousValue = previousValue === 0 ? 1 : previousValue; // Avoid division by zero for percentage if it's truly zero.
-
+    const safePreviousValue = previousValue === 0 ? 1 : previousValue;
     const diff = currentValue - safePreviousValue;
-    // Calculate percentage change based on absolute previous value to avoid issues if it's negative
     const percentageChange = (diff / Math.abs(safePreviousValue)) * 100;
-
 
     let trend: 'up' | 'down';
     if (lowerIsBetter) {
-        trend = diff < 0 ? 'up' : 'down'; // 'up' (positive trend) if current is less
+        trend = diff < 0 ? 'up' : 'down';
     } else {
         trend = diff > 0 ? 'up' : 'down';
     }
     
-    const sign = percentageChange > 0 ? '+' : ''; // No sign for negative, toFixed will add it.
+    const sign = percentageChange > 0 ? '+' : '';
 
     return {
       trend: trend,
@@ -371,9 +437,10 @@ export class DashboardComponent implements OnInit {
 
     const sortedDates = Object.keys(revenueByDate).sort((a, b) => new Date(a).getTime() - new Date(b).getTime());
     
-    const brandInfo = getComputedStyle(document.documentElement).getPropertyValue('--cui-info').trim() || 'rgba(75, 192, 192, 1)';
-    const brandInfoBg = `rgba(${getComputedStyle(document.documentElement).getPropertyValue('--cui-info-rgb').trim()}, .2)` || 'rgba(75, 192, 192, 0.2)';
-
+    const getCssVar = (name: string) => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+    const brandInfo = getCssVar('--cui-info') || 'rgba(75, 192, 192, 1)';
+    const brandInfoRgb = getCssVar('--cui-info-rgb') || '75, 192, 192'; // Default RGB if var not found
+    const brandInfoBg = `rgba(${brandInfoRgb}, 0.2)`;
 
     this.revenueOverTimeChartData = {
       labels: sortedDates.map(dateKey => this.datePipe.transform(dateKey, 'MMM d')),
@@ -386,8 +453,8 @@ export class DashboardComponent implements OnInit {
         tension: 0.1,
         fill: true,
         pointBackgroundColor: brandInfo, 
-        pointBorderColor: '#fff', 
-        pointHoverBackgroundColor: '#fff',
+        pointBorderColor: getCssVar('--cui-card-bg'), // Use card-bg for contrast with line
+        pointHoverBackgroundColor: getCssVar('--cui-card-bg'),
         pointHoverBorderColor: brandInfo
       }]
     };
@@ -422,20 +489,10 @@ export class DashboardComponent implements OnInit {
   navigateToEntryDetail(entryId: string | undefined): void {
     if (!entryId) return;
     console.log('Navigate to detail for entry ID:', entryId);
-    // Example: this.router.navigate(['/manage-data/earnings-records', entryId]); // Assuming a route like this
   }
 
   navigateToMetricDetail(metricKey: MetricKey): void {
     console.log('Navigate to detail for metric:', metricKey);
-    // Based on the metricKey, you could navigate to a pre-filtered view
-    // or a specific section of the application.
-    // Example:
-    // if (metricKey === 'totalEntries') {
-    //   this.router.navigate(['/manage-data/earnings-records'], { queryParams: { filter: 'allEntriesToday' } });
-    // } else if (metricKey === 'totalGrossRevenue') {
-    //   this.router.navigate(['/reports/revenue-deep-dive']);
-    // }
-    // For now, it just logs.
   }
 
   exportToCsv(): void {

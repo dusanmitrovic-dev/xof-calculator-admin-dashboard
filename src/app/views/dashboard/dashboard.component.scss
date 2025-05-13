@@ -3,63 +3,126 @@
 
 // General Dashboard Enhancements
 .dashboard-card-title {
-  font-size: 0.95rem; // Increased from default for better readability
-  font-weight: 500; // Slightly bolder
-  color: var(--cui-body-color); // Default body color for good contrast
+  font-size: 1rem; // Standardized size for card titles
+  font-weight: 500;
+  color: var(--cui-body-color);
+  margin-bottom: 0.5rem; // Add some space below title
 }
 
 // Metric Card Specific Styles
 c-widget-stat-a {
-  .text-medium-emphasis { // This is often used for the card title/label
-    font-size: 0.95rem !important; // Make label text slightly larger
-    font-weight: 500 !important;
-    color: var(--cui-body-color) !important; // Ensure good contrast for labels
+  padding: 1.25rem; // Consistent padding for cards
+
+  .text-medium-emphasis { // This is often used for the card title/label (already handled by .dashboard-card-title)
+    // font-size: 1rem !important; // Standardized with dashboard-card-title
+    // font-weight: 500 !important;
+    // color: var(--cui-body-color) !important;
   }
 
   .fs-3.fw-semibold { // This is often used for the main value
-    // Value font size is usually good, but ensure contrast
+    font-size: 1.75rem !important; // Slightly larger value text
     color: var(--cui-body-color) !important;
+  }
+
+  .d-flex.align-items-center {
+    margin-top: 0.5rem; // Space between title and value/trend line
+  }
+}
+
+// Trend indicator icon and text enhancements
+.trend-indicator {
+  font-size: 0.9rem; // Slightly larger trend text
+  font-weight: 500; // Bolder trend text
+  margin-left: 0.35rem;
+  display: inline-flex; // Align icon and text better
+  align-items: center;
+
+  c-icon {
+    margin-right: 0.2rem;
+    font-size: 1.1em; // Make icon slightly larger relative to text
+  }
+
+  &.positive {
+    color: var(--cui-success);
+  }
+  &.negative {
+    color: var(--cui-danger);
+  }
+  &.neutral {
+    color: var(--cui-gray-600); // More distinct neutral color
   }
 }
 
 // Dark Theme Adjustments
 @include color-mode.color-mode(dark) {
   .dashboard-card-title {
-    color: var(--cui-white, #ffffff);
+    color: var(--cui-gray-200); // Brighter title for dark mode
   }
 
   c-widget-stat-a {
+    background-color: var(--cui-gray-800); // Slightly different shade for cards
+    border: 1px solid var(--cui-gray-700); // Subtle accent border
+
     .text-medium-emphasis { // Label in dark mode
-      color: var(--cui-gray-300, #d8dbe0) !important; // Brighter for dark backgrounds
+      color: var(--cui-gray-300) !important;
     }
 
     .fs-3.fw-semibold { // Value in dark mode
-      color: var(--cui-white, #ffffff) !important; // Ensure value is bright white
+      color: var(--cui-white) !important;
     }
-
-    // Ensure background of cards provides enough contrast if they use contextual colors
-    // Example: If a card has a specific background color in dark mode.
-    // &[color="primary"] {
-    //   .text-medium-emphasis, .fs-3.fw-semibold {
-    //     color: var(--cui-white, #ffffff) !important;
-    //   }
-    // }
   }
 
-  // Specific fix for light blue text on dark backgrounds if CoreUI defaults are not sufficient
-  // This targets elements like "Total Gross Revenue" if they are specifically styled.
-  // For example, if a class `total-gross-revenue-label` was used:
-  // .total-gross-revenue-label {
-  //   color: var(--cui-gray-200, #e9ecef) !important; // Brighter than typical light blue
-  //   font-weight: bold !important; // Make it bold
-  // }
+  .trend-indicator {
+    &.positive {
+      color: var(--cui-green); // CoreUI green variable
+    }
+    &.negative {
+      color: var(--cui-red); // CoreUI red variable
+    }
+    &.neutral {
+      color: var(--cui-gray-500);
+    }
+  }
+
+  // Ensure text on colored cards (success, warning) has enough contrast in dark mode
+  c-widget-stat-a[color="success"] {
+    .dashboard-card-title, .fs-3.fw-semibold, .trend-indicator {
+      color: var(--cui-white) !important; // Ensure text is white on success bg
+    }
+    .trend-indicator.positive { color: var(--cui-white) !important; }
+    .trend-indicator.negative { color: var(--cui-white) !important; }
+    .trend-indicator.neutral { color: var(--cui-light) !important; }
+  }
+
+  c-widget-stat-a[color="warning"] {
+    .dashboard-card-title, .fs-3.fw-semibold, .trend-indicator {
+      color: var(--cui-black) !important; // Ensure text is dark on warning bg
+    }
+     .trend-indicator.positive { color: var(--cui-black) !important; }
+     .trend-indicator.negative { color: var(--cui-black) !important; }
+     .trend-indicator.neutral { color: var(--cui-black) !important; }
+  }
+  c-widget-stat-a[color="info"] {
+    .dashboard-card-title, .fs-3.fw-semibold, .trend-indicator {
+      color: var(--cui-white) !important; 
+    }
+  }
+ c-widget-stat-a[color="primary"] {
+    .dashboard-card-title, .fs-3.fw-semibold, .trend-indicator {
+      color: var(--cui-white) !important; 
+    }
+  }
 }
 
-// Light Theme Adjustments (if necessary, CoreUI defaults are often sufficient)
+// Light Theme Adjustments
 @include color-mode.color-mode(light) {
   c-widget-stat-a {
+    background-color: var(--cui-white); // Explicit white background for cards
+    box-shadow: 0 2px 4px rgba(0,0,0,.075); // Soft shadow for depth
+    border: 1px solid var(--cui-gray-200); // Light border
+
     .text-medium-emphasis { // Label in light mode
-        color: var(--cui-gray-700, #4f5d73) !important; // Ensure dark enough for light backgrounds
+        color: var(--cui-gray-700) !important;
     }
     .fs-3.fw-semibold { // Value in light mode
         color: var(--cui-body-color) !important;
@@ -68,32 +131,46 @@ c-widget-stat-a {
 
   // Ensure text on warning widget (which is often light yellow) is dark enough
   c-widget-stat-a[color="warning"] {
-    .text-medium-emphasis,
-    .fs-3.fw-semibold {
-      color: var(--cui-black, #000000) !important; // Ensure text is dark on light warning background
+    .dashboard-card-title,
+    .fs-3.fw-semibold,
+    .trend-indicator {
+      color: var(--cui-black) !important; // Ensure text is dark on light warning background
+    }
+  }
+
+  // Ensure text on success widget is dark enough (CoreUI default is light)
+  c-widget-stat-a[color="success"] {
+    .dashboard-card-title,
+    .fs-3.fw-semibold,
+    .trend-indicator {
+      color: var(--cui-white) !important;
     }
   }
 }
 
-// Chart specific styling for legend (will be used if legend is moved)
+// Chart specific styling
 .chart-legend-above {
-  text-align: center;
+  text-align: left; // Align with dropdown as requested
   margin-bottom: 1rem;
-  font-weight: 500;
-  font-size: 0.9rem;
+  font-weight: 600; // Bolder chart title
+  font-size: 1.2rem; // Larger chart title
+  color: var(--cui-body-color);
 }
 
-// Ensure trend indicators are visible
-.trend-indicator {
-  font-size: 0.85rem;
-  margin-left: 0.25rem;
-  &.positive {
-    color: var(--cui-success);
-  }
-  &.negative {
-    color: var(--cui-danger);
-  }
-  &.neutral {
-    color: var(--cui-warning);
-  }
+// Add padding between summary cards and graph section
+c-row.mb-4:has(c-widget-stat-a) + c-row.mb-4:has(c-card c-chart) {
+  margin-top: 2rem !important; // Add more top margin to the chart row specifically
 }
+
+// Align dropdown with chart title - this can be tricky with current HTML structure
+// Assuming the dropdown is the last element in its row, and title is first in its row.
+// A more robust solution might involve HTML structure changes.
+// For now, we adjust the chart title alignment to be left.
+
+// Adjustments for card color contrast on specific card types (if needed beyond CoreUI defaults)
+// Example for a `info` colored card to ensure text is white
+// c-widget-stat-a[color="info"] {
+//   .dashboard-card-title, .fs-3.fw-semibold, .trend-indicator {
+//     color: var(--cui-white) !important;
+//   }
+// }

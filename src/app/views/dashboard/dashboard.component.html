@@ -1,11 +1,11 @@
 <c-container fluid>
-  <!-- Date Range Filter -->
+  <!-- Date Range Filter & Guild Name -->
   <c-row class="mb-3 align-items-center">
-    <c-col [md]="9">
-      <h4 *ngIf="selectedGuildName" class="mb-0">Guild: {{ selectedGuildName }}</h4>
+    <c-col [md]="selectedGuildName ? 6 : 9"> <!-- Adjust column span based on guild name presence -->
+      <h4 *ngIf="selectedGuildName" class="mb-0 guild-name-title">Guild: {{ selectedGuildName }}</h4>
     </c-col>
-    <c-col [md]="3" class="text-md-end">
-      <c-dropdown>
+    <c-col [md]="selectedGuildName ? 6 : 3" class="text-md-start"> <!-- Changed to text-md-start and adjusted span -->
+      <c-dropdown class="dashboard-filter-dropdown">
         <button cButton cDropdownToggle color="secondary">
           {{ selectedDateRangeLabel }}
         </button>
