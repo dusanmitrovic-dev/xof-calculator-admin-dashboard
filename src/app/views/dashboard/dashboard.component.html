@@ -1,6 +1,6 @@
 <c-container fluid>
   <!-- Welcome Message -->
-  <c-row class="mb-3">
+  <c-row class="mb-4"> <!-- Changed from mb-3 to mb-4 -->
     <c-col>
       <h3 *ngIf="userName">Welcome back, {{ userName }}!</h3>
     </c-col>
@@ -20,6 +20,7 @@
           <li><a cDropdownItem (click)="setDateRange('7days')">Last 7 Days</a></li>
           <li><a cDropdownItem (click)="setDateRange('30days')">Last 30 Days</a></li>
           <li><a cDropdownItem (click)="setDateRange('90days')">Last 90 Days</a></li>
+          <li><a cDropdownItem (click)="setDateRange('365days')">Last Year</a></li> <!-- Added Last Year option -->
           <li><a cDropdownItem (click)="setDateRange('all')">All Time</a></li>
         </ul>
       </c-dropdown>
@@ -38,10 +39,12 @@
     <c-col [xs]="12" [sm]="6" [lg]="3">
       <div (click)="navigateToMetricDetail('totalGrossRevenue')" style="cursor: pointer;" role="button" [attr.aria-label]="'View details for Total Gross Revenue'">
         <c-widget-stat-a color="primary">
-          <span class="dashboard-card-title">Total Gross Revenue
-            <c-icon name="cilInfo" size="sm" class="ms-1" cTooltip="Represents the total gross revenue generated within the selected date range." tooltipPlacement="top"></c-icon>
-          </span>
-          <div class="d-flex align-items-center">
+          <div class="card-title-container">
+            <span class="dashboard-card-title">Total Gross Revenue
+              <c-icon name="cilInfo" size="sm" class="ms-1" cTooltip="Represents the total gross revenue generated within the selected date range." tooltipPlacement="top"></c-icon>
+            </span>
+          </div>
+          <div class="card-value-container d-flex align-items-center">
             <c-icon name="cilDollar" size="xl" class="me-2"></c-icon>
             <span class="fs-3 fw-semibold me-2">{{ summaryStats.totalGrossRevenue | currency:'USD':'symbol':'1.2-2' }}</span>
             <ng-container *ngIf="summaryStats.totalGrossRevenueTrend?.trend && summaryStats.totalGrossRevenueTrend?.trend !== 'neutral'">
@@ -62,10 +65,12 @@
     <c-col [xs]="12" [sm]="6" [lg]="3">
       <div (click)="navigateToMetricDetail('totalCut')" style="cursor: pointer;" role="button" [attr.aria-label]="'View details for Total Cut'">
         <c-widget-stat-a color="success">
-          <span class="dashboard-card-title">Total Cut
-            <c-icon name="cilCalculator" size="sm" class="ms-1" cTooltip="Represents the total commission earned within the selected date range." tooltipPlacement="top"></c-icon>
-          </span>
-          <div class="d-flex align-items-center">
+           <div class="card-title-container">
+            <span class="dashboard-card-title">Total Cut
+              <c-icon name="cilCalculator" size="sm" class="ms-1" cTooltip="Represents the total commission earned within the selected date range." tooltipPlacement="top"></c-icon>
+            </span>
+          </div>
+          <div class="card-value-container d-flex align-items-center">
             <c-icon name="cilCalculator" size="xl" class="me-2"></c-icon>
             <span class="fs-3 fw-semibold me-2">{{ summaryStats.totalCut | currency:'USD':'symbol':'1.2-2' }}</span>
             <ng-container *ngIf="summaryStats.totalCutTrend?.trend && summaryStats.totalCutTrend?.trend !== 'neutral'">
@@ -80,10 +85,12 @@
     <c-col [xs]="12" [sm]="6" [lg]="3">
       <div (click)="navigateToMetricDetail('totalEntries')" style="cursor: pointer;" role="button" [attr.aria-label]="'View details for Total Entries'">
         <c-widget-stat-a color="info">
-          <span class="dashboard-card-title">Total Entries
-            <c-icon name="cilInfo" size="sm" class="ms-1" cTooltip="Represents the total number of revenue entries recorded within the selected date range." tooltipPlacement="top"></c-icon>
-          </span>
-          <div class="d-flex align-items-center">
+           <div class="card-title-container">
+            <span class="dashboard-card-title">Total Entries
+              <c-icon name="cilInfo" size="sm" class="ms-1" cTooltip="Represents the total number of revenue entries recorded within the selected date range." tooltipPlacement="top"></c-icon>
+            </span>
+          </div>
+          <div class="card-value-container d-flex align-items-center">
             <c-icon name="cilListNumbered" size="xl" class="me-2"></c-icon>
             <span class="fs-3 fw-semibold me-2">{{ summaryStats.totalEntries | number:'1.0-0' }}</span>
             <ng-container *ngIf="summaryStats.totalEntriesTrend?.trend && summaryStats.totalEntriesTrend?.trend !== 'neutral'">
@@ -98,11 +105,13 @@
     <c-col [xs]="12" [sm]="6" [lg]="3">
       <div (click)="navigateToMetricDetail('avgCutPerEntry')" style="cursor: pointer;" role="button" [attr.aria-label]="'View details for Average Cut per Entry'">
         <c-widget-stat-a color="warning">
-          <span class="dashboard-card-title">
-            Avg Cut per Entry
-            <c-icon name="cilChartPie" size="sm" class="ms-1" cTooltip="Represents the average 'total cut' (commission) per individual 'entry' recorded. Calculated as Total Cut / Total Entries." tooltipPlacement="top"></c-icon>
-          </span>
-          <div class="d-flex align-items-center">
+           <div class="card-title-container">
+            <span class="dashboard-card-title">
+              Avg Cut per Entry
+              <c-icon name="cilChartPie" size="sm" class="ms-1" cTooltip="Represents the average 'total cut' (commission) per individual 'entry' recorded. Calculated as Total Cut / Total Entries." tooltipPlacement="top"></c-icon>
+            </span>
+          </div>
+          <div class="card-value-container d-flex align-items-center">
             <c-icon name="cilChartPie" size="xl" class="me-2"></c-icon>
             <span class="fs-3 fw-semibold me-2">{{ summaryStats.avgCutPerEntry | currency:'USD':'symbol':'1.2-2' }}</span>
             <ng-container *ngIf="summaryStats.avgCutPerEntryTrend?.trend && summaryStats.avgCutPerEntryTrend?.trend !== 'neutral'">
