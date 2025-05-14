@@ -190,11 +190,6 @@
                   <th scope="col">Role</th>
                   <th scope="col">Shift</th>
                   <th scope="col">Revenue</th>
-                  <th scope="col">Cut</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr *ngFor="let entry of displayableEntries" (click)="navigateToEntryDetail(entry._id)" style="cursor: pointer;">
                   <td>{{ entry.parsedDate | date:'shortDate' }}</td>
                   <td>{{ entry.user_mention || 'N/A' }}</td>
                   <td>{{ entry.role || 'N/A' }}</td>
