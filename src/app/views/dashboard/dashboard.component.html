@@ -31,7 +31,7 @@
   <c-row class="mb-4" *ngIf="!loading">
     <c-col [xs]="12" [sm]="6" [lg]="3">
       <div (click)="navigateToMetricDetail('totalGrossRevenue')" style="cursor: pointer;" role="button" [attr.aria-label]="'View details for Total Gross Revenue'">
-        <c-widget-stat-a color="info">
+        <c-widget-stat-a color="info" class="transparent-widget">
           <div class="card-title-container">
             <span class="dashboard-card-title">Total Gross Revenue
               <c-icon name="cilInfo" size="sm" class="ms-1" cTooltip="Represents the total gross revenue generated within the selected date range." tooltipPlacement="top"></c-icon>
@@ -57,7 +57,7 @@
     </c-col>
     <c-col [xs]="12" [sm]="6" [lg]="3">
       <div (click)="navigateToMetricDetail('totalCut')" style="cursor: pointer;" role="button" [attr.aria-label]="'View details for Total Cut'">
-        <c-widget-stat-a color="info">
+        <c-widget-stat-a color="info" class="transparent-widget">
            <div class="card-title-container">
             <span class="dashboard-card-title">Total Cut
               <c-icon name="cilCalculator" size="sm" class="ms-1" cTooltip="Represents the total commission earned within the selected date range." tooltipPlacement="top"></c-icon>
@@ -77,7 +77,7 @@
     </c-col>
     <c-col [xs]="12" [sm]="6" [lg]="3">
       <div (click)="navigateToMetricDetail('totalEntries')" style="cursor: pointer;" role="button" [attr.aria-label]="'View details for Total Entries'">
-        <c-widget-stat-a color="info">
+        <c-widget-stat-a color="info" class="transparent-widget">
            <div class="card-title-container">
             <span class="dashboard-card-title">Total Entries
               <c-icon name="cilInfo" size="sm" class="ms-1" cTooltip="Represents the total number of revenue entries recorded within the selected date range." tooltipPlacement="top"></c-icon>
@@ -97,7 +97,7 @@
     </c-col>
     <c-col [xs]="12" [sm]="6" [lg]="3">
       <div (click)="navigateToMetricDetail('avgCutPerEntry')" style="cursor: pointer;" role="button" [attr.aria-label]="'View details for Average Cut per Entry'">
-        <c-widget-stat-a color="info">
+        <c-widget-stat-a color="info" class="transparent-widget">
            <div class="card-title-container">
             <span class="dashboard-card-title">
               Avg Cut per Entry
