@@ -2,8 +2,8 @@ import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule, DatePipe, DecimalPipe, CurrencyPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ChartData, ChartOptions } from 'chart.js';
-import { catchError, of } from 'rxjs';
-import { Router } from '@angular/router'; // Import Router
+import { catchError, of, finalize } from 'rxjs'; // Import finalize
+import { Router } from '@angular/router';
 
 import { EarningsService, Earning } from '../../services/earnings.service';
 
@@ -105,20 +105,23 @@ export class DashboardComponent implements OnInit {
   private earningsService = inject(EarningsService);
   private datePipe = inject(DatePipe);
   private iconSetService = inject(IconSetService);
-  private router = inject(Router); 
+  private router = inject(Router);
 
-  allRevenueEntries: DisplayEarning[] = []; 
-  currentPeriodEntries: DisplayEarning[] = []; 
-  displayableEntries: DisplayEarning[] = []; 
+  loading: boolean = true; // Add loading property
+  userName: string = 'Dule'; // Add userName property (example)
+
+  allRevenueEntries: DisplayEarning[] = [];
+  currentPeriodEntries: DisplayEarning[] = [];
+  displayableEntries: DisplayEarning[] = [];
   filteredForExport: DisplayEarning[] = [];
 
   currentPage: number = 1;
-  itemsPerPage: number = 10; 
+  itemsPerPage: number = 10;
   totalPages: number = 0;
   searchTerm: string = '';
 
-  selectedDateRangeLabel: string = 'All Time'; 
-  selectedGuildName: string | null = null; 
+  selectedDateRangeLabel: string = 'All Time';
+  selectedGuildName: string | null = null;
 
   summaryStats: DashboardSummaryStats = this.getInitialSummaryStats();
   revenueOverTimeChartData: ChartData<'line'> = { labels: [], datasets: [] };
@@ -127,7 +130,7 @@ export class DashboardComponent implements OnInit {
   constructor() {
     this.iconSetService.icons = {
       cilChartLine, cilDollar, cilCalculator, cilListNumbered, cilChartPie,
-      cilArrowTop, cilArrowBottom, cilSearch, cilSave, cilInfo 
+      cilArrowTop, cilArrowBottom, cilSearch, cilSave, cilInfo
     };
 
     // Helper to get CSS variable values
@@ -150,7 +153,7 @@ export class DashboardComponent implements OnInit {
             color: getCssVar('--cui-body-color') // Use CSS var for dynamic color
           },
           grid: {
-            display: true,
+            display: true, // Display Y-axis grid lines
             color: getCssVar('--cui-border-color-translucent') // Theme-aware grid color
           }
         },
@@ -165,16 +168,16 @@ export class DashboardComponent implements OnInit {
             color: getCssVar('--cui-body-color') // Use CSS var for dynamic color
           },
           grid: {
-            display: false, // Keep X-axis grid lines hidden as per original
-            // color: getCssVar('--cui-border-color-translucent') // If you want to show them
+            display: true, // Display X-axis grid lines (Changed from false)
+            color: getCssVar('--cui-border-color-translucent') // Theme-aware grid color
           }
         }
       },
       plugins: {
         legend: {
-          display: false, // Keep legend hidden for now, can be enabled if multiple datasets
+          display: false,
           labels: {
-            font: { size: 13, weight: 500 }, // Style for future use
+            font: { size: 13, weight: 500 },
             color: getCssVar('--cui-body-color')
           }
         },
@@ -182,7 +185,7 @@ export class DashboardComponent implements OnInit {
           enabled: true,
           mode: 'index',
           intersect: false,
-          backgroundColor: getCssVar('--cui-body-bg'), // Use body-bg for tooltip background
+          backgroundColor: getCssVar('--cui-body-bg'),
           titleColor: getCssVar('--cui-body-color'),
           bodyColor: getCssVar('--cui-body-color'),
           borderColor: getCssVar('--cui-border-color'),
@@ -203,12 +206,12 @@ export class DashboardComponent implements OnInit {
       },
       elements: {
         point: {
-          radius: 3, 
+          radius: 3,
           hoverRadius: 5,
           hitRadius: 10,
         },
         line: {
-          tension: 0.1 
+          tension: 0.1
         }
       }
     };
@@ -217,7 +220,6 @@ export class DashboardComponent implements OnInit {
   ngOnInit(): void {
     this.fetchAndProcessAllData();
     // Update chart options dynamically after view init when CSS variables are available
-    // This is a more robust way to ensure CSS vars are loaded.
     setTimeout(() => this.updateChartColors(), 0);
   }
 
@@ -288,10 +290,14 @@ export class DashboardComponent implements OnInit {
 
 
   fetchAndProcessAllData(): void {
+    this.loading = true; // Set loading to true
     this.earningsService.getAllEarningsAcrossGuilds().pipe(
       catchError(err => {
         console.error('[Dashboard] Error fetching all earnings:', err);
         return of([]);
+      }),
+      finalize(() => { // Set loading to false when the observable completes or errors
+        this.loading = false;
       })
     ).subscribe((earnings: Earning[]) => {
       this.allRevenueEntries = [...earnings]
@@ -515,7 +521,7 @@ export class DashboardComponent implements OnInit {
       return strValue;
     };
 
-    let csvContent = csvHeaders.join(',') + ''; 
+    let csvContent = csvHeaders.join(',') + ''; // Added newline
     dataToExport.forEach((entry: DisplayEarning) => {
       const row = [
         this.datePipe.transform(entry.parsedDate, 'yyyy-MM-dd') || '', 
@@ -525,7 +531,7 @@ export class DashboardComponent implements OnInit {
         escapeCsvValue(entry.gross_revenue?.toString() || '0'),
         escapeCsvValue(entry.total_cut?.toString() || '0')
       ];
-      csvContent += row.join(',') + '';
+      csvContent += row.join(',') + ''; // Added newline
     });
 
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });

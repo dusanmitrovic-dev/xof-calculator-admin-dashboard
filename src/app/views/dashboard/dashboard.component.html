@@ -1,4 +1,11 @@
 <c-container fluid>
+  <!-- Welcome Message -->
+  <c-row class="mb-3">
+    <c-col>
+      <h3 *ngIf="userName">Welcome back, {{ userName }}!</h3>
+    </c-col>
+  </c-row>
+
   <!-- Date Range Filter & Guild Name -->
   <c-row class="mb-3 align-items-center">
     <c-col [md]="selectedGuildName ? 6 : 9"> <!-- Adjust column span based on guild name presence -->
@@ -19,14 +26,21 @@
     </c-col>
   </c-row>
 
+  <!-- Loading Indicator -->
+  <div *ngIf="loading" class="d-flex justify-content-center mb-3">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+  </div>
+
   <!-- KPI Cards -->
-  <c-row class="mb-4">
+  <c-row class="mb-4" *ngIf="!loading">
     <c-col [xs]="12" [sm]="6" [lg]="3">
       <div (click)="navigateToMetricDetail('totalGrossRevenue')" style="cursor: pointer;" role="button" [attr.aria-label]="'View details for Total Gross Revenue'">
         <c-widget-stat-a color="primary">
-          <ng-template cTemplateId="widgetStatValueRef">
-            <span class="dashboard-card-title">Total Gross Revenue</span>
-          </ng-template>
+          <span class="dashboard-card-title">Total Gross Revenue
+            <c-icon name="cilInfo" size="sm" class="ms-1" cTooltip="Represents the total gross revenue generated within the selected date range." tooltipPlacement="top"></c-icon>
+          </span>
           <div class="d-flex align-items-center">
             <c-icon name="cilDollar" size="xl" class="me-2"></c-icon>
             <span class="fs-3 fw-semibold me-2">{{ summaryStats.totalGrossRevenue | currency:'USD':'symbol':'1.0-0' }}</span>
@@ -48,9 +62,9 @@
     <c-col [xs]="12" [sm]="6" [lg]="3">
       <div (click)="navigateToMetricDetail('totalCut')" style="cursor: pointer;" role="button" [attr.aria-label]="'View details for Total Cut'">
         <c-widget-stat-a color="success">
-          <ng-template cTemplateId="widgetStatValueRef">
-            <span class="dashboard-card-title">Total Cut</span>
-          </ng-template>
+          <span class="dashboard-card-title">Total Cut
+            <c-icon name="cilInfo" size="sm" class="ms-1" cTooltip="Represents the total commission earned within the selected date range." tooltipPlacement="top"></c-icon>
+          </span>
           <div class="d-flex align-items-center">
             <c-icon name="cilCalculator" size="xl" class="me-2"></c-icon>
             <span class="fs-3 fw-semibold me-2">{{ summaryStats.totalCut | currency:'USD':'symbol':'1.0-0' }}</span>
@@ -66,9 +80,9 @@
     <c-col [xs]="12" [sm]="6" [lg]="3">
       <div (click)="navigateToMetricDetail('totalEntries')" style="cursor: pointer;" role="button" [attr.aria-label]="'View details for Total Entries'">
         <c-widget-stat-a color="info">
-          <ng-template cTemplateId="widgetStatValueRef">
-            <span class="dashboard-card-title">Total Entries</span>
-          </ng-template>
+          <span class="dashboard-card-title">Total Entries
+            <c-icon name="cilInfo" size="sm" class="ms-1" cTooltip="Represents the total number of revenue entries recorded within the selected date range." tooltipPlacement="top"></c-icon>
+          </span>
           <div class="d-flex align-items-center">
             <c-icon name="cilListNumbered" size="xl" class="me-2"></c-icon>
             <span class="fs-3 fw-semibold me-2">{{ summaryStats.totalEntries | number:'1.0-0' }}</span>
@@ -84,12 +98,10 @@
     <c-col [xs]="12" [sm]="6" [lg]="3">
       <div (click)="navigateToMetricDetail('avgCutPerEntry')" style="cursor: pointer;" role="button" [attr.aria-label]="'View details for Average Cut per Entry'">
         <c-widget-stat-a color="warning">
-          <ng-template cTemplateId="widgetStatValueRef">
-            <span class="dashboard-card-title">
-              Avg Cut per Entry
-              <c-icon name="cilInfo" size="sm" class="ms-1" cTooltip="Represents the average 'total cut' (commission) per individual 'entry' recorded. Calculated as Total Cut / Total Entries." tooltipPlacement="top"></c-icon>
-            </span>
-          </ng-template>
+          <span class="dashboard-card-title">
+            Avg Cut per Entry
+            <c-icon name="cilInfo" size="sm" class="ms-1" cTooltip="Represents the average 'total cut' (commission) per individual 'entry' recorded. Calculated as Total Cut / Total Entries." tooltipPlacement="top"></c-icon>
+          </span>
           <div class="d-flex align-items-center">
             <c-icon name="cilChartPie" size="xl" class="me-2"></c-icon>
             <span class="fs-3 fw-semibold me-2">{{ summaryStats.avgCutPerEntry | currency:'USD':'symbol':'1.2-2' }}</span>
@@ -105,7 +117,7 @@
   </c-row>
 
   <!-- Revenue Over Time Chart -->
-  <c-row class="mb-4">
+  <c-row class="mb-4" *ngIf="!loading">
     <c-col>
       <c-card>
         <c-card-header>
@@ -121,7 +133,7 @@
   </c-row>
 
   <!-- Breakdown Section Placeholder -->
-  <c-row class="mb-4">
+  <c-row class="mb-4" *ngIf="!loading">
     <c-col>
       <c-card>
         <c-card-header>Revenue Breakdown (Top Sources/Entries)</c-card-header>
@@ -136,7 +148,7 @@
   </c-row>
 
   <!-- Revenue Entries Table -->
-  <c-row class="mb-4">
+  <c-row class="mb-4" *ngIf="!loading">
     <c-col>
       <c-card>
         <c-card-header>Revenue Entries</c-card-header>

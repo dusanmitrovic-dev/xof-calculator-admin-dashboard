@@ -5,22 +5,30 @@
 .dashboard-card-title {
   font-size: 1rem; // Standardized size for card titles
   font-weight: 500;
-  color: var(--cui-body-color);
+  color: var(--cui-body-color) !important; // Ensure body color by default
   margin-bottom: 0.5rem; // Add some space below title
+  display: block !important; // Force display
+  visibility: visible !important; // Force visibility
 }
 
 // Metric Card Specific Styles
 c-widget-stat-a {
   padding: 1.25rem; // Consistent padding for cards
+  border-radius: var(--cui-border-radius-xl); // Added rounded corners
+  box-shadow: var(--cui-box-shadow); // Added subtle shadow
+  transition: transform 0.2s ease-in-out; // Added hover animation
+
+  &:hover {
+    transform: translateY(-3px); // Slight lift on hover
+  }
 
   .text-medium-emphasis { // This is often used for the card title/label (already handled by .dashboard-card-title)
-    // font-size: 1rem !important; // Standardized with dashboard-card-title
-    // font-weight: 500 !important;
-    // color: var(--cui-body-color) !important;
+    color: var(--cui-gray-600) !important; // Subtle grey for descriptions
   }
 
   .fs-3.fw-semibold { // This is often used for the main value
-    font-size: 1.75rem !important; // Slightly larger value text
+    font-size: 2rem !important; // Slightly larger value text
+    font-weight: 700 !important; // Make value bold
     color: var(--cui-body-color) !important;
   }
 
@@ -31,15 +39,15 @@ c-widget-stat-a {
 
 // Trend indicator icon and text enhancements
 .trend-indicator {
-  font-size: 0.9rem; // Slightly larger trend text
+  font-size: 1rem; // Slightly larger trend text
   font-weight: 500; // Bolder trend text
-  margin-left: 0.35rem;
+  margin-left: 0.5rem; // Increased margin
   display: inline-flex; // Align icon and text better
   align-items: center;
 
   c-icon {
     margin-right: 0.2rem;
-    font-size: 1.1em; // Make icon slightly larger relative to text
+    font-size: 1.2em; // Make icon slightly larger relative to text
   }
 
   &.positive {
@@ -56,7 +64,7 @@ c-widget-stat-a {
 // Dark Theme Adjustments
 @include color-mode.color-mode(dark) {
   .dashboard-card-title {
-    color: var(--cui-gray-200); // Brighter title for dark mode
+    color: var(--cui-gray-200) !important; // Brighter title for dark mode
   }
 
   c-widget-stat-a {
@@ -64,7 +72,7 @@ c-widget-stat-a {
     border: 1px solid var(--cui-gray-700); // Subtle accent border
 
     .text-medium-emphasis { // Label in dark mode
-      color: var(--cui-gray-300) !important;
+      color: var(--cui-gray-400) !important; // Adjusted grey for dark mode
     }
 
     .fs-3.fw-semibold { // Value in dark mode
@@ -118,8 +126,8 @@ c-widget-stat-a {
 @include color-mode.color-mode(light) {
   c-widget-stat-a {
     background-color: var(--cui-white); // Explicit white background for cards
-    box-shadow: 0 2px 4px rgba(0,0,0,.075); // Soft shadow for depth
-    border: 1px solid var(--cui-gray-200); // Light border
+    box-shadow: 0 2px 8px rgba(0,0,0,.1); // Softer and larger shadow for depth
+    border: 1px solid var(--cui-gray-300); // Slightly darker border
 
     .text-medium-emphasis { // Label in light mode
         color: var(--cui-gray-700) !important;
@@ -160,6 +168,12 @@ c-widget-stat-a {
 // Add padding between summary cards and graph section
 c-row.mb-4:has(c-widget-stat-a) + c-row.mb-4:has(c-card c-chart) {
   margin-top: 2rem !important; // Add more top margin to the chart row specifically
+}
+
+// General Card Styling (for chart and table)
+c-card {
+  border-radius: var(--cui-border-radius-xl); // Added rounded corners to general cards
+  box-shadow: var(--cui-box-shadow); // Added subtle shadow to general cards
 }
 
 // Align dropdown with chart title - this can be tricky with current HTML structure
