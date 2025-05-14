@@ -1,11 +1,4 @@
 <c-container fluid>
-  <!-- Welcome Message -->
-  <c-row class="mb-4"> <!-- Changed from mb-3 to mb-4 -->
-    <c-col>
-      <h3 *ngIf="userName">Welcome back, {{ userName }}!</h3>
-    </c-col>
-  </c-row>
-
   <!-- Date Range Filter & Guild Name -->
   <c-row class="mb-3 align-items-center">
     <c-col [md]="selectedGuildName ? 6 : 9"> <!-- Adjust column span based on guild name presence -->
