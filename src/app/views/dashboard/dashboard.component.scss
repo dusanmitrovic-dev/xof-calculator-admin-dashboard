@@ -6,9 +6,15 @@
   font-size: 1rem; // Standardized size for card titles
   font-weight: 500;
   color: var(--cui-body-color) !important; // Ensure body color by default
-  margin-bottom: 0.5rem; // Add some space below title
+  margin-bottom: 1rem; // Increased space below title from 0.5rem to 1rem
   display: block !important; // Force display
   visibility: visible !important; // Force visibility
+}
+
+.card-value-container {
+  margin-top: 0.5rem; // Add space above the value row
+  display: flex; // Keep icon and value/trend inline within this row
+  align-items: center; // Vertically align icon and value/trend
 }
 
 // Metric Card Specific Styles
@@ -32,9 +38,7 @@ c-widget-stat-a {
     color: var(--cui-body-color) !important;
   }
 
-  .d-flex.align-items-center {
-    margin-top: 0.5rem; // Space between title and value/trend line
-  }
+  // Removed the old .d-flex.align-items-center rule that was causing issues with the new structure
 }
 
 // Trend indicator icon and text enhancements
@@ -175,16 +179,3 @@ c-card {
   border-radius: var(--cui-border-radius-xl); // Added rounded corners to general cards
   box-shadow: var(--cui-box-shadow); // Added subtle shadow to general cards
 }
-
-// Align dropdown with chart title - this can be tricky with current HTML structure
-// Assuming the dropdown is the last element in its row, and title is first in its row.
-// A more robust solution might involve HTML structure changes.
-// For now, we adjust the chart title alignment to be left.
-
-// Adjustments for card color contrast on specific card types (if needed beyond CoreUI defaults)
-// Example for a `info` colored card to ensure text is white
-// c-widget-stat-a[color="info"] {
-//   .dashboard-card-title, .fs-3.fw-semibold, .trend-indicator {
-//     color: var(--cui-white) !important;
-//   }
-// }
