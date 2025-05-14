@@ -175,7 +175,7 @@ export class DashboardComponent implements OnInit {
       },
       plugins: {
         legend: {
-          display: false,
+          display: true, // Changed to true to display the legend
           labels: {
             font: { size: 13, weight: 500 },
             color: getCssVar('--cui-body-color')
@@ -309,7 +309,7 @@ export class DashboardComponent implements OnInit {
     });
   }
 
-  setDateRange(rangeKey: '7days' | '30days' | '90days' | 'all'): void {
+  setDateRange(rangeKey: '7days' | '30days' | '90days' | '365days' | 'all'): void {
     const today = new Date();
     today.setHours(0, 0, 0, 0); 
 
@@ -330,6 +330,11 @@ export class DashboardComponent implements OnInit {
         this.selectedDateRangeLabel = 'Last 90 Days';
         startDate = new Date(today);
         startDate.setDate(today.getDate() - 90);
+        break;
+      case '365days': // Added case for Last Year
+        this.selectedDateRangeLabel = 'Last Year';
+        startDate = new Date(today);
+        startDate.setDate(today.getDate() - 365);
         break;
       case 'all':
       default:
