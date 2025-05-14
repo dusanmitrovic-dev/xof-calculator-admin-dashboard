@@ -41,6 +41,12 @@ c-widget-stat-a {
   // Removed the old .d-flex.align-items-center rule that was causing issues with the new structure
 }
 
+.transparent-widget {
+  background-color: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
 // Trend indicator icon and text enhancements
 .trend-indicator {
   font-size: 1rem; // Slightly larger trend text
