@@ -43,7 +43,7 @@
           </span>
           <div class="d-flex align-items-center">
             <c-icon name="cilDollar" size="xl" class="me-2"></c-icon>
-            <span class="fs-3 fw-semibold me-2">{{ summaryStats.totalGrossRevenue | currency:'USD':'symbol':'1.0-0' }}</span>
+            <span class="fs-3 fw-semibold me-2">{{ summaryStats.totalGrossRevenue | currency:'USD':'symbol':'1.2-2' }}</span>
             <ng-container *ngIf="summaryStats.totalGrossRevenueTrend?.trend && summaryStats.totalGrossRevenueTrend?.trend !== 'neutral'">
               <c-icon
                 [name]="summaryStats.totalGrossRevenueTrend?.trend === 'up' ? 'cilArrowTop' : 'cilArrowBottom'"
@@ -63,11 +63,11 @@
       <div (click)="navigateToMetricDetail('totalCut')" style="cursor: pointer;" role="button" [attr.aria-label]="'View details for Total Cut'">
         <c-widget-stat-a color="success">
           <span class="dashboard-card-title">Total Cut
-            <c-icon name="cilInfo" size="sm" class="ms-1" cTooltip="Represents the total commission earned within the selected date range." tooltipPlacement="top"></c-icon>
+            <c-icon name="cilCalculator" size="sm" class="ms-1" cTooltip="Represents the total commission earned within the selected date range." tooltipPlacement="top"></c-icon>
           </span>
           <div class="d-flex align-items-center">
             <c-icon name="cilCalculator" size="xl" class="me-2"></c-icon>
-            <span class="fs-3 fw-semibold me-2">{{ summaryStats.totalCut | currency:'USD':'symbol':'1.0-0' }}</span>
+            <span class="fs-3 fw-semibold me-2">{{ summaryStats.totalCut | currency:'USD':'symbol':'1.2-2' }}</span>
             <ng-container *ngIf="summaryStats.totalCutTrend?.trend && summaryStats.totalCutTrend?.trend !== 'neutral'">
               <c-icon [name]="summaryStats.totalCutTrend?.trend === 'up' ? 'cilArrowTop' : 'cilArrowBottom'" [class]="'trend-indicator ' + (summaryStats.totalCutTrend?.trend === 'up' ? 'positive' : 'negative')" class="me-1"></c-icon>
               <span [class]="'trend-indicator ' + (summaryStats.totalCutTrend?.trend === 'up' ? 'positive' : 'negative')" class="fs-6 fw-semibold">{{ summaryStats.totalCutTrend?.deltaPercentage }}</span>
@@ -100,7 +100,7 @@
         <c-widget-stat-a color="warning">
           <span class="dashboard-card-title">
             Avg Cut per Entry
-            <c-icon name="cilInfo" size="sm" class="ms-1" cTooltip="Represents the average 'total cut' (commission) per individual 'entry' recorded. Calculated as Total Cut / Total Entries." tooltipPlacement="top"></c-icon>
+            <c-icon name="cilChartPie" size="sm" class="ms-1" cTooltip="Represents the average 'total cut' (commission) per individual 'entry' recorded. Calculated as Total Cut / Total Entries." tooltipPlacement="top"></c-icon>
           </span>
           <div class="d-flex align-items-center">
             <c-icon name="cilChartPie" size="xl" class="me-2"></c-icon>
