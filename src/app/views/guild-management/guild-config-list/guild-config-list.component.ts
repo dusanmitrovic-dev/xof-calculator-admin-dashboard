@@ -13,7 +13,8 @@ import {
   SpinnerModule,
   TableModule,
   ModalModule,
-  UtilitiesModule
+  UtilitiesModule,
+  BadgeModule // Import BadgeModule
 } from '@coreui/angular';
 import { IconDirective } from '@coreui/icons-angular';
 
@@ -42,7 +43,8 @@ import { CommonModule, CurrencyPipe } from '@angular/common';
     IconDirective,
     UtilitiesModule,
     CurrencyPipe,
-    GuildConfigEditModalComponent
+    GuildConfigEditModalComponent,
+    BadgeModule // Add BadgeModule here
   ]
 })
 export class GuildConfigListComponent implements OnInit, OnDestroy {
