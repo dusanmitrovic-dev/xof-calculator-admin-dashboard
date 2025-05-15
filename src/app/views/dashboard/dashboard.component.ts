@@ -80,7 +80,7 @@ type MetricKey = 'totalGrossRevenue' | 'totalCut' | 'totalEntries' | 'avgCutPerE
     CardComponent,
     CardHeaderComponent,
     CardBodyComponent,
-    WidgetStatAComponent,
+    // WidgetStatAComponent,
     SharedModule,
     ChartjsComponent,
     TableDirective,

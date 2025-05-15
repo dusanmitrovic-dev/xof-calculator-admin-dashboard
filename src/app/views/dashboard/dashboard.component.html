@@ -27,71 +27,75 @@
     </div>
   </div>
 
-  <!-- KPI Cards -->
-  <c-row class="mb-4 align-items-stretch kpi-cards-row" *ngIf="!loading">
+  <c-row class="mb-4 kpi-cards-container" *ngIf="!loading">
+    <!-- Total Gross Revenue -->
     <c-col [xs]="12" [sm]="6" [lg]="3">
-      <div (click)="navigateToMetricDetail('totalGrossRevenue')" style="cursor: pointer;" role="button" [attr.aria-label]="'View details for Total Gross Revenue'">
-        <c-widget-stat-a color="info" class="transparent-widget">
-          <div class="card-value-container d-flex align-items-center">
-            <c-icon name="cilDollar" size="xl" class="me-2"></c-icon>
-            <span class="fs-3 fw-semibold me-2">{{ summaryStats.totalGrossRevenue | currency:'USD':'symbol':'1.2-2' }}</span>
+      <c-card class="h-100 shadow-sm hover-shadow">
+        <c-card-body class="text-center">
+          <div class="text-muted small mb-1 d-flex justify-content-center align-items-center">
+            Total Gross Revenue
+            <c-icon name="cilInfo" size="sm" class="ms-1" cTooltip="Represents the total gross revenue generated within the selected date range." tooltipPlacement="top"></c-icon>
           </div>
-          <div class="card-title-container">
-            <span class="dashboard-card-title">Total Gross Revenue
-              <c-icon name="cilInfo" size="sm" class="ms-1" cTooltip="Represents the total gross revenue generated within the selected date range." tooltipPlacement="top"></c-icon>
-            </span>
+          <div class="d-flex justify-content-center align-items-center mb-1">
+            <c-icon name="cilDollar" size="lg" class="me-2 text-info"></c-icon>
+            <span class="fs-3 fw-bold">{{ summaryStats.totalGrossRevenue | currency:'USD':'symbol':'1.2-2' }}</span>
           </div>
-        </c-widget-stat-a>
-      </div>
+          <small class="text-muted">in selected date range</small>
+        </c-card-body>
+      </c-card>
     </c-col>
+
+    <!-- Total Cut -->
     <c-col [xs]="12" [sm]="6" [lg]="3">
-      <div (click)="navigateToMetricDetail('totalCut')" style="cursor: pointer;" role="button" [attr.aria-label]="'View details for Total Cut'">
-        <c-widget-stat-a color="info" class="transparent-widget">
-           <div class="card-value-container d-flex align-items-center">
-            <c-icon name="cilCalculator" size="xl" class="me-2"></c-icon>
-            <span class="fs-3 fw-semibold me-2">{{ summaryStats.totalCut | currency:'USD':'symbol':'1.2-2' }}</span>
+      <c-card class="h-100 shadow-sm hover-shadow">
+        <c-card-body class="text-center">
+          <div class="text-muted small mb-1 d-flex justify-content-center align-items-center">
+            Total Cut
+            <c-icon name="cilCalculator" size="sm" class="ms-1" cTooltip="Represents the total commission earned within the selected date range." tooltipPlacement="top"></c-icon>
           </div>
-           <div class="card-title-container">
-            <span class="dashboard-card-title">Total Cut
-              <c-icon name="cilCalculator" size="sm" class="ms-1" cTooltip="Represents the total commission earned within the selected date range." tooltipPlacement="top"></c-icon>
-            </span>
+          <div class="d-flex justify-content-center align-items-center mb-1">
+            <c-icon name="cilCalculator" size="lg" class="me-2 text-info"></c-icon>
+            <span class="fs-3 fw-bold">{{ summaryStats.totalCut | currency:'USD':'symbol':'1.2-2' }}</span>
           </div>
-        </c-widget-stat-a>
-      </div>
+          <small class="text-muted">in selected date range</small>
+        </c-card-body>
+      </c-card>
     </c-col>
+
+    <!-- Total Entries -->
     <c-col [xs]="12" [sm]="6" [lg]="3">
-      <div (click)="navigateToMetricDetail('totalEntries')" style="cursor: pointer;" role="button" [attr.aria-label]="'View details for Total Entries'">
-        <c-widget-stat-a color="info" class="transparent-widget">
-           <div class="card-value-container d-flex align-items-center">
-            <c-icon name="cilListNumbered" size="xl" class="me-2"></c-icon>
-            <span class="fs-3 fw-semibold me-2">{{ summaryStats.totalEntries | number:'1.0-0' }}</span>
+      <c-card class="h-100 shadow-sm hover-shadow">
+        <c-card-body class="text-center">
+          <div class="text-muted small mb-1 d-flex justify-content-center align-items-center">
+            Total Entries
+            <c-icon name="cilInfo" size="sm" class="ms-1" cTooltip="Represents the total number of revenue entries recorded within the selected date range." tooltipPlacement="top"></c-icon>
           </div>
-           <div class="card-title-container">
-            <span class="dashboard-card-title">Total Entries
-              <c-icon name="cilInfo" size="sm" class="ms-1" cTooltip="Represents the total number of revenue entries recorded within the selected date range." tooltipPlacement="top"></c-icon>
-            </span>
+          <div class="d-flex justify-content-center align-items-center mb-1">
+            <c-icon name="cilListNumbered" size="lg" class="me-2 text-info"></c-icon>
+            <span class="fs-3 fw-bold">{{ summaryStats.totalEntries | number:'1.0-0' }}</span>
           </div>
-        </c-widget-stat-a>
-      </div>
+          <small class="text-muted">in selected date range</small>
+        </c-card-body>
+      </c-card>
     </c-col>
+
+    <!-- Average Cut per Entry -->
     <c-col [xs]="12" [sm]="6" [lg]="3">
-      <div (click)="navigateToMetricDetail('avgCutPerEntry')" style="cursor: pointer;" role="button" [attr.aria-label]="'View details for Average Cut per Entry'">
-        <c-widget-stat-a color="info" class="transparent-widget">
-           <div class="card-value-container d-flex align-items-center">
-            <c-icon name="cilChartPie" size="xl" class="me-2"></c-icon>
-            <span class="fs-3 fw-semibold me-2">{{ summaryStats.avgCutPerEntry | currency:'USD':'symbol':'1.2-2' }}</span>
+      <c-card class="h-100 shadow-sm hover-shadow">
+        <c-card-body class="text-center">
+          <div class="text-muted small mb-1 d-flex justify-content-center align-items-center">
+            Avg Cut per Entry
+            <c-icon name="cilChartPie" size="sm" class="ms-1" cTooltip="Represents the average 'total cut' (commission) per individual 'entry'. Calculated as Total Cut / Total Entries." tooltipPlacement="top"></c-icon>
           </div>
-           <div class="card-title-container">
-            <span class="dashboard-card-title">
-              Avg Cut per Entry
-              <c-icon name="cilChartPie" size="sm" class="ms-1" cTooltip="Represents the average 'total cut' (commission) per individual 'entry' recorded. Calculated as Total Cut / Total Entries." tooltipPlacement="top"></c-icon>
-            </span>
+          <div class="d-flex justify-content-center align-items-center mb-1">
+            <c-icon name="cilChartPie" size="lg" class="me-2 text-info"></c-icon>
+            <span class="fs-3 fw-bold">{{ summaryStats.avgCutPerEntry | currency:'USD':'symbol':'1.2-2' }}</span>
           </div>
-        </c-widget-stat-a>
-      </div>
+          <small class="text-muted">in selected date range</small>
+        </c-card-body>
+      </c-card>
     </c-col>
   </c-row>
-
   <!-- Revenue Over Time Chart -->
   <c-row class="mb-4" *ngIf="!loading">
     <c-col>

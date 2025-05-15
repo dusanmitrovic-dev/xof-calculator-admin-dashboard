@@ -1,56 +1,58 @@
 @use "@coreui/coreui/scss/variables" as cui;
 @use "@coreui/coreui/scss/mixins/color-mode" as color-mode;
 
+// ======================
 // General Dashboard Enhancements
+// ======================
 .dashboard-card-title {
-  font-size: 1rem; // Standardized size for card titles
+  font-size: 1rem;
   font-weight: 500;
-  color: var(--cui-body-color) !important; // Ensure body color by default
-  margin-bottom: 0; // Remove bottom margin as gap will handle spacing
-  display: flex; // Use flex to align title text and info icon
-  align-items: center; // Vertically align title text and info icon
-  flex-grow: 1; // Allow title to take up space
+  color: var(--cui-body-color) !important;
+  margin-bottom: 0;
+  display: flex;
+  align-items: center;
+  flex-grow: 1;
 }
 
 .card-title-container {
-  // Added this container in HTML, now style it
   display: flex;
   align-items: center;
-  flex-grow: 1; // Added flex-grow to make title container take up space
+  flex-grow: 1;
 }
 
 .card-value-container {
-  margin-top: 0; // Remove top margin as gap will handle spacing
-  display: flex; // Keep icon and value/trend inline within this row
-  align-items: center; // Vertically align icon and value/trend
+  margin-top: 0;
+  display: flex;
+  align-items: center;
 }
 
+// ======================
 // Metric Card Specific Styles
+// ======================
 c-widget-stat-a {
-  padding: 1.25rem; // Consistent padding for cards
-  border-radius: var(--cui-border-radius-xl); // Added rounded corners
-  box-shadow: var(--cui-box-shadow); // Added subtle shadow
-  transition: transform 0.2s ease-in-out; // Added hover animation
+  padding: 1.25rem;
+  border-radius: var(--cui-border-radius-xl);
+  box-shadow: var(--cui-box-shadow);
+  transition: transform 0.2s ease-in-out;
 
   &:hover {
-    transform: translateY(-3px); // Slight lift on hover
+    transform: translateY(-3px);
   }
 
   .card-body {
     display: flex;
-    flex-direction: column; // Stack value and title vertically
-    gap: 0.5rem; // Add space between value and title
-    height: 100%; // Ensure card body fills the card height
-    // Removed justify-content: space-between; // Distribute space within the card body
+    flex-direction: column;
+    gap: 0.5rem;
+    height: 100%;
   }
 
-  .text-medium-emphasis { // This is often used for the card title/label
-    color: var(--cui-gray-600) !important; // Subtle grey for descriptions
+  .text-medium-emphasis {
+    color: var(--cui-gray-600) !important;
   }
 
-  .fs-3.fw-semibold { // This is often used for the main value
-    font-size: 2rem !important; // Slightly larger value text
-    font-weight: 700 !important; // Make value bold
+  .fs-3.fw-semibold {
+    font-size: 2rem !important;
+    font-weight: 700 !important;
     color: var(--cui-body-color) !important;
   }
 }
@@ -59,17 +61,19 @@ c-widget-stat-a {
   background-color: transparent !important;
 }
 
-// Trend indicator icon and text enhancements
+// ======================
+// Trend Indicator
+// ======================
 .trend-indicator {
-  font-size: 1rem; // Slightly larger trend text
-  font-weight: 500; // Bolder trend text
-  margin-left: 0.5rem; // Increased margin
-  display: inline-flex; // Align icon and text better
+  font-size: 1rem;
+  font-weight: 500;
+  margin-left: 0.5rem;
+  display: inline-flex;
   align-items: center;
 
   c-icon {
     margin-right: 0.2rem;
-    font-size: 1.2em; // Make icon slightly larger relative to text
+    font-size: 1.2em;
   }
 
   &.positive {
@@ -79,96 +83,105 @@ c-widget-stat-a {
     color: var(--cui-danger);
   }
   &.neutral {
-    color: var(--cui-gray-600); // More distinct neutral color
+    color: var(--cui-gray-600);
   }
 }
 
-// Dark Theme Adjustments
+// ======================
+// Dark Theme Fixes
+// ======================
 @include color-mode.color-mode(dark) {
   .dashboard-card-title {
-    color: var(--cui-gray-200) !important; // Brighter title for dark mode
+    color: var(--cui-gray-200) !important;
+  }
+
+  // Fix white cards in dark mode
+  c-card,
+  c-col > c-card,
+  .kpi-cards-container c-card {
+    background-color: var(--cui-gray-800) !important;
+    color: var(--cui-gray-100) !important;
+    border: 1px solid var(--cui-gray-700);
   }
 
   c-widget-stat-a {
-    background-color: var(--cui-gray-800); // Slightly different shade for cards
-    border: 1px solid var(--cui-gray-700); // Subtle accent border
+    background-color: var(--cui-gray-800);
+    border: 1px solid var(--cui-gray-700);
 
-    .text-medium-emphasis { // Label in dark mode
-      color: var(--cui-gray-400) !important; // Adjusted grey for dark mode
+    .text-medium-emphasis {
+      color: var(--cui-gray-400) !important;
     }
 
-    .fs-3.fw-semibold { // Value in dark mode
+    .fs-3.fw-semibold {
       color: var(--cui-white) !important;
     }
   }
 
   .trend-indicator {
     &.positive {
-      color: var(--cui-green); // CoreUI green variable
+      color: var(--cui-green);
     }
     &.negative {
-      color: var(--cui-red); // CoreUI red variable
+      color: var(--cui-red);
     }
     &.neutral {
       color: var(--cui-gray-500);
     }
   }
 
-  // Ensure text on colored cards (success, warning) has enough contrast in dark mode
-  c-widget-stat-a[color="success"] {
-    .dashboard-card-title, .fs-3.fw-semibold, .trend-indicator {
-      color: var(--cui-white) !important; // Ensure text is white on success bg
-    }
-    .trend-indicator.positive { color: var(--cui-white) !important; }
-    .trend-indicator.negative { color: var(--cui-white) !important; }
-    .trend-indicator.neutral { color: var(--cui-light) !important; }
-  }
-
-  c-widget-stat-a[color="warning"] {
-    .dashboard-card-title, .fs-3.fw-semibold, .trend-indicator {
-      color: var(--cui-black) !important; // Ensure text is dark on warning bg
-    }
-     .trend-indicator.positive { color: var(--cui-black) !important; }
-     .trend-indicator.negative { color: var(--cui-black) !important; }
-     .trend-indicator.neutral { color: var(--cui-black) !important; }
-  }
-  c-widget-stat-a[color="info"] {
-    .dashboard-card-title, .fs-3.fw-semibold, .trend-indicator {
-      color: var(--cui-white) !important; 
-    }
-  }
- c-widget-stat-a[color="primary"] {
-    .dashboard-card-title, .fs-3.fw-semibold, .trend-indicator {
-      color: var(--cui-white) !important; 
-    }
-  }
-}
-
-// Light Theme Adjustments
-@include color-mode.color-mode(light) {
-  c-widget-stat-a {
-    background-color: var(--cui-white); // Explicit white background for cards
-    box-shadow: 0 2px 8px rgba(0,0,0,.1); // Softer and larger shadow for depth
-    border: 1px solid var(--cui-gray-300); // Slightly darker border
-
-    .text-medium-emphasis { // Label in light mode
-        color: var(--cui-gray-700) !important;
-    }
-    .fs-3.fw-semibold { // Value in light mode
-        color: var(--cui-body-color) !important;
+  // Ensure text has contrast on colored cards
+  c-widget-stat-a[color="success"],
+  c-widget-stat-a[color="info"],
+  c-widget-stat-a[color="primary"] {
+    .dashboard-card-title,
+    .fs-3.fw-semibold,
+    .trend-indicator {
+      color: var(--cui-white) !important;
     }
   }
 
-  // Ensure text on warning widget (which is often light yellow) is dark enough
   c-widget-stat-a[color="warning"] {
     .dashboard-card-title,
     .fs-3.fw-semibold,
     .trend-indicator {
-      color: var(--cui-black) !important; // Ensure text is dark on light warning background
+      color: var(--cui-black) !important;
+    }
+  }
+}
+
+// ======================
+// Light Theme Enhancements
+// ======================
+@include color-mode.color-mode(light) {
+  c-widget-stat-a {
+    background-color: var(--cui-white);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border: 1px solid var(--cui-gray-300);
+
+    .text-medium-emphasis {
+      color: var(--cui-gray-700) !important;
+    }
+
+    .fs-3.fw-semibold {
+      color: var(--cui-body-color) !important;
     }
   }
 
-  // Ensure text on success widget is dark enough (CoreUI default is light)
+  c-card,
+  .kpi-cards-container c-card {
+    background-color: var(--cui-white) !important;
+    color: var(--cui-body-color) !important;
+    border: 1px solid var(--cui-gray-300);
+  }
+
+  c-widget-stat-a[color="warning"] {
+    .dashboard-card-title,
+    .fs-3.fw-semibold,
+    .trend-indicator {
+      color: var(--cui-black) !important;
+    }
+  }
+
   c-widget-stat-a[color="success"] {
     .dashboard-card-title,
     .fs-3.fw-semibold,
@@ -178,27 +191,27 @@ c-widget-stat-a {
   }
 }
 
-// Chart specific styling
+// ======================
+// Chart Styling & Layout Enhancements
+// ======================
 .chart-legend-above {
-  text-align: left; // Align with dropdown as requested
+  text-align: left;
   margin-bottom: 1rem;
-  font-weight: 600; // Bolder chart title
-  font-size: 1.2rem; // Larger chart title
+  font-weight: 600;
+  font-size: 1.2rem;
   color: var(--cui-body-color);
 }
 
-// Add padding between summary cards and graph section
 c-row.mb-4:has(c-widget-stat-a) + c-row.mb-4:has(c-card c-chart) {
-  margin-top: 2rem !important; // Add more top margin to the chart row specifically
+  margin-top: 2rem !important;
 }
 
-// General Card Styling (for chart and table)
 c-card {
-  border-radius: var(--cui-border-radius-xl); // Added rounded corners to general cards
-  box-shadow: var(--cui-box-shadow); // Added subtle shadow to general cards
+  border-radius: var(--cui-border-radius-xl);
+  box-shadow: var(--cui-box-shadow);
 }
 
-// Ensure KPI cards in the designated row have equal height
+// Ensure KPI cards have equal height
 .kpi-cards-row c-col > div > c-widget-stat-a > .card {
   height: 100%;
 
@@ -207,11 +220,10 @@ c-card {
     flex-direction: column;
     gap: 0.5rem;
     height: 100%;
-    // Removed justify-content: space-between; // Distribute space within the card body
   }
 }
 
 .dashboard-card-title .ms-1 {
-  margin-top: 0; // Remove margin-top from info icon
-  margin-bottom: 0; // Remove margin-bottom from info icon
+  margin-top: 0;
+  margin-bottom: 0;
 }
