@@ -4,7 +4,7 @@
     <c-col [md]="selectedGuildName ? 6 : 9"> <!-- Adjust column span based on guild name presence -->
       <h4 *ngIf="selectedGuildName" class="mb-0 guild-name-title">Guild: {{ selectedGuildName }}</h4>
     </c-col>
-    <c-col [md]="selectedGuildName ? 6 : 3" class="text-md-start"> <!-- Changed to text-md-start and adjusted span -->
+    <c-col [md]="selectedGuildName ? 6 : 3" class="text-md-end"> <!-- Changed to text-md-end for right alignment -->
       <c-dropdown class="dashboard-filter-dropdown">
         <button cButton cDropdownToggle color="secondary">
           {{ selectedDateRangeLabel }}
