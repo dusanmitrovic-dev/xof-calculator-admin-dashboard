@@ -16,6 +16,7 @@
   // Added this container in HTML, now style it
   display: flex;
   align-items: center;
+  flex-grow: 1; // Added flex-grow to make title container take up space
 }
 
 .card-value-container {
@@ -40,7 +41,7 @@ c-widget-stat-a {
     flex-direction: column; // Stack value and title vertically
     gap: 0.5rem; // Add space between value and title
     height: 100%; // Ensure card body fills the card height
-    justify-content: space-between; // Distribute space within the card body
+    // Removed justify-content: space-between; // Distribute space within the card body
   }
 
   .text-medium-emphasis { // This is often used for the card title/label
@@ -206,7 +207,7 @@ c-card {
     flex-direction: column;
     gap: 0.5rem;
     height: 100%;
-    justify-content: space-between; // Distribute space within the card body
+    // Removed justify-content: space-between; // Distribute space within the card body
   }
 }
 
