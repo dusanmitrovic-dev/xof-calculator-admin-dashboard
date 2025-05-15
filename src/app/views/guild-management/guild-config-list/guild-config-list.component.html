@@ -109,13 +109,12 @@
                   </c-card-header>
                   <c-card-body>
                     @if (guildConfig.roles && objectKeys(guildConfig.roles).length > 0) {
-                      <ul class="list-unstyled mb-0">
-                        @for (roleId of objectKeys(guildConfig.roles); track roleId) {
-                          <li class="border-bottom pb-2 mb-2">
-                             Role ID <code>{{ roleId }}</code>: <strong>{{ guildConfig.roles[roleId] }}</strong>
-                          </li>
-                        }
-                      </ul>
+                      @for (roleId of objectKeys(guildConfig.roles); track roleId) {
+                        <c-row class="mb-2 border-bottom pb-2 align-items-center">
+                           <c-col sm="3" class="fw-semibold text-muted">Role ID <code>{{ roleId }}</code></c-col>
+                           <c-col sm="9"><strong>{{ guildConfig.roles[roleId] }}</strong></c-col>
+                        </c-row>
+                      }
                     } @else {
                       <div class="text-center text-muted py-3">
                         <svg cIcon name="cilBan" size="xl" class="mb-2"></svg>
