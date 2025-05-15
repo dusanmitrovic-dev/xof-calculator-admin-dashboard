@@ -41,7 +41,7 @@
                   <c-card-body>
                     <c-row class="align-items-center">
                       <c-col sm="3" class="fw-semibold text-muted">Guild ID</c-col>
-                      <c-col sm="9"><strong class="text-info">{{ guildConfig.guild_id }}</strong></c-col>
+                      <c-col sm="9"><strong>{{ guildConfig.guild_id }}</strong></c-col>
                     </c-row>
                   </c-card-body>
                 </c-card>
@@ -112,7 +112,7 @@
                       <ul class="list-unstyled mb-0">
                         @for (roleId of objectKeys(guildConfig.roles); track roleId) {
                           <li class="border-bottom pb-2 mb-2">
-                             Role ID <code class="text-info">{{ roleId }}</code>: <strong class="text-success">{{ guildConfig.roles[roleId] }}</strong>
+                             Role ID <code>{{ roleId }}</code>: <strong>{{ guildConfig.roles[roleId] }}</strong>
                           </li>
                         }
                       </ul>
@@ -145,24 +145,21 @@
 
                       <dt class="col-sm-3 fw-semibold text-muted">Ephemeral Responses</dt>
                       <dd class="col-sm-9">
-                        <span class="badge" [ngClass]="guildConfig.display_settings.ephemeral_responses ? 'bg-success' : 'bg-secondary'">
-                          <svg cIcon [name]="guildConfig.display_settings.ephemeral_responses ? 'cilCheckCircle' : 'cilXCircle'" size="sm" class="me-1"></svg>
+                        <span class="border rounded py-1 px-2 d-inline-block text-body">
                           {{ guildConfig.display_settings.ephemeral_responses ? 'Yes' : 'No' }}
                         </span>
                       </dd>
 
                       <dt class="col-sm-3 fw-semibold text-muted">Show Average</dt>
                       <dd class="col-sm-9">
-                        <span class="badge" [ngClass]="guildConfig.display_settings.show_average ? 'bg-success' : 'bg-secondary'">
-                          <svg cIcon [name]="guildConfig.display_settings.show_average ? 'cilCheckCircle' : 'cilXCircle'" size="sm" class="me-1"></svg>
+                        <span class="border rounded py-1 px-2 d-inline-block text-body">
                           {{ guildConfig.display_settings.show_average ? 'Yes' : 'No' }}
                         </span>
                       </dd>
 
                       <dt class="col-sm-3 fw-semibold text-muted">Show IDs</dt>
                       <dd class="col-sm-9">
-                        <span class="badge" [ngClass]="guildConfig.display_settings.show_ids ? 'bg-success' : 'bg-secondary'">
-                          <svg cIcon [name]="guildConfig.display_settings.show_ids ? 'cilCheckCircle' : 'cilXCircle'" size="sm" class="me-1"></svg>
+                        <span class="border rounded py-1 px-2 d-inline-block text-body">
                           {{ guildConfig.display_settings.show_ids ? 'Yes' : 'No' }}
                         </span>
                       </dd>
@@ -192,8 +189,8 @@
                         <tbody>
                           @for (rule of guildConfig.bonus_rules; track $index) {
                             <tr>
-                              <td><strong class="text-success">{{ rule.amount | currency }}</strong></td>
-                              <td><strong class="text-primary">{{ rule.from | currency }}</strong> - <strong class="text-primary">{{ rule.to | currency }}</strong></td>
+                              <td><strong>{{ rule.amount | currency }}</strong></td>
+                              <td><strong>{{ rule.from | currency }}</strong> - <strong>{{ rule.to | currency }}</strong></td>
                             </tr>
                           }
                         </tbody>
@@ -222,7 +219,7 @@
                       <ul class="list-unstyled mb-0">
                         @for (roleId of objectKeys(guildConfig.commission_settings.roles); track roleId) {
                           <li class="border-bottom pb-2 mb-2">
-                             Role ID <code class="text-info">{{ roleId }}</code>: <strong class="text-success">{{ guildConfig.commission_settings.roles[roleId].commission_percentage }}%</strong>
+                             Role ID <code>{{ roleId }}</code>: <strong>{{ guildConfig.commission_settings.roles[roleId].commission_percentage }}%</strong>
                           </li>
                         }
                       </ul>
@@ -250,12 +247,12 @@
                       <ul class="list-unstyled mb-0">
                         @for (userId of objectKeys(guildConfig.commission_settings.users); track userId) {
                           <li class="border-bottom pb-2 mb-2">
-                             User ID <code class="text-info">{{ userId }}</code>:
+                             User ID <code>{{ userId }}</code>:
                              @if (guildConfig.commission_settings.users[userId].hourly_rate != null) {
                                <span class="ms-2"> Hourly Rate: <strong>{{ guildConfig.commission_settings.users[userId].hourly_rate | currency }}</strong></span>
                              }
                              @if (guildConfig.commission_settings.users[userId].override_role) {
-                               <span class="badge bg-warning text-dark ms-2">Overrides Role %</span>
+                               <span class="border rounded py-1 px-2 d-inline-block text-body ms-2">Overrides Role %</span>
                              }
                           </li>
                         }
