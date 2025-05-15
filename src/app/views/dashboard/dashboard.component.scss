@@ -6,13 +6,20 @@
   font-size: 1rem; // Standardized size for card titles
   font-weight: 500;
   color: var(--cui-body-color) !important; // Ensure body color by default
-  margin-bottom: 1rem; // Increased space below title from 0.5rem to 1rem
-  display: block !important; // Force display
-  visibility: visible !important; // Force visibility
+  margin-bottom: 0; // Remove bottom margin as gap will handle spacing
+  display: flex; // Use flex to align title text and info icon
+  align-items: center; // Vertically align title text and info icon
+  flex-grow: 1; // Allow title to take up space
+}
+
+.card-title-container {
+  // Added this container in HTML, now style it
+  display: flex;
+  align-items: center;
 }
 
 .card-value-container {
-  margin-top: 0.5rem; // Add space above the value row
+  margin-top: 0; // Remove top margin as gap will handle spacing
   display: flex; // Keep icon and value/trend inline within this row
   align-items: center; // Vertically align icon and value/trend
 }
@@ -28,7 +35,15 @@ c-widget-stat-a {
     transform: translateY(-3px); // Slight lift on hover
   }
 
-  .text-medium-emphasis { // This is often used for the card title/label (already handled by .dashboard-card-title)
+  .card-body {
+    display: flex;
+    flex-direction: column; // Stack value and title vertically
+    gap: 0.5rem; // Add space between value and title
+    height: 100%; // Ensure card body fills the card height
+    justify-content: space-between; // Distribute space within the card body
+  }
+
+  .text-medium-emphasis { // This is often used for the card title/label
     color: var(--cui-gray-600) !important; // Subtle grey for descriptions
   }
 
@@ -37,8 +52,6 @@ c-widget-stat-a {
     font-weight: 700 !important; // Make value bold
     color: var(--cui-body-color) !important;
   }
-
-  // Removed the old .d-flex.align-items-center rule that was causing issues with the new structure
 }
 
 .transparent-widget {
@@ -187,4 +200,17 @@ c-card {
 // Ensure KPI cards in the designated row have equal height
 .kpi-cards-row c-col > div > c-widget-stat-a > .card {
   height: 100%;
+
+  .card-body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    height: 100%;
+    justify-content: space-between; // Distribute space within the card body
+  }
+}
+
+.dashboard-card-title .ms-1 {
+  margin-top: 0; // Remove margin-top from info icon
+  margin-bottom: 0; // Remove margin-bottom from info icon
 }
