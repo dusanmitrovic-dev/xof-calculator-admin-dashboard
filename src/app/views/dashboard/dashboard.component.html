@@ -28,7 +28,7 @@
   </div>
 
   <!-- KPI Cards -->
-  <c-row class="mb-4 align-items-stretch" *ngIf="!loading">
+  <c-row class="mb-4 align-items-stretch kpi-cards-row" *ngIf="!loading">
     <c-col [xs]="12" [sm]="6" [lg]="3">
       <div (click)="navigateToMetricDetail('totalGrossRevenue')" style="cursor: pointer;" role="button" [attr.aria-label]="'View details for Total Gross Revenue'">
         <c-widget-stat-a color="info" class="transparent-widget">

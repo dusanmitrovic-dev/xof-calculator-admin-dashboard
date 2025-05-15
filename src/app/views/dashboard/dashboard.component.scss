@@ -183,3 +183,8 @@ c-card {
   border-radius: var(--cui-border-radius-xl); // Added rounded corners to general cards
   box-shadow: var(--cui-box-shadow); // Added subtle shadow to general cards
 }
+
+// Ensure KPI cards in the designated row have equal height
+.kpi-cards-row c-col > div > c-widget-stat-a > .card {
+  height: 100%;
+}
