@@ -181,15 +181,15 @@
                       <table cTable class="table table-striped table-hover mb-0">
                         <thead>
                           <tr>
-                            <th>Bonus Amount</th>
                             <th>Revenue Range</th>
+                            <th>Bonus Amount</th>
                           </tr>
                         </thead>
                         <tbody>
                           @for (rule of guildConfig.bonus_rules; track $index) {
                             <tr>
-                              <td><strong>{{ rule.amount | currency }}</strong></td>
                               <td><strong>{{ rule.from | currency }}</strong> - <strong>{{ rule.to | currency }}</strong></td>
+                              <td><strong>{{ rule.amount | currency }}</strong></td>
                             </tr>
                           }
                         </tbody>
