@@ -15,3 +15,10 @@
 .select-week .calendar-row.current {
   cursor: pointer;
 }
+
+// Style the dashboard filter dropdown button
+.dashboard-filter-dropdown .btn-secondary, .dashboard-filter-dropdown .btn {
+  background-color: transparent !important;
+  border: 1px solid var(--cui-border-color) !important; /* Add a border using a theme-aware color */
+  color: var(--cui-body-color) !important; /* Set text color using a theme-aware color */
+}
