@@ -56,7 +56,7 @@
                       <c-col sm="3" class="fw-semibold text-muted">Models</c-col>
                       <c-col sm="6">
                         <ng-container *ngIf="guildConfig.models && guildConfig.models.length > 0; else noModels">
-                          <span *ngFor="let model of guildConfig.models" class="badge bg-info me-1 mb-1">{{ model }}</span>
+                          <span *ngFor="let model of guildConfig.models" class="border rounded py-1 px-2 me-1 mb-1 d-inline-block text-body">{{ model }}</span>
                         </ng-container>
                         <ng-template #noModels><span class="text-muted">-</span></ng-template>
                       </c-col>
@@ -70,7 +70,7 @@
                       <c-col sm="3" class="fw-semibold text-muted">Shifts</c-col>
                       <c-col sm="6">
                         <ng-container *ngIf="guildConfig.shifts && guildConfig.shifts.length > 0; else noShifts">
-                          <span *ngFor="let shift of guildConfig.shifts" class="badge bg-info me-1 mb-1">{{ shift }}</span>
+                          <span *ngFor="let shift of guildConfig.shifts" class="border rounded py-1 px-2 me-1 mb-1 d-inline-block text-body">{{ shift }}</span>
                         </ng-container>
                         <ng-template #noShifts><span class="text-muted">-</span></ng-template>
                       </c-col>
@@ -84,7 +84,7 @@
                       <c-col sm="3" class="fw-semibold text-muted">Periods</c-col>
                       <c-col sm="6">
                         <ng-container *ngIf="guildConfig.periods && guildConfig.periods.length > 0; else noPeriods">
-                          <span *ngFor="let period of guildConfig.periods" class="badge bg-info me-1 mb-1">{{ period }}</span>
+                          <span *ngFor="let period of guildConfig.periods" class="border rounded py-1 px-2 me-1 mb-1 d-inline-block text-body">{{ period }}</span>
                         </ng-container>
                         <ng-template #noPeriods><span class="text-muted">-</span></ng-template>
                       </c-col>
@@ -222,7 +222,7 @@
                       <ul class="list-unstyled mb-0">
                         @for (roleId of objectKeys(guildConfig.commission_settings.roles); track roleId) {
                           <li class="border-bottom pb-2 mb-2">
-                             Role ID <code class="text-info">{{ roleId }}</code>: <strong>{{ guildConfig.commission_settings.roles[roleId].commission_percentage }}%</strong>
+                             Role ID <code class="text-info">{{ roleId }}</code>: <strong class="text-success">{{ guildConfig.commission_settings.roles[roleId].commission_percentage }}%</strong>
                           </li>
                         }
                       </ul>
