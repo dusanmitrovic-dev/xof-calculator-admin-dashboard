@@ -101,7 +101,6 @@
                   </c-card-body>
                 </c-card>
 
-                <!-- Basic Definitions Card -->
                 <c-card class="mb-3 shadow-sm">
                   <c-card-header>
                     Basic Definitions
@@ -243,7 +242,7 @@
                     </div>
                   </c-card-header>
                   <c-card-body>
-                    @if (guildConfig.commission_settings.roles && objectKeys(guildConfig.commission_settings.roles).length > 0) {
+                    @if (guildConfig.commission_settings?.roles && objectKeys(guildConfig.commission_settings.roles).length > 0) {
                       <ul class="list-unstyled mb-0">
                         @for (roleId of objectKeys(guildConfig.commission_settings.roles); track roleId) {
                           <li class="border-bottom pb-2 mb-2">
@@ -271,7 +270,7 @@
                     </div>
                   </c-card-header>
                   <c-card-body>
-                    @if (guildConfig.commission_settings.users && objectKeys(guildConfig.commission_settings.users).length > 0) {
+                    @if (guildConfig.commission_settings?.users && objectKeys(guildConfig.commission_settings.users).length > 0) {
                       <ul class="list-unstyled mb-0">
                         @for (userId of objectKeys(guildConfig.commission_settings.users); track userId) {
                           <li class="border-bottom pb-2 mb-2">
