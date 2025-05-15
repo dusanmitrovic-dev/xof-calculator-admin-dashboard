@@ -46,96 +46,6 @@
                   </c-card-body>
                 </c-card>
 
-                <!-- Basic Definitions Card -->
-                <c-card class="mb-3 shadow-sm">
-                  <c-card-header>
-                    Basic Definitions
-                  </c-card-header>
-                  <c-card-body>
-                    <c-row class="mb-2 border-bottom pb-2 align-items-center">
-                      <c-col sm="3" class="fw-semibold text-muted">Models</c-col>
-                      <c-col sm="6">
-                        <ng-container *ngIf="guildConfig.models && guildConfig.models.length > 0; else noModels">
-                          <span *ngFor="let model of guildConfig.models" class="border rounded py-1 px-2 me-1 mb-1 d-inline-block text-body">{{ model }}</span>
-                        </ng-container>
-                        <ng-template #noModels><span class="text-muted">-</span></ng-template>
-                      </c-col>
-                      <c-col sm="3" class="text-end">
-                        <button cButton color="primary" variant="outline" size="sm" (click)="openEditConfigModal('models')" [disabled]="loadingConfig">
-                          <svg cIcon name="cilPencil" size="sm"></svg> Modify
-                        </button>
-                      </c-col>
-                    </c-row>
-                    <c-row class="mb-2 border-bottom pb-2 align-items-center">
-                      <c-col sm="3" class="fw-semibold text-muted">Shifts</c-col>
-                      <c-col sm="6">
-                        <ng-container *ngIf="guildConfig.shifts && guildConfig.shifts.length > 0; else noShifts">
-                          <span *ngFor="let shift of guildConfig.shifts" class="border rounded py-1 px-2 me-1 mb-1 d-inline-block text-body">{{ shift }}</span>
-                        </ng-container>
-                        <ng-template #noShifts><span class="text-muted">-</span></ng-template>
-                      </c-col>
-                      <c-col sm="3" class="text-end">
-                        <button cButton color="primary" variant="outline" size="sm" (click)="openEditConfigModal('shifts')" [disabled]="loadingConfig">
-                          <svg cIcon name="cilPencil" size="sm"></svg> Modify
-                        </button>
-                      </c-col>
-                    </c-row>
-                    <c-row class="mb-0 align-items-center"> 
-                      <c-col sm="3" class="fw-semibold text-muted">Periods</c-col>
-                      <c-col sm="6">
-                        <ng-container *ngIf="guildConfig.periods && guildConfig.periods.length > 0; else noPeriods">
-                          <span *ngFor="let period of guildConfig.periods" class="border rounded py-1 px-2 me-1 mb-1 d-inline-block text-body">{{ period }}</span>
-                        </ng-container>
-                        <ng-template #noPeriods><span class="text-muted">-</span></ng-template>
-                      </c-col>
-                      <c-col sm="3" class="text-end">
-                        <button cButton color="primary" variant="outline" size="sm" (click)="openEditConfigModal('periods')" [disabled]="loadingConfig">
-                          <svg cIcon name="cilPencil" size="sm"></svg> Modify
-                        </button>
-                      </c-col>
-                    </c-row>
-                  </c-card-body>
-                </c-card>
-
-                <!-- Top-Level Roles Card -->
-                <c-card class="mb-3 shadow-sm">
-                  <c-card-header>
-                    General Role Settings (Numeric Values)
-                    <div class="float-end">
-                      <button cButton color="primary" variant="outline" size="sm" (click)="openEditConfigModal('top_level_roles')" [disabled]="loadingConfig">
-                        <svg cIcon name="cilTags" size="sm"></svg> Modify
-                      </button>
-                    </div>
-                  </c-card-header>
-                  <c-card-body>
-                    @if (guildConfig.roles && objectKeys(guildConfig.roles).length > 0) {
-                      <table class="table table-striped mb-0">
-                        <thead>
-                          <tr>
-                            <th scope="col">#</th>
-                            <th scope="col">Role ID</th>
-                            <th scope="col">Value</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          @for (roleId of objectKeys(guildConfig.roles); track $index) {
-                            <tr>
-                              <th scope="row">{{ $index + 1 }}</th>
-                              <td><code>{{ roleId }}</code></td>
-                              <td><strong>{{ guildConfig.roles[roleId] }}</strong></td>
-                            </tr>
-                          }
-                        </tbody>
-                      </table>
-                    } @else {
-                      <div class="text-center text-muted py-3">
-                        <svg cIcon name="cilBan" size="xl" class="mb-2"></svg>
-                        <p>No general role settings defined.</p>
-                      </div>
-                    }
-                  </c-card-body>
-                </c-card>
-
                 <!-- Display Settings Card - Now includes Agency and Bot Name -->
                 <c-card class="mb-3 shadow-sm">
                   <c-card-header>
@@ -191,6 +101,57 @@
                   </c-card-body>
                 </c-card>
 
+                <!-- Basic Definitions Card -->
+                <c-card class="mb-3 shadow-sm">
+                  <c-card-header>
+                    Basic Definitions
+                  </c-card-header>
+                  <c-card-body>
+                    <c-row class="mb-2 border-bottom pb-2 align-items-center">
+                      <c-col sm="3" class="fw-semibold text-muted">Models</c-col>
+                      <c-col sm="6">
+                        <ng-container *ngIf="guildConfig.models && guildConfig.models.length > 0; else noModels">
+                          <span *ngFor="let model of guildConfig.models" class="border rounded py-1 px-2 me-1 mb-1 d-inline-block text-body">{{ model }}</span>
+                        </ng-container>
+                        <ng-template #noModels><span class="text-muted">-</span></ng-template>
+                      </c-col>
+                      <c-col sm="3" class="text-end">
+                        <button cButton color="primary" variant="outline" size="sm" (click)="openEditConfigModal('models')" [disabled]="loadingConfig">
+                          <svg cIcon name="cilPencil" size="sm"></svg> Modify
+                        </button>
+                      </c-col>
+                    </c-row>
+                    <c-row class="mb-2 border-bottom pb-2 align-items-center">
+                      <c-col sm="3" class="fw-semibold text-muted">Shifts</c-col>
+                      <c-col sm="6">
+                        <ng-container *ngIf="guildConfig.shifts && guildConfig.shifts.length > 0; else noShifts">
+                          <span *ngFor="let shift of guildConfig.shifts" class="border rounded py-1 px-2 me-1 mb-1 d-inline-block text-body">{{ shift }}</span>
+                        </ng-container>
+                        <ng-template #noShifts><span class="text-muted">-</span></ng-template>
+                      </c-col>
+                      <c-col sm="3" class="text-end">
+                        <button cButton color="primary" variant="outline" size="sm" (click)="openEditConfigModal('shifts')" [disabled]="loadingConfig">
+                          <svg cIcon name="cilPencil" size="sm"></svg> Modify
+                        </button>
+                      </c-col>
+                    </c-row>
+                    <c-row class="mb-0 align-items-center"> 
+                      <c-col sm="3" class="fw-semibold text-muted">Periods</c-col>
+                      <c-col sm="6">
+                        <ng-container *ngIf="guildConfig.periods && guildConfig.periods.length > 0; else noPeriods">
+                          <span *ngFor="let period of guildConfig.periods" class="border rounded py-1 px-2 me-1 mb-1 d-inline-block text-body">{{ period }}</span>
+                        </ng-container>
+                        <ng-template #noPeriods><span class="text-muted">-</span></ng-template>
+                      </c-col>
+                      <c-col sm="3" class="text-end">
+                        <button cButton color="primary" variant="outline" size="sm" (click)="openEditConfigModal('periods')" [disabled]="loadingConfig">
+                          <svg cIcon name="cilPencil" size="sm"></svg> Modify
+                        </button>
+                      </c-col>
+                    </c-row>
+                  </c-card-body>
+                </c-card>
+
                 <!-- Bonus Rules Card -->
                 <c-card class="mb-3 shadow-sm">
                   <c-card-header>
@@ -227,6 +188,45 @@
                       <div class="text-center text-muted py-3">
                         <svg cIcon name="cilBan" size="xl" class="mb-2"></svg>
                         <p>No bonus rules defined.</p>
+                      </div>
+                    }
+                  </c-card-body>
+                </c-card>
+
+                <!-- Top-Level Roles Card -->
+                <c-card class="mb-3 shadow-sm">
+                  <c-card-header>
+                    General Role Settings (Numeric Values)
+                    <div class="float-end">
+                      <button cButton color="primary" variant="outline" size="sm" (click)="openEditConfigModal('top_level_roles')" [disabled]="loadingConfig">
+                        <svg cIcon name="cilTags" size="sm"></svg> Modify
+                      </button>
+                    </div>
+                  </c-card-header>
+                  <c-card-body>
+                    @if (guildConfig.roles && objectKeys(guildConfig.roles).length > 0) {
+                      <table class="table table-striped mb-0">
+                        <thead>
+                          <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">Role ID</th>
+                            <th scope="col">Value</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          @for (roleId of objectKeys(guildConfig.roles); track $index) {
+                            <tr>
+                              <th scope="row">{{ $index + 1 }}</th>
+                              <td><code>{{ roleId }}</code></td>
+                              <td><strong>{{ guildConfig.roles[roleId] }}</strong></td>
+                            </tr>
+                          }
+                        </tbody>
+                      </table>
+                    } @else {
+                      <div class="text-center text-muted py-3">
+                        <svg cIcon name="cilBan" size="xl" class="mb-2"></svg>
+                        <p>No general role settings defined.</p>
                       </div>
                     }
                   </c-card-body>
