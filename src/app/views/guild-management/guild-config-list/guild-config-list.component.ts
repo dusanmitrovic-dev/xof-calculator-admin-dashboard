@@ -51,12 +51,12 @@ export class GuildConfigListComponent implements OnInit, OnDestroy {
 
   // Component State
   selectedGuildId$: Observable<string | null>;
-  currentGuildId: string | null = null; 
+  currentGuildId: string | null = null;
   private destroy$ = new Subject<void>();
 
   // Guild Config State
   guildConfig: GuildConfig | null = null;
-  loadingConfig: boolean = false; 
+  loadingConfig: boolean = false;
   configError: string | null = null;
 
   // Modal State
@@ -64,14 +64,14 @@ export class GuildConfigListComponent implements OnInit, OnDestroy {
   currentEditSection: string = 'full'; // Default to 'full' for creating or general edit
 
   constructor(
-    private router: Router, 
+    private router: Router,
     private guildConfigService: GuildConfigService,
-    private authService: AuthService 
+    private authService: AuthService
   ) {
     this.selectedGuildId$ = this.guildConfigService.selectedGuildId$;
   }
 
-  objectKeys = Object.keys; 
+  objectKeys = Object.keys;
 
   ngOnInit(): void {
     console.log('GuildConfigListComponent: Initializing...');
@@ -79,8 +79,8 @@ export class GuildConfigListComponent implements OnInit, OnDestroy {
       takeUntil(this.destroy$),
       tap(guildId => {
         console.log('GuildConfigListComponent: Selected Guild ID changed:', guildId);
-        this.currentGuildId = guildId; 
-        this.resetState(); 
+        this.currentGuildId = guildId;
+        this.resetState();
         if (guildId) {
           this.loadDataForGuild(guildId);
         } else {
@@ -105,7 +105,7 @@ export class GuildConfigListComponent implements OnInit, OnDestroy {
   resetState(): void {
       console.log('GuildConfigListComponent: Resetting state.');
       this.guildConfig = null;
-      this.loadingConfig = true; 
+      this.loadingConfig = true;
       this.configError = null;
       this.isConfigEditModalVisible = false;
       this.currentEditSection = 'full'; // Reset edit section
@@ -126,8 +126,8 @@ export class GuildConfigListComponent implements OnInit, OnDestroy {
       error: (err: any) => {
         console.error(`GuildConfigListComponent: Error loading config for guild ${id}:`, err);
         if (err.status === 404 || err?.message?.includes('not found')) {
-             this.configError = null; 
-             this.guildConfig = null; 
+             this.configError = null;
+             this.guildConfig = null;
              console.log(`GuildConfigListComponent: No config found for guild ${id}.`);
         } else {
             this.configError = err.message || `Failed to load configuration for guild ${id}.`;
@@ -138,14 +138,30 @@ export class GuildConfigListComponent implements OnInit, OnDestroy {
   }
 
   openEditConfigModal(section: string = 'full'): void {
-    if (!this.currentGuildId) return;
+    if (!this.currentGuildId) {
+      console.error("Cannot open config edit modal - Guild ID missing.");
+      this.configError = "Cannot edit config: Select a guild first.";
+      return;
+    }
+
+    // Ensure guildConfig is loaded before attempting to open modal for a specific section
+    if (!this.guildConfig && section !== 'full') {
+       console.warn(`Attempted to open section '${section}' without loaded guild config.`);
+       // Optionally show a loading state or error, or load the config first
+       // For now, we'll rely on prepareFormForMode handling null config
+    }
+
     this.currentEditSection = section;
-    this.isConfigEditModalVisible = true;
+    // Pass the currently loaded guildConfig to the modal component
+    // This ensures the modal component receives existing data when opened for a specific section
+    this.isConfigEditModalVisible = true; // This triggers the modal's ngOnChanges
+
     console.log(`GuildConfigListComponent: Opening config edit modal for guild ${this.currentGuildId}, section: ${section}`);
   }
 
+
   deleteGuildConfig(): void {
-    if (!this.currentGuildId) { 
+    if (!this.currentGuildId) {
         console.error("Cannot delete config - Guild ID missing.");
         this.configError = "Cannot delete config: Select a guild first.";
         return;
@@ -172,7 +188,8 @@ export class GuildConfigListComponent implements OnInit, OnDestroy {
     this.isConfigEditModalVisible = false;
     if (savedConfig && this.currentGuildId) {
       console.log('GuildConfigListComponent: Config saved event received. Reloading config.');
-      this.loadGuildConfig(this.currentGuildId); 
+      // Reload the full config after saving any section
+      this.loadGuildConfig(this.currentGuildId);
     } else {
       console.log('GuildConfigListComponent: Config modal closed without saving.');
     }

@@ -334,12 +334,13 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
   }
 
   private setStringArrayData(formArray: FormArray, data: string[] | undefined): void {
-      formArray.clear();
-      (data || []).forEach(item_name => {
-          if (typeof item_name === 'string') { 
-            formArray.push(this.fb.control(item_name, Validators.required));
-          }
-      });
+    console.log('GuildConfigEditModalComponent: setStringArrayData called with data:', data);
+    formArray.clear();
+    (data || []).forEach(item_name => {
+        // Removed the typeof check to ensure all items are attempted to be added
+        formArray.push(this.fb.control(item_name, Validators.required));
+    });
+    console.log('GuildConfigEditModalComponent: setStringArrayData - FormArray after patching:', formArray.controls);
   }
 
   private patchBonusRules(rules: BonusRule[] | undefined): void {
