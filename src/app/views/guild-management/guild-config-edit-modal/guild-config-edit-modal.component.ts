@@ -484,6 +484,10 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
     }
   }
 
+  addRoleCommission(newRoleCommissionInput: HTMLInputElement): void {
+    // TODO: Implement the logic for adding a role commission
+  }
+
   saveChanges(): void {
     this.submitAttempted = true;
     this.configForm.markAllAsTouched(); 
@@ -569,7 +573,7 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
           const newCommissionUsers = this.prepareCommissionUsersPayload(formValue.commission_settings.users);
           const fullCommissionSettingsPayload: CommissionSettings = {
             roles: (this.originalConfig?.commission_settings?.roles || {}), 
-            users: newCommissionUsers
+            users: newCommissionUsers\
           };
           saveObservable = this.guildConfigService.updateCommissionSettings(effectiveGuildId, fullCommissionSettingsPayload);
           break;
