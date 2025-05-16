@@ -226,18 +226,34 @@
               <ng-container *ngIf="editSection === 'full' || editSection === 'commission_settings_roles'">
                 <div class="mb-3">
                   <h6 class="fw-semibold mb-1">By Role (%)</h6>
+                  <div class="mb-3">
+                    <label cLabel for="newRoleCommissionId" class="fw-semibold">Add Role Commission</label>
+                    <div class="input-group">
+                      <input cFormControl type="text" id="newRoleCommissionId" placeholder="Enter Role ID" #newRoleCommissionInput 
+                             (blur)="addRoleCommission(newRoleCommissionInput)"
+                             (keydown.enter)="addRoleCommission(newRoleCommissionInput); $event.preventDefault()">
+                      <button cButton type="button" color="success" variant="outline" (click)="addRoleCommission(newRoleCommissionInput)">
+                        <svg cIcon name="cilPlus" size="sm"></svg> Add Role
+                      </button>
+                    </div>
+                  </div>
                   <div formGroupName="roles">
                     <div *ngIf="commissionRoles && objectKeys(commissionRoles.controls).length > 0; else noCommissionRolesDefined">
                       <c-row *ngFor="let roleId of objectKeys(commissionRoles.controls)" class="g-2 mb-2 align-items-center p-2 border rounded" [formGroupName]="roleId">
                         <c-col sm="4">
                           <label class="col-form-label text-truncate">Role ID: <code class="text-primary">{{ roleId }}</code></label>
                         </c-col>
-                        <c-col sm="8">
+                        <c-col sm="7">
                           <div class="input-group">
                             <input cFormControl type="number" formControlName="commission_percentage" required min="0" max="100">
                             <span class="input-group-text">%</span>
                           </div>
                         </c-col>
+                         <c-col sm="1" class="text-end">
+                           <button cButton type="button" color="danger" variant="ghost" size="sm" class="p-1" (click)="removeRoleCommission(roleId)" title="Remove Role Commission">
+                             <svg cIcon name="cilTrash" size="lg"></svg>
+                           </button>
+                         </c-col>
                       </c-row>
                     </div>
                     <ng-template #noCommissionRolesDefined><p class="text-muted">No role commissions defined.</p></ng-template>
