@@ -317,7 +317,7 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
   }
 
   private patchForm(config: GuildConfig | null): void {
-    if (!config) { 
+    if (!config) {
         this.configForm.reset();
         this.clearAllFormArraysAndGroups();
         this.patchTopLevelRoles(undefined);
@@ -474,6 +474,14 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
   removeBonusRule(index: number): void {
     this.bonus_rules.removeAt(index);
     this.bonus_rules.markAsDirty();
+  }
+
+  removeRoleCommission(roleId: string): void {
+    const rolesGroup = this.commissionRoles;
+    if (rolesGroup.get(roleId)) {
+      rolesGroup.removeControl(roleId);
+      rolesGroup.markAsDirty();
+    }
   }
 
   saveChanges(): void {
