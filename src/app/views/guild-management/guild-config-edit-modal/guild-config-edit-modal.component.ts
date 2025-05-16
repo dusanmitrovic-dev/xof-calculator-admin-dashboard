@@ -221,25 +221,43 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
     this.clearAllFormArraysAndGroups();
 
     if (this.isEditMode && this.guildConfig) { // Check this.guildConfig for initial mode detection
-      this.originalConfig = JSON.parse(JSON.stringify(this.guildConfig)); 
+      this.originalConfig = JSON.parse(JSON.stringify(this.guildConfig));
       // Set currentDisplaySettings based on originalConfig, which is the snapshot from DB for this session
       this.currentDisplaySettings = {
         ...this.getDefaultDisplaySettings(),
-        ...(this.originalConfig?.display_settings || {}), 
+        ...(this.originalConfig?.display_settings || {}),
       };
-      this.patchForm(this.originalConfig); 
-      this.configForm.get('guild_id')?.setValue(this.originalConfig?.guild_id, { emitEvent: false });
-      this.configForm.get('guild_id')?.disable();
+
+      // Add a small delay before patching the form specifically for 'models' section
+      if (this.editSection === 'models') {
+        console.log('GuildConfigEditModalComponent: Delaying patchForm for models section.');
+        setTimeout(() => {
+          this.patchForm(this.originalConfig);
+          this.configForm.get('guild_id')?.setValue(this.originalConfig?.guild_id, { emitEvent: false });
+          this.configForm.get('guild_id')?.disable();
+          this.updateTitle();
+          this.setConditionalValidators();
+          this.changeDetectorRef.detectChanges();
+        }, 50); // Short delay
+      } else {
+        this.patchForm(this.originalConfig);
+        this.configForm.get('guild_id')?.setValue(this.originalConfig?.guild_id, { emitEvent: false });
+        this.configForm.get('guild_id')?.disable();
+        this.updateTitle();
+        this.setConditionalValidators();
+        this.changeDetectorRef.detectChanges();
+      }
+
     } else {
       this.originalConfig = null;
       this.currentDisplaySettings = this.getDefaultDisplaySettings();
-      this.patchForm(null); 
+      this.patchForm(null);
       this.configForm.get('guild_id')?.enable();
       this.configForm.get('guild_id')?.setValue(this.guildId || '');
+      this.updateTitle();
+      this.setConditionalValidators();
+      this.changeDetectorRef.detectChanges();
     }
-    this.updateTitle(); 
-    this.setConditionalValidators();
-    this.changeDetectorRef.detectChanges();
   }
 
   private updateTitle(): void {
