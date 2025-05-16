@@ -228,9 +228,9 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
         ...(this.originalConfig?.display_settings || {}),
       };
 
-      // Add a small delay before patching the form specifically for 'models' section
-      if (this.editSection === 'models') {
-        console.log('GuildConfigEditModalComponent: Delaying patchForm for models section.');
+      // Add a small delay before patching the form specifically for 'models', 'shifts', and 'periods' sections
+      if (this.editSection === 'models' || this.editSection === 'shifts' || this.editSection === 'periods') {
+        console.log(`GuildConfigEditModalComponent: Delaying patchForm for ${this.editSection} section.`);
         setTimeout(() => {
           this.patchForm(this.originalConfig);
           this.configForm.get('guild_id')?.setValue(this.originalConfig?.guild_id, { emitEvent: false });
