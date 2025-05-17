@@ -89,7 +89,7 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
       }
     } else if (this.visible && (changes['guildConfig'] || changes['guildId'] || changes['editSection'])) {
       if (!this.isEditingDisplaySettingsSubFlow) {
-          this.prepareFormForMode();
+        this.prepareFormForMode();
       }
     } else if (changes['visible'] && !this.visible) {
       this.resetModalState();
@@ -113,15 +113,15 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
   private handleDisplaySettingsSubFlow(): void {
     // Ensure originalConfig is available if in edit mode, as effectiveGuildId depends on it.
     if (this.isEditMode && !this.originalConfig) {
-        this.errorMessage = "Original configuration data is missing. Cannot edit display settings.";
-        this.closeModal();
-        return;
+      this.errorMessage = "Original configuration data is missing. Cannot edit display settings.";
+      this.closeModal();
+      return;
     }
     const effectiveGuildId = this.originalConfig?.guild_id;
     if (!effectiveGuildId) {
-        this.errorMessage = "Guild ID is missing. Cannot edit display settings.";
-        this.closeModal();
-        return;
+      this.errorMessage = "Guild ID is missing. Cannot edit display settings.";
+      this.closeModal();
+      return;
     }
 
     this.isEditingDisplaySettingsSubFlow = true;
@@ -144,15 +144,15 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
         this.closeModal();
       }
     ).finally(() => {
-        this.isEditingDisplaySettingsSubFlow = false;
+      this.isEditingDisplaySettingsSubFlow = false;
     });
   }
 
   openDisplaySettingsModal(): void { // Called when editSection is 'full'
     if (this.isEditMode && !this.originalConfig) {
-        this.errorMessage = "Original configuration data is missing. Cannot edit display settings.";
-        // Potentially close or show an error, but don't proceed to open sub-modal without originalConfig if editing.
-        return;
+      this.errorMessage = "Original configuration data is missing. Cannot edit display settings.";
+      // Potentially close or show an error, but don't proceed to open sub-modal without originalConfig if editing.
+      return;
     }
     const modalRef = this.modalService.open(DisplaySettingsEditModalComponent, { centered: true, backdrop: 'static' });
 
@@ -200,12 +200,12 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
   private setConditionalValidators(): void {
     const guildIdCtrl = this.configForm.get('guild_id');
     if (guildIdCtrl) {
-        guildIdCtrl.clearValidators();
-        guildIdCtrl.setValidators([Validators.pattern('^[0-9]+$')]);
-        if (!this.isEditMode && this.editSection === 'full') { 
-          guildIdCtrl.addValidators(Validators.required);
-        }
-        guildIdCtrl.updateValueAndValidity();
+      guildIdCtrl.clearValidators();
+      guildIdCtrl.setValidators([Validators.pattern('^[0-9]+$')]);
+      if (!this.isEditMode && this.editSection === 'full') {
+        guildIdCtrl.addValidators(Validators.required);
+      }
+      guildIdCtrl.updateValueAndValidity();
     }
   }
 
@@ -215,7 +215,7 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
     this.submitAttempted = false;
 
     if (!this.configForm) {
-        this.configForm = this.buildForm();
+      this.configForm = this.buildForm();
     }
     this.configForm.reset();
     this.clearAllFormArraysAndGroups();
@@ -261,9 +261,9 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
   }
 
   private updateTitle(): void {
-    const guildIdentifier = this.originalConfig?.guild_id || this.guildId; 
+    const guildIdentifier = this.originalConfig?.guild_id || this.guildId;
     const baseTitle = this.isEditMode && guildIdentifier ? `Guild ${guildIdentifier}` : 'New Guild Configuration';
-    
+
     switch (this.editSection) {
       case 'full':
         this.title = this.isEditMode && guildIdentifier ? `Edit Guild Configuration (${guildIdentifier})` : 'Create New Guild Configuration';
@@ -289,9 +289,9 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
       case 'top_level_roles':
         this.title = `Manage General Role Settings for ${baseTitle}`;
         break;
-      case 'display_settings': 
-         this.title = `Manage Display Settings for ${baseTitle}`;
-         break;
+      case 'display_settings':
+        this.title = `Manage Display Settings for ${baseTitle}`;
+        break;
       default:
         this.title = this.isEditMode && guildIdentifier ? `Edit Guild Configuration (${guildIdentifier})` : 'Create New Guild Configuration';
     }
@@ -305,38 +305,45 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
       periods: this.fb.array([]),
       bonus_rules: this.fb.array([]),
       commission_settings: this.buildCommissionSettingsForm(),
-      roles: this.fb.group({}) 
+      roles: this.fb.group({})
     });
   }
 
   private buildCommissionSettingsForm(): FormGroup {
-      return this.fb.group({
-          roles: this.fb.group({}),
-          users: this.fb.group({})
-      });
+    return this.fb.group({
+      roles: this.fb.group({}),
+      users: this.fb.group({})
+    });
   }
 
   private patchForm(config: GuildConfig | null): void {
     if (!config) {
-        this.configForm.reset();
-        this.clearAllFormArraysAndGroups();
-        this.patchTopLevelRoles(undefined);
-        this.patchCommissionSettings(undefined);
-        const guildIdCtrl = this.configForm.get('guild_id');
-        if (guildIdCtrl) {
-            guildIdCtrl.enable();
-            guildIdCtrl.setValue(this.guildId || '');
-        }
-        return;
+      this.configForm.reset();
+      this.clearAllFormArraysAndGroups();
+      this.patchTopLevelRoles(undefined);
+      this.patchCommissionSettings(undefined);
+      const guildIdCtrl = this.configForm.get('guild_id');
+      if (guildIdCtrl) {
+        guildIdCtrl.enable();
+        guildIdCtrl.setValue(this.guildId || '');
+      }
+      return;
     }
-    
+
     // Guild ID is set and disabled in prepareFormForMode for existing configs
     this.setStringArrayData(this.models, config.models);
     this.setStringArrayData(this.shifts, config.shifts);
     this.setStringArrayData(this.periods, config.periods);
     this.patchBonusRules(config.bonus_rules);
-    this.patchCommissionSettings(config.commission_settings);
-    this.patchTopLevelRoles(config.roles); 
+
+    // Add a small delay before patching commission settings
+    setTimeout(() => {
+      console.log('GuildConfigEditModalComponent: Delaying patchCommissionSettings.');
+      this.patchCommissionSettings(config.commission_settings);
+      this.changeDetectorRef.detectChanges(); // Trigger change detection after patching
+    }, 50); // Short delay
+
+    this.patchTopLevelRoles(config.roles);
   }
 
   private patchTopLevelRoles(rolesData: { [roleId: string]: number } | undefined): void {
@@ -355,19 +362,19 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
     console.log('GuildConfigEditModalComponent: setStringArrayData called with data:', data);
     formArray.clear();
     (data || []).forEach(item_name => {
-        // Removed the typeof check to ensure all items are attempted to be added
-        formArray.push(this.fb.control(item_name, Validators.required));
+      // Removed the typeof check to ensure all items are attempted to be added
+      formArray.push(this.fb.control(item_name, Validators.required));
     });
     console.log('GuildConfigEditModalComponent: setStringArrayData - FormArray after patching:', formArray.controls);
   }
 
   private patchBonusRules(rules: BonusRule[] | undefined): void {
-      this.bonus_rules.clear();
-      (rules || []).forEach(rule => this.bonus_rules.push(this.fb.group({
-          from: [rule.from, [Validators.required, Validators.min(0)]],
-          to: [rule.to, [Validators.required, Validators.min(0)]],
-          amount: [rule.amount, [Validators.required, Validators.min(0)]]
-      }, { validators: this.bonusRuleValidator })));
+    this.bonus_rules.clear();
+    (rules || []).forEach(rule => this.bonus_rules.push(this.fb.group({
+      from: [rule.from, [Validators.required, Validators.min(0)]],
+      to: [rule.to, [Validators.required, Validators.min(0)]],
+      amount: [rule.amount, [Validators.required, Validators.min(0)]]
+    }, { validators: this.bonusRuleValidator })));
   }
 
   private bonusRuleValidator(group: AbstractControl): { [key: string]: boolean } | null {
@@ -382,24 +389,24 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
   private patchCommissionSettings(settings: CommissionSettings | undefined): void {
     const rolesGroup = this.commissionRoles;
     const usersGroup = this.commissionUsers;
-    this.clearCommissionControls(); 
+    this.clearCommissionControls();
     if (settings?.roles) {
       Object.entries(settings.roles).forEach(([roleId, roleSetting]) => {
-         if (roleId && roleSetting != null) {
-             rolesGroup.addControl(roleId, this.fb.group({
-                 commission_percentage: [roleSetting.commission_percentage, [Validators.required, Validators.min(0), Validators.max(100)]]
-             }));
-         }
+        if (roleId && roleSetting != null) {
+          rolesGroup.addControl(roleId, this.fb.group({
+            commission_percentage: [roleSetting.commission_percentage, [Validators.required, Validators.min(0), Validators.max(100)]]
+          }));
+        }
       });
     }
     if (settings?.users) {
       Object.entries(settings.users).forEach(([userId, userSetting]) => {
-         if (userId && userSetting != null) {
-             usersGroup.addControl(userId, this.fb.group({
-                 hourly_rate: [userSetting.hourly_rate ?? null, [Validators.min(0)]],
-                 override_role: [userSetting.override_role ?? false]
-             }));
-         }
+        if (userId && userSetting != null) {
+          usersGroup.addControl(userId, this.fb.group({
+            hourly_rate: [userSetting.hourly_rate ?? null, [Validators.min(0)]],
+            override_role: [userSetting.override_role ?? false]
+          }));
+        }
       });
     }
   }
@@ -436,9 +443,9 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
 
   addItemManually(array: FormArray, value: string): void {
     if (value) {
-        array.push(this.fb.control(value, Validators.required));
-        array.markAsDirty();
-        array.updateValueAndValidity();
+      array.push(this.fb.control(value, Validators.required));
+      array.markAsDirty();
+      array.updateValueAndValidity();
     }
   }
 
@@ -617,7 +624,7 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
     } else {
       this.isLoading = false;
       if (this.editSection !== 'display_settings') {
-          this.errorMessage = "No save action defined for this section or section not implemented for individual save.";
+        this.errorMessage = "No save action defined for this section or section not implemented for individual save.";
       }
     }
   }
@@ -664,7 +671,7 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
       Object.keys(formRoles).forEach(roleId => {
         const val = Number(formRoles[roleId]);
         if (!isNaN(val)) {
-            roles[roleId] = val;
+          roles[roleId] = val;
         }
       });
     }
@@ -672,27 +679,27 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
   }
 
   private displayFormErrors(): void {
-      let errorMessages: string[] = [];
-      const findErrorsRecursive = (control: AbstractControl | null, path: string) => {
-          if (!control) return;
-          if (control.errors) {
-              for (const keyError of Object.keys(control.errors)) {
-                errorMessages.push(`Error at '${path || 'Form'}.${keyError}': ${JSON.stringify(control.errors[keyError])}`);
-              }
-          }
-          if (control instanceof FormGroup || control instanceof FormArray) {
-              Object.keys(control.controls).forEach(key => {
-                  const nestedControl = control.get(key);
-                  const currentPath = path ? `${path}.${key}` : key;
-                  if (nestedControl && (nestedControl.invalid || nestedControl instanceof FormGroup || nestedControl instanceof FormArray)) {
-                    findErrorsRecursive(nestedControl, currentPath);
-                  }
-              });
-          }
+    let errorMessages: string[] = [];
+    const findErrorsRecursive = (control: AbstractControl | null, path: string) => {
+      if (!control) return;
+      if (control.errors) {
+        for (const keyError of Object.keys(control.errors)) {
+          errorMessages.push(`Error at '${path || 'Form'}.${keyError}': ${JSON.stringify(control.errors[keyError])}`);
+        }
       }
-      findErrorsRecursive(this.configForm, '');
-      this.errorMessage = `Please correct the errors in the form. Details: ${errorMessages.join('; ')}`;
-      console.warn('Form validation failed. Errors:', errorMessages, 'Form Values:', this.configForm.getRawValue());
+      if (control instanceof FormGroup || control instanceof FormArray) {
+        Object.keys(control.controls).forEach(key => {
+          const nestedControl = control.get(key);
+          const currentPath = path ? `${path}.${key}` : key;
+          if (nestedControl && (nestedControl.invalid || nestedControl instanceof FormGroup || nestedControl instanceof FormArray)) {
+            findErrorsRecursive(nestedControl, currentPath);
+          }
+        });
+      }
+    }
+    findErrorsRecursive(this.configForm, '');
+    this.errorMessage = `Please correct the errors in the form. Details: ${errorMessages.join('; ')}`;
+    console.warn('Form validation failed. Errors:', errorMessages, 'Form Values:', this.configForm.getRawValue());
   }
 
   closeModal(emitNull: boolean = true): void {
