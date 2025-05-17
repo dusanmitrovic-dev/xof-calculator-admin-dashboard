@@ -265,6 +265,18 @@
               <ng-container *ngIf="editSection === 'full' || editSection === 'commission_settings_users'">
                 <div>
                   <h6 class="fw-semibold mb-1">By User (Overrides)</h6>
+                  <!-- Add New User Override Input Group -->
+                  <div class="mb-3">
+                    <label cLabel for="newUserOverrideId" class="fw-semibold">Add User Override</label>
+                    <div class="input-group">
+                      <input cFormControl type="text" id="newUserOverrideId" placeholder="Enter User ID" #newUserOverrideInput 
+                             (blur)="addUserOverride(newUserOverrideInput)"
+                             (keydown.enter)="addUserOverride(newUserOverrideInput); $event.preventDefault()">
+                      <button cButton type="button" color="success" variant="outline" (click)="addUserOverride(newUserOverrideInput)">
+                        <svg cIcon name="cilPlus" size="sm"></svg> Add User
+                      </button>
+                    </div>
+                  </div>
                   <div formGroupName="users">
                     <div *ngIf="commissionUsers && objectKeys(commissionUsers.controls).length > 0; else noCommissionUsersDefined">
                       <div *ngFor="let userId of objectKeys(commissionUsers.controls)" class="p-2 border rounded mb-2" [formGroupName]="userId">
