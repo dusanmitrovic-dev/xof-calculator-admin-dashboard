@@ -152,12 +152,23 @@
           <c-card class="mb-3">
             <c-card-header>General Role Settings (Numeric)</c-card-header>
             <c-card-body formGroupName="roles">
+              <div class="mb-3">
+                <label cLabel for="newTopLevelRoleId" class="fw-semibold">Add New Role ID</label>
+                <div class="input-group">
+                  <input cFormControl type="text" id="newTopLevelRoleId" placeholder="Enter Role ID" #newTopLevelRoleInput
+                         (blur)="addTopLevelRole(newTopLevelRoleInput.value)"
+                         (keydown.enter)="addTopLevelRole(newTopLevelRoleInput.value); $event.preventDefault()">
+                  <button cButton type="button" color="success" variant="outline" (click)="addTopLevelRole(newTopLevelRoleInput.value)">
+                    <svg cIcon name="cilPlus" size="sm"></svg> Add Role
+                  </button>
+                </div>
+              </div>
               <div *ngIf="topLevelRoles && objectKeys(topLevelRoles.controls).length > 0; else noTopLevelRolesDefined">
                 <c-row *ngFor="let roleId of objectKeys(topLevelRoles.controls)" class="g-2 mb-2 align-items-center p-2 border rounded">
-                  <c-col sm="4">
+                  <c-col xs="12" sm="4">
                     <label class="col-form-label text-truncate">Role ID: <code class="text-info">{{ roleId }}</code></label>
                   </c-col>
-                  <c-col sm="8">
+                  <c-col xs="10" sm="7">
                     <input cFormControl type="number" [id]="'role_value_' + roleId" [formControlName]="roleId" required placeholder="Enter numeric value">
                     <c-form-feedback [valid]="false" *ngIf="topLevelRoles.get(roleId)?.hasError('required')">
                       Value is required.
@@ -166,10 +177,15 @@
                       Value must be a number.
                     </c-form-feedback>
                   </c-col>
+                   <c-col xs="2" sm="1" class="text-end">
+                     <button cButton type="button" color="danger" variant="ghost" size="sm" class="p-1" (click)="removeTopLevelRole(roleId)" title="Remove Role">
+                       <svg cIcon name="cilTrash" size="lg"></svg>
+                     </button>
+                   </c-col>
                 </c-row>
               </div>
               <ng-template #noTopLevelRolesDefined>
-                <p class="text-muted">No general role settings defined. These are typically pre-configured or managed by system.</p>
+                <p class="text-muted">No general role settings defined.</p>
               </ng-template>
             </c-card-body>
           </c-card>
