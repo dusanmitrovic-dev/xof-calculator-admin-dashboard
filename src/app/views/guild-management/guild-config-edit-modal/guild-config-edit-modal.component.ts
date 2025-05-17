@@ -55,7 +55,7 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
   originalConfig: GuildConfig | null = null;
   isEditingDisplaySettingsSubFlow: boolean = false;
   // This holds the LATEST state of display settings, whether from init or sub-modal result.
-  currentDisplaySettings!: DisplaySettingsModalData; 
+  currentDisplaySettings!: DisplaySettingsModalData;
 
   get isEditMode(): boolean {
     return !!this.guildConfig; // Based on the initial @Input
@@ -82,9 +82,9 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['visible'] && this.visible) {
       this.isEditingDisplaySettingsSubFlow = false;
-      this.prepareFormForMode(); 
+      this.prepareFormForMode();
       // Check isEditMode (based on initial guildConfig) before attempting sub-flow
-      if (this.isEditMode && this.editSection === 'display_settings') { 
+      if (this.isEditMode && this.editSection === 'display_settings') {
         this.handleDisplaySettingsSubFlow();
       }
     } else if (this.visible && (changes['guildConfig'] || changes['guildId'] || changes['editSection'])) {
@@ -129,7 +129,7 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
     this.changeDetectorRef.detectChanges();
 
     const modalRef = this.modalService.open(DisplaySettingsEditModalComponent, { centered: true, backdrop: 'static' });
-    
+
     const settingsForSubModal = this.getInitialDisplaySettingsForSubModal();
     console.log('[Parent] Passing to DisplaySettingsEditModalComponent (handleDisplaySettingsSubFlow):', JSON.stringify(settingsForSubModal));
     modalRef.componentInstance.currentDisplaySettings = JSON.parse(JSON.stringify(settingsForSubModal));
@@ -141,7 +141,7 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
       },
       (reason) => {
         console.log(`Display settings modal dismissed: ${reason}`);
-        this.closeModal(); 
+        this.closeModal();
       }
     ).finally(() => {
         this.isEditingDisplaySettingsSubFlow = false;
@@ -155,15 +155,15 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
         return;
     }
     const modalRef = this.modalService.open(DisplaySettingsEditModalComponent, { centered: true, backdrop: 'static' });
-    
+
     const settingsForSubModal = this.getInitialDisplaySettingsForSubModal();
     console.log('[Parent] Passing to DisplaySettingsEditModalComponent (openDisplaySettingsModal from full edit):', JSON.stringify(settingsForSubModal));
     modalRef.componentInstance.currentDisplaySettings = JSON.parse(JSON.stringify(settingsForSubModal));
-    
+
     modalRef.result.then(
       (result: DisplaySettingsModalData) => {
         this.currentDisplaySettings = result; // Update parent's currentDisplaySettings with the result
-        this.configForm.markAsDirty(); 
+        this.configForm.markAsDirty();
         console.log('Display settings (from full edit) updated locally in parent:', result);
       },
       (reason) => { console.log(`Display settings modal (from full edit) dismissed: ${reason}`); }
@@ -344,7 +344,7 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
     Object.keys(rolesFormGroup.controls).forEach(key => rolesFormGroup.removeControl(key));
     if (rolesData) {
       Object.entries(rolesData).forEach(([roleId, value]) => {
-        if (roleId) { 
+        if (roleId) {
           rolesFormGroup.addControl(roleId, this.fb.control(value, [Validators.required, Validators.pattern('^[0-9]+$')]));
         }
       });
@@ -484,9 +484,27 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
     }
   }
 
+  addRoleCommission(newRoleCommissionInput: HTMLInputElement): void {
+    const roleId = newRoleCommissionInput.value.trim();
+    if (roleId) {
+      const rolesGroup = this.commissionRoles;
+      if (rolesGroup.get(roleId)) {
+        console.warn(`Role ID ${roleId} already exists.`);
+        this.errorMessage = `Role ID ${roleId} already exists.`;
+      } else {
+        rolesGroup.addControl(roleId, this.fb.group({
+          commission_percentage: [0, [Validators.required, Validators.min(0), Validators.max(100)]]
+        }));
+        rolesGroup.markAsDirty();
+        this.errorMessage = null; // Clear error message if successful
+      }
+      newRoleCommissionInput.value = ''; // Clear input after attempt
+    }
+  }
+
   saveChanges(): void {
     this.submitAttempted = true;
-    this.configForm.markAllAsTouched(); 
+    this.configForm.markAllAsTouched();
     this.setConditionalValidators();
 
     if (this.configForm.invalid) {
@@ -512,14 +530,14 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
         {
           const createOrUpdatePayload: GuildConfig = {
             guild_id: effectiveGuildId,
-            models: (formValue.models || []).map((name: string) => name), 
-            shifts: (formValue.shifts || []).map((name: string) => name), 
-            periods: (formValue.periods || []).map((name: string) => name), 
+            models: (formValue.models || []).map((name: string) => name),
+            shifts: (formValue.shifts || []).map((name: string) => name),
+            periods: (formValue.periods || []).map((name: string) => name),
             bonus_rules: (formValue.bonus_rules || []).map((rule: any) => ({ from: Number(rule.from), to: Number(rule.to), amount: Number(rule.amount) })),
             // currentDisplaySettings holds the definitive, merged state of display settings
             display_settings: { ...this.currentDisplaySettings } as DisplaySettings,
             commission_settings: this.prepareCommissionSettingsPayload(formValue.commission_settings),
-            roles: this.prepareTopLevelRolesPayload(formValue.roles), 
+            roles: this.prepareTopLevelRolesPayload(formValue.roles),
           };
           if (this.isEditMode && this.originalConfig?._id) createOrUpdatePayload._id = this.originalConfig._id;
 
@@ -559,7 +577,7 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
           const newCommissionRoles = this.prepareCommissionRolesPayload(formValue.commission_settings.roles);
           const fullCommissionSettingsPayload: CommissionSettings = {
             roles: newCommissionRoles,
-            users: (this.originalConfig?.commission_settings?.users || {}) 
+            users: (this.originalConfig?.commission_settings?.users || {})
           };
           saveObservable = this.guildConfigService.updateCommissionSettings(effectiveGuildId, fullCommissionSettingsPayload);
           break;
@@ -568,13 +586,13 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
         {
           const newCommissionUsers = this.prepareCommissionUsersPayload(formValue.commission_settings.users);
           const fullCommissionSettingsPayload: CommissionSettings = {
-            roles: (this.originalConfig?.commission_settings?.roles || {}), 
+            roles: (this.originalConfig?.commission_settings?.roles || {}),
             users: newCommissionUsers
           };
           saveObservable = this.guildConfigService.updateCommissionSettings(effectiveGuildId, fullCommissionSettingsPayload);
           break;
         }
-      case 'top_level_roles': 
+      case 'top_level_roles':
         {
           const rolesPayload = this.prepareTopLevelRolesPayload(formValue.roles);
           saveObservable = this.guildConfigService.updateRoles(effectiveGuildId, rolesPayload);
@@ -598,7 +616,7 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
       });
     } else {
       this.isLoading = false;
-      if (this.editSection !== 'display_settings') { 
+      if (this.editSection !== 'display_settings') {
           this.errorMessage = "No save action defined for this section or section not implemented for individual save.";
       }
     }
@@ -702,12 +720,12 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
     this.submitAttempted = false;
     this.isEditingDisplaySettingsSubFlow = false;
     this.originalConfig = null;
-    this.currentDisplaySettings = this.getDefaultDisplaySettings(); 
+    this.currentDisplaySettings = this.getDefaultDisplaySettings();
 
     if (this.configForm) {
-      this.configForm.reset(); 
-      this.clearAllFormArraysAndGroups(); 
-      this.patchForm(null); 
+      this.configForm.reset();
+      this.clearAllFormArraysAndGroups();
+      this.patchForm(null);
       this.configForm.get('guild_id')?.setValue(this.guildId || '');
       this.setConditionalValidators();
     }
