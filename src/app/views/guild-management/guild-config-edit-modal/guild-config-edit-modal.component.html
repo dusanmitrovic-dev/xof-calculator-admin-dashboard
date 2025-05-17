@@ -288,7 +288,7 @@
                           </c-col>
                           <c-col sm="6" class="pt-4">
                             <c-form-check>
-                              <input cFormCheckInput type="checkbox" formControlName="override_role" [id]="'override_role_' + userId">
+                              <input cFormCheckInput type="checkbox" formControlName="override_role" [id]="'override_role_' + userId" [checked]="commissionUsers.get(userId)?.get('override_role')?.value === true">
                               <label cFormCheckLabel [for]="'override_role_' + userId">Override Role %?</label>
                             </c-form-check>
                           </c-col>

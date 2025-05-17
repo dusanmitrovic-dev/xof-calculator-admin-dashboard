@@ -24,7 +24,7 @@
     <c-row class="mb-3">
       <c-col sm="12">
         <c-form-check>
-          <input cFormCheckInput id="ephemeral_responses" type="checkbox" formControlName="ephemeral_responses" />
+          <input cFormCheckInput id="ephemeral_responses" type="checkbox" formControlName="ephemeral_responses" [checked]="displaySettingsForm.get('ephemeral_responses')?.value === true" />
           <label cFormCheckLabel for="ephemeral_responses">Use Ephemeral Responses</label>
         </c-form-check>
       </c-col>
@@ -33,7 +33,7 @@
     <c-row class="mb-3">
       <c-col sm="12">
         <c-form-check>
-          <input cFormCheckInput id="show_average" type="checkbox" formControlName="show_average" />
+          <input cFormCheckInput id="show_average" type="checkbox" formControlName="show_average" [checked]="displaySettingsForm.get('show_average')?.value === true" />
           <label cFormCheckLabel for="show_average">Show Average in Reports</label>
         </c-form-check>
       </c-col>
@@ -42,7 +42,7 @@
     <c-row class="mb-3">
       <c-col sm="12">
         <c-form-check>
-          <input cFormCheckInput id="show_ids" type="checkbox" formControlName="show_ids" />
+          <input cFormCheckInput id="show_ids" type="checkbox" formControlName="show_ids" [checked]="displaySettingsForm.get('show_ids')?.value === true" />
           <label cFormCheckLabel for="show_ids">Show IDs in Reports</label>
         </c-form-check>
       </c-col>
