@@ -346,6 +346,36 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
     this.patchTopLevelRoles(config.roles);
   }
 
+  // Method to add a user override
+  addUserOverride(newUserOverrideInput: HTMLInputElement): void {
+    const userId = newUserOverrideInput.value.trim();
+    if (userId) {
+      const usersGroup = this.commissionUsers;
+      if (usersGroup.get(userId)) {
+        console.warn(`User ID ${userId} already exists.`);
+        this.errorMessage = `User ID ${userId} already exists.`;
+      } else {
+        usersGroup.addControl(userId, this.fb.group({
+          hourly_rate: [null, [Validators.min(0)]],
+          override_role: [false]
+        }));
+        usersGroup.markAsDirty();
+        this.errorMessage = null; // Clear error message if successful
+      }
+      newUserOverrideInput.value = ''; // Clear input after attempt
+    }
+  }
+
+  // Method to remove a user override
+  removeUserOverride(userId: string): void {
+    const usersGroup = this.commissionUsers;
+    if (usersGroup.get(userId)) {
+      usersGroup.removeControl(userId);
+      usersGroup.markAsDirty();
+    }
+  }
+
+
   private patchTopLevelRoles(rolesData: { [roleId: string]: number } | undefined): void {
     const rolesFormGroup = this.topLevelRoles;
     Object.keys(rolesFormGroup.controls).forEach(key => rolesFormGroup.removeControl(key));
