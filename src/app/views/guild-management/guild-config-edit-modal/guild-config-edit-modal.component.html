@@ -153,12 +153,12 @@
             <c-card-header>General Role Settings (Numeric)</c-card-header>
             <c-card-body formGroupName="roles">
               <div *ngIf="topLevelRoles && objectKeys(topLevelRoles.controls).length > 0; else noTopLevelRolesDefined">
-                <c-row *ngFor="let roleId of objectKeys(topLevelRoles.controls)" class="g-2 mb-2 align-items-center p-2 border rounded" [formGroupName]="roleId">
+                <c-row *ngFor="let roleId of objectKeys(topLevelRoles.controls)" class="g-2 mb-2 align-items-center p-2 border rounded">
                   <c-col sm="4">
                     <label class="col-form-label text-truncate">Role ID: <code class="text-info">{{ roleId }}</code></label>
                   </c-col>
                   <c-col sm="8">
-                    <input cFormControl type="number" [id]="'role_value_' + roleId" [formControlName]="roleId" [value]="topLevelRoles.get(roleId)?.value" required placeholder="Enter numeric value">
+                    <input cFormControl type="number" [id]="'role_value_' + roleId" [formControlName]="roleId" required placeholder="Enter numeric value">
                     <c-form-feedback [valid]="false" *ngIf="topLevelRoles.get(roleId)?.hasError('required')">
                       Value is required.
                     </c-form-feedback>
