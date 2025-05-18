@@ -16,7 +16,7 @@ import {
   SpinnerModule,
   UtilitiesModule
 } from '@coreui/angular';
-import { IconDirective } from '@coreui/icons-angular';
+import { IconDirective, IconModule } from '@coreui/icons-angular';
 
 @Component({
   selector: 'app-guild-config-edit-modal',
@@ -35,7 +35,8 @@ import { IconDirective } from '@coreui/icons-angular';
     GridModule,
     UtilitiesModule,
     CardModule,
-    // IconDirective,
+    IconDirective,
+    // IconModule,
   ]
 })
 export class GuildConfigEditModalComponent implements OnInit, OnChanges {
@@ -405,7 +406,9 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
     if (rolesData) {
       Object.entries(rolesData).forEach(([roleId, value]) => {
         if (roleId) {
-          rolesFormGroup.addControl(roleId, this.fb.control(value, [Validators.required, Validators.pattern('^[0-9]+$')]));
+          rolesFormGroup.addControl(roleId, this.fb.group({
+            value: [value, [Validators.required, Validators.pattern('^[0-9]+$')]]
+          }));
         }
       });
     }

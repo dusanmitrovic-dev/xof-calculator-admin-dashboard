@@ -168,7 +168,6 @@
               <div class="mb-3">
                 <label cLabel for="newTopLevelRoleId" class="fw-semibold">Add New Role ID</label>
                 <div class="input-group">
-                  <!-- In the top-level roles section -->
                   <input cFormControl type="text" id="newTopLevelRoleId" placeholder="Enter Role ID"
                     #newTopLevelRoleInput (blur)="addTopLevelRole(newTopLevelRoleInput.value)"
                     (keydown.enter)="addTopLevelRole(newTopLevelRoleInput.value); $event.preventDefault()">
@@ -207,9 +206,11 @@
                     </c-col>
                   </c-row>
                 </ng-template>
-            </c-card-body>
+              </div>
+            </c-card-body> <!-- ✅ This was missing or misplaced -->
           </c-card>
         </ng-container>
+
 
         <!-- Bonus Rules Card -->
         <ng-container *ngIf="editSection === 'full' || editSection === 'bonus_rules'">
