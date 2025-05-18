@@ -35,7 +35,7 @@ import { IconDirective } from '@coreui/icons-angular';
     GridModule,
     UtilitiesModule,
     CardModule,
-    IconDirective,
+    // IconDirective,
   ]
 })
 export class GuildConfigEditModalComponent implements OnInit, OnChanges {
@@ -375,27 +375,27 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
     }
   }
 
- // Method to add a top-level role
- addTopLevelRole(roleId: string, value: string): void {
+  // Method to add a top-level role
+  addTopLevelRole(roleId: string): void {
     const rolesGroup = this.topLevelRoles;
     if (roleId) {
       if (rolesGroup.get(roleId)) {
- console.warn(`Role ID ${roleId} already exists.`);
- this.errorMessage = `Role ID ${roleId} already exists.`;
+        console.warn(`Role ID ${roleId} already exists.`);
+        this.errorMessage = `Role ID ${roleId} already exists.`;
       } else {
- rolesGroup.addControl(roleId, this.fb.control(value, [Validators.required, Validators.pattern('^[0-9]+$')]));
- rolesGroup.markAsDirty();
- this.errorMessage = null; // Clear error message if successful
+        rolesGroup.addControl(roleId, this.fb.control('', [Validators.required, Validators.pattern('^[0-9]+$')]));
+        rolesGroup.markAsDirty();
+        this.errorMessage = null;
       }
     }
   }
 
   // Method to remove a top-level role
- removeTopLevelRole(roleId: string): void {
+  removeTopLevelRole(roleId: string): void {
     const rolesGroup = this.topLevelRoles;
     if (rolesGroup.get(roleId)) {
- rolesGroup.removeControl(roleId);
- rolesGroup.markAsDirty();
+      rolesGroup.removeControl(roleId);
+      rolesGroup.markAsDirty();
     }
   }
 
