@@ -157,7 +157,7 @@
                 <div class="input-group">
                   <input cFormControl type="text" id="newTopLevelRoleId" placeholder="Enter Role ID" #newTopLevelRoleInput
                          (blur)="addTopLevelRole(newTopLevelRoleInput.value)"
-                         (keydown.enter)="addTopLevelRole(newTopLevelRoleInput.value); $event.preventDefault()">
+ (keydown.enter)="addTopLevelRole(newTopLevelRoleInput.value, $event); $event.preventDefault()">
                   <button cButton type="button" color="success" variant="outline" (click)="addTopLevelRole(newTopLevelRoleInput.value)">
                     <svg cIcon name="cilPlus" size="sm"></svg> Add Role
                   </button>
