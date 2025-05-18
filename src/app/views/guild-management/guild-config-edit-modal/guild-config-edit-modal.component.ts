@@ -384,14 +384,15 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
         console.warn(`Role ID ${roleId} already exists.`);
         this.errorMessage = `Role ID ${roleId} already exists.`;
       } else {
-        rolesGroup.addControl(roleId, this.fb.control('', [Validators.required, Validators.pattern('^[0-9]+$')]));
+        rolesGroup.addControl(roleId, this.fb.group({
+          value: ['', [Validators.required, Validators.pattern('^[0-9]+$')]]
+        }));
         rolesGroup.markAsDirty();
         this.errorMessage = null;
       }
     }
   }
 
-  // Method to remove a top-level role
   removeTopLevelRole(roleId: string): void {
     const rolesGroup = this.topLevelRoles;
     if (rolesGroup.get(roleId)) {
