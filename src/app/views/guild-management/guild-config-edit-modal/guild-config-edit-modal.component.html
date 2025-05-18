@@ -151,7 +151,7 @@
         <ng-container *ngIf="editSection === 'full' || editSection === 'top_level_roles'">
           <c-card class="mb-3">
             <c-card-header>General Role Settings (Numeric)</c-card-header>
-            <c-card-body formArrayName="roles">
+            <c-card-body formGroupName="roles">
               <div class="mb-3">
                 <label cLabel for="newTopLevelRoleId" class="fw-semibold">Add New Role ID</label>
                 <div class="input-group">
@@ -166,26 +166,25 @@
                     Duplicate Role ID entered.
                   </c-form-feedback>
               </div>
-              <div *ngIf="topLevelRoles.controls.length === 0; else topLevelRolesDefined">
+              <div *ngIf="objectKeys(topLevelRoles.controls).length === 0; else topLevelRolesDefined">
                 <p class="text-muted">No general role settings defined.</p>
               </div>
               <ng-template #topLevelRolesDefined>
-                <c-row *ngFor="let roleControl of topLevelRoles.controls; let i=index" [formGroupName]="i" class="g-2 mb-2 align-items-center p-2 border rounded">
+                <c-row *ngFor="let roleId of objectKeys(topLevelRoles.controls)" [formGroupName]="roleId" class="g-2 mb-2 align-items-center p-2 border rounded position-relative">
                   <c-col xs="12" sm="4">
-                     <label class="col-form-label text-truncate">Role ID: <code class="text-info">{{ roleControl.get('id')?.value }}</code></label>
-                     <input type="hidden" [formControlName]="'id'"> <!-- Hidden input for the ID -->
+                     <label class="col-form-label text-truncate">Role ID: <code class="text-info">{{ roleId }}</code></label>
                   </c-col>
                   <c-col xs="10" sm="7">
-                    <input cFormControl type="number" [id]="'role_value_' + i" formControlName="value" required placeholder="Enter numeric value">
-                    <c-form-feedback [valid]="false" *ngIf="roleControl.get('value')?.hasError('required') && (roleControl.get('value')?.dirty || roleControl.get('value')?.touched || submitAttempted)">
+                    <input cFormControl type="number" [id]="'role_value_' + roleId" formControlName="value" required placeholder="Enter numeric value">
+                    <c-form-feedback [valid]="false" *ngIf="topLevelRoles.get(roleId)?.get('value')?.hasError('required') && (topLevelRoles.get(roleId)?.get('value')?.dirty || topLevelRoles.get(roleId)?.get('value')?.touched || submitAttempted)">
                       Value is required.
                     </c-form-feedback>
-                     <c-form-feedback [valid]="false" *ngIf="roleControl.get('value')?.hasError('pattern') && (roleControl.get('value')?.dirty || roleControl.get('value')?.touched || submitAttempted)">
+                     <c-form-feedback [valid]="false" *ngIf="topLevelRoles.get(roleId)?.get('value')?.hasError('pattern') && (topLevelRoles.get(roleId)?.get('value')?.dirty || topLevelRoles.get(roleId)?.get('value')?.touched || submitAttempted)">
                       Value must be a number.
                     </c-form-feedback>
                   </c-col>
                    <c-col xs="2" sm="1" class="text-end">
-                     <button cButton type="button" color="danger" variant="ghost" size="sm" class="p-1" (click)="removeTopLevelRole(i)" title="Remove Role">
+                     <button cButton type="button" color="danger" variant="ghost" size="sm" class="p-1" (click)="removeTopLevelRole(roleId)" title="Remove Role">
                        <svg cIcon name="cilTrash" size="lg"></svg>
                      </button>
                    </c-col>
