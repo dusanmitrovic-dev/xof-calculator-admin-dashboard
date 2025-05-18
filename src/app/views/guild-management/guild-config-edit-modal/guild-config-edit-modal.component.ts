@@ -393,7 +393,6 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
     }
   }
 
-  // Method to remove a top-level role
   removeTopLevelRole(roleId: string): void {
     const rolesGroup = this.topLevelRoles;
     if (rolesGroup.get(roleId)) {
