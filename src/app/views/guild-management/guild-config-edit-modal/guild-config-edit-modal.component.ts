@@ -481,7 +481,7 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
             value: [
               '',
               [Validators.required, Validators.pattern(/^\d+(\.\d+)?$/)],
-            ], // Allow integers and decimals
+            ],
           })
         );
         rolesGroup.markAsDirty();
@@ -503,10 +503,15 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
     rolesData: { [roleId: string]: number } | undefined
   ): void {
     const rolesFormGroup = this.topLevelRoles;
+
+    // Clear existing controls
     Object.keys(rolesFormGroup.controls).forEach((key) =>
       rolesFormGroup.removeControl(key)
     );
+
     if (rolesData) {
+      console.log('Patching roles with data:', rolesData);
+
       Object.entries(rolesData).forEach(([roleId, value]) => {
         if (roleId) {
           rolesFormGroup.addControl(
@@ -515,12 +520,15 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
               value: [
                 value,
                 [Validators.required, Validators.pattern(/^\d+(\.\d+)?$/)],
-              ], 
+              ],
             })
           );
         }
       });
     }
+
+    rolesFormGroup.markAsPristine();
+    rolesFormGroup.markAsUntouched();
   }
 
   private setStringArrayData(
