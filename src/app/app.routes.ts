@@ -16,7 +16,7 @@ export const routes: Routes = [
     // Authenticated routes within the main application layout
     path: '',
     component: DefaultLayoutComponent,
-    canActivate: [authGuard],
+    canActivate: [authGuard], // Use functional authGuard to protect this layout and its children
     data: {
       title: 'Home'
     },
