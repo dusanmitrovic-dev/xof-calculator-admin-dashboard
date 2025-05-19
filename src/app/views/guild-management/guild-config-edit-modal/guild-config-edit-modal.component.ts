@@ -499,7 +499,29 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
     }
   }
 
-  patchTopLevelRoles;
+  private patchTopLevelRoles(
+    rolesData: { [roleId: string]: number } | undefined
+  ): void {
+    const rolesFormGroup = this.topLevelRoles;
+    Object.keys(rolesFormGroup.controls).forEach((key) =>
+      rolesFormGroup.removeControl(key)
+    );
+    if (rolesData) {
+      Object.entries(rolesData).forEach(([roleId, value]) => {
+        if (roleId) {
+          rolesFormGroup.addControl(
+            roleId,
+            this.fb.group({
+              value: [
+                value,
+                [Validators.required, Validators.pattern(/^\d+(\.\d+)?$/)],
+              ], // Allow integers and decimals
+            })
+          );
+        }
+      });
+    }
+  }
 
   private setStringArrayData(
     formArray: FormArray,
