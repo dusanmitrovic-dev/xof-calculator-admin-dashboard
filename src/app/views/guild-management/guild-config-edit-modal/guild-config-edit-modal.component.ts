@@ -467,7 +467,7 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
     }
   }
 
-  // Method to add a top-level role
+  // Improved method to add a top-level role
   addTopLevelRole(roleId: string): void {
     const rolesGroup = this.topLevelRoles;
     if (roleId) {
@@ -480,22 +480,27 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
           this.fb.group({
             value: [
               '',
-              [Validators.required, Validators.pattern(/^\d+(\.\d+)?$/)],
+              [Validators.required, Validators.pattern(/^(\d+)(\.\d+)?$/)],
             ],
           })
         );
         rolesGroup.markAsDirty();
         this.errorMessage = null;
       }
+    } else {
+      this.errorMessage = 'Role ID cannot be empty.';
     }
   }
 
-  // Method to remove a top-level role
+  // Improved method to remove a top-level role
   removeTopLevelRole(roleId: string): void {
     const rolesGroup = this.topLevelRoles;
     if (rolesGroup.get(roleId)) {
       rolesGroup.removeControl(roleId);
       rolesGroup.markAsDirty();
+      this.errorMessage = null; // Clear any previous error messages
+    } else {
+      this.errorMessage = `Role ID ${roleId} does not exist.`;
     }
   }
 
