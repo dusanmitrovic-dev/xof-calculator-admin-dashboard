@@ -16,7 +16,7 @@ export const routes: Routes = [
     // Authenticated routes within the main application layout
     path: '',
     component: DefaultLayoutComponent,
-    canActivate: [authGuard], // Use functional authGuard to protect this layout and its children
+    canActivate: [authGuard],
     data: {
       title: 'Home'
     },
@@ -31,20 +31,20 @@ export const routes: Routes = [
       },
       {
         path: 'guild-configurations', // Updated path
-        loadComponent: () => 
+        loadComponent: () =>
           import('./views/guild-management/guild-config-list/guild-config-list.component').then(m => m.GuildConfigListComponent),
         data: { title: 'Guild Configurations' }
       },
       {
         path: 'earnings-records', // New path for earnings
-        loadComponent: () => 
+        loadComponent: () =>
           import('./views/guild-management/earnings-list/earnings-list.component').then(m => m.EarningsListComponent),
         data: { title: 'Earnings Records' }
       },
       {
         path: 'user-management',
         canActivate: [adminGuard],
-        loadComponent: () => 
+        loadComponent: () =>
           import('./views/user-management/user-list/user-list.component').then(m => m.UserListComponent),
         data: { title: 'User Management' }
       },
