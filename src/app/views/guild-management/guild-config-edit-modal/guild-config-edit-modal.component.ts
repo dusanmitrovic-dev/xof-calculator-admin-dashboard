@@ -515,7 +515,7 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
               value: [
                 value,
                 [Validators.required, Validators.pattern(/^\d+(\.\d+)?$/)],
-              ], // Allow integers and decimals
+              ], 
             })
           );
         }
