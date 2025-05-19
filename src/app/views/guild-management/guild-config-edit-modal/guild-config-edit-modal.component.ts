@@ -471,7 +471,7 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
   addTopLevelRole(roleId: string): void {
     const rolesGroup = this.topLevelRoles;
     if (roleId) {
-      if (rolesGroup.get(roleId)) {
+      if (rolesGroup.contains(roleId)) {
         console.warn(`Role ID ${roleId} already exists.`);
         this.errorMessage = `Role ID ${roleId} already exists.`;
       } else {
@@ -480,12 +480,12 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
           this.fb.group({
             value: [
               '',
-              [Validators.required, Validators.pattern(/^(\d+)(\.\d+)?$/)],
+              [Validators.required, Validators.pattern(/^\d+(\.\d+)?$/)],
             ],
           })
         );
         rolesGroup.markAsDirty();
-        this.errorMessage = null;
+        this.errorMessage = null; // Clear error message if successful
       }
     } else {
       this.errorMessage = 'Role ID cannot be empty.';
