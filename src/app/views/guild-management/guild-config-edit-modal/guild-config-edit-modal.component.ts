@@ -432,6 +432,7 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
       this.changeDetectorRef.detectChanges(); // Trigger change detection after patching
     }, 50); // Short delay
 
+    alert(config.roles);
     this.patchTopLevelRoles(config.roles);
   }
 
