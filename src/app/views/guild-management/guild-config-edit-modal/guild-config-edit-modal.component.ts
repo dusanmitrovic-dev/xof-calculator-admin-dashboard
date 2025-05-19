@@ -507,7 +507,7 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
   private patchTopLevelRoles(
     rolesData: { [roleId: string]: number } | undefined
   ): void {
-    const rolesFormGroup = this.topLevelRoles;
+    const rolesFormGroup = this.configForm.get('roles') as FormGroup;
 
     // Clear existing controls
     Object.keys(rolesFormGroup.controls).forEach((key) =>
@@ -524,7 +524,7 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
             this.fb.group({
               value: [
                 value,
-                [Validators.required, Validators.pattern(/^\d+(\.\d+)?$/)],
+                [Validators.required, Validators.pattern(/^(\d+)(\.\d+)?$/)],
               ],
             })
           );
