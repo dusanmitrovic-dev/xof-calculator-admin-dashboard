@@ -524,7 +524,7 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
             this.fb.group({
               value: [
                 value,
-                [Validators.required, Validators.pattern(/^(\d+)(\.\d+)?$/)],
+                [Validators.required, Validators.pattern(/^\d+(\.\d+)?$/)],
               ],
             })
           );
@@ -532,6 +532,7 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
       });
     }
 
+    // Ensure rolesFormGroup is marked as pristine and untouched to prevent accidental empty saves
     rolesFormGroup.markAsPristine();
     rolesFormGroup.markAsUntouched();
   }
