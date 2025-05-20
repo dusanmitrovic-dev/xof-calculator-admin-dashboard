@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { Router } from '@angular/router';
 import { Subject, Observable } from 'rxjs';
 import { takeUntil, tap } from 'rxjs/operators';
@@ -66,7 +66,8 @@ export class GuildConfigListComponent implements OnInit, OnDestroy {
   constructor(
     private router: Router,
     private guildConfigService: GuildConfigService,
-    private authService: AuthService
+    private authService: AuthService,
+    private changeDetectorRef: ChangeDetectorRef // Inject ChangeDetectorRef
   ) {
     this.selectedGuildId$ = this.guildConfigService.selectedGuildId$;
   }
@@ -146,15 +147,16 @@ export class GuildConfigListComponent implements OnInit, OnDestroy {
 
     // Ensure guildConfig is loaded before attempting to open modal for a specific section
     if (!this.guildConfig && section !== 'full') {
-       console.warn(`Attempted to open section '${section}' without loaded guild config.`);
-       // Optionally show a loading state or error, or load the config first
-       // For now, we'll rely on prepareFormForMode handling null config
+      console.warn(`Attempted to open section '${section}' without loaded guild config.`);
     }
 
     this.currentEditSection = section;
-    // Pass the currently loaded guildConfig to the modal component
-    // This ensures the modal component receives existing data when opened for a specific section
-    this.isConfigEditModalVisible = true; // This triggers the modal's ngOnChanges
+
+    // Defer modal visibility update to avoid ExpressionChangedAfterItHasBeenCheckedError
+    setTimeout(() => {
+      this.isConfigEditModalVisible = true; // This triggers the modal's ngOnChanges
+      this.changeDetectorRef.detectChanges(); // Explicitly trigger change detection
+    });
 
     console.log(`GuildConfigListComponent: Opening config edit modal for guild ${this.currentGuildId}, section: ${section}`);
   }
