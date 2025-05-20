@@ -193,42 +193,40 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
   }
 
   openDisplaySettingsModal(): void {
-    // Called when editSection is 'full'
+    console.log('openDisplaySettingsModal triggered');
     if (this.isEditMode && !this.originalConfig) {
       this.errorMessage =
         'Original configuration data is missing. Cannot edit display settings.';
-      // Potentially close or show an error, but don't proceed to open sub-modal without originalConfig if editing.
+      console.error('Error: Original configuration data is missing.');
       return;
     }
+
     const modalRef = this.modalService.open(DisplaySettingsEditModalComponent, {
       centered: true,
       backdrop: 'static',
     });
 
     const settingsForSubModal = this.getInitialDisplaySettingsForSubModal();
-    console.log(
-      '[Parent] Passing to DisplaySettingsEditModalComponent (openDisplaySettingsModal from full edit):',
-      JSON.stringify(settingsForSubModal)
-    );
+    console.log('Settings passed to modal:', settingsForSubModal);
+
     modalRef.componentInstance.currentDisplaySettings = JSON.parse(
       JSON.stringify(settingsForSubModal)
     );
 
-    modalRef.result.then(
-      (result: DisplaySettingsModalData) => {
-        this.currentDisplaySettings = result; // Update parent's currentDisplaySettings with the result
-        this.configForm.markAsDirty();
-        console.log(
-          'Display settings (from full edit) updated locally in parent:',
-          result
-        );
-      },
-      (reason) => {
-        console.log(
-          `Display settings modal (from full edit) dismissed: ${reason}`
-        );
-      }
-    );
+    modalRef.result
+      .then(
+        (result: DisplaySettingsModalData) => {
+          console.log('Modal result:', result);
+          this.currentDisplaySettings = result;
+          this.configForm.markAsDirty();
+        },
+        (reason) => {
+          console.log('Modal dismissed with reason:', reason);
+        }
+      )
+      .catch((error) => {
+        console.error('Error opening modal:', error);
+      });
   }
 
   private saveDisplaySettingsOnly(
