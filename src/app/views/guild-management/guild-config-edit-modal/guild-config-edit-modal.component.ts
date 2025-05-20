@@ -286,48 +286,23 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
     this.clearAllFormArraysAndGroups();
 
     if (this.isEditMode && this.guildConfig) {
-      // Check this.guildConfig for initial mode detection
-      this.originalConfig = JSON.parse(JSON.stringify(this.guildConfig));
-      // Set currentDisplaySettings based on originalConfig, which is the snapshot from DB for this session
-      this.currentDisplaySettings = {
-        ...this.getDefaultDisplaySettings(),
-        ...(this.originalConfig?.display_settings || {}),
-      };
-
-      // Add a small delay before patching the form specifically for 'models', 'shifts', and 'periods' sections
-      if (
-        this.editSection === 'models' ||
-        this.editSection === 'shifts' ||
-        this.editSection === 'periods'
-      ) {
-        console.log(
-          `GuildConfigEditModalComponent: Delaying patchForm for ${this.editSection} section.`
-        );
-        setTimeout(() => {
+      // Fetch the latest roles from the backend to ensure state consistency
+      this.guildConfigService.getGuildConfig(this.guildConfig.guild_id).subscribe({
+        next: (config) => {
+          this.originalConfig = JSON.parse(JSON.stringify(config));
           this.patchForm(this.originalConfig);
-          this.configForm
-            .get('guild_id')
-            ?.setValue(this.originalConfig?.guild_id, { emitEvent: false });
-          this.configForm.get('guild_id')?.disable();
           this.updateTitle();
           this.setConditionalValidators();
           this.changeDetectorRef.detectChanges();
-        }, 50); // Short delay
-      } else {
-        this.patchForm(this.originalConfig);
-        this.configForm
-          .get('guild_id')
-          ?.setValue(this.originalConfig?.guild_id, { emitEvent: false });
-        this.configForm.get('guild_id')?.disable();
-        this.updateTitle();
-        this.setConditionalValidators();
-        this.changeDetectorRef.detectChanges();
-      }
+        },
+        error: (err) => {
+          this.errorMessage = 'Failed to fetch the latest configuration.';
+          console.error('Error fetching guild config:', err);
+        },
+      });
     } else {
       this.originalConfig = null;
-      this.currentDisplaySettings = this.getDefaultDisplaySettings();
       this.patchForm(null);
-      this.configForm.get('guild_id')?.enable();
       this.configForm.get('guild_id')?.setValue(this.guildId || '');
       this.updateTitle();
       this.setConditionalValidators();
@@ -470,10 +445,12 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
   // Improved method to add a top-level role
   addTopLevelRole(roleId: string): void {
     const rolesGroup = this.topLevelRoles;
+    console.log('Current rolesGroup state before adding:', rolesGroup.controls);
+
     if (roleId) {
-      if (rolesGroup.contains(roleId)) {
+      if (rolesGroup.get(roleId)) {
         console.warn(`Role ID ${roleId} already exists.`);
-        this.errorMessage = `Role ID ${roleId} already exists.`;
+        // this.errorMessage = `Role ID ${roleId} already exists.`;
       } else {
         rolesGroup.addControl(
           roleId,
@@ -486,6 +463,7 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
         );
         rolesGroup.markAsDirty();
         this.errorMessage = null; // Clear error message if successful
+        console.log('Role added successfully. Updated rolesGroup state:', rolesGroup.controls);
       }
     } else {
       this.errorMessage = 'Role ID cannot be empty.';
