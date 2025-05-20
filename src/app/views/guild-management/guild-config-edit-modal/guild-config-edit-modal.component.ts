@@ -188,6 +188,7 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
       )
       .finally(() => {
         this.isEditingDisplaySettingsSubFlow = false;
+        this.changeDetectorRef.detectChanges(); // Ensure UI updates after modal closes
       });
   }
 
