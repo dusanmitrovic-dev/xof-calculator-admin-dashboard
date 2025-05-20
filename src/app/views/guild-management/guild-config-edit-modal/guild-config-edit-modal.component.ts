@@ -43,6 +43,8 @@ import {
   UtilitiesModule,
 } from '@coreui/angular';
 import { IconDirective, IconModule } from '@coreui/icons-angular';
+import { cilPaint, cilBan, cilX } from '@coreui/icons';
+import { IconSetService } from '@coreui/icons-angular';
 
 @Component({
   selector: 'app-guild-config-edit-modal',
@@ -62,7 +64,6 @@ import { IconDirective, IconModule } from '@coreui/icons-angular';
     UtilitiesModule,
     CardModule,
     IconDirective,
-    // IconModule,
   ],
 })
 export class GuildConfigEditModalComponent implements OnInit, OnChanges {
@@ -93,8 +94,11 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
     private fb: FormBuilder,
     private guildConfigService: GuildConfigService,
     private changeDetectorRef: ChangeDetectorRef,
-    private modalService: NgbModal
-  ) {}
+    private modalService: NgbModal,
+    private iconSetService: IconSetService
+  ) {
+    this.iconSetService.icons = { cilPaint, cilBan, cilX };
+  }
 
   ngOnInit(): void {
     this.configForm = this.buildForm();
@@ -140,7 +144,6 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
   }
 
   private handleDisplaySettingsSubFlow(): void {
-    // Ensure originalConfig is available if in edit mode, as effectiveGuildId depends on it.
     if (this.isEditMode && !this.originalConfig) {
       this.errorMessage =
         'Original configuration data is missing. Cannot edit display settings.';
@@ -156,7 +159,11 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
 
     this.isEditingDisplaySettingsSubFlow = true;
     this.title = `Editing Display Settings for ${effectiveGuildId}`;
-    this.changeDetectorRef.detectChanges();
+
+    // Ensure changes are applied outside the Angular change detection cycle
+    setTimeout(() => {
+      this.changeDetectorRef.detectChanges();
+    });
 
     const modalRef = this.modalService.open(DisplaySettingsEditModalComponent, {
       centered: true,
@@ -164,10 +171,6 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
     });
 
     const settingsForSubModal = this.getInitialDisplaySettingsForSubModal();
-    console.log(
-      '[Parent] Passing to DisplaySettingsEditModalComponent (handleDisplaySettingsSubFlow):',
-      JSON.stringify(settingsForSubModal)
-    );
     modalRef.componentInstance.currentDisplaySettings = JSON.parse(
       JSON.stringify(settingsForSubModal)
     );
@@ -175,7 +178,7 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
     modalRef.result
       .then(
         (result: DisplaySettingsModalData) => {
-          this.currentDisplaySettings = result; // Update parent's currentDisplaySettings with the result
+          this.currentDisplaySettings = result;
           this.saveDisplaySettingsOnly(result, effectiveGuildId);
         },
         (reason) => {
@@ -407,7 +410,7 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
       this.changeDetectorRef.detectChanges(); // Trigger change detection after patching
     }, 50); // Short delay
 
-    alert(config.roles);
+    // alert(config.roles);
     this.patchTopLevelRoles(config.roles);
   }
 

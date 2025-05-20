@@ -198,4 +198,8 @@ export class GuildConfigListComponent implements OnInit, OnDestroy {
   getCommissionRoles(): { [roleId: string]: any } | null {
       return this.guildConfig?.commission_settings?.roles ?? null;
   }
+
+  trackByFn(index: number, item: any): any {
+    return item;
+  }
 }

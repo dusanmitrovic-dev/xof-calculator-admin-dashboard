@@ -74,7 +74,7 @@
                     <c-row class="mb-2 border-bottom pb-2 align-items-center">
                       <c-col sm="3" class="fw-semibold text-muted">Ephemeral Responses</c-col>
                       <c-col sm="9">
-                        <c-badge [color]="guildConfig.display_settings.ephemeral_responses ? 'success' : 'secondary'">
+                        <c-badge [color]="guildConfig.display_settings.ephemeral_responses ? 'success' : 'secondary'" class="btn btn-outline-secondary">
                           {{ guildConfig.display_settings.ephemeral_responses ? 'Enabled' : 'Disabled' }}
                         </c-badge>
                         <small class="text-muted ms-2"></small>
@@ -83,7 +83,7 @@
                      <c-row class="mb-2 border-bottom pb-2 align-items-center">
                       <c-col sm="3" class="fw-semibold text-muted">Show Average</c-col>
                       <c-col sm="9">
-                        <c-badge [color]="guildConfig.display_settings.show_average ? 'success' : 'secondary'">
+                        <c-badge [color]="guildConfig.display_settings.show_average ? 'success' : 'secondary'" class="btn btn-outline-secondary">
                           {{ guildConfig.display_settings.show_average ? 'Enabled' : 'Disabled' }}
                         </c-badge>
                          <small class="text-muted ms-2"></small>
@@ -92,7 +92,7 @@
                     <c-row class="mb-0 align-items-center">
                       <c-col sm="3" class="fw-semibold text-muted">Show IDs</c-col>
                       <c-col sm="9">
-                        <c-badge [color]="guildConfig.display_settings.show_ids ? 'success' : 'secondary'">
+                        <c-badge [color]="guildConfig.display_settings.show_ids ? 'success' : 'secondary'" class="btn btn-outline-secondary">
                           {{ guildConfig.display_settings.show_ids ? 'Enabled' : 'Disabled' }}
                         </c-badge>
                         <small class="text-muted ms-2"></small>
@@ -135,7 +135,7 @@
                         </button>
                       </c-col>
                     </c-row>
-                    <c-row class="mb-0 align-items-center"> 
+                    <c-row class="mb-0 align-items-center">
                       <c-col sm="3" class="fw-semibold text-muted">Periods</c-col>
                       <c-col sm="6">
                         <ng-container *ngIf="guildConfig.periods && guildConfig.periods.length > 0; else noPeriods">
@@ -245,11 +245,9 @@
                   <c-card-body>
                     @if (guildConfig.commission_settings && guildConfig.commission_settings.roles && objectKeys(guildConfig.commission_settings.roles).length > 0) {
                       <ul class="list-unstyled mb-0">
-                        @for (roleId of objectKeys(guildConfig.commission_settings.roles); track roleId) {
-                          <li class="border-bottom pb-2 mb-2">
-                             Role ID <code>{{ roleId }}</code>: <strong>{{ guildConfig.commission_settings.roles[roleId].commission_percentage }}%</strong>
-                          </li>
-                        }
+                        <li *ngFor="let roleId of objectKeys(guildConfig.commission_settings.roles); trackBy: trackByFn">
+                          Role ID <code>{{ roleId }}</code>: <strong>{{ guildConfig.commission_settings.roles[roleId].commission_percentage }}%</strong>
+                        </li>
                       </ul>
                     } @else {
                       <div class="text-center text-muted py-3">
@@ -273,17 +271,15 @@
                   <c-card-body>
                     @if (guildConfig.commission_settings && guildConfig.commission_settings.users && objectKeys(guildConfig.commission_settings.users).length > 0) {
                       <ul class="list-unstyled mb-0">
-                        @for (userId of objectKeys(guildConfig.commission_settings.users); track userId) {
-                          <li class="border-bottom pb-2 mb-2">
-                             User ID <code>{{ userId }}</code>:
-                             @if (guildConfig.commission_settings.users[userId].hourly_rate != null) {
-                               <span class="ms-2"> Hourly Rate: <strong>{{ guildConfig.commission_settings.users[userId].hourly_rate | currency }}</strong></span>
-                             }
-                             @if (guildConfig.commission_settings.users[userId].override_role) {
-                               <span class="border rounded py-1 px-2 d-inline-block text-body ms-2">Overrides Role %</span>
-                             }
-                          </li>
-                        }
+                        <li *ngFor="let userId of objectKeys(guildConfig.commission_settings.users); trackBy: trackByFn">
+                          User ID <code>{{ userId }}</code>:
+                          <span *ngIf="guildConfig.commission_settings.users[userId].hourly_rate != null">
+                            Hourly Rate: <strong>{{ guildConfig.commission_settings.users[userId].hourly_rate | currency }}</strong>
+                          </span>
+                          <span *ngIf="guildConfig.commission_settings.users[userId].override_role" class="border rounded py-1 px-2 d-inline-block text-body ms-2">
+                            Overrides Role %
+                          </span>
+                        </li>
                       </ul>
                     } @else {
                       <div class="text-center text-muted py-3">
