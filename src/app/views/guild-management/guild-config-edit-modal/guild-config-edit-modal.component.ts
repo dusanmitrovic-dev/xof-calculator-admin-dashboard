@@ -201,32 +201,36 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
       return;
     }
 
-    const modalRef = this.modalService.open(DisplaySettingsEditModalComponent, {
-      centered: true,
-      backdrop: 'static',
-    });
-
     const settingsForSubModal = this.getInitialDisplaySettingsForSubModal();
     console.log('Settings passed to modal:', settingsForSubModal);
 
-    modalRef.componentInstance.currentDisplaySettings = JSON.parse(
-      JSON.stringify(settingsForSubModal)
-    );
-
-    modalRef.result
-      .then(
-        (result: DisplaySettingsModalData) => {
-          console.log('Modal result:', result);
-          this.currentDisplaySettings = result;
-          this.configForm.markAsDirty();
-        },
-        (reason) => {
-          console.log('Modal dismissed with reason:', reason);
-        }
-      )
-      .catch((error) => {
-        console.error('Error opening modal:', error);
+    setTimeout(() => {
+      const modalRef = this.modalService.open(DisplaySettingsEditModalComponent, {
+        centered: true,
+        backdrop: 'static',
       });
+
+      modalRef.componentInstance.currentDisplaySettings = JSON.parse(
+        JSON.stringify(settingsForSubModal)
+      );
+
+      modalRef.result
+        .then(
+          (result: DisplaySettingsModalData) => {
+            console.log('Modal result:', result);
+            this.currentDisplaySettings = result;
+            this.configForm.markAsDirty();
+          },
+          (reason) => {
+            console.log('Modal dismissed with reason:', reason);
+          }
+        )
+        .catch((error) => {
+          console.error('Error opening modal:', error);
+        });
+
+      this.changeDetectorRef.detectChanges();
+    });
   }
 
   private saveDisplaySettingsOnly(
