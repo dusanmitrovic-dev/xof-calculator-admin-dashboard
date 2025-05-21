@@ -58,44 +58,49 @@
                   </c-card-header>
                   <c-card-body>
                     <c-row class="mb-2 border-bottom pb-2 align-items-center">
-                      <c-col sm="3" class="fw-semibold text-muted">Agency Name</c-col>
+                      <c-col sm="3" class="fw-semibold text-muted">
+                        <svg cIcon name="cil-speech" size="sm" class="me-1"></svg> Agency Name
+                      </c-col>
                       <c-col sm="9">
                         {{ guildConfig.display_settings.agency_name || 'Not Set' }}
-                        <small class="text-muted ms-2"></small>
                       </c-col>
                     </c-row>
                     <c-row class="mb-2 border-bottom pb-2 align-items-center">
-                      <c-col sm="3" class="fw-semibold text-muted">Bot Name</c-col>
+                      <c-col sm="3" class="fw-semibold text-muted">
+                         <svg cIcon name="cil-speech" size="sm" class="me-1"></svg> Bot Name
+                      </c-col>
                       <c-col sm="9">
                          {{ guildConfig.display_settings.bot_name || 'Not Set' }}
-                         <small class="text-muted ms-2"></small>
                       </c-col>
                     </c-row>
                     <c-row class="mb-2 border-bottom pb-2 align-items-center">
-                      <c-col sm="3" class="fw-semibold text-muted">Ephemeral Responses</c-col>
+                      <c-col sm="3" class="fw-semibold text-muted">
+                        <svg cIcon name="cil-message-square" size="sm" class="me-1"></svg> Ephemeral Responses
+                      </c-col>
                       <c-col sm="9">
-                        <span class="border rounded py-1 px-2 d-inline-block text-body ms-2">
+                        <span class="border rounded py-1 px-2 d-inline-block text-body ms-2" [ngClass]="guildConfig.display_settings.ephemeral_responses ? 'border-success' : 'border-danger'">
                           {{ guildConfig.display_settings.ephemeral_responses ? 'Enabled' : 'Disabled' }}
                         </span>
-                        <small class="text-muted ms-2"></small>
                       </c-col>
                     </c-row>
                      <c-row class="mb-2 border-bottom pb-2 align-items-center">
-                      <c-col sm="3" class="fw-semibold text-muted">Show Average</c-col>
+                      <c-col sm="3" class="fw-semibold text-muted">
+                        <svg cIcon name="cil-chart-line" size="sm" class="me-1"></svg> Show Average
+                      </c-col>
                       <c-col sm="9">
-                        <span class="border rounded py-1 px-2 d-inline-block text-body ms-2">
+                        <span class="border rounded py-1 px-2 d-inline-block text-body ms-2" [ngClass]="guildConfig.display_settings.show_average ? 'border-success' : 'border-danger'">
                           {{ guildConfig.display_settings.show_average ? 'Enabled' : 'Disabled' }}
                         </span>
-                         <small class="text-muted ms-2"></small>
                       </c-col>
                     </c-row>
                     <c-row class="mb-0 align-items-center">
-                      <c-col sm="3" class="fw-semibold text-muted">Show IDs</c-col>
+                      <c-col sm="3" class="fw-semibold text-muted">
+                        <svg cIcon name="cil-barcode" size="sm" class="me-1"></svg> Show IDs
+                      </c-col>
                       <c-col sm="9">
-                        <span class="border rounded py-1 px-2 d-inline-block text-body ms-2">
+                        <span class="border rounded py-1 px-2 d-inline-block text-body ms-2" [ngClass]="guildConfig.display_settings.show_ids ? 'border-success' : 'border-danger'">
                           {{ guildConfig.display_settings.show_ids ? 'Enabled' : 'Disabled' }}
                         </span>
-                        <small class="text-muted ms-2"></small>
                       </c-col>
                     </c-row>
                   </c-card-body>
