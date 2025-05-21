@@ -7,13 +7,13 @@
 
     <!-- Main content area shown ONLY when a guild is selected -->
     <ng-container *ngIf="currentGuildId">
-      <c-card class="mb-4 rounded-4 shadow-lg">
+      <c-card class="mb-4 rounded-4 shadow-lg earnings-card">
         <c-card-header>
-          <strong>Earnings Records for {{ currentGuildId }}</strong>
+          <strong class="earnings-heading">Earnings Records for {{ currentGuildId }}</strong>
           <div class="float-end">
             <button cButton color="success" variant="outline" size="sm" (click)="openAddEarningModal()" 
                     [disabled]="loadingEarnings || loadingConfig || !guildConfig" 
-                    title="{{ !guildConfig ? 'Guild Config must exist first' : 'Add New Earning' }}">
+                    title="{{ !guildConfig ? 'Guild Config must exist first' : 'Add New Earning' }}" class="add-btn">
               <svg cIcon name="cilPlus" size="sm"></svg> Add Earning
             </button>
           </div>
@@ -75,7 +75,7 @@
                 <!-- --- END UPDATE --- -->
                   <td>{{ earning.date }}</td>
                   <td>{{ earning.user_mention }}</td>
-                  <td>{{ earning.role }}</td>
+                  <td><span class="badge">{{ earning.role }}</span></td>
                   <td>
                     <ng-container *ngIf="earning.models && earning.models.length > 0; else noModels">
                       <c-dropdown alignment="end">
@@ -100,10 +100,10 @@
                   <td>{{ earning.gross_revenue | currency }}</td>
                   <td>{{ earning.total_cut | currency }}</td>
                   <td>
-                    <button cButton color="primary" variant="outline" size="sm" class="rounded-circle" (click)="openEditEarningModal(earning)" title="Edit Earning">
+                    <button cButton color="primary" variant="outline" size="sm" class="rounded-circle action-btn" (click)="openEditEarningModal(earning)" title="Edit Earning">
                       <svg cIcon name="cilPencil" size="sm"></svg>
                     </button>
-                    <button cButton color="danger" variant="outline" size="sm" class="ms-1 rounded-circle" (click)="openDeleteConfirmModal(earning)" title="Delete Earning">
+                    <button cButton color="danger" variant="outline" size="sm" class="ms-1 rounded-circle action-btn delete" (click)="openDeleteConfirmModal(earning)" title="Delete Earning">
                       <svg cIcon name="cilTrash" size="sm"></svg>
                     </button>
                   </td>
