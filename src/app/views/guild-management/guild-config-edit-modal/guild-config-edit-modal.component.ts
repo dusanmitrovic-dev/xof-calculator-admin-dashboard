@@ -294,11 +294,13 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
         ...(this.originalConfig?.display_settings || {}),
       };
 
-      // Add a small delay before patching the form specifically for 'models', 'shifts', and 'periods' sections
+      // Add a small delay before patching the form for sections that might require the view to be ready
       if (
         this.editSection === 'models' ||
         this.editSection === 'shifts' ||
-        this.editSection === 'periods'
+        this.editSection === 'periods' ||
+        this.editSection === 'bonus_rules' ||
+        this.editSection === 'top_level_roles'
       ) {
         console.log(
           `GuildConfigEditModalComponent: Delaying patchForm for ${this.editSection} section.`
