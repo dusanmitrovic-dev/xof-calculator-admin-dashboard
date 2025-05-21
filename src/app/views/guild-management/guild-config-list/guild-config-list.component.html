@@ -74,27 +74,27 @@
                     <c-row class="mb-2 border-bottom pb-2 align-items-center">
                       <c-col sm="3" class="fw-semibold text-muted">Ephemeral Responses</c-col>
                       <c-col sm="9">
-                        <c-badge [color]="guildConfig.display_settings.ephemeral_responses ? 'success' : 'secondary'">
+                        <span class="border rounded py-1 px-2 d-inline-block text-body ms-2">
                           {{ guildConfig.display_settings.ephemeral_responses ? 'Enabled' : 'Disabled' }}
-                        </c-badge>
+                        </span>
                         <small class="text-muted ms-2"></small>
                       </c-col>
                     </c-row>
                      <c-row class="mb-2 border-bottom pb-2 align-items-center">
                       <c-col sm="3" class="fw-semibold text-muted">Show Average</c-col>
                       <c-col sm="9">
-                        <c-badge [color]="guildConfig.display_settings.show_average ? 'success' : 'secondary'">
+                        <span class="border rounded py-1 px-2 d-inline-block text-body ms-2">
                           {{ guildConfig.display_settings.show_average ? 'Enabled' : 'Disabled' }}
-                        </c-badge>
+                        </span>
                          <small class="text-muted ms-2"></small>
                       </c-col>
                     </c-row>
                     <c-row class="mb-0 align-items-center">
                       <c-col sm="3" class="fw-semibold text-muted">Show IDs</c-col>
                       <c-col sm="9">
-                        <c-badge [color]="guildConfig.display_settings.show_ids ? 'success' : 'secondary'">
+                        <span class="border rounded py-1 px-2 d-inline-block text-body ms-2">
                           {{ guildConfig.display_settings.show_ids ? 'Enabled' : 'Disabled' }}
-                        </c-badge>
+                        </span>
                         <small class="text-muted ms-2"></small>
                       </c-col>
                     </c-row>
