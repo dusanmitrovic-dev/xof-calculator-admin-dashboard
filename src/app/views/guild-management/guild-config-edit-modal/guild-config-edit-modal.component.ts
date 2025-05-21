@@ -64,10 +64,6 @@ import { IconSetService } from '@coreui/icons-angular';
     UtilitiesModule,
     CardModule,
     IconDirective,
-<<<<<<< HEAD
-=======
-    // IconModule,
->>>>>>> fa7bf6f0898dc48eb7f97168aaac2f65525eb7ad
   ],
 })
 export class GuildConfigEditModalComponent implements OnInit, OnChanges {
@@ -98,16 +94,11 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
     private fb: FormBuilder,
     private guildConfigService: GuildConfigService,
     private changeDetectorRef: ChangeDetectorRef,
-<<<<<<< HEAD
     private modalService: NgbModal,
     private iconSetService: IconSetService
   ) {
     this.iconSetService.icons = { cilPaint, cilBan, cilX };
   }
-=======
-    private modalService: NgbModal
-  ) {}
->>>>>>> fa7bf6f0898dc48eb7f97168aaac2f65525eb7ad
 
   ngOnInit(): void {
     this.configForm = this.buildForm();
@@ -169,27 +160,17 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
     this.isEditingDisplaySettingsSubFlow = true;
     this.title = `Editing Display Settings for ${effectiveGuildId}`;
 
-<<<<<<< HEAD
     // Ensure changes are applied outside the Angular change detection cycle
     setTimeout(() => {
       this.changeDetectorRef.detectChanges();
     });
 
-=======
->>>>>>> fa7bf6f0898dc48eb7f97168aaac2f65525eb7ad
     const modalRef = this.modalService.open(DisplaySettingsEditModalComponent, {
       centered: true,
       backdrop: 'static',
     });
 
     const settingsForSubModal = this.getInitialDisplaySettingsForSubModal();
-<<<<<<< HEAD
-=======
-    console.log(
-      '[Parent] Passing to DisplaySettingsEditModalComponent (handleDisplaySettingsSubFlow):',
-      JSON.stringify(settingsForSubModal)
-    );
->>>>>>> fa7bf6f0898dc48eb7f97168aaac2f65525eb7ad
     modalRef.componentInstance.currentDisplaySettings = JSON.parse(
       JSON.stringify(settingsForSubModal)
     );
@@ -197,11 +178,7 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
     modalRef.result
       .then(
         (result: DisplaySettingsModalData) => {
-<<<<<<< HEAD
           this.currentDisplaySettings = result;
-=======
-          this.currentDisplaySettings = result; // Update parent's currentDisplaySettings with the result
->>>>>>> fa7bf6f0898dc48eb7f97168aaac2f65525eb7ad
           this.saveDisplaySettingsOnly(result, effectiveGuildId);
         },
         (reason) => {
@@ -211,15 +188,11 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
       )
       .finally(() => {
         this.isEditingDisplaySettingsSubFlow = false;
-<<<<<<< HEAD
         this.changeDetectorRef.detectChanges(); // Ensure UI updates after modal closes
-=======
->>>>>>> fa7bf6f0898dc48eb7f97168aaac2f65525eb7ad
       });
   }
 
   openDisplaySettingsModal(): void {
-<<<<<<< HEAD
     console.log('openDisplaySettingsModal triggered');
     if (this.isEditMode && !this.originalConfig) {
       this.errorMessage =
@@ -258,44 +231,6 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
 
       this.changeDetectorRef.detectChanges();
     });
-=======
-    // Called when editSection is 'full'
-    if (this.isEditMode && !this.originalConfig) {
-      this.errorMessage =
-        'Original configuration data is missing. Cannot edit display settings.';
-      // Potentially close or show an error, but don't proceed to open sub-modal without originalConfig if editing.
-      return;
-    }
-    const modalRef = this.modalService.open(DisplaySettingsEditModalComponent, {
-      centered: true,
-      backdrop: 'static',
-    });
-
-    const settingsForSubModal = this.getInitialDisplaySettingsForSubModal();
-    console.log(
-      '[Parent] Passing to DisplaySettingsEditModalComponent (openDisplaySettingsModal from full edit):',
-      JSON.stringify(settingsForSubModal)
-    );
-    modalRef.componentInstance.currentDisplaySettings = JSON.parse(
-      JSON.stringify(settingsForSubModal)
-    );
-
-    modalRef.result.then(
-      (result: DisplaySettingsModalData) => {
-        this.currentDisplaySettings = result; // Update parent's currentDisplaySettings with the result
-        this.configForm.markAsDirty();
-        console.log(
-          'Display settings (from full edit) updated locally in parent:',
-          result
-        );
-      },
-      (reason) => {
-        console.log(
-          `Display settings modal (from full edit) dismissed: ${reason}`
-        );
-      }
-    );
->>>>>>> fa7bf6f0898dc48eb7f97168aaac2f65525eb7ad
   }
 
   private saveDisplaySettingsOnly(
@@ -357,7 +292,6 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
     this.clearAllFormArraysAndGroups();
 
     if (this.isEditMode && this.guildConfig) {
-<<<<<<< HEAD
       // Fetch the latest roles from the backend to ensure state consistency
       this.guildConfigService.getGuildConfig(this.guildConfig.guild_id).subscribe({
         next: (config) => {
@@ -372,45 +306,6 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
           console.error('Error fetching guild config:', err);
         },
       });
-=======
-      // Check this.guildConfig for initial mode detection
-      this.originalConfig = JSON.parse(JSON.stringify(this.guildConfig));
-      // Set currentDisplaySettings based on originalConfig, which is the snapshot from DB for this session
-      this.currentDisplaySettings = {
-        ...this.getDefaultDisplaySettings(),
-        ...(this.originalConfig?.display_settings || {}),
-      };
-
-      // Add a small delay before patching the form specifically for 'models', 'shifts', and 'periods' sections
-      if (
-        this.editSection === 'models' ||
-        this.editSection === 'shifts' ||
-        this.editSection === 'periods'
-      ) {
-        console.log(
-          `GuildConfigEditModalComponent: Delaying patchForm for ${this.editSection} section.`
-        );
-        setTimeout(() => {
-          this.patchForm(this.originalConfig);
-          this.configForm
-            .get('guild_id')
-            ?.setValue(this.originalConfig?.guild_id, { emitEvent: false });
-          this.configForm.get('guild_id')?.disable();
-          this.updateTitle();
-          this.setConditionalValidators();
-          this.changeDetectorRef.detectChanges();
-        }, 50); // Short delay
-      } else {
-        this.patchForm(this.originalConfig);
-        this.configForm
-          .get('guild_id')
-          ?.setValue(this.originalConfig?.guild_id, { emitEvent: false });
-        this.configForm.get('guild_id')?.disable();
-        this.updateTitle();
-        this.setConditionalValidators();
-        this.changeDetectorRef.detectChanges();
-      }
->>>>>>> fa7bf6f0898dc48eb7f97168aaac2f65525eb7ad
     } else {
       this.originalConfig = null;
       this.patchForm(null);
@@ -570,11 +465,7 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
             value: [
               '',
               [Validators.required, Validators.pattern(/^\d+(\.\d+)?$/)],
-<<<<<<< HEAD
             ],
-=======
-            ], // Allow integers and decimals
->>>>>>> fa7bf6f0898dc48eb7f97168aaac2f65525eb7ad
           })
         );
         rolesGroup.markAsDirty();
@@ -601,7 +492,6 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
   private patchTopLevelRoles(
     rolesData: { [roleId: string]: number } | undefined
   ): void {
-<<<<<<< HEAD
     const rolesFormGroup = this.configForm.get('roles') as FormGroup;
 
     // Clear existing controls
@@ -609,12 +499,6 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
       rolesFormGroup.removeControl(key)
     );
 
-=======
-    const rolesFormGroup = this.topLevelRoles;
-    Object.keys(rolesFormGroup.controls).forEach((key) =>
-      rolesFormGroup.removeControl(key)
-    );
->>>>>>> fa7bf6f0898dc48eb7f97168aaac2f65525eb7ad
     if (rolesData) {
       console.log('Patching roles with data:', rolesData);
 
@@ -626,11 +510,7 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
               value: [
                 value,
                 [Validators.required, Validators.pattern(/^\d+(\.\d+)?$/)],
-<<<<<<< HEAD
               ],
-=======
-              ], // Allow integers and decimals
->>>>>>> fa7bf6f0898dc48eb7f97168aaac2f65525eb7ad
             })
           );
         }
