@@ -25,7 +25,7 @@ export const navItems: INavData[] = [
         name: 'User Management',
         url: '/user-management',
         iconComponent: { name: 'cil-user' },
-        attributes: { roles: ['admin'] }
+        attributes: { roles: ['admin'] } // Add this line to restrict visibility
       }
     ]
   }
