@@ -16,7 +16,7 @@ import {
 } from '@coreui/angular';
 
 import { DefaultHeaderComponent } from './';
-import { navItems } from './_nav';
+import { navItems as originalNavItems, INavData } from './_nav'; // Renamed navItems import
 import { AuthService } from '../../../app/auth/auth.service'; // Import AuthService
 
 function isOverflown(element: HTMLElement) {
@@ -50,28 +50,50 @@ function isOverflown(element: HTMLElement) {
   ]
 })
 export class DefaultLayoutComponent implements OnInit { // Implemented OnInit
-  public navItems = [...navItems];
+  // Initialize with the original nav items
+  public navItems: INavData[] = [];
   private userRole: string | null = null;
 
   constructor(private authService: AuthService) {} // Injected AuthService
 
   ngOnInit(): void {
     this.userRole = this.authService.getUserRole(); // Get user role
-    this.filterNavItems();
+    console.log('DefaultLayoutComponent: User role:', this.userRole); // Log user role
+    this.navItems = this.filterNavItems(originalNavItems);
+    console.log('DefaultLayoutComponent: Filtered nav items:', this.navItems); // Log filtered nav items
   }
 
-  filterNavItems(): void {
-    if (!this.userRole) { // If no role, or role couldn't be determined, show minimal items or handle as error
-      this.navItems = this.navItems.filter(item => !item.attributes?.['roles']);
-      return;
+  // Recursive function to filter nav items and their children
+  filterNavItems(items: INavData[]): INavData[] {
+    if (!this.userRole) {
+       // If no role, return only items without explicit roles defined
+       return items.filter(item => !item.attributes?.['roles']);
     }
 
-    this.navItems = navItems.filter(item => {
+    return items.filter(item => {
       const requiredRoles = item.attributes?.['roles'] as string[];
-      if (!requiredRoles || requiredRoles.length === 0) {
-        return true; // Item has no role restrictions
+
+      // Check if the item has required roles and if the user has one of them
+      const hasRequiredRole = requiredRoles && this.userRole != null && requiredRoles.includes(this.userRole);
+
+      // Check if the item has no role restrictions
+      const noRoleRestriction = !requiredRoles || requiredRoles.length === 0;
+
+      // If the item is a group with children, filter its children recursively
+      if (item.children && item.children.length > 0) {
+        const filteredChildren = this.filterNavItems(item.children);
+        // Include the group if it has no role restrictions OR if the user has the required role for the group AND it has filtered children
+        // Or if it has no role restrictions but has filtered children
+         if ((noRoleRestriction || hasRequiredRole) && filteredChildren.length > 0) {
+            // Create a new item object to ensure immutability and update children
+            return { ...item, children: filteredChildren };
+         }
+         // Exclude the group if it has no allowed children after filtering
+         return false;
       }
-      return requiredRoles.includes(this.userRole!);
+
+      // For items without children, include if there are no role restrictions or user has the required role
+      return noRoleRestriction || hasRequiredRole;
     });
   }
 }

@@ -31,3 +31,5 @@ export const navItems: INavData[] = [
   }
   // ... (rest of the commented out items remain unchanged) ...
 ];
+export { INavData };
+
