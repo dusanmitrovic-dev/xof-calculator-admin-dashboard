@@ -29,7 +29,6 @@
               <!-- Add a default 'user' option if needed, otherwise stick to manager/admin -->
               <option value="user">User</option> 
               <option value="manager">Manager</option>
-              <option value="admin">Admin</option>
            </select>
            <div *ngIf="userForm.get('role')?.invalid && userForm.get('role')?.touched" class="invalid-feedback">
                  Role is required.
