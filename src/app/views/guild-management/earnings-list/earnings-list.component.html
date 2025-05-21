@@ -1,4 +1,4 @@
-<c-row>
+  <c-row>
   <c-col xs="12">
     <!-- Message shown when NO guild is selected -->
     <c-alert color="info" *ngIf="!(selectedGuildId$ | async)">
@@ -7,7 +7,7 @@
 
     <!-- Main content area shown ONLY when a guild is selected -->
     <ng-container *ngIf="currentGuildId">
-      <c-card class="mb-4">
+      <c-card class="mb-4 rounded-4 shadow-lg">
         <c-card-header>
           <strong>Earnings Records for {{ currentGuildId }}</strong>
           <div class="float-end">
@@ -54,7 +54,7 @@
 
           <!-- Earnings Table -->
           <ng-container *ngIf="!loadingConfig && guildConfig && !loadingEarnings && !earningsError && earnings.length > 0">
-            <table cTable class="mb-0 border" hover responsive striped align="middle">
+            <table cTable class="mb-0 border table-hover" responsive striped align="middle">
               <thead>
                 <tr>
                   <th>Date</th>
@@ -100,10 +100,10 @@
                   <td>{{ earning.gross_revenue | currency }}</td>
                   <td>{{ earning.total_cut | currency }}</td>
                   <td>
-                    <button cButton color="primary" variant="outline" size="sm" (click)="openEditEarningModal(earning)" title="Edit Earning">
+                    <button cButton color="primary" variant="outline" size="sm" class="rounded-circle" (click)="openEditEarningModal(earning)" title="Edit Earning">
                       <svg cIcon name="cilPencil" size="sm"></svg>
                     </button>
-                    <button cButton color="danger" variant="outline" size="sm" class="ms-1" (click)="openDeleteConfirmModal(earning)" title="Delete Earning">
+                    <button cButton color="danger" variant="outline" size="sm" class="ms-1 rounded-circle" (click)="openDeleteConfirmModal(earning)" title="Delete Earning">
                       <svg cIcon name="cilTrash" size="sm"></svg>
                     </button>
                   </td>
@@ -129,7 +129,7 @@
 <!-- Delete Confirmation Modal -->
 <c-modal id="deleteConfirmModal" [visible]="isDeleteModalVisible" (visibleChange)="handleDeleteModalVisibleChange($event)"> 
   <c-modal-header>
-    <h5 cModalTitle>Confirm Deletion</h5>
+    <h5 cModalTitle>Confirm Dletion</h5>
     <button (click)="closeDeleteModal()" cButtonClose></button>
   </c-modal-header>
   <c-modal-body *ngIf="earningToDelete">
