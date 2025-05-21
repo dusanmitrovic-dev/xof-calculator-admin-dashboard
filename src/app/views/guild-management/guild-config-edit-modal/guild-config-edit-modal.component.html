@@ -7,7 +7,7 @@
 >
   <c-modal-header>
     <h5 cModalTitle>{{ title }}</h5>
-    <button (click)="closeModal()" cButtonClose title="Close Modal">
+    <button (click)="closeModal()" cButtonClose>
       <svg cIcon name="cilX"></svg>
     </button>
   </c-modal-header>
@@ -50,8 +50,6 @@
                   >Guild ID</label
                 >
                 <input
-                  title="Enter text here"
-                  placeholder="Enter text"
                   cFormControl
                   type="text"
                   id="guild_id"
