@@ -444,7 +444,7 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
       const usersGroup = this.commissionUsers;
       if (usersGroup.get(userId)) {
         console.warn(`User ID ${userId} already exists.`);
-        this.errorMessage = `User ID ${userId} already exists.`;
+        // this.errorMessage = `User ID ${userId} already exists.`;
       } else {
         usersGroup.addControl(
           userId,
@@ -475,7 +475,7 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
     if (roleId) {
       if (rolesGroup.get(roleId)) {
         console.warn(`Role ID ${roleId} already exists.`);
-        this.errorMessage = `Role ID ${roleId} already exists.`;
+        // this.errorMessage = `Role ID ${roleId} already exists.`;
       } else {
         rolesGroup.addControl(
           roleId,
@@ -726,7 +726,7 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
       const rolesGroup = this.commissionRoles;
       if (rolesGroup.get(roleId)) {
         console.warn(`Role ID ${roleId} already exists.`);
-        this.errorMessage = `Role ID ${roleId} already exists.`;
+        // this.errorMessage = `Role ID ${roleId} already exists.`; // TODO: Remove
       } else {
         rolesGroup.addControl(
           roleId,
