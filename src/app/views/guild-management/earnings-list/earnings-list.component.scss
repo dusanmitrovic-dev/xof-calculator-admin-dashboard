@@ -46,11 +46,16 @@ c-table td {
 
 .badge {
   background: #eef1f8;
-  color: #333;
+  color: #333; /* Ensure dark text color */
   padding: 0.3rem 0.6rem;
   border-radius: 10px;
   font-size: 0.85rem;
   display: inline-block; /* Ensure padding and margin work correctly */
+}
+
+/* Add specific rule for badges within the table to ensure dark text */
+c-table .badge {
+  color: #333; // Ensure dark text color for badges within the table
 }
 
 /* Style CoreUI buttons to look like action buttons */
