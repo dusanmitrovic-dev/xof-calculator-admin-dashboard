@@ -16,7 +16,7 @@ interface AuthResponse {
 export interface UserPayload {
   user: {
     id: string; // User ID from MongoDB
-    role: 'admin' | 'user'; // Define expected roles
+    role: 'admin' | 'manager' | 'user'; // Define expected roles
     // Add other fields if they are included in the JWT payload from your backend (e.g., username)
   };
   iat?: number; // Issued at timestamp (optional)
@@ -180,7 +180,7 @@ export class AuthService {
    * Gets the role of the currently logged-in user. Useful for guards.
    * @returns The user's role ('admin', 'user') or null if not logged in.
    */
-  getUserRole(): 'admin' | 'user' | null {
+  getUserRole(): 'admin' | 'manager' | 'user' | null {
     // Add type assertion based on UserPayload definition
     return this.getCurrentUser()?.user?.role ?? null;
   }
