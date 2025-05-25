@@ -16,7 +16,7 @@ import {
 } from '@coreui/angular';
 
 import { DefaultHeaderComponent } from './';
-import { navItems as originalNavItems, INavData } from './_nav'; // Renamed navItems import
+import { navItems as originalNavItems, INavData } from './_nav'; 
 import { AuthService } from '../../../app/auth/auth.service'; // Import AuthService
 
 function isOverflown(element: HTMLElement) {
