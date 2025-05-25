@@ -17,7 +17,7 @@ import {
 
 import { DefaultHeaderComponent } from './';
 import { navItems as originalNavItems, INavData } from './_nav'; // Renamed navItems import
-import { AuthService } from '../../../app/auth/auth.service'; // Import AuthService
+import { AuthService } from '../../../app/auth/auth.service'; 
 
 function isOverflown(element: HTMLElement) {
   return (
