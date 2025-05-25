@@ -1,8 +1,9 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
-import { Subject, Observable } from 'rxjs';
-import { takeUntil, tap } from 'rxjs/operators';
+import { Subject, Observable, forkJoin } from 'rxjs';
+import { takeUntil, tap, catchError } from 'rxjs/operators';
 import { FormsModule } from '@angular/forms';
+import { of } from 'rxjs';
 
 // Import CoreUI modules
 import {
@@ -21,6 +22,7 @@ import { IconDirective } from '@coreui/icons-angular';
 // Import services and interfaces
 import { GuildConfigService, GuildConfig } from '../../../services/guild-config.service';
 import { AuthService } from '../../../auth/auth.service';
+import { GuildService } from '../../../services/guild.service'; // Import GuildService
 
 // Import the modal components
 import { GuildConfigEditModalComponent } from '../guild-config-edit-modal/guild-config-edit-modal.component';
@@ -59,6 +61,12 @@ export class GuildConfigListComponent implements OnInit, OnDestroy {
   loadingConfig: boolean = false;
   configError: string | null = null;
 
+  // Guild Members and Roles State
+  guildMembersMap: { [id: string]: string } = {};
+  guildRolesMap: { [id: string]: string } = {};
+  loadingGuildData: boolean = false;
+  guildDataError: string | null = null;
+
   // Modal State
   isConfigEditModalVisible: boolean = false;
   currentEditSection: string = 'full'; // Default to 'full' for creating or general edit
@@ -66,7 +74,8 @@ export class GuildConfigListComponent implements OnInit, OnDestroy {
   constructor(
     private router: Router,
     private guildConfigService: GuildConfigService,
-    private authService: AuthService
+    private authService: AuthService,
+    private guildService: GuildService // Inject GuildService
   ) {
     this.selectedGuildId$ = this.guildConfigService.selectedGuildId$;
   }
@@ -85,6 +94,7 @@ export class GuildConfigListComponent implements OnInit, OnDestroy {
           this.loadDataForGuild(guildId);
         } else {
            this.loadingConfig = false;
+           this.loadingGuildData = false; // Also reset guild data loading
            console.log('GuildConfigListComponent: No guild selected.');
         }
       })
@@ -100,6 +110,7 @@ export class GuildConfigListComponent implements OnInit, OnDestroy {
   loadDataForGuild(guildId: string): void {
     console.log(`GuildConfigListComponent: Loading data for guild ${guildId}`);
     this.loadGuildConfig(guildId);
+    this.loadGuildMembersAndRoles(guildId); // Load guild members and roles
   }
 
   resetState(): void {
@@ -107,6 +118,10 @@ export class GuildConfigListComponent implements OnInit, OnDestroy {
       this.guildConfig = null;
       this.loadingConfig = true;
       this.configError = null;
+      this.guildMembersMap = {}; // Reset members map
+      this.guildRolesMap = {}; // Reset roles map
+      this.loadingGuildData = true; // Reset guild data loading
+      this.guildDataError = null; // Reset guild data error
       this.isConfigEditModalVisible = false;
       this.currentEditSection = 'full'; // Reset edit section
   }
@@ -116,25 +131,64 @@ export class GuildConfigListComponent implements OnInit, OnDestroy {
     this.loadingConfig = true;
     this.configError = null;
     this.guildConfigService.getGuildConfig(id).pipe(
-      takeUntil(this.destroy$)
-    ).subscribe({
-      next: (config) => {
-        this.guildConfig = config;
-        this.loadingConfig = false;
-        console.log(`GuildConfigListComponent: Config loaded for guild ${id}:`, config);
-      },
-      error: (err: any) => {
-        console.error(`GuildConfigListComponent: Error loading config for guild ${id}:`, err);
-        if (err.status === 404 || err?.message?.includes('not found')) {
-             this.configError = null;
-             this.guildConfig = null;
-             console.log(`GuildConfigListComponent: No config found for guild ${id}.`);
-        } else {
-            this.configError = err.message || `Failed to load configuration for guild ${id}.`;
-        }
-        this.loadingConfig = false;
-      }
+      takeUntil(this.destroy$),
+      catchError((err) => {
+         console.error(`GuildConfigListComponent: Error loading config for guild ${id}:`, err);
+         if (err.status === 404 || err?.message?.includes('not found')) {
+              this.configError = null;
+              this.guildConfig = null;
+              console.log(`GuildConfigListComponent: No config found for guild ${id}.`);
+         } else {
+             this.configError = err.message || `Failed to load configuration for guild ${id}.`;
+         }
+         this.loadingConfig = false;
+         return of(null); // Return an observable of null to continue the stream
+      })
+    ).subscribe((config) => {
+       if (config) {
+         this.guildConfig = config;
+         console.log(`GuildConfigListComponent: Config loaded for guild ${id}:`, config);
+       }
+       this.loadingConfig = false;
     });
+  }
+
+  loadGuildMembersAndRoles(guildId: string): void {
+      console.log(`GuildConfigListComponent: Loading members and roles for guild ${guildId}...`);
+      this.loadingGuildData = true;
+      this.guildDataError = null;
+      forkJoin([
+          this.guildService.getGuildMembers(guildId).pipe(catchError(err => {
+              console.error('Error loading guild members:', err);
+              this.guildDataError = 'Failed to load guild members.';
+              return of([]); // Return empty array on error
+          })),
+          this.guildService.getGuildRoles(guildId).pipe(catchError(err => {
+              console.error('Error loading guild roles:', err);
+              this.guildDataError = 'Failed to load guild roles.';
+              return of([]); // Return empty array on error
+          }))
+      ]).pipe(takeUntil(this.destroy$))
+      .subscribe(([members, roles]) => {
+          this.guildMembersMap = members.reduce((map, member) => {
+              map[member.id] = member.display_name || member.name; // Prefer display name
+              return map;
+          }, {} as { [id: string]: string });
+          this.guildRolesMap = roles.reduce((map, role) => {
+              map[role.id] = role.name;
+              return map;
+          }, {} as { [id: string]: string });
+          this.loadingGuildData = false;
+          console.log('GuildConfigListComponent: Guild members and roles loaded.', this.guildMembersMap, this.guildRolesMap);
+      });
+  }
+
+  getMemberDisplayName(memberId: string): string {
+      return this.guildMembersMap[memberId] || memberId; // Return ID if name not found
+  }
+
+  getRoleName(roleId: string): string {
+      return this.guildRolesMap[roleId] || roleId; // Return ID if name not found
   }
 
   openEditConfigModal(section: string = 'full'): void {
@@ -189,7 +243,7 @@ export class GuildConfigListComponent implements OnInit, OnDestroy {
     if (savedConfig && this.currentGuildId) {
       console.log('GuildConfigListComponent: Config saved event received. Reloading config.');
       // Reload the full config after saving any section
-      this.loadGuildConfig(this.currentGuildId);
+      this.loadDataForGuild(this.currentGuildId); // Reload all data including members/roles
     } else {
       console.log('GuildConfigListComponent: Config modal closed without saving.');
     }
