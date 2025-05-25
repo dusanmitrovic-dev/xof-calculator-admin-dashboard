@@ -1,138 +1,255 @@
-# xof-calculator-admin-dashboard
+[![@coreui angular](https://img.shields.io/badge/@coreui%20-angular-lightgrey.svg?style=flat-square)](https://github.com/coreui/angular)
+[![npm-coreui-angular][npm-coreui-angular-badge]][npm-coreui-angular]
+[![npm-coreui-angular][npm-coreui-angular-badge-next]][npm-coreui-angular]
+[![NPM downloads][npm-coreui-angular-download]][npm-coreui-angular]  
+[![@coreui coreui](https://img.shields.io/badge/@coreui%20-coreui-lightgrey.svg?style=flat-square)](https://github.com/coreui/coreui)
+[![npm package][npm-coreui-badge]][npm-coreui]
+[![NPM downloads][npm-coreui-download]][npm-coreui]  
+![angular](https://img.shields.io/badge/angular-^19.2.0-lightgrey.svg?style=flat-square&logo=angular)
 
-## 1. Project Setup & Core Configuration (`ANGULAR`) Data driven !!!!!!!!!!!!!!!
+[npm-coreui-angular]: https://www.npmjs.com/package/@coreui/angular
 
-- [x] Create Angular project (`ng new`)
-- [x] Add Angular Material (`ng add @angular/material`)
-- [x] Create `src/app/core/data` folder
-- [x] Copy provided JSON data files into `src/app/core/data`
-- [x] Define Core Data Models/Interfaces (`src/app/core/models/`)
-    - [x] `BonusRule`
-    - [x] `CommissionSettings` (including `RoleSetting`, `UserOverrideSetting`)
-    - [x] `DisplaySettings`
-    - [x] `Earning` (with added `userId`)
-    - [x] `RolePercentageMap`
-- [x] Implement Core Services (`src/app/core/services/`)
-    - [x] `ThemeService` (Handles toggling, loading initial, localStorage)
-    - [x] `SettingsService` (Loads *mock* data for all config types from JSON)
-    - [x] `SettingsService` (Implements *mock* save methods for all config types - logs to console)
-    - [x] `EarningsService` (Flattens and loads *mock* earnings data from JSON)
-    - [x] `EarningsService` (Implements *mock* CRUD methods - logs/modifies local array)
-- [x] Configure Theming
-    - [x] Define custom light/dark palettes in `theme.scss`
-    - [x] Apply themes and global styles in `styles.scss`
-- [x] Configure Main App Module (`app.module.ts`) with necessary imports (Browser, Animations, HttpClient, Layout, Shared, Core Material)
-- [x] Configure Main App Routing (`app-routing.module.ts`) with layout and lazy-loading placeholders
-- [ ] Fix the sidebar toggle functionality.
-- [ ] Ensure responsiveness for mobile devices.
-- [ ] Verify navigation links and their functionality.
-- [ ] Adjust styles for better alignment and spacing.
+[npm-coreui-angular-badge]: https://img.shields.io/npm/v/@coreui/angular.png?style=flat-square
 
-## 2. Layout Implementation
+[npm-coreui-angular-badge-next]: https://img.shields.io/npm/v/@coreui/angular/next?style=flat-square&color=red
 
-- [x] Create Layout Components (`MainLayout`, `Toolbar`, `Sidenav`)
-- [x] Implement `MainLayoutComponent` (Handles mobile query, integrates ThemeService, loads DisplaySettings for title)
-- [x] Implement `ToolbarComponent` (Displays dynamic title, theme toggle, sidenav toggle)
-- [x] Implement `SidenavComponent` (Displays navigation items with links/icons, basic active state)
-- [ ] Ensure the form loads and saves settings correctly.
-- [ ] Fix validation and pristine state handling.
-- [ ] Test the onSubmit method for proper error handling and success messages.
-- [ ] Verify the form layout and ensure all fields are displayed correctly.
-- [ ] Fix alignment and spacing issues for form fields and toggles.
-- [ ] Ensure the page is fully responsive, especially on Android devices.
+[npm-coreui-angular-download]: https://img.shields.io/npm/dm/@coreui/angular.svg?style=flat-square
 
-## 3. Shared Module & Components
+[npm-coreui]: https://www.npmjs.com/package/@coreui/coreui
 
-- [x] Create `SharedModule`
-- [x] Create `ConfigCardComponent` (Handles title, loading state, content projection for actions/content)
-- [x] Configure `SharedModule` (Imports/exports Material modules, declares/exports `ConfigCardComponent`)
-- [ ] Verify the getDisplaySettings and saveDisplaySettings methods.
-- [ ] Ensure mock data is being fetched and saved correctly.
-- [ ] Replace mock methods with actual API calls if a backend is available.
+[npm-coreui-badge]: https://img.shields.io/npm/v/@coreui/coreui.png?style=flat-square
 
-## 4. Feature: Dashboard
+[npm-coreui-download]: https://img.shields.io/npm/dm/@coreui/coreui.svg?style=flat-square
 
-- [x] Create `DashboardModule` and `DashboardPageComponent`
-- [x] Configure dashboard routing
-- [x] Implement `DashboardPageComponent` (Displays basic overview stats using *mock* service data)
-- [ ] Verify all necessary modules and components are imported.
-- [ ] Ensure the SettingsModule and other feature modules are correctly configured.
+# CoreUI Free Admin Dashboard Template for Angular 19
 
-## 5. Feature: Settings
+CoreUI is meant to be the UX game changer. Pure & transparent code is devoid of redundant components, so the app is light enough to offer ultimate user
+experience. This means mobile devices also, where the navigation is just as easy and intuitive as on a desktop or laptop. The CoreUI Layout API lets you
+customize your project for almost any device – be it Mobile, Web or WebApp – CoreUI covers them all!
 
-- [x] Create `SettingsModule` and configure base routing
-- [x] Create Settings Page Components (`CommissionSettingsPage`, `BonusRulesPage`, `DisplaySettingsPage`, `OtherConfigsPage`)
-- [x] Configure settings feature routing (linking paths to components)
-- [x] Implement `CommissionSettingsPageComponent`
-    - [x] Use Reactive Forms (`FormGroup` nested for roles/users)
-    - [x] Load and display *mock* commission settings data
-    - [x] Implement basic add/remove controls for roles/users (modifies form)
-    - [x] Call *mock* `SettingsService.saveCommissionSettings` on submit
-- [x] Implement `BonusRulesPageComponent`
-    - [x] Use Reactive Forms (`FormArray` for rules)
-    - [x] Load and display *mock* bonus rules data
-    - [x] Implement add/remove controls for rules
-    - [x] Call *mock* `SettingsService.saveBonusRules` on submit (includes sorting)
-- [x] Implement `DisplaySettingsPageComponent`
-    - [x] Use Reactive Forms (`FormGroup`)
-    - [x] Load and display *mock* display settings data
-    - [x] Call *mock* `SettingsService.saveDisplaySettings` on submit
-- [x] Implement `OtherConfigsPageComponent`
-    - [x] Use Reactive Forms / appropriate controls for list management (Models, Periods, Shifts)
-    - [x] Use Reactive Forms / appropriate controls for Role Percentages map
-    - [x] Load and display *mock* data for all sections
-    - [x] Call respective *mock* save methods in `SettingsService` on submit
-- [ ] Update the documentation to reflect the current state of the project.
-- [ ] Add notes about pending tasks and known issues.
+- [CoreUI Angular Admin Dashboard Template & UI Components Library](https://coreui.io/angular)
+- [CoreUI Angular Demo](https://coreui.io/angular/demo/5.0/free/)
+- [CoreUI Angular Docs](https://coreui.io/angular/docs/)
 
-## 6. Feature: Earnings
+## Table of Contents
 
-- [x] Create `EarningsModule` and `EarningsPageComponent`
-- [x] Configure earnings routing
-- [x] Implement `EarningsPageComponent`
-    - [x] Use `MatTable` with `MatTableDataSource`
-    - [x] Load `DisplaySettings` to determine `show_ids`
-    - [x] Dynamically set `displayedColumns` based on `show_ids`
-    - [x] Load and display flattened *mock* earnings data
-    - [x] Integrate `MatPaginator`
-    - [x] Integrate `MatSort` (with basic date sorting logic)
-    - [x] Implement client-side filter input
-    - [x] Include Edit/Delete buttons in 'actions' column
-    - [x] Call *mock* `EarningsService` edit/delete methods (using `confirm`/`alert`)
-- [ ] Ensure all pages are mobile-friendly and work well on Android devices.
-- [ ] Add proper error messages and loading indicators where necessary.
-- [ ] Test all pages and components for functionality and fix any issues.
-- [ ] Refine the design and layout for better user experience.
+* [Versions](#versions)
+* [CoreUI Pro](#coreui-pro)
+* [Quick Start](#quick-start)
+* [Installation](#installation)
+* [Basic usage](#basic-usage)
+* [What's included](#whats-included)
+* [Documentation](#documentation)
+* [Versioning](#versioning)
+* [Creators](#creators)
+* [Community](#community)
+* [Copyright and License](#copyright-and-license)
 
-## 7. Next Steps / Pending Tasks
+## Versions
 
-- [ ] **Backend Integration:** Replace ALL mock service calls (`of(...)`, `console.log`, `alert`) in `SettingsService` and `EarningsService` with actual `HttpClient` calls to the backend API endpoints.
-- [ ] **Authentication:**
-    - [ ] Implement `AuthService` (login, logout, token management).
-    - [ ] Implement Login Page Component.
-    - [ ] Implement `AuthGuard` to protect routes.
-    - [ ] Implement HTTP Interceptor to add JWT token to API requests.
-- [ ] **Earnings Table Enhancements:**
-    - [ ] Implement server-side pagination, sorting, and filtering by modifying `EarningsService.getEarnings` to accept parameters and making the backend API support them.
-    - [ ] Implement `MatDialog` for editing earning records with a dedicated form.
-    - [ ] Implement `MatDialog` for confirming earning deletions.
-- [ ] **Settings Enhancements:**
-    - [ ] Implement `MatDialog` for adding new Roles/Users in Commission Settings instead of basic inputs.
-- [ ] **UI/UX Refinements:**
-    - [ ] Add more robust loading indicators (e.g., on buttons during save).
-    - [ ] Improve form validation feedback.
-    - [ ] Enhance error handling (display user-friendly messages from API errors).
-    - [ ] Ensure responsiveness across various screen sizes is adequate.
-- [ ] **Testing:** Implement unit tests for services and components. Consider integration/e2e tests.
-- [ ] **CI/CD:** Set up automated build and deployment pipelines.
-- [ ] **Documentation:** Add code comments and potentially generate documentation.
-- [ ] Replace mock service calls with actual API calls.
-- [ ] Implement login, logout, and route protection.
-- [ ] Add server-side pagination, sorting, and filtering for the earnings table.
-- [ ] Use dialogs for adding new roles/users in commission settings.
-- [ ] Add robust loading indicators and improve form validation feedback.
-- [ ] Implement unit tests for services and components.
+* [CoreUI Free Bootstrap Admin Template](https://github.com/coreui/coreui-free-bootstrap-admin-template)
+* [CoreUI Free Angular Admin Template](https://github.com/coreui/coreui-free-angular-admin-template)
+* [CoreUI Free React.js Admin Template](https://github.com/coreui/coreui-free-react-admin-template)
+* [CoreUI Free Vue.js Admin Template](https://github.com/coreui/coreui-free-vue-admin-template)
 
-- [ ] Set up automated build and deployment pipelines.
+## CoreUI Pro
 
-`note: Use Mongo DB Atlas M0 512mb free tier cloud database.`
+* 💪  [CoreUI Pro Angular Admin Template](https://coreui.io/product/angular-dashboard-template/)
+* 💪  [CoreUI Pro Bootstrap Admin Template](https://coreui.io/product/bootstrap-dashboard-template/)
+* 💪  [CoreUI Pro React Admin Template](https://coreui.io/product/react-dashboard-template/)
+* 💪  [CoreUI Pro Next.js Admin Template](https://coreui.io/product/next-js-dashboard-template/)
+* 💪  [CoreUI Pro Vue Admin Template](https://coreui.io/product/vue-dashboard-template/)
+
+## CoreUI PRO Angular Admin Templates
+
+| Default Theme                                                                                                                                                                      | Light Theme                                                                                                                                                                    |
+|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| [![CoreUI PRO Angular Admin Template](https://coreui.io/images/templates/coreui_pro_default_light_dark.webp)](https://coreui.io/product/angular-dashboard-template/?theme=default) | [![CoreUI PRO Angular Admin Template](https://coreui.io/images/templates/coreui_pro_light_light_dark.webp)](https://coreui.io/product/angular-dashboard-template/?theme=light) |
+
+| Modern Theme                                                                                                                                                                             | Bright Theme                                                                                                                                                                    |
+|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| [![CoreUI PRO Angular Admin Template](https://coreui.io/images/templates/coreui_pro_default_v3_light_dark.webp)](https://coreui.io/product/angular-dashboard-template/?theme=default-v3) | [![CoreUI PRO React Admin Template](https://coreui.io/images/templates/coreui_pro_light_v3_light_dark.webp)](https://coreui.io/product/angular-dashboard-template/?theme=light) |
+
+## Quick Start
+
+- [Download the latest release](https://github.com/coreui/coreui-free-angular-admin-template/)
+- Clone the repo: `git clone https://github.com/coreui/coreui-free-angular-admin-template.git`
+
+#### <i>Prerequisites</i>
+
+Before you begin, make sure your development environment includes `Node.js®` and an `npm` package manager.
+
+###### Node.js
+
+[**Angular 19**](https://angular.io/guide/what-is-angular) requires `Node.js` LTS version `^18.19.1` or `^20.11.1`.
+
+- To check your version, run `node -v` in a terminal/console window.
+- To get `Node.js`, go to [nodejs.org](https://nodejs.org/).
+
+###### Angular CLI
+
+Install the Angular CLI globally using a terminal/console window.
+
+```bash
+npm install -g @angular/cli
+```
+
+### Installation
+
+``` bash
+$ npm install
+$ npm update
+```
+
+### Basic usage
+
+``` bash
+# dev server with hot reload at http://localhost:4200
+$ npm start
+```
+
+Navigate to [http://localhost:4200](http://localhost:4200). The app will automatically reload if you change any of the source files.
+
+#### Build
+
+Run `build` to build the project. The build artifacts will be stored in the `dist/` directory.
+
+```bash
+# build for production with minification
+$ npm run build
+```
+
+## What's included
+
+Within the download you'll find the following directories and files, logically grouping common assets and providing both compiled and minified variations.
+You'll see something like this:
+
+```
+coreui-free-angular-admin-template
+├── src/                         # project root
+│   ├── app/                     # main app directory
+|   │   ├── icons/               # icons set for the app
+|   │   ├── layout/              # layout 
+|   |   │   └── default-layout/  # layout components
+|   |   |       └── _nav.js      # sidebar navigation config
+|   │   └── views/               # application views
+│   ├── assets/                  # images, icons, etc.
+│   ├── components/              # components for demo only
+│   ├── scss/                    # scss styles
+│   └── index.html               # html template
+│
+├── angular.json
+├── README.md
+└── package.json
+```
+
+## Documentation
+
+The documentation for the CoreUI Admin Template is hosted at our website [CoreUI for Angular](https://coreui.io/angular/)
+
+---
+
+This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 18.0.0.
+
+## Versioning
+
+For transparency into our release cycle and in striving to maintain backward compatibility, CoreUI Free Admin Template is maintained
+under [the Semantic Versioning guidelines](http://semver.org/).
+
+See [the Releases section of our project](https://github.com/coreui/coreui-free-angular-admin-template/releases) for changelogs for each release version.
+
+## Development server
+
+Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+
+## Code scaffolding
+
+Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+
+## Build
+
+Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+
+## Running unit tests
+
+Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+
+## Running end-to-end tests
+
+Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end
+testing capabilities.
+
+## Further help
+
+To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+
+## Creators
+
+**Łukasz Holeczek**
+
+* <https://twitter.com/lukaszholeczek>
+* <https://github.com/mrholek>
+* <https://github.com/coreui>
+
+**CoreUI team**
+
+* https://github.com/orgs/coreui/people
+
+## Community
+
+Get updates on CoreUI's development and chat with the project maintainers and community members.
+
+- Follow [@core_ui on Twitter](https://twitter.com/core_ui).
+- Read and subscribe to [CoreUI Blog](https://coreui.io/blog/).
+
+## Support CoreUI Development
+
+CoreUI is an MIT-licensed open source project and is completely free to use. However, the amount of effort needed to maintain and develop new features for the
+project is not sustainable without proper financial backing. You can support development by buying the [CoreUI PRO](https://coreui.io/pricing/) or by becoming a
+sponsor via [Open Collective](https://opencollective.com/coreui/).
+
+<!--- StartOpenCollectiveBackers -->
+
+### Platinum Sponsors
+
+Support this project by [becoming a Platinum Sponsor](https://opencollective.com/coreui/contribute/platinum-sponsor-40959/). A large company logo will be added
+here with a link to your website.
+
+<a href="https://opencollective.com/coreui/contribute/platinum-sponsor-40959/checkout"><img src="https://opencollective.com/coreui/tiers/platinum-sponsor/0/avatar.svg?avatarHeight=100"></a>
+
+### Gold Sponsors
+
+Support this project by [becoming a Gold Sponsor](https://opencollective.com/coreui/contribute/gold-sponsor-40960/). A big company logo will be added here with
+a link to your website.
+
+<a href="https://opencollective.com/coreui/contribute/gold-sponsor-40960/checkout"><img src="https://opencollective.com/coreui/tiers/gold-sponsor/0/avatar.svg?avatarHeight=100"></a>
+
+### Silver Sponsors
+
+Support this project by [becoming a Silver Sponsor](https://opencollective.com/coreui/contribute/silver-sponsor-40967/). A medium company logo will be added
+here with a link to your website.
+
+<a href="https://opencollective.com/coreui/contribute/silver-sponsor-40967/checkout"><img src="https://opencollective.com/coreui/tiers/gold-sponsor/0/avatar.svg?avatarHeight=100"></a>
+
+### Bronze Sponsors
+
+Support this project by [becoming a Bronze Sponsor](https://opencollective.com/coreui/contribute/bronze-sponsor-40966/). The company avatar will show up here
+with a link to your OpenCollective Profile.
+
+<a href="https://opencollective.com/coreui/contribute/bronze-sponsor-40966/checkout"><img src="https://opencollective.com/coreui/tiers/bronze-sponsor/0/avatar.svg?avatarHeight=100"></a>
+
+### Backers
+
+Thanks to all the backers and sponsors! Support this project by [becoming a backer](https://opencollective.com/coreui/contribute/backer-40965/).
+
+<a href="https://opencollective.com/coreui/contribute/backer-40965/checkout" target="_blank" rel="noopener"><img src="https://opencollective.com/coreui/backers.svg?width=890"></a>
+
+<!--- EndOpenCollectiveBackers -->
+
+## Copyright and License
+
+copyright 2025 creativeLabs Łukasz Holeczek.
+
+Code released under [the MIT license](https://github.com/coreui/coreui-free-react-admin-template/blob/master/LICENSE).
+There is only one limitation you can't re-distribute the CoreUI as stock. You can’t do this if you modify the CoreUI. In the past, we faced some problems with
+persons who tried to sell CoreUI based templates.

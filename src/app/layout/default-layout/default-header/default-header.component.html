@@ -1,0 +1,96 @@
+<ng-container>
+  <c-container [fluid]="true" class="border-bottom px-4">
+    
+    <button
+      [cSidebarToggle]="sidebarId()"
+      cHeaderToggler
+      class="btn"
+      toggle="visible"
+      style="margin-inline-start: -14px;"
+      aria-label="Toggle sidebar navigation"
+    >
+      <svg cIcon name="cilMenu" size="lg"></svg>
+    </button>
+   
+
+    <!-- Guild Selector Dropdown -->
+    <c-header-nav class="ms-auto d-none d-md-flex"> <!-- Hide on smaller screens if needed -->
+        <ng-container *ngIf="guildLoadingError">
+            <span class="text-danger px-2">{{ guildLoadingError }}</span>
+        </ng-container>
+        <c-dropdown alignment="end" variant="nav-item" *ngIf="!(guildLoadingError)">
+            <button cDropdownToggle [caret]="true">
+                {{ selectedGuildName$ | async }}
+            </button>
+            <ul cDropdownMenu>
+                <li *ngIf="(availableGuilds$ | async)?.length === 0">
+                    <span cDropdownItem class="disabled">No guilds available</span>
+                </li>
+                <li *ngFor="let guild of (availableGuilds$ | async)">
+                    <button cDropdownItem (click)="onGuildSelect(guild.id)" [active]="(selectedGuildId$ | async) === guild.id">
+                        {{ guild.name }} ({{ guild.id }})
+                    </button>
+                </li>
+                 <li><hr cDropdownDivider></li>
+                 <li>
+                    <button cDropdownItem (click)="onGuildSelect(null)" [active]="(selectedGuildId$ | async) === null">
+                         Clear Selection
+                    </button>
+                </li>
+            </ul>
+        </c-dropdown>
+    </c-header-nav>
+
+    <c-header-nav class="ms-auto ms-md-0"> <!-- Theme selector -->
+      <ng-container *ngTemplateOutlet="themeDropdown" />
+    </c-header-nav>
+
+    <!-- User/Logout Dropdown (using example structure) -->
+    <c-header-nav class="ms-2"> <!-- Add margin start -->
+      <c-dropdown [popperOptions]="{ placement: 'bottom-end' }" variant="nav-item">
+        <button [caret]="false" cDropdownToggle class="py-0 pe-0" aria-label="Open user menu">
+          <!-- Placeholder Icon - Replace with avatar if needed -->
+           <svg cIcon name="cilUser" size="lg"></svg>
+        </button>
+        <ul cDropdownMenu class="pt-0">
+          <li>
+            <h6 cDropdownHeader class="bg-body-secondary text-body-secondary fw-semibold py-2 rounded-top">
+              Account
+            </h6>
+          </li>
+          <li>
+            <!-- *** Modified for Logout *** -->
+            <button cDropdownItem (click)="logout()"> <!-- Changed <a> to <button> and added click handler -->
+              <svg cIcon class="me-2" name="cilAccountLogout"></svg>
+              Logout
+            </button>
+          </li>
+          <!-- Add other user links here if needed (Profile, Settings, etc.) -->
+        </ul>
+      </c-dropdown>
+    </c-header-nav>
+
+  </c-container>
+</ng-container>
+
+<!-- Theme Picker Dropdown Template -->
+<ng-template #themeDropdown>
+  <c-dropdown alignment="end" variant="nav-item">
+    <button [caret]="false" cDropdownToggle aria-label="Open theme picker">
+      <svg cIcon [name]="icons()" size="lg"></svg>
+    </button>
+    <div cDropdownMenu>
+      @for (mode of colorModes; track mode.name) {
+        <button
+          (click)="colorMode.set(mode.name)"
+          [active]="colorMode()===mode.name"
+          cDropdownItem
+          class="d-flex align-items-center"
+        >
+          <svg cIcon class="me-2" [name]="mode.icon" size="lg"></svg>
+          {{ mode.text }}
+        </button>
+      }
+    </div>
+  </c-dropdown>
+</ng-template>

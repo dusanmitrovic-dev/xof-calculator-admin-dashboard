@@ -1,0 +1,89 @@
+<div class="bg-body-tertiary min-vh-100 d-flex flex-row align-items-center">
+  <c-container>
+    <c-row class="justify-content-center">
+      <c-col md="7" lg="6" xl="5">
+        <c-card class="mx-4">
+          <c-card-body class="p-4">
+            <form cForm [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+              <h1>Register</h1>
+              <p class="text-body-secondary">Create your account</p>
+
+              <!-- Error/Success Messages -->
+              <c-alert *ngIf="errorMessage" color="danger" dismissible (visibleChange)="errorMessage = null">
+                {{ errorMessage }}
+              </c-alert>
+              <c-alert *ngIf="successMessage" color="success" dismissible (visibleChange)="successMessage = null">
+                {{ successMessage }}
+              </c-alert>
+
+              <!-- Email -->
+              <c-input-group class="mb-3">
+                <span cInputGroupText>
+                  <svg cIcon name="cilEnvelopeOpen"></svg>
+                </span>
+                <input cFormControl placeholder="Email" autocomplete="email" formControlName="email" required email 
+                       [class.is-invalid]="email?.invalid && (email?.dirty || email?.touched)"/>
+              </c-input-group>
+               <div *ngIf="email?.invalid && (email?.dirty || email?.touched)" class="invalid-feedback d-block mb-2">
+                <div *ngIf="email?.errors?.['required']">
+                  Email is required.
+                </div>
+                 <div *ngIf="email?.errors?.['email']">
+                  Please enter a valid email address.
+                </div>
+              </div>
+
+              <!-- Password -->
+              <c-input-group class="mb-3">
+                <span cInputGroupText>
+                  <svg cIcon name="cilLockLocked"></svg>
+                </span>
+                <input cFormControl placeholder="Password" autocomplete="new-password" type="password" formControlName="password" required 
+                       [class.is-invalid]="password?.invalid && (password?.dirty || password?.touched)"/>
+              </c-input-group>
+              <div *ngIf="password?.invalid && (password?.dirty || password?.touched)" class="invalid-feedback d-block mb-2">
+                <div *ngIf="password?.errors?.['required']">
+                  Password is required.
+                </div>
+                 <div *ngIf="password?.errors?.['minlength']">
+                  Password must be at least 6 characters long.
+                </div>
+              </div>
+
+              <!-- Confirm Password -->
+              <c-input-group class="mb-4">
+                <span cInputGroupText>
+                  <svg cIcon name="cilLockLocked"></svg>
+                </span>
+                <input cFormControl placeholder="Repeat password" autocomplete="new-password" type="password" formControlName="confirmPassword" required 
+                       [class.is-invalid]="(confirmPassword?.invalid || registerForm.hasError('passwordMismatch')) && (confirmPassword?.dirty || confirmPassword?.touched)"/>
+              </c-input-group>
+              <div *ngIf="(confirmPassword?.invalid || registerForm.hasError('passwordMismatch')) && (confirmPassword?.dirty || confirmPassword?.touched)" class="invalid-feedback d-block mb-2">
+                 <div *ngIf="confirmPassword?.errors?.['required']">
+                   Please confirm your password.
+                </div>
+                <div *ngIf="registerForm.hasError('passwordMismatch')">
+                   Passwords do not match.
+                </div>
+              </div>
+
+              <!-- Submit Button -->
+              <div class="d-grid">
+                <!-- Disable button if form is invalid or loading -->
+                <button cButton color="success" type="submit" [disabled]="registerForm.invalid || isLoading">
+                  <span *ngIf="isLoading" cSpinner component="span" size="sm" aria-hidden="true"></span>
+                  {{ isLoading ? ' Creating Account...' : 'Create Account' }}
+                </button>
+              </div>
+
+              <!-- Link to Login -->
+              <div class="text-center mt-3">
+                <a [routerLink]="['/login']">Already have an account? Login</a>
+              </div>
+            </form>
+          </c-card-body>
+        </c-card>
+      </c-col>
+    </c-row>
+  </c-container>
+</div>

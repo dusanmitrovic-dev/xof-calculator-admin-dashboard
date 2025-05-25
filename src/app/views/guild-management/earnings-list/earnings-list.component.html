@@ -1,0 +1,289 @@
+<c-row>
+  <c-col xs="12">
+    <!-- Message shown when NO guild is selected -->
+    <c-alert color="info" *ngIf="!(selectedGuildId$ | async)">
+      Please select a guild from the dropdown in the header to manage its earnings records.
+    </c-alert>
+
+    <!-- Main content area shown ONLY when a guild is selected -->
+    <ng-container *ngIf="currentGuildId">
+      <c-card class="mb-4 rounded-4 shadow-lg earnings-card">
+        <c-card-header>
+          <strong class="earnings-heading">
+            Earnings Records for {{ currentGuildId }}
+            <span *ngIf="guildConfig?.display_settings?.agency_name">
+              ({{ guildConfig?.display_settings?.agency_name }})
+            </span>
+          </strong>
+          <div class="float-end">
+            <button cButton color="success" variant="outline" size="sm" (click)="openAddEarningModal()"
+              [disabled]="loadingEarnings || loadingConfig || !guildConfig"
+              title="{{ !guildConfig ? 'Guild Config must exist first' : 'Add New Earning' }}" class="add-btn">
+              <svg cIcon name="cilPlus" size="sm"></svg> Add Earning
+            </button>
+          </div>
+        </c-card-header>
+        <c-card-body>
+          <!-- Loading states -->
+          <div *ngIf="loadingConfig || loadingEarnings || loadingGuildData" class="text-center py-3">
+            <c-spinner aria-hidden="true" size="sm"></c-spinner>
+            {{ loadingConfig ? 'Loading guild configuration...' : loadingEarnings ? 'Loading earnings...' : 'Loading
+            guild data...'}}
+          </div>
+
+          <!-- Error State for Earnings -->
+          <c-alert color="danger" *ngIf="!loadingEarnings && (earningsError || guildDataError) && !loadingConfig">
+            {{ earningsError || guildDataError }}
+          </c-alert>
+
+          <!-- No Guild Config State -->
+          <div *ngIf="!loadingConfig && !guildConfig && currentGuildId && !earningsError"
+            class="text-center py-3 text-muted">
+            <svg cIcon name="cilSettings" size="xxl" class="text-warning mb-2"></svg>
+            <h5 class="text-warning">Guild Configuration Missing</h5>
+            <p>A guild configuration must exist for guild <strong>{{ currentGuildId }}</strong> before earnings can be
+              managed or recorded.</p>
+            <p>Please go to <a routerLink="/guild-configurations">Guild Configurations</a> to set one up.</p>
+          </div>
+
+          <!-- No Earnings Found State (but config exists) -->
+          <div *ngIf="!loadingConfig && guildConfig && !loadingEarnings && !earningsError && earnings.length === 0"
+            class="text-center py-3">
+            <c-card class="shadow-sm">
+              <c-card-body class="text-center">
+                <svg cIcon name="cilInbox" size="xxl" class="text-muted mb-2"></svg>
+                <h5 class="card-title">No earnings recorded yet for {{ currentGuildId }}.</h5>
+                <p class="card-text">Click <strong>“Add Earning”</strong> to get started.</p>
+                <button cButton color="success" (click)="openAddEarningModal()" [disabled]="!guildConfig">
+                  <svg cIcon name="cilPlus" size="sm" class="me-1"></svg>Add Earning
+                </button>
+              </c-card-body>
+            </c-card>
+          </div>
+
+          <!-- Filter Input -->
+          <div class="mb-3"
+            *ngIf="!loadingConfig && guildConfig && !loadingEarnings && !earningsError && earnings.length > 0">
+            <input type="text" class="form-control" placeholder="Filter earnings..." [(ngModel)]="filterText"
+              (ngModelChange)="onFilterChange()" />
+          </div>
+
+          <!-- Hours, Gross, and Cut Range Filters -->
+          <div class="row g-2 mb-2 flex-wrap">
+            <div class="col-6 col-sm-4 col-md-2">
+              <input type="number" class="form-control form-control-sm w-100" placeholder="Min Hours"
+                [(ngModel)]="hoursMin" (ngModelChange)="onHoursFilterChange()" />
+            </div>
+            <div class="col-6 col-sm-4 col-md-2">
+              <input type="number" class="form-control form-control-sm w-100" placeholder="Max Hours"
+                [(ngModel)]="hoursMax" (ngModelChange)="onHoursFilterChange()" />
+            </div>
+            <div class="col-6 col-sm-4 col-md-2">
+              <input type="number" class="form-control form-control-sm w-100" placeholder="Min Gross"
+                [(ngModel)]="grossMin" (ngModelChange)="onGrossFilterChange()" />
+            </div>
+            <div class="col-6 col-sm-4 col-md-2">
+              <input type="number" class="form-control form-control-sm w-100" placeholder="Max Gross"
+                [(ngModel)]="grossMax" (ngModelChange)="onGrossFilterChange()" />
+            </div>
+            <div class="col-6 col-sm-4 col-md-2">
+              <input type="number" class="form-control form-control-sm w-100" placeholder="Min Cut" [(ngModel)]="cutMin"
+                (ngModelChange)="onCutFilterChange()" />
+            </div>
+            <div class="col-6 col-sm-4 col-md-2">
+              <input type="number" class="form-control form-control-sm w-100" placeholder="Max Cut" [(ngModel)]="cutMax"
+                (ngModelChange)="onCutFilterChange()" />
+            </div>
+          </div>
+
+          <div class="d-flex align-items-center mb-2"
+            *ngIf="!loadingConfig && guildConfig && !loadingEarnings && !earningsError && earnings.length > 0">
+            <label for="pageSizeSelect" class="me-2 mb-0">Rows per page:</label>
+            <select id="pageSizeSelect" class="form-select form-select-sm w-auto" [(ngModel)]="pageSize"
+              (ngModelChange)="onPageSizeChange($event)">
+              <option *ngFor="let size of [5, 10, 20, 50, 100]" [value]="size">{{ size }}</option>
+            </select>
+          </div>
+
+          <!-- Earnings Table -->
+          <ng-container
+            *ngIf="!loadingConfig && guildConfig && !loadingEarnings && !earningsError && earnings.length > 0">
+            <table cTable class="mb-0 border table-hover" responsive striped align="middle">
+              <thead>
+                <tr>
+                  <th>
+                    <span class="sortable-header" (click)="setSort('date')">
+                      Date
+                      <svg *ngIf="sortColumn === 'date' && sortDirection === 'asc'" cIcon name="cilArrowTop"></svg>
+                      <svg *ngIf="sortColumn === 'date' && sortDirection === 'desc'" cIcon name="cilArrowBottom"></svg>
+                    </span>
+                  </th>
+                  <th>
+                    <span class="sortable-header" (click)="setSort('user_mention')">
+                      User
+                      <span *ngIf="sortColumn === 'user_mention'">
+                        <svg *ngIf="sortDirection === 'asc'" cIcon name="cilArrowTop"></svg>
+                        <svg *ngIf="sortDirection === 'desc'" cIcon name="cilArrowBottom"></svg>
+                      </span>
+                    </span>
+                  </th>
+                  <th>
+                    <span class="sortable-header" (click)="setSort('role')">
+                      Role
+                      <span *ngIf="sortColumn === 'role'">
+                        <svg *ngIf="sortDirection === 'asc'" cIcon name="cilArrowTop"></svg>
+                        <svg *ngIf="sortDirection === 'desc'" cIcon name="cilArrowBottom"></svg>
+                      </span>
+                    </span>
+                  </th>
+                  <th>
+                    <span class="sortable-header" (click)="setSort('models')">
+                      Models
+                      <span *ngIf="sortColumn === 'models'">
+                        <svg *ngIf="sortDirection === 'asc'" cIcon name="cilArrowTop"></svg>
+                        <svg *ngIf="sortDirection === 'desc'" cIcon name="cilArrowBottom"></svg>
+                      </span>
+                    </span>
+                  </th>
+                  <th>
+                    <span class="sortable-header" (click)="setSort('shift')">
+                      Shift
+                      <span *ngIf="sortColumn === 'shift'">
+                        <svg *ngIf="sortDirection === 'asc'" cIcon name="cilArrowTop"></svg>
+                        <svg *ngIf="sortDirection === 'desc'" cIcon name="cilArrowBottom"></svg>
+                      </span>
+                    </span>
+                  </th>
+                  <th>
+                    <span class="sortable-header" (click)="setSort('period')">
+                      Period
+                      <span *ngIf="sortColumn === 'period'">
+                        <svg *ngIf="sortDirection === 'asc'" cIcon name="cilArrowTop"></svg>
+                        <svg *ngIf="sortDirection === 'desc'" cIcon name="cilArrowBottom"></svg>
+                      </span>
+                    </span>
+                  </th>
+                  <th>
+                    <span class="sortable-header" (click)="setSort('hours_worked')">
+                      Hours
+                      <span *ngIf="sortColumn === 'hours_worked'">
+                        <svg *ngIf="sortDirection === 'asc'" cIcon name="cilArrowTop"></svg>
+                        <svg *ngIf="sortDirection === 'desc'" cIcon name="cilArrowBottom"></svg>
+                      </span>
+                    </span>
+                  </th>
+                  <th>
+                    <span class="sortable-header" (click)="setSort('gross_revenue')">
+                      Gross Rev.
+                      <span *ngIf="sortColumn === 'gross_revenue'">
+                        <svg *ngIf="sortDirection === 'asc'" cIcon name="cilArrowTop"></svg>
+                        <svg *ngIf="sortDirection === 'desc'" cIcon name="cilArrowBottom"></svg>
+                      </span>
+                    </span>
+                  </th>
+                  <th>
+                    <span class="sortable-header" (click)="setSort('total_cut')">
+                      Total Cut
+                      <span *ngIf="sortColumn === 'total_cut'">
+                        <svg *ngIf="sortDirection === 'asc'" cIcon name="cilArrowTop"></svg>
+                        <svg *ngIf="sortDirection === 'desc'" cIcon name="cilArrowBottom"></svg>
+                      </span>
+                    </span>
+                  </th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let earning of paginatedEarnings; trackBy: trackById">
+                  <!-- ...existing table cells... -->
+                  <td>{{ earning.date }}</td>
+                  <td>{{ getMemberDisplayName(earning.user_mention) }}</td>
+                  <td><span class="">{{ getRoleName(earning.role) }}</span></td>
+                  <td>
+                    <ng-container *ngIf="earning.models && earning.models.length > 0; else noModels">
+                      <c-dropdown alignment="end">
+                        <button cButton cDropdownToggle color="secondary" variant="outline" size="sm">
+                          {{ earning.models.length }} {{ earning.models.length === 1 ? 'Model' : 'Models' }}
+                        </button>
+                        <ul cDropdownMenu>
+                          <li *ngFor="let model of earning.models">
+                            <span cDropdownItem class="disabled" style="cursor: default; color: inherit;">{{ model
+                              }}</span>
+                          </li>
+                        </ul>
+                      </c-dropdown>
+                    </ng-container>
+                    <ng-template #noModels>
+                      <span>-</span>
+                    </ng-template>
+                  </td>
+                  <td>{{ earning.shift }}</td>
+                  <td>{{ earning.period }}</td>
+                  <td>{{ earning.hours_worked }}</td>
+                  <td>{{ earning.gross_revenue | currency }}</td>
+                  <td>{{ earning.total_cut | currency }}</td>
+                  <td>
+                    <button cButton color="primary" variant="outline" size="sm" class="rounded-circle action-btn"
+                      (click)="openEditEarningModal(earning)" title="Edit Earning">
+                      <svg cIcon name="cilPencil" size="sm"></svg>
+                    </button>
+                    <button cButton color="danger" variant="outline" size="sm"
+                      class="ms-1 rounded-circle action-btn delete" (click)="openDeleteConfirmModal(earning)"
+                      title="Delete Earning">
+                      <svg cIcon name="cilTrash" size="sm"></svg>
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+
+            <!-- Pagination Controls -->
+            <nav class="mt-3" *ngIf="totalPages > 1">
+              <ul class="pagination justify-content-center">
+                <li class="page-item" [class.disabled]="currentPage === 1">
+                  <button class="page-link" (click)="setPage(currentPage - 1)"
+                    [disabled]="currentPage === 1">&laquo;</button>
+                </li>
+                <li class="page-item" *ngFor="let page of [].constructor(totalPages); let i = index"
+                  [class.active]="currentPage === i + 1">
+                  <button class="page-link" (click)="setPage(i + 1)">{{ i + 1 }}</button>
+                </li>
+                <li class="page-item" [class.disabled]="currentPage === totalPages">
+                  <button class="page-link" (click)="setPage(currentPage + 1)"
+                    [disabled]="currentPage === totalPages">&raquo;</button>
+                </li>
+              </ul>
+            </nav>
+          </ng-container>
+        </c-card-body>
+      </c-card>
+    </ng-container>
+  </c-col>
+</c-row>
+
+<!-- Earning Add/Edit Modal -->
+<app-earning-edit-modal [(visible)]="isEarningModalVisible" [guildId]="currentGuildId" [guildConfig]="guildConfig"
+  [earningToEdit]="selectedEarningForEdit" [guildMembersMap]="guildMembersMap" [guildRolesMap]="guildRolesMap"
+  (earningSaved)="onEarningSaved($event)">
+</app-earning-edit-modal>
+
+<!-- Delete Confirmation Modal -->
+<c-modal id="deleteConfirmModal" [visible]="isDeleteModalVisible"
+  (visibleChange)="handleDeleteModalVisibleChange($event)">
+  <c-modal-header>
+    <h5 cModalTitle>Confirm Dletion</h5>
+    <button (click)="closeDeleteModal()" cButtonClose></button>
+  </c-modal-header>
+  <c-modal-body *ngIf="earningToDelete">
+    Are you sure you want to delete the earning record from <strong>{{ earningToDelete.date }}</strong> for user
+    <strong>{{ getMemberDisplayName(earningToDelete.user_mention) }}</strong>?
+  </c-modal-body>
+  <c-modal-footer>
+    <button (click)="closeDeleteModal()" cButton color="secondary">
+      Cancel
+    </button>
+    <button (click)="confirmDelete()" cButton color="danger">
+      Delete Earning
+    </button>
+  </c-modal-footer>
+</c-modal>

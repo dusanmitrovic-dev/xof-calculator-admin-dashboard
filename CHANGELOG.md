@@ -3,6 +3,220 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [0.28.0] - 2025-04-16
+
+### Changed
+- Refined UI and layout for `GuildConfigComponent` form sections (Models, Shifts, Periods, Bonus Rules, Display Settings).
+- Used `mat-expansion-panel` for better organization.
+- Improved styling for `mat-chip-listbox`, `FormArray` groups, and buttons.
+- Added icons to expansion panel headers and buttons for clarity.
+- Disabled save button when form is pristine (no changes made).
+- Added visual feedback for save status (success/error/no changes).
+
+## [0.27.0] - 2025-04-16
+
+### Added
+- Generated `UserEditDialogComponent` for editing user roles and managed guilds.
+- Implemented reactive form in the dialog to modify user role and select managed guilds using `mat-selection-list`.
+- Added logic to fetch all available guilds via `UserService` to populate selection list.
+- Implemented save functionality to update user data via `UserService`.
+- Added logic to disable role editing for the current admin user and disable guild selection for users with the 'admin' role.
+- Updated `UserManagementComponent` to open the `UserEditDialogComponent` when the edit button is clicked.
+
+## [0.26.0] - 2025-04-16
+
+### Added
+- Implemented initial `UserManagementComponent` (Admin Only):
+  - Fetches all users via `UserService`.
+  - Displays users in a `MatTable` with sorting, pagination, and filtering.
+  - Shows email, role, and managed guilds (using `mat-chip-listbox`).
+  - Includes action buttons for Edit (placeholder) and Delete.
+  - Delete action includes basic confirmation and prevents self-deletion.
+- Added `getUserIdFromToken()` helper method to `AuthService`.
+
+## [0.25.0] - 2025-04-16
+
+### Added
+- Generated `EarningDialogComponent` for adding/editing earnings.
+- Implemented reactive form in `EarningDialogComponent` with fields for earning details.
+- Added logic to fetch dropdown options (shifts, periods, models, roles) from `ConfigService`.
+- Implemented date parsing/formatting helpers.
+- Added save logic to create or update earnings via `EarningsService`.
+- Implemented dialog template (`earning-dialog.component.html`) with Material form fields.
+- Updated `EarningsComponent` to open `EarningDialogComponent` for add/edit actions.
+- Added `MatSnackBar` for user feedback on save/delete actions.
+
+## [0.24.0] - 2025-04-16
+
+### Added
+- Added earnings component.
+
+## [0.23.0] - 2025-04-16
+
+### Added
+- Implemented `EarningsService` for handling `/api/earnings` interactions (get, create, update, delete).
+- Implemented initial `EarningsComponent` structure:
+  - Includes `GuildSelectorComponent`.
+  - Fetches earnings for the selected guild using `EarningsService`.
+  - Displays earnings in a `MatTable` with sorting, pagination, and filtering.
+  - Added placeholders for Add/Edit/Delete actions (dialogs to be implemented).
+- Added required Material modules (`MatTable`, `MatPaginator`, `MatSort`, `MatDialog`, etc.) to `EarningsComponent` imports.
+
+### Fixed
+- Resolved SASS compilation errors in component SCSS files by removing local theme definitions and relying on CSS variables set by global theme.
+
+## [v0.22.0] - 2025-04-15
+
+### Added
+- Implemented reactive form structure in `GuildConfigComponent` based on fetched config data.
+- Added helper methods for managing FormArrays (models, shifts, periods, bonus_rules).
+- Implemented initial form population logic in `initConfigForm`.
+- Implemented basic `saveConfig` function to send form data to the backend.
+- Added initial HTML template (`guild-config.component.html`) to render the form using Material components (Expansion Panels, Chips, Inputs, Toggles).
+- Added corresponding SCSS styles (`guild-config.component.scss`) for the form layout.
+
+### Changed
+- `GuildConfigComponent` now attempts to build a default form structure if no config is found for a guild.
+
+## [v0.21.0] – 2025-04-15
+
+### Changed
+- Work on guild-selector, config service, user service, dashboard and guild config.
+
+## [v0.20.0] – 2025-04-15
+
+### Changed
+- Updated dark theme to `purple-green` in `styles.scss`.
+- Updated dark theme palette definitions in `login.component.scss` and `register.component.scss` SASS.
+
+### Fixed
+- Resolved Sass `@use` warnings by renaming relevant `.css` files to `.scss` and updating component `styleUrls`.
+- Explicitly applied Material theme background/foreground colors to card elements (`.login-card`, `.register-card`, `.dashboard-card`) in component SCSS to ensure correct theme appearance in all contexts.
+- Corrected invalid dark theme CSS filename (`cyan-light-blue.css`) import in `styles.scss`, resolving build error.
+- Forced themed text color on `mat-card-title` and `mat-card-subtitle` in Login/Register components using `!important` to ensure visibility in light mode.
+- Applied explicit theme colors to inputs, labels, buttons, and links within login/register cards using SASS functions to ensure correct text visibility in both light and dark modes.
+
+## [v0.19.1] – 2025-04-15
+
+### Changed
+- Updated dark theme to `purple-green` in `styles.scss`.
+- Updated dark theme palette definitions in `login.component.scss` and `register.component.scss` SASS.
+
+### Fixed
+- Corrected invalid dark theme CSS filename (`cyan-light-blue.css`) import in `styles.scss`, resolving build error.
+
+## [v0.19.0] – 2025-04-15
+
+### Changed
+- Updated Material theme palettes (`deeppurple-amber` for light, `cyan-light-blue` for dark) in `styles.css`.
+- Confirmed guild selection logic accommodates admin (all guilds) vs manager (assigned guilds) roles.
+
+### Fixed
+- Applied themed background colors to host elements of `LoginComponent` and `RegisterComponent` using Material SASS functions to fix contrast issues when not logged in.
+
+## [v0.18.0] – 2025-04-15
+
+### Added
+- Generated placeholder components: `DashboardComponent`, `GuildConfigComponent`, `EarningsComponent`, `UserManagementComponent`.
+- Generated `GuildSelectorComponent` to allow users to select a guild to manage.
+- Added `UserService` to handle fetching user data (including managed/available guilds) and user management actions.
+- Implemented initial `DashboardComponent` with links to other sections.
+- Implemented `GuildSelectorComponent` using `UserService` to fetch and display available guilds.
+- Configured main application routes in `app.routes.ts` for the new components, protected by `authGuard` and `adminGuard` where appropriate.
+
+## [v0.17.0] – 2025-04-15
+
+### Added
+- Set up the routes:
+  - The main application routes (dashboard, guild-config, earnings, user-management) are now grouped and protected by authGuard.
+  - The user-management route is further protected by adminGuard.
+  - The default path (/) after login redirects to /dashboard.
+  - The wildcard route ** now redirects to /dashboard, relying on authGuard to send unauthenticated users to login.
+
+## [v0.16.0] – 2025-04-15
+
+### Added
+- Configured Angular development proxy (`proxy.conf.json`) to forward `/api` requests to backend (`http://localhost:5000`).
+- Updated `angular.json` serve configuration to use the proxy.
+
+### Fixed
+- Resolved CSS `@import` warnings by moving Material theme imports to the top level in `styles.css`.
+- Updated `angular.json` styles configuration to only include `styles.css`.
+
+## [v0.15.0] – 2025-04-15
+
+### Added
+- Implemented main application `LayoutComponent` containing `ToolbarComponent` and `<router-outlet>`.
+- Implemented `ToolbarComponent` with app title, theme toggle (dark/light), and logout button.
+- Added global CSS for theme switching (`.dark-theme`, `.light-theme`) in `styles.css`.
+- Configured root `AppComponent` to conditionally display `LayoutComponent` only when logged in, otherwise display the router outlet for auth pages.
+
+## [v0.14.0] – 2025-04-15
+
+### Added
+- Implemented functional `authGuard` to protect routes based on login status.
+- Implemented functional `adminGuard` to protect routes based on login status and admin role.
+- Guards redirect unauthenticated/unauthorized users to the login page or dashboard.
+
+## [v0.13.0] – 2025-04-15
+
+### Added
+- Implemented `RegisterComponent`:
+  - Reactive form with email, password, and confirm password.
+  - Validation for required fields, email, password length, and password match (custom validator).
+  - Integration with `AuthService` for registration.
+  - Loading spinner and error display.
+  - Material Design styling consistent with LoginComponent.
+  - Link back to login page.
+
+## [v0.12.0] – 2025-04-15
+
+### Added
+- Configured application routes (`app.routes.ts`) for auth components (`/auth/login`, `/auth/register`) using lazy loading.
+- Added default route redirects for `/auth` and `/`.
+
+### Changed
+- Corrected ToastrService import issue in LoginComponent.
+
+## [v0.11.0] – 2025-04-15
+
+### Added
+- The LoginComponent is now implemented with:
+  - A reactive form for email and password with validation.
+  - Integration with AuthService for the login request.
+  - Loading state indication using MatProgressSpinner.
+  - Password visibility toggle.
+  - Error handling display.
+  - Basic Material Design styling for a centered login card.
+  - A link to the registration page.
+  - Usage of modern Angular syntax (signal, @if block).
+
+## [v0.10.0] – 2025-04-15
+
+### Added
+- `authInterceptor` implemented.
+
+## [v0.9.0] – 2025-04-15
+
+### Added
+- AuthService is implemented. Key features:
+  - Uses Angular's `HttpClient` for login/register API calls.
+  - Stores the JWT in `localStorage`.
+  - Uses `jwt-decode` to check token expiry and extract the user's role.
+  - Provides signals (`isAuthenticated`, `currentUserRole`) for components/guards to react to auth state changes.
+  - Includes methods like `logout`, `getToken`, `isLoggedIn`, `getUserRole`, `isAdmin`.
+
+## [v0.8.0] – 2025-04-15
+
+### Added
+- basic components, services, guards, and interceptor files generated.
+
+## [v0.7.0] – 2025-04-14
+
+### Changed
+- Completely redoing frontend.
+- Will be using typescript.
+
 ## [v0.6.0] – 2025-04-05
 
 ### Changed

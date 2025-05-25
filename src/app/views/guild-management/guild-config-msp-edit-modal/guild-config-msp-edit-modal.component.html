@@ -1,0 +1,112 @@
+<div class="modal-header">
+  <h4 class="modal-title" id="modal-basic-title">Edit Models, Shifts & Periods</h4>
+  <button type="button" class="btn-close" aria-label="Close" (click)="dismiss()"></button>
+</div>
+<div class="modal-body">
+  <form [formGroup]="mspForm">
+    <!-- Models -->
+    <div class="mb-3">
+      <h5>Models</h5>
+      <div formArrayName="models">
+        <div *ngFor="let model of models.controls; let i=index" [formGroupName]="i" class="row mb-2 align-items-center">
+          <div class="col-md-4">
+            <label for="modelName{{i}}" class="form-label">Name</label>
+            <input id="modelName{{i}}" type="text" formControlName="name" class="form-control form-control-sm">
+            <!-- Basic Validation Feedback -->
+            <div *ngIf="model.get('name')?.invalid && (model.get('name')?.dirty || model.get('name')?.touched)" class="text-danger form-text">
+              Name is required.
+            </div>
+          </div>
+          <div class="col-md-3">
+            <label for="modelPayout{{i}}" class="form-label">Payout</label>
+            <input id="modelPayout{{i}}" type="number" formControlName="payout" class="form-control form-control-sm">
+            <div *ngIf="model.get('payout')?.invalid && (model.get('payout')?.dirty || model.get('payout')?.touched)" class="text-danger form-text">
+              Payout must be a non-negative number.
+            </div>
+          </div>
+          <div class="col-md-3">
+            <label for="modelCommission{{i}}" class="form-label">Commission</label>
+            <input id="modelCommission{{i}}" type="number" formControlName="commission" class="form-control form-control-sm">
+            <div *ngIf="model.get('commission')?.invalid && (model.get('commission')?.dirty || model.get('commission')?.touched)" class="text-danger form-text">
+              Commission must be a non-negative number.
+            </div>
+          </div>
+          <div class="col-md-2 d-flex align-items-end">
+            <button type="button" class="btn btn-danger btn-sm" (click)="removeModel(i)">Remove</button>
+          </div>
+        </div>
+      </div>
+      <button type="button" class="btn btn-primary btn-sm mt-2" (click)="addModel()">Add Model</button>
+    </div>
+
+    <hr>
+
+    <!-- Shifts -->
+    <div class="mb-3">
+      <h5>Shifts</h5>
+      <div formArrayName="shifts">
+        <div *ngFor="let shift of shifts.controls; let i=index" [formGroupName]="i" class="row mb-2 align-items-center">
+          <div class="col-md-6">
+            <label for="shiftName{{i}}" class="form-label">Name</label>
+            <input id="shiftName{{i}}" type="text" formControlName="name" class="form-control form-control-sm">
+            <div *ngIf="shift.get('name')?.invalid && (shift.get('name')?.dirty || shift.get('name')?.touched)" class="text-danger form-text">
+              Name is required.
+            </div>
+          </div>
+          <div class="col-md-4">
+            <label for="shiftMultiplier{{i}}" class="form-label">Multiplier</label>
+            <input id="shiftMultiplier{{i}}" type="number" formControlName="multiplier" class="form-control form-control-sm">
+            <div *ngIf="shift.get('multiplier')?.invalid && (shift.get('multiplier')?.dirty || shift.get('multiplier')?.touched)" class="text-danger form-text">
+              Multiplier must be a non-negative number.
+            </div>
+          </div>
+          <div class="col-md-2 d-flex align-items-end">
+            <button type="button" class="btn btn-danger btn-sm" (click)="removeShift(i)">Remove</button>
+          </div>
+        </div>
+      </div>
+      <button type="button" class="btn btn-primary btn-sm mt-2" (click)="addShift()">Add Shift</button>
+    </div>
+
+    <hr>
+
+    <!-- Periods -->
+    <div class="mb-3">
+      <h5>Periods</h5>
+      <div formArrayName="periods">
+        <div *ngFor="let period of periods.controls; let i=index" [formGroupName]="i" class="row mb-2 align-items-center">
+          <div class="col-md-4">
+            <label for="periodName{{i}}" class="form-label">Name</label>
+            <input id="periodName{{i}}" type="text" formControlName="name" class="form-control form-control-sm">
+            <div *ngIf="period.get('name')?.invalid && (period.get('name')?.dirty || period.get('name')?.touched)" class="text-danger form-text">
+              Name is required.
+            </div>
+          </div>
+          <div class="col-md-3">
+            <label for="periodStartDate{{i}}" class="form-label">Start Date</label>
+            <input id="periodStartDate{{i}}" type="date" formControlName="startDate" class="form-control form-control-sm">
+            <div *ngIf="period.get('startDate')?.invalid && (period.get('startDate')?.dirty || period.get('startDate')?.touched)" class="text-danger form-text">
+              Start Date is required.
+            </div>
+          </div>
+          <div class="col-md-3">
+            <label for="periodEndDate{{i}}" class="form-label">End Date</label>
+            <input id="periodEndDate{{i}}" type="date" formControlName="endDate" class="form-control form-control-sm">
+            <div *ngIf="period.get('endDate')?.invalid && (period.get('endDate')?.dirty || period.get('endDate')?.touched)" class="text-danger form-text">
+              End Date is required.
+            </div>
+          </div>
+          <div class="col-md-2 d-flex align-items-end">
+            <button type="button" class="btn btn-danger btn-sm" (click)="removePeriod(i)">Remove</button>
+          </div>
+        </div>
+      </div>
+      <button type="button" class="btn btn-primary btn-sm mt-2" (click)="addPeriod()">Add Period</button>
+    </div>
+
+  </form>
+</div>
+<div class="modal-footer">
+  <button type="button" class="btn btn-secondary" (click)="dismiss()">Cancel</button>
+  <button type="button" class="btn btn-primary" (click)="save()" [disabled]="!mspForm.valid">Save MSP Settings</button>
+</div>

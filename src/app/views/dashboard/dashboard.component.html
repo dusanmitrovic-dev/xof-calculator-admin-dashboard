@@ -1,0 +1,114 @@
+<c-container fluid>
+  <!-- Date Range Filter & Guild Name -->
+  <c-row class="mb-3 align-items-center">
+    <c-col [md]="selectedGuildName ? 6 : 9"> <!-- Adjust column span based on guild name presence -->
+      <h4 *ngIf="selectedGuildName" class="mb-0 guild-name-title">Guild: {{ selectedGuildName }}</h4>
+    </c-col>
+    <c-col [md]="selectedGuildName ? 6 : 3" class="text-md-end"> <!-- Changed to text-md-end for right alignment -->
+      <c-dropdown class="dashboard-filter-dropdown">
+        <button cButton cDropdownToggle>
+          {{ selectedDateRangeLabel }}
+        </button>
+        <ul cDropdownMenu>
+          <li><a cDropdownItem (click)="setDateRange('7days')">Last 7 Days</a></li>
+          <li><a cDropdownItem (click)="setDateRange('30days')">Last 30 Days</a></li>
+          <li><a cDropdownItem (click)="setDateRange('90days')">Last 90 Days</a></li>
+          <li><a cDropdownItem (click)="setDateRange('365days')">Last Year</a></li> <!-- Added Last Year option -->
+          <li><a cDropdownItem (click)="setDateRange('all')">All Time</a></li>
+        </ul>
+      </c-dropdown>
+    </c-col>
+  </c-row>
+
+  <!-- Loading Indicator -->
+  <div *ngIf="loading" class="d-flex justify-content-center mb-3">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+  </div>
+
+  <c-row class="mb-4 kpi-cards-container" *ngIf="!loading">
+    <!-- Total Gross Revenue -->
+    <c-col [xs]="12" [sm]="6" [lg]="3">
+      <c-card class="h-100 shadow-sm hover-shadow">
+        <c-card-body class="text-center">
+          <div class="text-muted small mb-1 d-flex justify-content-center align-items-center">
+            Total Gross Revenue
+            <c-icon name="cilInfo" size="sm" class="ms-1" cTooltip="Represents the total gross revenue generated within the selected date range." tooltipPlacement="top"></c-icon>
+          </div>
+          <div class="d-flex justify-content-center align-items-center mb-1">
+            <c-icon name="cilDollar" size="lg" class="me-2 text-info"></c-icon>
+            <span class="fs-3 fw-bold">{{ summaryStats.totalGrossRevenue | currency:'USD':'symbol':'1.2-2' }}</span>
+          </div>
+          <small class="text-muted">in selected date range</small>
+        </c-card-body>
+      </c-card>
+    </c-col>
+
+    <!-- Total Cut -->
+    <c-col [xs]="12" [sm]="6" [lg]="3">
+      <c-card class="h-100 shadow-sm hover-shadow">
+        <c-card-body class="text-center">
+          <div class="text-muted small mb-1 d-flex justify-content-center align-items-center">
+            Total Cut
+            <c-icon name="cilCalculator" size="sm" class="ms-1" cTooltip="Represents the total commission earned within the selected date range." tooltipPlacement="top"></c-icon>
+          </div>
+          <div class="d-flex justify-content-center align-items-center mb-1">
+            <c-icon name="cilCalculator" size="lg" class="me-2 text-info"></c-icon>
+            <span class="fs-3 fw-bold">{{ summaryStats.totalCut | currency:'USD':'symbol':'1.2-2' }}</span>
+          </div>
+          <small class="text-muted">in selected date range</small>
+        </c-card-body>
+      </c-card>
+    </c-col>
+
+    <!-- Total Entries -->
+    <c-col [xs]="12" [sm]="6" [lg]="3">
+      <c-card class="h-100 shadow-sm hover-shadow">
+        <c-card-body class="text-center">
+          <div class="text-muted small mb-1 d-flex justify-content-center align-items-center">
+            Total Entries
+            <c-icon name="cilInfo" size="sm" class="ms-1" cTooltip="Represents the total number of revenue entries recorded within the selected date range." tooltipPlacement="top"></c-icon>
+          </div>
+          <div class="d-flex justify-content-center align-items-center mb-1">
+            <c-icon name="cilListNumbered" size="lg" class="me-2 text-info"></c-icon>
+            <span class="fs-3 fw-bold">{{ summaryStats.totalEntries | number:'1.0-0' }}</span>
+          </div>
+          <small class="text-muted">in selected date range</small>
+        </c-card-body>
+      </c-card>
+    </c-col>
+
+    <!-- Average Cut per Entry -->
+    <c-col [xs]="12" [sm]="6" [lg]="3">
+      <c-card class="h-100 shadow-sm hover-shadow">
+        <c-card-body class="text-center">
+          <div class="text-muted small mb-1 d-flex justify-content-center align-items-center">
+            Avg Cut per Entry
+            <c-icon name="cilChartPie" size="sm" class="ms-1" cTooltip="Represents the average 'total cut' (commission) per individual 'entry'. Calculated as Total Cut / Total Entries." tooltipPlacement="top"></c-icon>
+          </div>
+          <div class="d-flex justify-content-center align-items-center mb-1">
+            <c-icon name="cilChartPie" size="lg" class="me-2 text-info"></c-icon>
+            <span class="fs-3 fw-bold">{{ summaryStats.avgCutPerEntry | currency:'USD':'symbol':'1.2-2' }}</span>
+          </div>
+          <small class="text-muted">in selected date range</small>
+        </c-card-body>
+      </c-card>
+    </c-col>
+  </c-row>
+  <!-- Revenue Over Time Chart -->
+  <c-row class="mb-4" *ngIf="!loading">
+    <c-col>
+      <c-card>
+        <c-card-header>
+          <div class="chart-legend-above">
+            Gross Revenue Over Time
+          </div>
+        </c-card-header>
+        <c-card-body>
+          <c-chart type="line" [data]="revenueOverTimeChartData" [options]="lineChartOptions"></c-chart>
+        </c-card-body>
+      </c-card>
+    </c-col>
+  </c-row>
+</c-container>

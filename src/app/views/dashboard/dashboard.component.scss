@@ -1,0 +1,229 @@
+@use "@coreui/coreui/scss/variables" as cui;
+@use "@coreui/coreui/scss/mixins/color-mode" as color-mode;
+
+// ======================
+// General Dashboard Enhancements
+// ======================
+.dashboard-card-title {
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--cui-body-color) !important;
+  margin-bottom: 0;
+  display: flex;
+  align-items: center;
+  flex-grow: 1;
+}
+
+.card-title-container {
+  display: flex;
+  align-items: center;
+  flex-grow: 1;
+}
+
+.card-value-container {
+  margin-top: 0;
+  display: flex;
+  align-items: center;
+}
+
+// ======================
+// Metric Card Specific Styles
+// ======================
+c-widget-stat-a {
+  padding: 1.25rem;
+  border-radius: var(--cui-border-radius-xl);
+  box-shadow: var(--cui-box-shadow);
+  transition: transform 0.2s ease-in-out;
+
+  &:hover {
+    transform: translateY(-3px);
+  }
+
+  .card-body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    height: 100%;
+  }
+
+  .text-medium-emphasis {
+    color: var(--cui-gray-600) !important;
+  }
+
+  .fs-3.fw-semibold {
+    font-size: 2rem !important;
+    font-weight: 700 !important;
+    color: var(--cui-body-color) !important;
+  }
+}
+
+.transparent-widget {
+  background-color: transparent !important;
+}
+
+// ======================
+// Trend Indicator
+// ======================
+.trend-indicator {
+  font-size: 1rem;
+  font-weight: 500;
+  margin-left: 0.5rem;
+  display: inline-flex;
+  align-items: center;
+
+  c-icon {
+    margin-right: 0.2rem;
+    font-size: 1.2em;
+  }
+
+  &.positive {
+    color: var(--cui-success);
+  }
+  &.negative {
+    color: var(--cui-danger);
+  }
+  &.neutral {
+    color: var(--cui-gray-600);
+  }
+}
+
+// ======================
+// Dark Theme Fixes
+// ======================
+@include color-mode.color-mode(dark) {
+  .dashboard-card-title {
+    color: var(--cui-gray-200) !important;
+  }
+
+  // Fix white cards in dark mode
+  c-card,
+  c-col > c-card,
+  .kpi-cards-container c-card {
+    background-color: var(--cui-gray-800) !important;
+    color: var(--cui-gray-100) !important;
+    border: 1px solid var(--cui-gray-700);
+  }
+
+  c-widget-stat-a {
+    background-color: var(--cui-gray-800);
+    border: 1px solid var(--cui-gray-700);
+
+    .text-medium-emphasis {
+      color: var(--cui-gray-400) !important;
+    }
+
+    .fs-3.fw-semibold {
+      color: var(--cui-white) !important;
+    }
+  }
+
+  .trend-indicator {
+    &.positive {
+      color: var(--cui-green);
+    }
+    &.negative {
+      color: var(--cui-red);
+    }
+    &.neutral {
+      color: var(--cui-gray-500);
+    }
+  }
+
+  // Ensure text has contrast on colored cards
+  c-widget-stat-a[color="success"],
+  c-widget-stat-a[color="info"],
+  c-widget-stat-a[color="primary"] {
+    .dashboard-card-title,
+    .fs-3.fw-semibold,
+    .trend-indicator {
+      color: var(--cui-white) !important;
+    }
+  }
+
+  c-widget-stat-a[color="warning"] {
+    .dashboard-card-title,
+    .fs-3.fw-semibold,
+    .trend-indicator {
+      color: var(--cui-black) !important;
+    }
+  }
+}
+
+// ======================
+// Light Theme Enhancements
+// ======================
+@include color-mode.color-mode(light) {
+  c-widget-stat-a {
+    background-color: var(--cui-white);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border: 1px solid var(--cui-gray-300);
+
+    .text-medium-emphasis {
+      color: var(--cui-gray-700) !important;
+    }
+
+    .fs-3.fw-semibold {
+      color: var(--cui-body-color) !important;
+    }
+  }
+
+  c-card,
+  .kpi-cards-container c-card {
+    background-color: var(--cui-white) !important;
+    color: var(--cui-body-color) !important;
+    border: 1px solid var(--cui-gray-300);
+  }
+
+  c-widget-stat-a[color="warning"] {
+    .dashboard-card-title,
+    .fs-3.fw-semibold,
+    .trend-indicator {
+      color: var(--cui-black) !important;
+    }
+  }
+
+  c-widget-stat-a[color="success"] {
+    .dashboard-card-title,
+    .fs-3.fw-semibold,
+    .trend-indicator {
+      color: var(--cui-white) !important;
+    }
+  }
+}
+
+// ======================
+// Chart Styling & Layout Enhancements
+// ======================
+.chart-legend-above {
+  text-align: left;
+  margin-bottom: 1rem;
+  font-weight: 600;
+  font-size: 1.2rem;
+  color: var(--cui-body-color);
+}
+
+c-row.mb-4:has(c-widget-stat-a) + c-row.mb-4:has(c-card c-chart) {
+  margin-top: 2rem !important;
+}
+
+c-card {
+  border-radius: var(--cui-border-radius-xl);
+  box-shadow: var(--cui-box-shadow);
+}
+
+// Ensure KPI cards have equal height
+.kpi-cards-row c-col > div > c-widget-stat-a > .card {
+  height: 100%;
+
+  .card-body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    height: 100%;
+  }
+}
+
+.dashboard-card-title .ms-1 {
+  margin-top: 0;
+  margin-bottom: 0;
+}
