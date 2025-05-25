@@ -5,7 +5,7 @@ import { Observable } from 'rxjs';
 interface GuildMember {
   _id: string;
   guild_id: string;
-  id: { low: number; high: number; unsigned: boolean; }; // Updated to match backend object structure
+  id: string;
   name: string;
   display_name: string;
 }
@@ -13,7 +13,7 @@ interface GuildMember {
 interface GuildRole {
   _id: string;
   guild_id: string;
-  id: { low: number; high: number; unsigned: boolean; }; // Updated to match backend object structure
+  id: string;
   name: string;
 }
 

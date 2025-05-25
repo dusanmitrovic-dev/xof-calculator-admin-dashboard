@@ -130,7 +130,6 @@ export class EarningEditModalComponent implements OnInit, OnChanges {
     console.log(`[EarningModal] prepareModal: Preparing. Mode: ${this.isEditMode ? 'Edit' : 'Add'}, Input GuildID: ${this.guildId}`);
     this.errorMessage = null;
     this.isLoading = false;
-
     // Reset form with default values (including empty models array)
     this.earningForm.reset({
       date: this.getTodayDateString(),
@@ -241,7 +240,6 @@ export class EarningEditModalComponent implements OnInit, OnChanges {
     };
     this.earningForm.patchValue(patchedValues);
   }
-
   /**
    * Checks if a model is currently selected in the form.
    * @param model The model name to check.
