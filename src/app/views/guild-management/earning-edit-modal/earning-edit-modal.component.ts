@@ -44,8 +44,9 @@ export class EarningEditModalComponent implements OnInit, OnChanges {
   @Output() visibleChange = new EventEmitter<boolean>();
   @Output() earningSaved = new EventEmitter<Earning | null>();
   @Input() guildMembersMap: { [id: string]: { displayName: string, username: string } } = {};
-  guildMembersList: { mention: string, display: string }[] = [];
   @Input() guildRolesMap: { [id: string]: string } = {};
+  @Input() availableRoles: { id: string, name: string }[] = [];
+  @Input() guildMembersList: { mention: string, display: string }[] = [];
   guildRolesList: string[] = [];
 
   earningForm!: FormGroup;
@@ -113,9 +114,8 @@ export class EarningEditModalComponent implements OnInit, OnChanges {
           : member.displayName || member.username
       }));
     }
-
     if (changes['guildRolesMap']) {
-      this.guildRolesList = Object.values(this.guildRolesMap);
+      this.availableRoles = Object.entries(this.guildRolesMap).map(([id, name]) => ({ id, name }));
     }
   }
 
