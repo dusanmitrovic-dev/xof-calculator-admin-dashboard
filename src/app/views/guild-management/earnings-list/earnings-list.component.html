@@ -10,10 +10,7 @@
       <c-card class="mb-4 rounded-4 shadow-lg earnings-card">
         <c-card-header>
           <strong class="earnings-heading">
-            Earnings Records for {{ currentGuildId }}
-            <span *ngIf="guildConfig?.display_settings?.agency_name">
-              ({{ guildConfig?.display_settings?.agency_name }})
-            </span>
+            Earnings Records
           </strong>
           <div class="float-end">
             <button cButton color="success" variant="outline" size="sm" (click)="openAddEarningModal()"

@@ -352,28 +352,28 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
             : 'Create New Guild Configuration';
         break;
       case 'models':
-        this.title = `Manage Models for ${baseTitle}`;
+        this.title = `Manage Models`;
         break;
       case 'shifts':
-        this.title = `Manage Shifts for ${baseTitle}`;
+        this.title = `Manage Shifts`;
         break;
       case 'periods':
-        this.title = `Manage Periods for ${baseTitle}`;
+        this.title = `Manage Periods`;
         break;
       case 'bonus_rules':
-        this.title = `Manage Bonus Rules for ${baseTitle}`;
+        this.title = `Manage Bonus Rules`;
         break;
       case 'commission_settings_roles':
-        this.title = `Manage Role Commissions for ${baseTitle}`;
+        this.title = `Manage Role Commissions`;
         break;
       case 'commission_settings_users':
-        this.title = `Manage User Overrides for ${baseTitle}`;
+        this.title = `Manage User Overrides`;
         break;
       case 'top_level_roles':
-        this.title = `Manage General Role Settings for ${baseTitle}`;
+        this.title = `Manage General Role Settings`;
         break;
       case 'display_settings':
-        this.title = `Manage Display Settings for ${baseTitle}`;
+        this.title = `Manage Display Settings`;
         break;
       default:
         this.title =

@@ -11,7 +11,7 @@
         <!-- Guild Configuration Section: Applying updated card styling -->
         <c-card class="mb-4 rounded shadow-lg hover-shadow">
           <c-card-header>
-            <strong class="text-xl font-semibold">Guild Configuration for {{ currentGuildId }}</strong>
+            <strong class="text-xl font-semibold">Guild Configuration</strong>
             <div class="float-end">
                 <!-- Delete Button: Icon already present. Hover/transition effects not directly applicable with just Bootstrap/CoreUI classes. -->
                 <button cButton color="danger" variant="outline" size="sm" class="ms-2" (click)="deleteGuildConfig()" [disabled]="loadingConfig || !guildConfig" title="Delete Entire Guild Config">

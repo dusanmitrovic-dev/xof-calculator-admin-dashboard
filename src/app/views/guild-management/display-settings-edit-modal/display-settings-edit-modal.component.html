@@ -4,53 +4,47 @@
 </div>
 <div class="modal-body">
   <form [formGroup]="displaySettingsForm" (ngSubmit)="save()">
-    <c-row class="mb-3">
-      <c-col sm="8">
-        <label cLabel for="agency_name">Agency Name</label>
-        <input cFormControl id="agency_name" type="text" formControlName="agency_name" />
-        <div *ngIf="displaySettingsForm.get('agency_name')?.invalid && displaySettingsForm.get('agency_name')?.touched" class="text-danger form-text">
-          Agency name is required.
-        </div>
-      </c-col>
-      <c-col sm="4">
-        <label cLabel for="bot_name">Bot Name</label>
-        <input cFormControl id="bot_name" type="text" formControlName="bot_name" />
-        <div *ngIf="displaySettingsForm.get('bot_name')?.invalid && displaySettingsForm.get('bot_name')?.touched" class="text-danger form-text">
-          Bot name is required.
-        </div>
-      </c-col>
-    </c-row>
-
-    <c-row class="mb-3">
-      <c-col sm="12">
-        <c-form-check>
-          <input cFormCheckInput id="ephemeral_responses" type="checkbox" formControlName="ephemeral_responses" [checked]="displaySettingsForm.get('ephemeral_responses')?.value === true" />
-          <label cFormCheckLabel for="ephemeral_responses">Use Ephemeral Responses</label>
-        </c-form-check>
-      </c-col>
-    </c-row>
-
-    <c-row class="mb-3">
-      <c-col sm="12">
-        <c-form-check>
-          <input cFormCheckInput id="show_average" type="checkbox" formControlName="show_average" [checked]="displaySettingsForm.get('show_average')?.value === true" />
+    <!-- Section: Names -->
+    <div class="mb-4">
+      <label cLabel for="agency_name" class="mb-1">Agency Name</label>
+      <input cFormControl id="agency_name" type="text" formControlName="agency_name" class="w-100 form-control" placeholder="Enter agency name" />
+      <div *ngIf="displaySettingsForm.get('agency_name')?.invalid && displaySettingsForm.get('agency_name')?.touched" class="text-danger form-text">
+        Agency name is required.
+      </div>
+    </div>
+    <div class="mb-4">
+      <label cLabel for="bot_name" class="mb-1">Bot Name</label>
+      <input cFormControl id="bot_name" type="text" formControlName="bot_name" class="w-100 form-control" placeholder="Enter bot name" />
+      <div *ngIf="displaySettingsForm.get('bot_name')?.invalid && displaySettingsForm.get('bot_name')?.touched" class="text-danger form-text">
+        Bot name is required.
+      </div>
+    </div>
+    <hr class="my-3" />
+    <!-- Section: Toggles -->
+    <div class="mb-3">
+      <c-form-check class="form-switch">
+        <input cFormCheckInput id="ephemeral_responses" type="checkbox" formControlName="ephemeral_responses" [checked]="displaySettingsForm.get('ephemeral_responses')?.value === true" />
+        <label cFormCheckLabel for="ephemeral_responses">Use Ephemeral Responses</label>
+      </c-form-check>
+      <small class="text-muted ms-4">Bot replies are only visible to the user.</small>
+    </div>
+    <div class="mb-3">
+      <c-form-check class="form-switch">
+        <input cFormCheckInput id="show_average" type="checkbox" formControlName="show_average" [checked]="displaySettingsForm.get('show_average')?.value === true" />
           <label cFormCheckLabel for="show_average">Show Average in Reports</label>
-        </c-form-check>
-      </c-col>
-    </c-row>
-
-    <c-row class="mb-3">
-      <c-col sm="12">
-        <c-form-check>
-          <input cFormCheckInput id="show_ids" type="checkbox" formControlName="show_ids" [checked]="displaySettingsForm.get('show_ids')?.value === true" />
-          <label cFormCheckLabel for="show_ids">Show IDs in Reports</label>
-        </c-form-check>
-      </c-col>
-    </c-row>
-
+      </c-form-check>
+      <small class="text-muted ms-4">Display average values in generated reports.</small>
+    </div>
+    <div class="mb-3">
+      <c-form-check class="form-switch">
+        <input cFormCheckInput id="show_ids" type="checkbox" formControlName="show_ids" [checked]="displaySettingsForm.get('show_ids')?.value === true" />
+        <label cFormCheckLabel for="show_ids">Show IDs in Reports</label>
+      </c-form-check>
+      <small class="text-muted ms-4">Include user or item IDs in reports.</small>
+    </div>
   </form>
 </div>
-<div class="modal-footer">
+<div class="modal-footer d-flex justify-content-end gap-2">
   <button type="button" class="btn btn-secondary" (click)="dismiss()">Cancel</button>
   <button type="button" class="btn btn-primary" (click)="save()" [disabled]="!displaySettingsForm.valid">Save Display Settings</button>
 </div>
