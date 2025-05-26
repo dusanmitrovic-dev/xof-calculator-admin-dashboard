@@ -60,7 +60,6 @@
           <!-- Models Management -->
           <ng-container *ngIf="editSection === 'full' || editSection === 'models'">
             <c-card class="mb-3">
-              <!-- <c-card-header>Manage Models</c-card-header> -->
               <c-card-body formArrayName="models">
                 <div class="mb-3">
                   <label cLabel for="newModelName" class="fw-semibold">Add New Model</label>
@@ -94,7 +93,6 @@
           <!-- Shifts Management -->
           <ng-container *ngIf="editSection === 'full' || editSection === 'shifts'">
             <c-card class="mb-3">
-              <!-- <c-card-header>Manage Shifts</c-card-header> -->
               <c-card-body formArrayName="shifts">
                 <div class="mb-3">
                   <label cLabel for="newShiftName" class="fw-semibold">Add New Shift</label>
@@ -128,7 +126,6 @@
           <!-- Periods Management -->
           <ng-container *ngIf="editSection === 'full' || editSection === 'periods'">
             <c-card class="mb-3">
-              <!-- <c-card-header>Manage Periods</c-card-header> -->
               <c-card-body formArrayName="periods">
                 <div class="mb-3">
                   <label cLabel for="newPeriodName" class="fw-semibold">Add New Period</label>
@@ -162,12 +159,7 @@
           <!-- Display Settings Card -->
           <ng-container *ngIf="editSection === 'full' || editSection === 'display_settings'">
             <c-card class="mb-3">
-              <c-card-header>Display & Bot Customization</c-card-header>
               <c-card-body>
-                <p class="mb-2">
-                  Customize bot name, agency name, and how information is
-                  displayed.
-                </p>
                 <button cButton type="button" color="info" variant="outline" (click)="openDisplaySettingsModal()">
                   <svg cIcon name="cilPaint" class="me-2"></svg>Edit Display
                   Settings
@@ -200,16 +192,20 @@
           <!-- Top-Level Roles Management -->
           <ng-container *ngIf="editSection === 'full' || editSection === 'top_level_roles'">
             <c-card class="mb-3">
-              <!-- <c-card-header>General Role Settings (Numeric)</c-card-header> -->
               <c-card-body formGroupName="roles">
                 <div class="mb-3">
-                  <label cLabel for="newTopLevelRoleId" class="fw-semibold">Add New Role ID</label>
+                  <label cLabel for="newTopLevelRoleId" class="fw-semibold">Add New Role</label>
                   <div class="input-group mb-3">
+                    <select cFormControl class="form-select" id="roleDropdown"
+                      (change)="onRoleDropdownChange($event, newTopLevelRoleInput)">
+                      <option value="">Select existing role...</option>
+                      <option *ngFor="let role of availableRoles" [value]="role.id">{{ role.name }}</option>
+                    </select>
                     <input cFormControl type="text" id="newTopLevelRoleId" placeholder="Enter Role ID"
                       #newTopLevelRoleInput (blur)="addTopLevelRole(newTopLevelRoleInput.value)" (keydown.enter)="
-                        addTopLevelRole(newTopLevelRoleInput.value);
-                        $event.preventDefault()
-                      " />
+      addTopLevelRole(newTopLevelRoleInput.value);
+      $event.preventDefault()
+    " />
                     <button cButton type="button" color="success" variant="outline"
                       (click)="addTopLevelRole(newTopLevelRoleInput.value)">
                       <svg cIcon name="cilPlus" size="sm"></svg> Add Role
@@ -266,100 +262,98 @@
           <ng-container *ngIf="editSection === 'full' || editSection === 'bonus_rules'">
             <c-card class="mb-3">
               <c-card-header>
-                Bonus Rules
+                <!-- Bonus Rules -->
                 <button cButton type="button" color="success" variant="outline" size="sm" class="float-end"
                   (click)="addBonusRule()">
                   <svg cIcon name="cilPlus" size="sm"></svg> Add Rule
                 </button>
               </c-card-header>
               <c-card-body formArrayName="bonus_rules">
+                <p class="text-muted small mb-3">
+                  <!-- Define bonus payouts based on value ranges. Each rule applies a bonus if the value falls within the -->
+                  <!-- specified range. -->
+                </p>
                 <div *ngIf="bonus_rules.controls.length === 0" class="text-center text-muted py-3">
                   <svg cIcon name="cilMoney" size="xl" class="mb-2"></svg>
                   <p>No bonus rules defined.</p>
                 </div>
                 <div *ngFor="let ruleGroup of bonus_rules.controls; let i = index" [formGroupName]="i"
-                  class="row g-3 align-items-center mb-3 p-2 border rounded position-relative">
-                  <c-col md="3">
-                    <label cLabel [for]="'bonus_from_' + i" class="small">From ($)</label>
-                    <input cFormControl type="number" [id]="'bonus_from_' + i" formControlName="from" required
-                      min="0" />
-                  </c-col>
-                  <c-col md="3">
-                    <label cLabel [for]="'bonus_to_' + i" class="small">To ($)</label>
-                    <input cFormControl type="number" [id]="'bonus_to_' + i" formControlName="to" required min="0" />
+                  class="row g-3 align-items-center mb-3 p-2 border rounded position-relative flex-wrap">
+                  <c-col xs="12" md="3">
+                    <label cLabel [for]="'bonus_from_' + i" class="small">
+                      From ($)
+                      <svg cIcon name="cilInfo" size="sm" class="ms-1" title="Minimum value for this bonus rule"></svg>
+                    </label>
+                    <input cFormControl type="number" [id]="'bonus_from_' + i" formControlName="from" required min="0"
+                      placeholder="Min value"
+                      [class.is-invalid]="ruleGroup.get('from')?.invalid && (ruleGroup.get('from')?.dirty || ruleGroup.get('from')?.touched || submitAttempted)" />
                     <c-form-feedback [valid]="false" *ngIf="
-                        ruleGroup.hasError('toLessThanFrom') &&
-                        (ruleGroup.get('to')?.dirty ||
-                          ruleGroup.get('to')?.touched ||
-                          submitAttempted)
-                      ">
-                      'To' must be >= 'From'.
-                    </c-form-feedback>
-                    <c-form-feedback [valid]="false" *ngIf="
-                        ruleGroup.get('to')?.hasError('required') &&
-                        (ruleGroup.get('to')?.dirty ||
-                          ruleGroup.get('to')?.touched ||
-                          submitAttempted)
-                      ">
+            ruleGroup.get('from')?.hasError('required') &&
+            (ruleGroup.get('from')?.dirty || ruleGroup.get('from')?.touched || submitAttempted)">
                       Value is required.
                     </c-form-feedback>
                     <c-form-feedback [valid]="false" *ngIf="
-                        ruleGroup.get('to')?.hasError('min') &&
-                        (ruleGroup.get('to')?.dirty ||
-                          ruleGroup.get('to')?.touched ||
-                          submitAttempted)
-                      ">
+            ruleGroup.get('from')?.hasError('min') &&
+            (ruleGroup.get('from')?.dirty || ruleGroup.get('from')?.touched || submitAttempted)">
                       Value must be non-negative.
                     </c-form-feedback>
                   </c-col>
-                  <c-col md="3">
-                    <label cLabel [for]="'bonus_amount_' + i" class="small">Bonus ($)</label>
+                  <c-col xs="12" md="3">
+                    <label cLabel [for]="'bonus_to_' + i" class="small">
+                      To ($)
+                      <svg cIcon name="cilInfo" size="sm" class="ms-1" title="Maximum value for this bonus rule"></svg>
+                    </label>
+                    <input cFormControl type="number" [id]="'bonus_to_' + i" formControlName="to" required min="0"
+                      placeholder="Max value" [class.is-invalid]="
+              (ruleGroup.get('to')?.invalid && (ruleGroup.get('to')?.dirty || ruleGroup.get('to')?.touched || submitAttempted)) ||
+              (ruleGroup.hasError('toLessThanFrom') && (ruleGroup.get('to')?.dirty || ruleGroup.get('to')?.touched || submitAttempted))
+            " />
+                    <c-form-feedback [valid]="false" *ngIf="
+            ruleGroup.hasError('toLessThanFrom') &&
+            (ruleGroup.get('to')?.dirty || ruleGroup.get('to')?.touched || submitAttempted)">
+                      'To' must be greater than or equal to 'From'.
+                    </c-form-feedback>
+                    <c-form-feedback [valid]="false" *ngIf="
+            ruleGroup.get('to')?.hasError('required') &&
+            (ruleGroup.get('to')?.dirty || ruleGroup.get('to')?.touched || submitAttempted)">
+                      Value is required.
+                    </c-form-feedback>
+                    <c-form-feedback [valid]="false" *ngIf="
+            ruleGroup.get('to')?.hasError('min') &&
+            (ruleGroup.get('to')?.dirty || ruleGroup.get('to')?.touched || submitAttempted)">
+                      Value must be non-negative.
+                    </c-form-feedback>
+                  </c-col>
+                  <c-col xs="12" md="3">
+                    <label cLabel [for]="'bonus_amount_' + i" class="small">
+                      Bonus ($)
+                      <svg cIcon name="cilInfo" size="sm" class="ms-1" title="Bonus amount for this rule"></svg>
+                    </label>
                     <input cFormControl type="number" [id]="'bonus_amount_' + i" formControlName="amount" required
-                      min="0" />
+                      min="0" placeholder="Bonus amount"
+                      [class.is-invalid]="ruleGroup.get('amount')?.invalid && (ruleGroup.get('amount')?.dirty || ruleGroup.get('amount')?.touched || submitAttempted)" />
                     <c-form-feedback [valid]="false" *ngIf="
-                        ruleGroup.get('amount')?.hasError('required') &&
-                        (ruleGroup.get('amount')?.dirty ||
-                          ruleGroup.get('amount')?.touched ||
-                          submitAttempted)
-                      ">
+            ruleGroup.get('amount')?.hasError('required') &&
+            (ruleGroup.get('amount')?.dirty || ruleGroup.get('amount')?.touched || submitAttempted)">
                       Value is required.
                     </c-form-feedback>
                     <c-form-feedback [valid]="false" *ngIf="
-                        ruleGroup.get('amount')?.hasError('min') &&
-                        (ruleGroup.get('amount')?.dirty ||
-                          ruleGroup.get('amount')?.touched ||
-                          submitAttempted)
-                      ">
+            ruleGroup.get('amount')?.hasError('min') &&
+            (ruleGroup.get('amount')?.dirty || ruleGroup.get('amount')?.touched || submitAttempted)">
                       Value must be non-negative.
                     </c-form-feedback>
                   </c-col>
-                  <c-col md="2">
-                    <strong class="text-success d-block mt-4">{{
-                      ruleGroup.get("amount")?.value | currency
-                      }}</strong>
+                  <c-col xs="12" md="2">
+                    <strong class="text-success d-block mt-4">
+                      {{ ruleGroup.get("amount")?.value | currency }}
+                    </strong>
                   </c-col>
-                  <c-col md="1" class="text-end">
-                    <button cButton type="button" color="danger" variant="ghost" size="sm" class="p-1 mt-3"
+                  <c-col xs="12" md="1" class="text-end mt-2 mt-md-0">
+                    <button cButton type="button" color="danger" variant="ghost" size="sm" class="p-1"
                       (click)="removeBonusRule(i)" title="Remove Rule">
                       <svg cIcon name="cilTrash" size="lg"></svg>
                     </button>
                   </c-col>
-                  <c-form-feedback [valid]="false" *ngIf="
-                      ruleGroup.get('from')?.hasError('required') &&
-                      (ruleGroup.get('from')?.dirty ||
-                        ruleGroup.get('from')?.touched ||
-                        submitAttempted)
-                    ">
-                    Value is required.
-                  </c-form-feedback>
-                  <c-form-feedback [valid]="false" *ngIf="
-                      ruleGroup.get('from')?.hasError('min') &&
-                      (ruleGroup.get('from')?.dirty ||
-                        ruleGroup.get('from')?.touched ||
-                        submitAttempted)
-                    ">
-                    Value must be non-negative.
-                  </c-form-feedback>
                 </div>
               </c-card-body>
             </c-card>
@@ -367,70 +361,72 @@
 
           <!-- Commission Settings Card -->
           <ng-container *ngIf="
-              editSection === 'full' ||
-              editSection === 'commission_settings_roles' ||
-              editSection === 'commission_settings_users'
-            ">
+    editSection === 'full' ||
+    editSection === 'commission_settings_roles' ||
+    editSection === 'commission_settings_users'
+  ">
             <c-card class="mb-3">
-              <c-card-header>Commission Settings</c-card-header>
               <c-card-body formGroupName="commission_settings">
                 <ng-container *ngIf="
-                    editSection === 'full' ||
-                    editSection === 'commission_settings_roles'
-                  ">
+          editSection === 'full' ||
+          editSection === 'commission_settings_roles'
+        ">
                   <div class="mb-3">
-                    <h6 class="fw-semibold mb-1">By Role (%)</h6>
-                    <div class="mb-3">
-                      <label cLabel for="newRoleCommissionId" class="fw-semibold">Add Role Commission</label>
-                      <div class="input-group">
-                        <input cFormControl type="text" id="newRoleCommissionId" placeholder="Enter Role ID"
-                          #newRoleCommissionInput (blur)="addRoleCommission(newRoleCommissionInput)" (keydown.enter)="
-                            addRoleCommission(newRoleCommissionInput);
-                            $event.preventDefault()
-                          " />
-                        <button cButton type="button" color="success" variant="outline"
-                          (click)="addRoleCommission(newRoleCommissionInput)">
-                          <svg cIcon name="cilPlus" size="sm"></svg> Add Role
-                        </button>
-                      </div>
-                    </div>
-                    <div formGroupName="roles">
-                      <div *ngIf="
-                          commissionRoles &&
-                            objectKeys(commissionRoles.controls).length > 0;
-                          else noCommissionRolesDefined
-                        ">
-                        <c-row *ngFor="
-                            let roleId of objectKeys(commissionRoles.controls)
-                          " class="g-2 mb-2 align-items-center p-2 border rounded" [formGroupName]="roleId">
-                          <c-col sm="4">
-                            <label class="col-form-label text-truncate">Role ID:
-                              <code class="text-primary">{{
-                                roleId
-                              }}</code></label>
-                          </c-col>
-                          <c-col sm="7">
-                            <div class="input-group">
-                              <input cFormControl type="number" formControlName="commission_percentage" required min="0"
-                                max="100" />
-                              <span class="input-group-text">%</span>
-                            </div>
-                          </c-col>
-                          <c-col sm="1" class="text-end">
-                            <button cButton type="button" color="danger" variant="ghost" size="sm" class="p-1"
-                              (click)="removeRoleCommission(roleId)" title="Remove Role Commission">
-                              <svg cIcon name="cilTrash" size="lg"></svg>
-                            </button>
-                          </c-col>
-                        </c-row>
-                      </div>
-                      <ng-template #noCommissionRolesDefined>
-                        <p class="text-muted">No role commissions defined.</p>
-                      </ng-template>
+                    <label cLabel for="newRoleCommissionId" class="fw-semibold">Add Role Commission</label>
+                    <div class="input-group mb-3">
+                      <select cFormControl class="form-select" id="commissionRoleDropdown"
+                        (change)="onCommissionRoleDropdownChange($event, newRoleCommissionInput)">
+                        <option value="">Select existing role...</option>
+                        <option *ngFor="let role of availableRoles" [value]="role.id">{{ role.name }}</option>
+                      </select>
+                      <input cFormControl type="text" id="newRoleCommissionId" placeholder="Enter Role ID"
+                        #newRoleCommissionInput (blur)="addRoleCommission(newRoleCommissionInput.value)"
+                        (keydown.enter)="
+    addRoleCommission(newRoleCommissionInput.value);
+    $event.preventDefault()
+  " />
+                      <button cButton type="button" color="success" variant="outline"
+                        (click)="addRoleCommission(newRoleCommissionInput.value)">
+                        <svg cIcon name="cilPlus" size="sm"></svg> Add Role
+                      </button>
                     </div>
                   </div>
+                  <div formGroupName="roles">
+                    <div *ngIf="
+              commissionRoles &&
+                objectKeys(commissionRoles.controls).length > 0;
+              else noCommissionRolesDefined
+            ">
+                      <c-row *ngFor="let roleId of objectKeys(commissionRoles.controls)"
+                        class="g-2 mb-2 align-items-center p-2 border rounded" [formGroupName]="roleId">
+                        <c-col sm="4">
+                          <label class="col-form-label text-truncate">
+                            Role:
+                            <code class="text-primary">
+  {{ getRoleName(roleId) }}
+</code>
+                          </label>
+                        </c-col>
+                        <c-col sm="7">
+                          <div class="input-group">
+                            <input cFormControl type="number" formControlName="commission_percentage" required min="0"
+                              max="100" />
+                            <span class="input-group-text">%</span>
+                          </div>
+                        </c-col>
+                        <c-col sm="1" class="text-end">
+                          <button cButton type="button" color="danger" variant="ghost" size="sm" class="p-1"
+                            (click)="removeRoleCommission(roleId)" title="Remove Role Commission">
+                            <svg cIcon name="cilTrash" size="lg"></svg>
+                          </button>
+                        </c-col>
+                      </c-row>
+                    </div>
+                    <ng-template #noCommissionRolesDefined>
+                      <p class="text-muted">No role commissions defined.</p>
+                    </ng-template>
+                  </div>
                 </ng-container>
-                <!-- Corrected *ngIf for the <hr> tag -->
                 <hr *ngIf="editSection === 'full'" />
                 <ng-container *ngIf="
                     editSection === 'full' ||
@@ -442,11 +438,16 @@
                     <div class="mb-3">
                       <label cLabel for="newUserOverrideId" class="fw-semibold">Add User Override</label>
                       <div class="input-group">
+                        <select cFormControl class="form-select" id="userOverrideDropdown"
+                          (change)="onUserDropdownChange($event, newUserOverrideInput)">
+                          <option value="">Select existing user...</option>
+                          <option *ngFor="let user of availableUsers" [value]="user.id">
+                            {{ user.displayName || user.username }} ({{ user.username }})
+                          </option>
+                        </select>
                         <input cFormControl type="text" id="newUserOverrideId" placeholder="Enter User ID"
-                          #newUserOverrideInput (blur)="addUserOverride(newUserOverrideInput)" (keydown.enter)="
-                            addUserOverride(newUserOverrideInput);
-                            $event.preventDefault()
-                          " />
+                          #newUserOverrideInput (blur)="addUserOverride(newUserOverrideInput)"
+                          (keydown.enter)="addUserOverride(newUserOverrideInput); $event.preventDefault()" />
                         <button cButton type="button" color="success" variant="outline"
                           (click)="addUserOverride(newUserOverrideInput)">
                           <svg cIcon name="cilPlus" size="sm"></svg> Add User
@@ -462,8 +463,14 @@
                         <div *ngFor="
                             let userId of objectKeys(commissionUsers.controls)
                           " class="p-2 border rounded mb-2" [formGroupName]="userId">
-                          <label class="col-form-label text-truncate fw-medium">User ID:
-                            <code class="text-info">{{ userId }}</code></label>
+                          <label class="col-form-label text-truncate fw-medium">
+                            User:
+                            <code class="text-info">
+    {{
+      getUserDisplayName(userId)
+    }}
+  </code>
+                          </label>
                           <c-row class="g-3 align-items-center">
                             <c-col sm="6">
                               <label [for]="'hourly_rate_' + userId" class="small">Hourly Rate ($)</label>

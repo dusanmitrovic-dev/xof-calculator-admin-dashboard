@@ -66,6 +66,8 @@ export class GuildConfigListComponent implements OnInit, OnDestroy {
   guildRolesMap: { [id: string]: string } = {};
   loadingGuildData: boolean = false;
   guildDataError: string | null = null;
+  availableRoles: { id: string, name: string }[] = [];
+  availableUsers: { id: string, displayName: string, username: string }[] = [];
 
   // Modal State
   isConfigEditModalVisible: boolean = false;
@@ -191,12 +193,17 @@ export class GuildConfigListComponent implements OnInit, OnDestroy {
           };
           return map;
         }, {} as { [id: string]: { displayName: string, username: string } });
-
+        this.availableUsers = Object.entries(this.guildMembersMap).map(([id, user]) => ({
+          id,
+          displayName: user.displayName,
+          username: user.username
+        }));
         this.guildRolesMap = roles.reduce((map, role) => {
           const key = this.idObjectToSnowflake(role.id);
           map[key] = role.name;
           return map;
         }, {} as { [id: string]: string });
+        this.availableRoles = Object.entries(this.guildRolesMap).map(([id, name]) => ({ id, name }));
         this.loadingGuildData = false;
         console.log('GuildConfigListComponent: Guild members and roles loaded.', this.guildMembersMap, this.guildRolesMap);
       });

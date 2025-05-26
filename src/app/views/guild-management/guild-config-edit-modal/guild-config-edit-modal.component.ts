@@ -70,6 +70,8 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
   @Input() guildConfig: GuildConfig | null = null;
   @Input() guildId: string | null = null;
   @Input() editSection: string = 'full';
+  @Input() availableRoles: { id: string, name: string }[] = [];
+  @Input() availableUsers: { id: string, displayName: string, username: string }[] = [];
   @Output() visibleChange = new EventEmitter<boolean>();
   @Output() configSaved = new EventEmitter<GuildConfig | null>();
 
@@ -94,7 +96,7 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
     private guildConfigService: GuildConfigService,
     private changeDetectorRef: ChangeDetectorRef,
     private modalService: NgbModal
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.configForm = this.buildForm();
@@ -123,6 +125,27 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
     } else if (changes['visible'] && !this.visible) {
       this.resetModalState();
     }
+  }
+
+  onUserDropdownChange(event: Event, input: HTMLInputElement) {
+    const value = (event.target as HTMLSelectElement).value;
+    input.value = value;
+    if (value) {
+      this.addUserOverride(input);
+    }
+  }
+
+  onRoleDropdownChange(event: Event, input: HTMLInputElement) {
+    const value = (event.target as HTMLSelectElement).value;
+    input.value = value;
+    if (value) {
+      this.addTopLevelRole(value);
+    }
+  }
+
+  getUserDisplayName(userId: string): string {
+    const found = this.availableUsers.find(u => u.id === userId);
+    return found ? `${found.displayName || found.username} (${found.username})` : userId;
   }
 
   // Helper to get the definitive initial settings for the sub-modal, based on DB state if available.
@@ -383,6 +406,14 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
     }
   }
 
+  onCommissionRoleDropdownChange(event: Event, input: HTMLInputElement) {
+    const value = (event.target as HTMLSelectElement).value;
+    input.value = value;
+    if (value) {
+      this.addRoleCommission(value);
+    }
+  }
+
   private buildForm(): FormGroup {
     return this.fb.group({
       guild_id: [
@@ -456,7 +487,7 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
         usersGroup.markAsDirty();
         this.errorMessage = null; // Clear error message if successful
       }
-      newUserOverrideInput.value = ''; // Clear input after attempt
+      // newUserOverrideInput.value = ''; // Clear input after attempt
     }
   }
 
@@ -720,16 +751,16 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
     }
   }
 
-  addRoleCommission(newRoleCommissionInput: HTMLInputElement): void {
-    const roleId = newRoleCommissionInput.value.trim();
-    if (roleId) {
+  addRoleCommission(roleId: string): void {
+    const trimmedRoleId = roleId.trim();
+    if (trimmedRoleId) {
       const rolesGroup = this.commissionRoles;
-      if (rolesGroup.get(roleId)) {
-        console.warn(`Role ID ${roleId} already exists.`);
-        // this.errorMessage = `Role ID ${roleId} already exists.`; // TODO: Remove
+      if (rolesGroup.get(trimmedRoleId)) {
+        console.warn(`Role ID ${trimmedRoleId} already exists.`);
+        // this.errorMessage = `Role ID ${trimmedRoleId} already exists.`;
       } else {
         rolesGroup.addControl(
-          roleId,
+          trimmedRoleId,
           this.fb.group({
             commission_percentage: [
               0,
@@ -740,8 +771,12 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
         rolesGroup.markAsDirty();
         this.errorMessage = null; // Clear error message if successful
       }
-      newRoleCommissionInput.value = ''; // Clear input after attempt
     }
+  }
+
+  getRoleName(roleId: string): string {
+    const found = this.availableRoles.find(r => r.id === roleId);
+    return found ? found.name : roleId;
   }
 
   saveChanges(): void {
