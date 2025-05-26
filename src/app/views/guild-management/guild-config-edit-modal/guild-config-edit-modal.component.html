@@ -221,8 +221,9 @@
                     <c-row *ngFor="let roleId of objectKeys(topLevelRoles.controls)" [formGroupName]="roleId"
                       class="g-2 mt-3 mb-2 align-items-center p-2 border rounded position-relative flex-wrap">
                       <c-col xs="12" md="4" class="mb-1 mb-md-0">
-                        <label class="col-form-label text-truncate w-100">Role ID:
-                          <code class="text-info">{{ roleId }}</code></label>
+                        <label class="col-form-label text-truncate w-100">Role:
+                          <code class="text-info">{{ getRoleName(roleId) }}</code>
+                        </label>
                       </c-col>
                       <c-col xs="12" md="7" class="mb-1 mb-md-0">
                         <input cFormControl type="number" [id]="'role_value_' + roleId" formControlName="value" required
