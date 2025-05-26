@@ -19,28 +19,27 @@
         Bot name is required.
       </div>
     </div>
-    <hr class="my-3" />
     <!-- Section: Toggles -->
     <div class="mb-3">
       <c-form-check class="form-switch">
         <input cFormCheckInput id="ephemeral_responses" type="checkbox" formControlName="ephemeral_responses" [checked]="displaySettingsForm.get('ephemeral_responses')?.value === true" />
         <label cFormCheckLabel for="ephemeral_responses">Use Ephemeral Responses</label>
       </c-form-check>
-      <small class="text-muted ms-4">Bot replies are only visible to the user.</small>
+      <small class="text-muted ms-4">Bot replies can be seen by all.</small>
     </div>
     <div class="mb-3">
       <c-form-check class="form-switch">
         <input cFormCheckInput id="show_average" type="checkbox" formControlName="show_average" [checked]="displaySettingsForm.get('show_average')?.value === true" />
           <label cFormCheckLabel for="show_average">Show Average in Reports</label>
       </c-form-check>
-      <small class="text-muted ms-4">Display average values in generated reports.</small>
+      <small class="text-muted ms-4">Display average values in calculator embeds.</small>
     </div>
     <div class="mb-3">
       <c-form-check class="form-switch">
         <input cFormCheckInput id="show_ids" type="checkbox" formControlName="show_ids" [checked]="displaySettingsForm.get('show_ids')?.value === true" />
         <label cFormCheckLabel for="show_ids">Show IDs in Reports</label>
       </c-form-check>
-      <small class="text-muted ms-4">Include user or item IDs in reports.</small>
+      <small class="text-muted ms-4">Include earning IDs in embeds.</small>
     </div>
   </form>
 </div>

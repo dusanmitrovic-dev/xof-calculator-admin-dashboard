@@ -1,1 +1,143 @@
 /* SCSS styles for DisplaySettingsEditModalComponent */
+:host ::ng-deep .modal-content {
+  background: #1e1e2f;
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.45);
+  color: #f5f6fa;
+  border: none;
+}
+
+:host ::ng-deep .modal-header {
+  border-bottom: none;
+  padding-bottom: 0.5rem;
+  background: transparent;
+}
+
+:host ::ng-deep .modal-title {
+  font-size: 24px;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: 0.01em;
+}
+
+:host ::ng-deep .btn-close {
+  background: #23233a;
+  border-radius: 8px;
+  color: #fff;
+  opacity: 1;
+  border: 1px solid #35354a;
+  transition: background 0.2s;
+}
+:host ::ng-deep .btn-close:hover {
+  background: #35354a;
+}
+
+:host ::ng-deep label[cLabel] {
+  color: #f5f6fa;
+  font-weight: 500;
+  font-size: 15px;
+  margin-bottom: 0.25rem;
+}
+
+:host ::ng-deep input[formControlName] {
+  background: #23233a;
+  color: #fff;
+  border: 1px solid #35354a;
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  font-size: 15px;
+  margin-bottom: 0.25rem;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.08) inset;
+}
+:host ::ng-deep input[formControlName]::placeholder {
+  color: #a0a0b0;
+  opacity: 1;
+}
+
+:host ::ng-deep .form-text {
+  color: #ff6b81 !important;
+  font-size: 13px;
+}
+
+:host ::ng-deep .form-switch .form-check-input,
+:host ::ng-deep input[type="checkbox"] {
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  background: #23233a;
+  border: 2px solid #35354a;
+  transition: border 0.2s, background 0.2s;
+  margin-right: 0.75rem;
+  cursor: pointer;
+}
+:host ::ng-deep .form-switch .form-check-input:checked,
+:host ::ng-deep input[type="checkbox"]:checked {
+  background: #6366f1;
+  border-color: #6366f1;
+}
+:host ::ng-deep .form-switch .form-check-input:checked:after,
+:host ::ng-deep input[type="checkbox"]:checked:after {
+  content: '';
+  display: block;
+  width: 10px;
+  height: 10px;
+  margin: 4px;
+  border-radius: 2px;
+  background: #fff;
+}
+
+:host ::ng-deep .form-switch .form-check-label,
+:host ::ng-deep label[cFormCheckLabel] {
+  color: #f5f6fa;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+:host ::ng-deep small.text-muted {
+  color: #a0a0b0 !important;
+  font-size: 13px;
+  margin-left: 2.5rem;
+}
+
+:host ::ng-deep .mb-4, :host ::ng-deep .mb-3 {
+  margin-bottom: 1.5rem !important;
+}
+
+:host ::ng-deep .modal-footer {
+  border-top: none;
+  background: transparent;
+  padding-top: 0.5rem;
+}
+
+:host ::ng-deep .btn-secondary {
+  background: transparent;
+  color: #a0a0b0;
+  border: 1.5px solid #35354a;
+  border-radius: 8px;
+  font-weight: 500;
+  transition: background 0.2s, color 0.2s;
+}
+:host ::ng-deep .btn-secondary:hover {
+  background: #23233a;
+  color: #fff;
+}
+
+:host ::ng-deep .btn-primary {
+  background: #6366f1;
+  color: #fff;
+  border-radius: 8px;
+  font-weight: 700;
+  border: none;
+  box-shadow: 0 2px 8px rgba(99,102,241,0.15);
+  transition: background 0.2s, box-shadow 0.2s;
+}
+:host ::ng-deep .btn-primary:disabled {
+  background: #35354a;
+  color: #a0a0b0;
+  cursor: not-allowed;
+}
+:host ::ng-deep .btn-primary:hover:not(:disabled) {
+  background: #7b82fa;
+  box-shadow: 0 4px 16px rgba(99,102,241,0.25);
+}
