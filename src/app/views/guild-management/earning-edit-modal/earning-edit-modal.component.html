@@ -13,7 +13,7 @@
         </div>
 
         <form *ngIf="earningForm && !loadingConfigOptions" [formGroup]="earningForm" (ngSubmit)="saveChanges()">
-
+            <!-- Guild ID (disabled) -->
             <div class="mb-3 row">
                 <label cLabel class="col-sm-3 col-form-label">Guild ID</label>
                 <div class="col-sm-9 d-flex align-items-center">
@@ -25,7 +25,6 @@
                     </button>
                 </div>
             </div>
-
 
             <div class="mb-3 row" *ngIf="isEditMode">
                 <label cLabel class="col-sm-3 col-form-label">Record ID</label>
