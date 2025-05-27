@@ -18,11 +18,6 @@
                 <label cLabel class="col-sm-3 col-form-label">Guild ID</label>
                 <div class="col-sm-9 d-flex align-items-center">
                     <input cFormControl type="text" formControlName="guild_id" readonly />
-                    <button type="button" cButton color="" size="sm" class="ms-2"
-                        (click)="copyToClipboard(earningForm.get('guild_id')?.value)"
-                        [disabled]="!earningForm.get('guild_id')?.value">
-                        <svg cIcon name="cilCopy" size="sm"></svg>
-                    </button>
                 </div>
             </div>
  
@@ -31,12 +26,6 @@
                 <label cLabel class="col-sm-3 col-form-label">Record ID</label>
                 <div class="col-sm-9 d-flex align-items-center">
                     <input cFormControl type="text" formControlName="id" readonly />
-                    <button type="button" cButton color="" variant="ghost" size="sm"
-                        title="Copy Record ID"
-                        (click)="copyToClipboard(earningForm.get('id')?.value)"
-                        [disabled]="!earningForm.get('id')?.value">
-                        <svg cIcon name="cilCopy" size="sm"></svg>
-                    </button>
                 </div>
             </div>
 
@@ -57,10 +46,11 @@
                 </div>
             </div>
 
-            <!-- User Mention (disabled, with copy button) -->
+            <!-- User Mention (disabled, no copy button) -->
             <div class="mb-3 row">
                 <label cLabel for="userMention" class="col-sm-3 col-form-label">User Mention</label>
                 <div class="col-sm-9 d-flex align-items-center">
+<<<<<<< HEAD
                     <input cFormControl type="text" id="userMention" formControlName="user_mention" readonly />
                     <button type="button" cButton color="" variant="ghost" size="sm"
                         title="Copy User Mention"
@@ -68,6 +58,9 @@
                         [disabled]="!earningForm.get('user_mention')?.value">
                         <svg cIcon name="cilCopy" size="sm"></svg>
                     </button>
+=======
+                    <input cFormControl type="text" id="userMention" formControlName="user_mention" />
+>>>>>>> 0d74cc14ccc7d62786ea26472567144b815c4867
                 </div>
             </div>
 
@@ -88,16 +81,19 @@
 
             <!-- Date -->
             <div class="mb-3 row">
-                <label cLabel for="earningDate" class="col-sm-3 col-form-label">Date</label>
+                <label cLabel for="earningDateText" class="col-sm-3 col-form-label">Date</label>
                 <div class="col-sm-9">
-                    <input cFormControl type="text" id="earningDate" formControlName="date" placeholder="DD/MM/YYYY"
-                        required
-                        [class.is-invalid]="earningForm.get('date')?.invalid && (earningForm.get('date')?.dirty || earningForm.get('date')?.touched)" />
+                    <input type="date"
+                        class="form-control"
+                        id="earningDateText"
+                        [value]="formatDateForDatePicker(earningForm.get('date')?.value)"
+                        (change)="onDatePickerChange($event)"
+                        required />
                     <div *ngIf="earningForm.get('date')?.invalid && (earningForm.get('date')?.dirty || earningForm.get('date')?.touched)"
                         class="invalid-feedback">
                         Date is required.
                     </div>
-                </div>
+                </div> 
             </div>
 
             <!-- Models Buttons -->
