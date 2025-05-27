@@ -34,8 +34,7 @@
                     <button type="button" cButton color="" variant="ghost" size="sm"
                         title="Copy Record ID"
                         (click)="copyToClipboard(earningForm.get('id')?.value)"
-                        [disabled]="!earningForm.get('id')?.value"
-                        style="padding: 0.25rem 0.5rem; min-width:unset; min-height:unset; line-height:1;">
+                        [disabled]="!earningForm.get('id')?.value">
                         <svg cIcon name="cilCopy" size="sm"></svg>
                     </button>
                 </div>
@@ -66,8 +65,7 @@
                     <button type="button" cButton color="" variant="ghost" size="sm"
                         title="Copy User Mention"
                         (click)="copyToClipboard(earningForm.get('user_mention')?.value)"
-                        [disabled]="!earningForm.get('user_mention')?.value"
-                        style="padding: 0.25rem 0.5rem; min-width:unset; min-height:unset; line-height:1;">
+                        [disabled]="!earningForm.get('user_mention')?.value">
                         <svg cIcon name="cilCopy" size="sm"></svg>
                     </button>
                 </div>
