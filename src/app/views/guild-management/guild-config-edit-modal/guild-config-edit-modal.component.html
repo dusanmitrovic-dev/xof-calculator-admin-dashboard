@@ -278,83 +278,90 @@
                   <svg cIcon name="cilMoney" size="xl" class="mb-2"></svg>
                   <p>No bonus rules defined.</p>
                 </div>
-                <div *ngFor="let ruleGroup of bonus_rules.controls; let i = index" [formGroupName]="i"
-                  class="row g-3 align-items-center mb-3 p-2 border rounded position-relative flex-wrap">
-                  <c-col xs="12" md="3">
-                    <label cLabel [for]="'bonus_from_' + i" class="small">
-                      From ($)
-                      <svg cIcon name="cilInfo" size="sm" class="ms-1" title="Minimum value for this bonus rule"></svg>
-                    </label>
-                    <input cFormControl type="number" [id]="'bonus_from_' + i" formControlName="from" required min="0"
-                      placeholder="Min value"
-                      [class.is-invalid]="ruleGroup.get('from')?.invalid && (ruleGroup.get('from')?.dirty || ruleGroup.get('from')?.touched || submitAttempted)" />
-                    <c-form-feedback [valid]="false" *ngIf="
-            ruleGroup.get('from')?.hasError('required') &&
-            (ruleGroup.get('from')?.dirty || ruleGroup.get('from')?.touched || submitAttempted)">
-                      Value is required.
-                    </c-form-feedback>
-                    <c-form-feedback [valid]="false" *ngIf="
-            ruleGroup.get('from')?.hasError('min') &&
-            (ruleGroup.get('from')?.dirty || ruleGroup.get('from')?.touched || submitAttempted)">
-                      Value must be non-negative.
-                    </c-form-feedback>
-                  </c-col>
-                  <c-col xs="12" md="3">
-                    <label cLabel [for]="'bonus_to_' + i" class="small">
-                      To ($)
-                      <svg cIcon name="cilInfo" size="sm" class="ms-1" title="Maximum value for this bonus rule"></svg>
-                    </label>
-                    <input cFormControl type="number" [id]="'bonus_to_' + i" formControlName="to" required min="0"
-                      placeholder="Max value" [class.is-invalid]="
-              (ruleGroup.get('to')?.invalid && (ruleGroup.get('to')?.dirty || ruleGroup.get('to')?.touched || submitAttempted)) ||
-              (ruleGroup.hasError('toLessThanFrom') && (ruleGroup.get('to')?.dirty || ruleGroup.get('to')?.touched || submitAttempted))
-            " />
-                    <c-form-feedback [valid]="false" *ngIf="
-            ruleGroup.hasError('toLessThanFrom') &&
-            (ruleGroup.get('to')?.dirty || ruleGroup.get('to')?.touched || submitAttempted)">
-                      'To' must be greater than or equal to 'From'.
-                    </c-form-feedback>
-                    <c-form-feedback [valid]="false" *ngIf="
-            ruleGroup.get('to')?.hasError('required') &&
-            (ruleGroup.get('to')?.dirty || ruleGroup.get('to')?.touched || submitAttempted)">
-                      Value is required.
-                    </c-form-feedback>
-                    <c-form-feedback [valid]="false" *ngIf="
-            ruleGroup.get('to')?.hasError('min') &&
-            (ruleGroup.get('to')?.dirty || ruleGroup.get('to')?.touched || submitAttempted)">
-                      Value must be non-negative.
-                    </c-form-feedback>
-                  </c-col>
-                  <c-col xs="12" md="3">
-                    <label cLabel [for]="'bonus_amount_' + i" class="small">
-                      Bonus ($)
-                      <svg cIcon name="cilInfo" size="sm" class="ms-1" title="Bonus amount for this rule"></svg>
-                    </label>
-                    <input cFormControl type="number" [id]="'bonus_amount_' + i" formControlName="amount" required
-                      min="0" placeholder="Bonus amount"
-                      [class.is-invalid]="ruleGroup.get('amount')?.invalid && (ruleGroup.get('amount')?.dirty || ruleGroup.get('amount')?.touched || submitAttempted)" />
-                    <c-form-feedback [valid]="false" *ngIf="
-            ruleGroup.get('amount')?.hasError('required') &&
-            (ruleGroup.get('amount')?.dirty || ruleGroup.get('amount')?.touched || submitAttempted)">
-                      Value is required.
-                    </c-form-feedback>
-                    <c-form-feedback [valid]="false" *ngIf="
-            ruleGroup.get('amount')?.hasError('min') &&
-            (ruleGroup.get('amount')?.dirty || ruleGroup.get('amount')?.touched || submitAttempted)">
-                      Value must be non-negative.
-                    </c-form-feedback>
-                  </c-col>
-                  <c-col xs="12" md="2">
-                    <strong class="text-success d-block mt-4">
-                      {{ ruleGroup.get("amount")?.value | currency }}
-                    </strong>
-                  </c-col>
-                  <c-col xs="12" md="1" class="text-end mt-2 mt-md-0">
-                    <button cButton type="button" color="danger" variant="ghost" size="sm" class="p-1"
-                      (click)="removeBonusRule(i)" title="Remove Rule">
-                      <svg cIcon name="cilTrash" size="lg"></svg>
-                    </button>
-                  </c-col>
+                <div cdkDropList (cdkDropListDropped)="onBonusRuleDrop($event)"
+                  [cdkDropListData]="bonus_rules.controls">
+                  <div *ngFor="let ruleGroup of bonus_rules.controls; let i = index" [formGroupName]="i" cdkDrag
+                    class="bonus-rule-wrapper">
+                    <div
+                      class="row g-3 align-items-center p-2 border rounded position-relative flex-wrap bonus-rule-row">
+                      <div cdkDragHandle class="col-auto d-flex align-items-center me-2" style="cursor: grab;"
+                        title="Drag to reorder" aria-label="Drag to reorder bonus rule">
+                        <svg cIcon name="cilMenu" size="lg"></svg>
+                      </div>
+                      <c-col xs="12" md="3">
+                        <label cLabel [for]="'bonus_from_' + i" class="small">
+                          From ($)
+                          <svg cIcon name="cilInfo" size="sm" class="ms-1"
+                            title="Minimum value for this bonus rule"></svg>
+                        </label>
+                        <input cFormControl type="number" [id]="'bonus_from_' + i" formControlName="from" required
+                          min="0" placeholder="Min value"
+                          [class.is-invalid]="ruleGroup.get('from')?.invalid && (ruleGroup.get('from')?.dirty || ruleGroup.get('from')?.touched || submitAttempted)" />
+                        <c-form-feedback [valid]="false" *ngIf="
+              ruleGroup.get('from')?.hasError('required') &&
+              (ruleGroup.get('from')?.dirty || ruleGroup.get('from')?.touched || submitAttempted)">
+                          Value is required.
+                        </c-form-feedback>
+                        <c-form-feedback [valid]="false" *ngIf="
+              ruleGroup.get('from')?.hasError('min') &&
+              (ruleGroup.get('from')?.dirty || ruleGroup.get('from')?.touched || submitAttempted)">
+                          Value must be non-negative.
+                        </c-form-feedback>
+                      </c-col>
+                      <c-col xs="12" md="3">
+                        <label cLabel [for]="'bonus_to_' + i" class="small">
+                          To ($)
+                          <svg cIcon name="cilInfo" size="sm" class="ms-1"
+                            title="Maximum value for this bonus rule"></svg>
+                        </label>
+                        <input cFormControl type="number" [id]="'bonus_to_' + i" formControlName="to" required min="0"
+                          placeholder="Max value" [class.is-invalid]="
+                (ruleGroup.get('to')?.invalid && (ruleGroup.get('to')?.dirty || ruleGroup.get('to')?.touched || submitAttempted)) ||
+                (ruleGroup.hasError('toLessThanFrom') && (ruleGroup.get('to')?.dirty || ruleGroup.get('to')?.touched || submitAttempted))
+              " />
+                        <c-form-feedback [valid]="false" *ngIf="
+              ruleGroup.hasError('toLessThanFrom') &&
+              (ruleGroup.get('to')?.dirty || ruleGroup.get('to')?.touched || submitAttempted)">
+                          'To' must be greater than or equal to 'From'.
+                        </c-form-feedback>
+                        <c-form-feedback [valid]="false" *ngIf="
+              ruleGroup.get('to')?.hasError('required') &&
+              (ruleGroup.get('to')?.dirty || ruleGroup.get('to')?.touched || submitAttempted)">
+                          Value is required.
+                        </c-form-feedback>
+                        <c-form-feedback [valid]="false" *ngIf="
+              ruleGroup.get('to')?.hasError('min') &&
+              (ruleGroup.get('to')?.dirty || ruleGroup.get('to')?.touched || submitAttempted)">
+                          Value must be non-negative.
+                        </c-form-feedback>
+                      </c-col>
+                      <c-col xs="12" md="3">
+                        <label cLabel [for]="'bonus_amount_' + i" class="small">
+                          Bonus ($)
+                          <svg cIcon name="cilInfo" size="sm" class="ms-1" title="Bonus amount for this rule"></svg>
+                        </label>
+                        <input cFormControl type="number" [id]="'bonus_amount_' + i" formControlName="amount" required
+                          min="0" placeholder="Bonus amount"
+                          [class.is-invalid]="ruleGroup.get('amount')?.invalid && (ruleGroup.get('amount')?.dirty || ruleGroup.get('amount')?.touched || submitAttempted)" />
+                        <c-form-feedback [valid]="false" *ngIf="
+              ruleGroup.get('amount')?.hasError('required') &&
+              (ruleGroup.get('amount')?.dirty || ruleGroup.get('amount')?.touched || submitAttempted)">
+                          Value is required.
+                        </c-form-feedback>
+                        <c-form-feedback [valid]="false" *ngIf="
+              ruleGroup.get('amount')?.hasError('min') &&
+              (ruleGroup.get('amount')?.dirty || ruleGroup.get('amount')?.touched || submitAttempted)">
+                          Value must be non-negative.
+                        </c-form-feedback>
+                      </c-col>
+                      <c-col xs="12" md="1" class="delete-col text-end mt-2 mt-md-0">
+                        <button cButton type="button" color="danger" variant="ghost" size="sm" class="p-1"
+                          (click)="removeBonusRule(i)" title="Remove Rule">
+                          <svg cIcon name="cilTrash" size="lg"></svg>
+                        </button>
+                      </c-col>
+                    </div>
+                  </div>
                 </div>
               </c-card-body>
             </c-card>

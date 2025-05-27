@@ -43,6 +43,8 @@ import {
   UtilitiesModule,
 } from '@coreui/angular';
 import { IconDirective, IconModule } from '@coreui/icons-angular';
+import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
+import { DragDropModule } from '@angular/cdk/drag-drop';
 
 @Component({
   selector: 'app-guild-config-edit-modal',
@@ -62,6 +64,7 @@ import { IconDirective, IconModule } from '@coreui/icons-angular';
     UtilitiesModule,
     CardModule,
     IconDirective,
+    DragDropModule
     // IconModule,
   ],
 })
@@ -777,6 +780,14 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
   getRoleName(roleId: string): string {
     const found = this.availableRoles.find(r => r.id === roleId);
     return found ? found.name : roleId;
+  }
+
+  onBonusRuleDrop(event: CdkDragDrop<any[]>) {
+    if (event.previousIndex !== event.currentIndex) {
+      moveItemInArray(this.bonus_rules.controls, event.previousIndex, event.currentIndex);
+      this.bonus_rules.updateValueAndValidity();
+      this.bonus_rules.markAsDirty();
+    }
   }
 
   saveChanges(): void {

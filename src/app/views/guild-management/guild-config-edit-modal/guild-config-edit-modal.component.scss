@@ -1,0 +1,62 @@
+.cdk-drag-preview {
+  box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+  border-radius: 0.5rem;
+  opacity: 0.95;
+}
+.cdk-drag-placeholder {
+  opacity: 0.2;
+}
+
+[cdkDropList] {
+  min-height: 40px;
+  border-radius: 0.5rem;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+  transition: border-color 0.2s;
+}
+
+[cdkDropList].cdk-drop-list-dragging {
+  border-color: #0d6efd;
+}
+
+.bonus-rule-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  position: relative;
+  margin-bottom: 1rem;
+}
+
+.bonus-rule-row > .delete-col {
+  margin-left: auto;
+  text-align: right;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  min-width: 60px;
+  padding-left: 0;
+}
+
+.bonus-rule-row:last-child {
+  margin-bottom: 0;
+}
+
+.bonus-rule-wrapper {
+  margin-bottom: 2rem;
+}
+.bonus-rule-wrapper:last-child {
+  margin-bottom: 0;
+}
+
+@media (max-width: 576px) {
+  .row.g-3 > [class^="col-"], .row.g-3 > [class*=" col-"] {
+    margin-bottom: 0.5rem;
+  }
+
+  .bonus-rule-row > .delete-col {
+    margin-top: 0.5rem;
+    min-width: unset;
+    width: 100%;
+    justify-content: flex-end;
+  }
+}
