@@ -104,9 +104,9 @@
                   <div class="input-group">
                     <input cFormControl type="text" id="newShiftName" placeholder="Enter shift name" #newShiftInput
                       (blur)="handleItemAddOnBlur(shifts, newShiftInput)" (keydown.enter)="
-                        handleItemAdd(shifts, newShiftInput);
-                        $event.preventDefault()
-                      " />
+              handleItemAdd(shifts, newShiftInput);
+              $event.preventDefault()
+            " />
                     <button cButton type="button" color="success" variant="outline"
                       (click)="handleItemAdd(shifts, newShiftInput)">
                       <svg cIcon name="cilPlus" size="sm"></svg> Add Shift
@@ -116,13 +116,18 @@
                 <div *ngIf="shifts.controls.length === 0" class="text-center text-muted py-3">
                   <p>No shifts defined.</p>
                 </div>
-                <div *ngFor="let shiftCtrl of shifts.controls; let i = index"
-                  class="d-flex justify-content-between align-items-center mb-2 p-2 border rounded">
-                  <span>{{ shiftCtrl.value }}</span>
-                  <button cButton type="button" color="danger" variant="ghost" size="sm" (click)="removeItem(shifts, i)"
-                    title="Remove Shift">
-                    <svg cIcon name="cilTrash" size="lg"></svg>
-                  </button>
+                <div cdkDropList (cdkDropListDropped)="onArrayDrop(shifts, $event)" [cdkDropListData]="shifts.controls">
+                  <div *ngFor="let shiftCtrl of shifts.controls; let i = index" cdkDrag
+                    class="d-flex justify-content-between align-items-center mb-2 p-2 border rounded shift-row">
+                    <div cdkDragHandle class="me-2" style="cursor: grab;" title="Drag to reorder">
+                      <svg cIcon name="cilMenu" size="lg"></svg>
+                    </div>
+                    <span>{{ shiftCtrl.value }}</span>
+                    <button cButton type="button" color="danger" variant="ghost" size="sm"
+                      (click)="removeItem(shifts, i)" title="Remove Shift">
+                      <svg cIcon name="cilTrash" size="lg"></svg>
+                    </button>
+                  </div>
                 </div>
               </c-card-body>
             </c-card>
