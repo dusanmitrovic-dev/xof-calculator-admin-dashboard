@@ -48,6 +48,11 @@
   margin-bottom: 0;
 }
 
+.model-row, .shift-row, .period-row {
+  margin-bottom: 0.75rem;
+  background: #fff;
+}
+
 @media (max-width: 576px) {
   .row.g-3 > [class^="col-"], .row.g-3 > [class*=" col-"] {
     margin-bottom: 0.5rem;
