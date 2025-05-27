@@ -88,6 +88,7 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
   // This holds the LATEST state of display settings, whether from init or sub-modal result.
   currentDisplaySettings!: DisplaySettingsModalData;
   topLevelRoleIds: string[] = [];
+  commissionRoleIds: string[] = [];
 
   get isEditMode(): boolean {
     return !!this.guildConfig; // Based on the initial @Input
@@ -627,6 +628,13 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
     return null;
   }
 
+  private updateCommissionRoleIds() {
+    if (this.commissionRoles) {
+      this.commissionRoleIds = Object.keys(this.commissionRoles.controls).filter(id => !!this.commissionRoles.get(id));
+    }
+  }
+
+
   private patchCommissionSettings(
     settings: CommissionSettings | undefined
   ): void {
@@ -664,6 +672,7 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
         }
       });
     }
+    this.updateCommissionRoleIds();
   }
 
   private clearAllFormArraysAndGroups(): void {
@@ -774,6 +783,11 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
       rolesGroup.removeControl(roleId);
       rolesGroup.markAsDirty();
     }
+    this.updateCommissionRoleIds();
+  }
+
+  onCommissionRoleDrop(event: CdkDragDrop<string[]>) {
+    moveItemInArray(this.commissionRoleIds, event.previousIndex, event.currentIndex);
   }
 
   addRoleCommission(roleId: string): void {
@@ -797,6 +811,7 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
         this.errorMessage = null; // Clear error message if successful
       }
     }
+    this.updateCommissionRoleIds();
   }
 
   getRoleName(roleId: string): string {

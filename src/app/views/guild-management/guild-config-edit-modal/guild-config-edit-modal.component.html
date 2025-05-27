@@ -419,35 +419,34 @@
                     </div>
                   </div>
                   <div formGroupName="roles">
-                    <div *ngIf="
-              commissionRoles &&
-                objectKeys(commissionRoles.controls).length > 0;
-              else noCommissionRolesDefined
-            ">
-                      <c-row *ngFor="let roleId of objectKeys(commissionRoles.controls)"
-                        class="g-2 mb-2 align-items-center p-2 border rounded" [formGroupName]="roleId">
-                        <c-col sm="4">
-                          <label class="col-form-label text-truncate">
-                            
-                            <code class="text-primary">
-  {{ getRoleName(roleId) }}
-</code>
-                          </label>
-                        </c-col>
-                        <c-col sm="7">
-                          <div class="input-group">
-                            <input cFormControl type="number" formControlName="commission_percentage" required min="0"
-                              max="100" />
-                            <span class="input-group-text">%</span>
+                    <div *ngIf="commissionRoles && commissionRoleIds.length > 0; else noCommissionRolesDefined">
+                      <div cdkDropList (cdkDropListDropped)="onCommissionRoleDrop($event)"
+                        [cdkDropListData]="commissionRoleIds">
+                        <div *ngFor="let roleId of commissionRoleIds" cdkDrag [formGroupName]="roleId"
+                          class="commission-role-row d-flex align-items-center flex-wrap p-2 border rounded mb-2">
+                          <div cdkDragHandle class="me-2" style="cursor: grab;" title="Drag to reorder">
+                            <svg cIcon name="cilMenu" size="lg"></svg>
                           </div>
-                        </c-col>
-                        <c-col sm="1" class="text-end">
-                          <button cButton type="button" color="danger" variant="ghost" size="sm" class="p-1"
-                            (click)="removeRoleCommission(roleId)" title="Remove Role Commission">
-                            <svg cIcon name="cilTrash" size="lg"></svg>
-                          </button>
-                        </c-col>
-                      </c-row>
+                          <div class="flex-grow-1 min-width-0 me-2 mb-2 mb-md-0" style="max-width: 250px;">
+                            <label class="col-form-label text-truncate w-100 mb-0">
+                              <code class="text-primary">{{ getRoleName(roleId) }}</code>
+                            </label>
+                          </div>
+                          <div class="flex-grow-1 me-2 mb-2 mb-md-0" style="min-width: 120px; max-width: 200px;">
+                            <div class="input-group">
+                              <input cFormControl type="number" formControlName="commission_percentage" required min="0"
+                                max="100" />
+                              <span class="input-group-text">%</span>
+                            </div>
+                          </div>
+                          <div class="ms-auto">
+                            <button cButton type="button" color="danger" variant="ghost" size="sm" class="p-1"
+                              (click)="removeRoleCommission(roleId)" title="Remove Role Commission">
+                              <svg cIcon name="cilTrash" size="lg"></svg>
+                            </button>
+                          </div>
+                        </div>
+                      </div>
                     </div>
                     <ng-template #noCommissionRolesDefined>
                       <p class="text-muted">No role commissions defined.</p>

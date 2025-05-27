@@ -278,7 +278,7 @@
                   <ul class="list-unstyled mb-0 text-base">
                     @for (roleId of objectKeys(guildConfig.commission_settings.roles); track roleId) {
                     <li class="border-bottom pb-2 mb-2">
-                      Role: <strong>{{ getRoleName(roleId) }}</strong>: <strong>{{
+                      <strong>{{ getRoleName(roleId) }}</strong>: <strong>{{
                         guildConfig.commission_settings.roles[roleId].commission_percentage }}%</strong>
                     </li>
                     }
@@ -309,7 +309,7 @@
                   <ul class="list-unstyled mb-0 text-base">
                     @for (userId of objectKeys(guildConfig.commission_settings.users); track userId) {
                     <li class="border-bottom pb-2 mb-2">
-                      User: <strong>{{ getMemberDisplayName(userId) }}</strong>:
+                      <strong>{{ getMemberDisplayName(userId) }}</strong>:
                       @if (guildConfig.commission_settings.users[userId].hourly_rate != null) {
                       <span class="ms-2"> Hourly Rate: <strong>{{
                           guildConfig.commission_settings.users[userId].hourly_rate | currency }}</strong></span>
