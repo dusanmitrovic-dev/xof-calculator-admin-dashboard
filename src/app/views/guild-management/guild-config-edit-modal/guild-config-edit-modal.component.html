@@ -428,7 +428,7 @@
                         class="g-2 mb-2 align-items-center p-2 border rounded" [formGroupName]="roleId">
                         <c-col sm="4">
                           <label class="col-form-label text-truncate">
-                            Role:
+                            
                             <code class="text-primary">
   {{ getRoleName(roleId) }}
 </code>
@@ -491,7 +491,6 @@
                             let userId of objectKeys(commissionUsers.controls)
                           " class="p-2 border rounded mb-2" [formGroupName]="userId">
                           <label class="col-form-label text-truncate fw-medium">
-                            User:
                             <code class="text-info">
     {{
       getUserDisplayName(userId)
