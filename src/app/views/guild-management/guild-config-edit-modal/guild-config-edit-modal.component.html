@@ -137,9 +137,9 @@
                   <div class="input-group">
                     <input cFormControl type="text" id="newPeriodName" placeholder="Enter period name" #newPeriodInput
                       (blur)="handleItemAddOnBlur(periods, newPeriodInput)" (keydown.enter)="
-                        handleItemAdd(periods, newPeriodInput);
-                        $event.preventDefault()
-                      " />
+              handleItemAdd(periods, newPeriodInput);
+              $event.preventDefault()
+            " />
                     <button cButton type="button" color="success" variant="outline"
                       (click)="handleItemAdd(periods, newPeriodInput)">
                       <svg cIcon name="cilPlus" size="sm"></svg> Add Period
@@ -149,13 +149,19 @@
                 <div *ngIf="periods.controls.length === 0" class="text-center text-muted py-3">
                   <p>No periods defined.</p>
                 </div>
-                <div *ngFor="let periodCtrl of periods.controls; let i = index"
-                  class="d-flex justify-content-between align-items-center mb-2 p-2 border rounded">
-                  <span>{{ periodCtrl.value }}</span>
-                  <button cButton type="button" color="danger" variant="ghost" size="sm"
-                    (click)="removeItem(periods, i)" title="Remove Period">
-                    <svg cIcon name="cilTrash" size="lg"></svg>
-                  </button>
+                <div cdkDropList (cdkDropListDropped)="onArrayDrop(periods, $event)"
+                  [cdkDropListData]="periods.controls">
+                  <div *ngFor="let periodCtrl of periods.controls; let i = index" cdkDrag
+                    class="d-flex justify-content-between align-items-center mb-2 p-2 border rounded period-row">
+                    <div cdkDragHandle class="me-2" style="cursor: grab;" title="Drag to reorder">
+                      <svg cIcon name="cilMenu" size="lg"></svg>
+                    </div>
+                    <span>{{ periodCtrl.value }}</span>
+                    <button cButton type="button" color="danger" variant="ghost" size="sm"
+                      (click)="removeItem(periods, i)" title="Remove Period">
+                      <svg cIcon name="cilTrash" size="lg"></svg>
+                    </button>
+                  </div>
                 </div>
               </c-card-body>
             </c-card>
