@@ -50,6 +50,7 @@ import { CommonModule, CurrencyPipe } from '@angular/common';
   ]
 })
 export class GuildConfigListComponent implements OnInit, OnDestroy {
+  isAdmin: boolean = false;
 
   // Component State
   selectedGuildId$: Observable<string | null>;
@@ -80,6 +81,7 @@ export class GuildConfigListComponent implements OnInit, OnDestroy {
     private guildService: GuildService // Inject GuildService
   ) {
     this.selectedGuildId$ = this.guildConfigService.selectedGuildId$;
+    this.isAdmin = this.authService.getUserRole() === 'admin';
   }
 
   objectKeys = Object.keys;

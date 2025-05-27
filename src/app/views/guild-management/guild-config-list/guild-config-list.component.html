@@ -13,300 +13,323 @@
           <c-card-header>
             <strong class="text-xl font-semibold">Guild Configuration</strong>
             <div class="float-end">
-                <!-- Delete Button: Icon already present. Hover/transition effects not directly applicable with just Bootstrap/CoreUI classes. -->
-                <button cButton color="danger" variant="outline" size="sm" class="ms-2" (click)="deleteGuildConfig()" [disabled]="loadingConfig || !guildConfig" title="Delete Entire Guild Config">
-                   <svg cIcon name="cilTrash" size="sm"></svg> Delete Config
-                </button>
+              <button *ngIf="isAdmin" cButton color="danger" variant="outline" size="sm" class="ms-2"
+                (click)="deleteGuildConfig()" [disabled]="loadingConfig || !guildConfig"
+                title="Delete Entire Guild Config">
+                <svg cIcon name="cilTrash" size="sm"></svg> Delete Config
+              </button>
             </div>
           </c-card-header>
           <c-card-body>
-             <!-- Loading State -->
-             <div *ngIf="loadingConfig || loadingGuildData" class="text-center py-3"><c-spinner aria-hidden="true" size="sm"></c-spinner> Loading Configuration...</div>
-             <!-- Error State -->
-             <c-alert color="danger" *ngIf="!loadingConfig && (configError || guildDataError)">{{ configError || guildDataError }}</c-alert>
-             <!-- No Config Found State -->
-             <div *ngIf="!loadingConfig && !configError && !guildConfig" class="text-center py-3">
-               No configuration found for this guild.
-               <button cButton color="success" variant="ghost" size="sm" class="ms-2" (click)="openEditConfigModal('full')">
-                   <svg cIcon name="cilPlus" size="sm"></svg> Create One?
-               </button>
-             </div>
+            <!-- Loading State -->
+            <div *ngIf="loadingConfig || loadingGuildData" class="text-center py-3"><c-spinner aria-hidden="true"
+                size="sm"></c-spinner> Loading Configuration...</div>
+            <!-- Error State -->
+            <c-alert color="danger" *ngIf="!loadingConfig && (configError || guildDataError)">{{ configError ||
+              guildDataError }}</c-alert>
+            <!-- No Config Found State -->
+            <div *ngIf="!loadingConfig && !configError && !guildConfig" class="text-center py-3">
+              No configuration found for this guild.
+              <button cButton color="success" variant="ghost" size="sm" class="ms-2"
+                (click)="openEditConfigModal('full')">
+                <svg cIcon name="cilPlus" size="sm"></svg> Create One?
+              </button>
+            </div>
 
-             <!-- Config Display State (guildConfig is guaranteed non-null here) -->
-             <div *ngIf="!loadingConfig && !configError && guildConfig">
-                <!-- General Info Card: Applying updated card styling -->
-                <c-card class="mb-3 rounded shadow-lg">
-                  <c-card-header>
-                    <strong class="text-lg font-bold">General Info</strong>
-                  </c-card-header>
-                  <c-card-body>
-                    <c-row class="align-items-center">
-                      <!-- Guild ID: Applying typography suggestion (monospaced font) -->
-                      <c-col sm="3" class="fw-semibold text-muted text-sm">Guild ID</c-col>
-                      <c-col sm="9"><strong class="text-base"><code class="font-mono">{{ guildConfig.guild_id }}</code></strong></c-col>
-                       <!-- Note: Copy-to-clipboard button requires JS/TS implementation -->
-                    </c-row>
-                  </c-card-body>
-                </c-card>
+            <!-- Config Display State (guildConfig is guaranteed non-null here) -->
+            <div *ngIf="!loadingConfig && !configError && guildConfig">
+              <!-- General Info Card: Applying updated card styling -->
+              <c-card class="mb-3 rounded shadow-lg">
+                <c-card-header>
+                  <strong class="text-lg font-bold">General Info</strong>
+                </c-card-header>
+                <c-card-body>
+                  <c-row class="align-items-center">
+                    <!-- Guild ID: Applying typography suggestion (monospaced font) -->
+                    <c-col sm="3" class="fw-semibold text-muted text-sm">Guild ID</c-col>
+                    <c-col sm="9"><strong class="text-base"><code
+                          class="font-mono">{{ guildConfig.guild_id }}</code></strong></c-col>
+                    <!-- Note: Copy-to-clipboard button requires JS/TS implementation -->
+                  </c-row>
+                </c-card-body>
+              </c-card>
 
-                <!-- Display Settings Card: Applying updated card styling, renaming Agency Name, and improving typography -->
-                <c-card class="mb-3 rounded shadow-lg">
-                  <c-card-header>
-                    <strong class="text-lg font-bold">Display Settings (Bot, Display, Behavior)</strong>
-                    <div class="float-end">
-                      <button cButton color="primary" variant="outline" size="sm" (click)="openEditConfigModal('display_settings')" [disabled]="loadingConfig">
+              <!-- Display Settings Card: Applying updated card styling, renaming Agency Name, and improving typography -->
+              <c-card class="mb-3 rounded shadow-lg">
+                <c-card-header>
+                  <strong class="text-lg font-bold">Display Settings (Bot, Display, Behavior)</strong>
+                  <div class="float-end">
+                    <button cButton color="primary" variant="outline" size="sm"
+                      (click)="openEditConfigModal('display_settings')" [disabled]="loadingConfig">
+                      <svg cIcon name="cilPencil" size="sm"></svg> Modify
+                    </button>
+                  </div>
+                </c-card-header>
+                <c-card-body>
+                  <!-- Note: Implementing a responsive grid or toggle switches requires significant component/layout changes beyond simple class updates. Keeping existing layout structure. -->
+                  <!-- Note: Tooltips/helper icons require additional component implementation. -->
+                  <c-row class="mb-2 border-bottom pb-2 align-items-center">
+                    <c-col sm="3" class="fw-semibold text-muted text-sm">
+                      <svg cIcon name="cil-speech" size="sm" class="me-1"></svg> Display Name
+                    </c-col>
+                    <c-col sm="9" class="text-base">
+                      {{ guildConfig.display_settings.agency_name || 'Not Set' }}
+                    </c-col>
+                  </c-row>
+                  <c-row class="mb-2 border-bottom pb-2 align-items-center">
+                    <c-col sm="3" class="fw-semibold text-muted text-sm">
+                      <svg cIcon name="cil-speech" size="sm" class="me-1"></svg> Bot Name
+                    </c-col>
+                    <c-col sm="9" class="text-base">
+                      {{ guildConfig.display_settings.bot_name || 'Not Set' }}
+                    </c-col>
+                  </c-row>
+                  <c-row class="mb-2 border-bottom pb-2 align-items-center">
+                    <c-col sm="3" class="fw-semibold text-muted text-sm">
+                      <svg cIcon name="cil-message-square" size="sm" class="me-1"></svg> Ephemeral Responses
+                    </c-col>
+                    <c-col sm="9" class="text-base">
+                      <span class="border rounded py-1 px-2 d-inline-block text-body ms-2"
+                        [ngClass]="guildConfig.display_settings.ephemeral_responses ? 'border-success' : 'border-danger'">
+                        {{ guildConfig.display_settings.ephemeral_responses ? 'Enabled' : 'Disabled' }}
+                      </span>
+                    </c-col>
+                  </c-row>
+                  <c-row class="mb-2 border-bottom pb-2 align-items-center">
+                    <c-col sm="3" class="fw-semibold text-muted text-sm">
+                      <svg cIcon name="cil-chart-line" size="sm" class="me-1"></svg> Show Average
+                    </c-col>
+                    <c-col sm="9" class="text-base">
+                      <span class="border rounded py-1 px-2 d-inline-block text-body ms-2"
+                        [ngClass]="guildConfig.display_settings.show_average ? 'border-success' : 'border-danger'">
+                        {{ guildConfig.display_settings.show_average ? 'Enabled' : 'Disabled' }}
+                      </span>
+                    </c-col>
+                  </c-row>
+                  <c-row class="mb-0 align-items-center">
+                    <c-col sm="3" class="fw-semibold text-muted text-sm">
+                      <svg cIcon name="cil-barcode" size="sm" class="me-1"></svg> Show IDs
+                    </c-col>
+                    <c-col sm="9" class="text-base">
+                      <span class="border rounded py-1 px-2 d-inline-block text-body ms-2"
+                        [ngClass]="guildConfig.display_settings.show_ids ? 'border-success' : 'border-danger'">
+                        {{ guildConfig.display_settings.show_ids ? 'Enabled' : 'Disabled' }}
+                      </span>
+                    </c-col>
+                  </c-row>
+                </c-card-body>
+              </c-card>
+
+              <!-- Basic Definitions Card: Applying updated card styling and typography -->
+              <c-card class="mb-3 rounded shadow-lg">
+                <c-card-header>
+                  <strong class="text-lg font-bold">Basic Definitions</strong>
+                </c-card-header>
+                <c-card-body>
+                  <c-row class="mb-2 border-bottom pb-2 align-items-center">
+                    <c-col sm="3" class="fw-semibold text-muted text-sm">Models</c-col>
+                    <c-col sm="6" class="text-base">
+                      <ng-container *ngIf="guildConfig.models && guildConfig.models.length > 0; else noModels">
+                        <span *ngFor="let model of guildConfig.models"
+                          class="border rounded py-1 px-2 me-1 mb-1 d-inline-block text-body">{{ model }}</span>
+                      </ng-container>
+                      <ng-template #noModels><span class="text-muted">-</span></ng-template>
+                    </c-col>
+                    <c-col sm="3" class="text-end">
+                      <button cButton color="primary" variant="outline" size="sm"
+                        (click)="openEditConfigModal('models')" [disabled]="loadingConfig">
                         <svg cIcon name="cilPencil" size="sm"></svg> Modify
                       </button>
-                    </div>
-                  </c-card-header>
-                  <c-card-body>
-                    <!-- Note: Implementing a responsive grid or toggle switches requires significant component/layout changes beyond simple class updates. Keeping existing layout structure. -->
-                    <!-- Note: Tooltips/helper icons require additional component implementation. -->
-                    <c-row class="mb-2 border-bottom pb-2 align-items-center">
-                      <c-col sm="3" class="fw-semibold text-muted text-sm">
-                        <svg cIcon name="cil-speech" size="sm" class="me-1"></svg> Display Name
-                      </c-col>
-                      <c-col sm="9" class="text-base">
-                        {{ guildConfig.display_settings.agency_name || 'Not Set' }}
-                      </c-col>
-                    </c-row>
-                    <c-row class="mb-2 border-bottom pb-2 align-items-center">
-                      <c-col sm="3" class="fw-semibold text-muted text-sm">
-                         <svg cIcon name="cil-speech" size="sm" class="me-1"></svg> Bot Name
-                      </c-col>
-                      <c-col sm="9" class="text-base">
-                         {{ guildConfig.display_settings.bot_name || 'Not Set' }}
-                      </c-col>
-                    </c-row>
-                    <c-row class="mb-2 border-bottom pb-2 align-items-center">
-                      <c-col sm="3" class="fw-semibold text-muted text-sm">
-                        <svg cIcon name="cil-message-square" size="sm" class="me-1"></svg> Ephemeral Responses
-                      </c-col>
-                      <c-col sm="9" class="text-base">
-                        <span class="border rounded py-1 px-2 d-inline-block text-body ms-2" [ngClass]="guildConfig.display_settings.ephemeral_responses ? 'border-success' : 'border-danger'">
-                          {{ guildConfig.display_settings.ephemeral_responses ? 'Enabled' : 'Disabled' }}
-                        </span>
-                      </c-col>
-                    </c-row>
-                     <c-row class="mb-2 border-bottom pb-2 align-items-center">
-                      <c-col sm="3" class="fw-semibold text-muted text-sm">
-                        <svg cIcon name="cil-chart-line" size="sm" class="me-1"></svg> Show Average
-                      </c-col>
-                      <c-col sm="9" class="text-base">
-                        <span class="border rounded py-1 px-2 d-inline-block text-body ms-2" [ngClass]="guildConfig.display_settings.show_average ? 'border-success' : 'border-danger'">
-                          {{ guildConfig.display_settings.show_average ? 'Enabled' : 'Disabled' }}
-                        </span>
-                      </c-col>
-                    </c-row>
-                    <c-row class="mb-0 align-items-center">
-                      <c-col sm="3" class="fw-semibold text-muted text-sm">
-                        <svg cIcon name="cil-barcode" size="sm" class="me-1"></svg> Show IDs
-                      </c-col>
-                      <c-col sm="9" class="text-base">
-                        <span class="border rounded py-1 px-2 d-inline-block text-body ms-2" [ngClass]="guildConfig.display_settings.show_ids ? 'border-success' : 'border-danger'">
-                          {{ guildConfig.display_settings.show_ids ? 'Enabled' : 'Disabled' }}
-                        </span>
-                      </c-col>
-                    </c-row>
-                  </c-card-body>
-                </c-card>
-
-                <!-- Basic Definitions Card: Applying updated card styling and typography -->
-                <c-card class="mb-3 rounded shadow-lg">
-                  <c-card-header>
-                     <strong class="text-lg font-bold">Basic Definitions</strong>
-                  </c-card-header>
-                  <c-card-body>
-                    <c-row class="mb-2 border-bottom pb-2 align-items-center">
-                      <c-col sm="3" class="fw-semibold text-muted text-sm">Models</c-col>
-                      <c-col sm="6" class="text-base">
-                        <ng-container *ngIf="guildConfig.models && guildConfig.models.length > 0; else noModels">
-                          <span *ngFor="let model of guildConfig.models" class="border rounded py-1 px-2 me-1 mb-1 d-inline-block text-body">{{ model }}</span>
-                        </ng-container>
-                        <ng-template #noModels><span class="text-muted">-</span></ng-template>
-                      </c-col>
-                      <c-col sm="3" class="text-end">
-                        <button cButton color="primary" variant="outline" size="sm" (click)="openEditConfigModal('models')" [disabled]="loadingConfig">
-                          <svg cIcon name="cilPencil" size="sm"></svg> Modify
-                        </button>
-                      </c-col>
-                    </c-row>
-                    <c-row class="mb-2 border-bottom pb-2 align-items-center">
-                      <c-col sm="3" class="fw-semibold text-muted text-sm">Shifts</c-col>
-                      <c-col sm="6" class="text-base">
-                        <ng-container *ngIf="guildConfig.shifts && guildConfig.shifts.length > 0; else noShifts">
-                          <span *ngFor="let shift of guildConfig.shifts" class="border rounded py-1 px-2 me-1 mb-1 d-inline-block text-body">{{ shift }}</span>
-                        </ng-container>
-                        <ng-template #noShifts><span class="text-muted">-</span></ng-template>
-                      </c-col>
-                      <c-col sm="3" class="text-end">
-                        <button cButton color="primary" variant="outline" size="sm" (click)="openEditConfigModal('shifts')" [disabled]="loadingConfig">
-                          <svg cIcon name="cilPencil" size="sm"></svg> Modify
-                        </button>
-                      </c-col>
-                    </c-row>
-                    <c-row class="mb-0 align-items-center"> 
-                      <c-col sm="3" class="fw-semibold text-muted text-sm">Periods</c-col>
-                      <c-col sm="6" class="text-base">
-                        <ng-container *ngIf="guildConfig.periods && guildConfig.periods.length > 0; else noPeriods">
-                          <span *ngFor="let period of guildConfig.periods" class="border rounded py-1 px-2 me-1 mb-1 d-inline-block text-body">{{ period }}</span>
-                        </ng-container>
-                        <ng-template #noPeriods><span class="text-muted">-</span></ng-template>
-                      </c-col>
-                      <c-col sm="3" class="text-end">
-                        <button cButton color="primary" variant="outline" size="sm" (click)="openEditConfigModal('periods')" [disabled]="loadingConfig">
-                          <svg cIcon name="cilPencil" size="sm"></svg> Modify
-                        </button>
-                      </c-col>
-                    </c-row>
-                  </c-card-body>
-                </c-card>
-
-                <!-- Bonus Rules Card: Applying updated card styling and typography -->
-                <c-card class="mb-3 rounded shadow-lg">
-                  <c-card-header>
-                    <strong class="text-lg font-bold">Bonus Rules</strong>
-                    <div class="float-end">
-                      <button cButton color="primary" variant="outline" size="sm" (click)="openEditConfigModal('bonus_rules')" [disabled]="loadingConfig">
+                    </c-col>
+                  </c-row>
+                  <c-row class="mb-2 border-bottom pb-2 align-items-center">
+                    <c-col sm="3" class="fw-semibold text-muted text-sm">Shifts</c-col>
+                    <c-col sm="6" class="text-base">
+                      <ng-container *ngIf="guildConfig.shifts && guildConfig.shifts.length > 0; else noShifts">
+                        <span *ngFor="let shift of guildConfig.shifts"
+                          class="border rounded py-1 px-2 me-1 mb-1 d-inline-block text-body">{{ shift }}</span>
+                      </ng-container>
+                      <ng-template #noShifts><span class="text-muted">-</span></ng-template>
+                    </c-col>
+                    <c-col sm="3" class="text-end">
+                      <button cButton color="primary" variant="outline" size="sm"
+                        (click)="openEditConfigModal('shifts')" [disabled]="loadingConfig">
                         <svg cIcon name="cilPencil" size="sm"></svg> Modify
                       </button>
-                    </div>
-                  </c-card-header>
-                  <c-card-body>
-                    @if (guildConfig.bonus_rules && guildConfig.bonus_rules.length > 0) {
-                      <!-- Table structure remains, improved typography for table headers and data -->
-                      <table class="table table-striped mb-0 text-base">
-                        <thead>
-                          <tr>
-                            <th scope="col">#</th>
-                            <th scope="col">Minimum Revenue</th>
-                            <th scope="col">Maximum Revenue</th>
-                            <th scope="col">Bonus Amount</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          @for (rule of guildConfig.bonus_rules; track $index) {
-                            <tr>
-                              <th scope="row">{{ $index + 1 }}</th>
-                              <td>{{ rule.from | currency }}</td>
-                              <td>{{ rule.to | currency }}</td>
-                              <td>{{ rule.amount | currency }}</td>
-                            </tr>
-                          }
-                        </tbody>
-                      </table>
-                    } @else {
-                      <div class="text-center text-muted py-3">
-                        <svg cIcon name="cilBan" size="xl" class="mb-2"></svg>
-                        <p class="text-base">No bonus rules defined.</p>
-                      </div>
-                    }
-                  </c-card-body>
-                </c-card>
-
-                <!-- Top-Level Roles Card: Applying updated card styling and typography -->
-                <c-card class="mb-3 rounded shadow-lg">
-                  <c-card-header>
-                    <strong class="text-lg font-bold">General Role Settings (Numeric Values)</strong>
-                    <div class="float-end">
-                      <button cButton color="primary" variant="outline" size="sm" (click)="openEditConfigModal('top_level_roles')" [disabled]="loadingConfig">
-                        <svg cIcon name="cilTags" size="sm"></svg> Modify
-                      </button>
-                    </div>
-                  </c-card-header>
-                  <c-card-body>
-                    @if (guildConfig.roles && objectKeys(guildConfig.roles).length > 0) {
-                      <!-- Table structure remains, improved typography for table headers and data -->
-                      <table class="table table-striped mb-0 text-base">
-                        <thead>
-                          <tr>
-                            <th scope="col">#</th>
-                            <th scope="col">Role</th>
-                            <th scope="col">Value</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          @for (roleId of objectKeys(guildConfig.roles); track $index) {
-                            <tr>
-                              <th scope="row">{{ $index + 1 }}</th>
-                              <td>{{ getRoleName(roleId) }}</td>
-                              <td><strong>{{ guildConfig.roles[roleId] }}</strong></td>
-                            </tr>
-                          }
-                        </tbody>
-                      </table>
-                    } @else {
-                      <div class="text-center text-muted py-3">
-                        <svg cIcon name="cilBan" size="xl" class="mb-2"></svg>
-                        <p class="text-base">No general role settings defined.</p>
-                      </div>
-                    }
-                  </c-card-body>
-                </c-card>
-
-                <!-- Role Commissions Card: Applying updated card styling and typography -->
-                <c-card class="mb-3 rounded shadow-lg">
-                  <c-card-header>
-                    <strong class="text-lg font-bold">Role Commissions</strong>
-                    <div class="float-end">
-                      <button cButton color="primary" variant="outline" size="sm" (click)="openEditConfigModal('commission_settings_roles')" [disabled]="loadingConfig">
+                    </c-col>
+                  </c-row>
+                  <c-row class="mb-0 align-items-center">
+                    <c-col sm="3" class="fw-semibold text-muted text-sm">Periods</c-col>
+                    <c-col sm="6" class="text-base">
+                      <ng-container *ngIf="guildConfig.periods && guildConfig.periods.length > 0; else noPeriods">
+                        <span *ngFor="let period of guildConfig.periods"
+                          class="border rounded py-1 px-2 me-1 mb-1 d-inline-block text-body">{{ period }}</span>
+                      </ng-container>
+                      <ng-template #noPeriods><span class="text-muted">-</span></ng-template>
+                    </c-col>
+                    <c-col sm="3" class="text-end">
+                      <button cButton color="primary" variant="outline" size="sm"
+                        (click)="openEditConfigModal('periods')" [disabled]="loadingConfig">
                         <svg cIcon name="cilPencil" size="sm"></svg> Modify
                       </button>
-                    </div>
-                  </c-card-header>
-                  <c-card-body>
-                    @if (guildConfig.commission_settings && guildConfig.commission_settings.roles && objectKeys(guildConfig.commission_settings.roles).length > 0) {
-                      <ul class="list-unstyled mb-0 text-base">
-                        @for (roleId of objectKeys(guildConfig.commission_settings.roles); track roleId) {
-                          <li class="border-bottom pb-2 mb-2">
-                             Role: <strong>{{ getRoleName(roleId) }}</strong>: <strong>{{ guildConfig.commission_settings.roles[roleId].commission_percentage }}%</strong>
-                          </li>
-                        }
-                      </ul>
-                    } @else {
-                      <div class="text-center text-muted py-3">
-                        <svg cIcon name="cilUserX" size="xl" class="mb-2"></svg>
-                        <p class="text-base">No role-specific commissions defined.</p>
-                      </div>
-                    }
-                  </c-card-body>
-                </c-card>
+                    </c-col>
+                  </c-row>
+                </c-card-body>
+              </c-card>
 
-                <!-- User Overrides Card: Applying updated card styling and typography -->
-                <c-card class="mb-3 rounded shadow-lg">
-                  <c-card-header>
-                    <strong class="text-lg font-bold">User Overrides</strong>
-                    <div class="float-end">
-                      <button cButton color="primary" variant="outline" size="sm" (click)="openEditConfigModal('commission_settings_users')" [disabled]="loadingConfig">
-                        <svg cIcon name="cilPencil" size="sm"></svg> Modify
-                      </button>
-                    </div>
-                  </c-card-header>
-                  <c-card-body>
-                    @if (guildConfig.commission_settings && guildConfig.commission_settings.users && objectKeys(guildConfig.commission_settings.users).length > 0) {
-                      <ul class="list-unstyled mb-0 text-base">
-                        @for (userId of objectKeys(guildConfig.commission_settings.users); track userId) {
-                          <li class="border-bottom pb-2 mb-2">
-                             User: <strong>{{ getMemberDisplayName(userId) }}</strong>:
-                             @if (guildConfig.commission_settings.users[userId].hourly_rate != null) {
-                               <span class="ms-2"> Hourly Rate: <strong>{{ guildConfig.commission_settings.users[userId].hourly_rate | currency }}</strong></span>
-                             }
-                             @if (guildConfig.commission_settings.users[userId].override_role) {
-                               <span class="border rounded py-1 px-2 d-inline-block text-body ms-2">Overrides Role %</span>
-                             }
-                          </li>
-                        }
-                      </ul>
-                    } @else {
-                      <div class="text-center text-muted py-3">
-                        <svg cIcon name="cilUserUnfollow" size="xl" class="mb-2"></svg>
-                        <p class="text-base">No user-specific overrides defined.</p>
-                      </div>
-                    }
-                  </c-card-body>
-                </c-card>
+              <!-- Bonus Rules Card: Applying updated card styling and typography -->
+              <c-card class="mb-3 rounded shadow-lg">
+                <c-card-header>
+                  <strong class="text-lg font-bold">Bonus Rules</strong>
+                  <div class="float-end">
+                    <button cButton color="primary" variant="outline" size="sm"
+                      (click)="openEditConfigModal('bonus_rules')" [disabled]="loadingConfig">
+                      <svg cIcon name="cilPencil" size="sm"></svg> Modify
+                    </button>
+                  </div>
+                </c-card-header>
+                <c-card-body>
+                  @if (guildConfig.bonus_rules && guildConfig.bonus_rules.length > 0) {
+                  <!-- Table structure remains, improved typography for table headers and data -->
+                  <table class="table table-striped mb-0 text-base">
+                    <thead>
+                      <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Minimum Revenue</th>
+                        <th scope="col">Maximum Revenue</th>
+                        <th scope="col">Bonus Amount</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      @for (rule of guildConfig.bonus_rules; track $index) {
+                      <tr>
+                        <th scope="row">{{ $index + 1 }}</th>
+                        <td>{{ rule.from | currency }}</td>
+                        <td>{{ rule.to | currency }}</td>
+                        <td>{{ rule.amount | currency }}</td>
+                      </tr>
+                      }
+                    </tbody>
+                  </table>
+                  } @else {
+                  <div class="text-center text-muted py-3">
+                    <svg cIcon name="cilBan" size="xl" class="mb-2"></svg>
+                    <p class="text-base">No bonus rules defined.</p>
+                  </div>
+                  }
+                </c-card-body>
+              </c-card>
 
-             </div>
+              <!-- Top-Level Roles Card: Applying updated card styling and typography -->
+              <c-card class="mb-3 rounded shadow-lg">
+                <c-card-header>
+                  <strong class="text-lg font-bold">General Role Settings (Numeric Values)</strong>
+                  <div class="float-end">
+                    <button cButton color="primary" variant="outline" size="sm"
+                      (click)="openEditConfigModal('top_level_roles')" [disabled]="loadingConfig">
+                      <svg cIcon name="cilTags" size="sm"></svg> Modify
+                    </button>
+                  </div>
+                </c-card-header>
+                <c-card-body>
+                  @if (guildConfig.roles && objectKeys(guildConfig.roles).length > 0) {
+                  <!-- Table structure remains, improved typography for table headers and data -->
+                  <table class="table table-striped mb-0 text-base">
+                    <thead>
+                      <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Role</th>
+                        <th scope="col">Value</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      @for (roleId of objectKeys(guildConfig.roles); track $index) {
+                      <tr>
+                        <th scope="row">{{ $index + 1 }}</th>
+                        <td>{{ getRoleName(roleId) }}</td>
+                        <td><strong>{{ guildConfig.roles[roleId] }}</strong></td>
+                      </tr>
+                      }
+                    </tbody>
+                  </table>
+                  } @else {
+                  <div class="text-center text-muted py-3">
+                    <svg cIcon name="cilBan" size="xl" class="mb-2"></svg>
+                    <p class="text-base">No general role settings defined.</p>
+                  </div>
+                  }
+                </c-card-body>
+              </c-card>
+
+              <!-- Role Commissions Card: Applying updated card styling and typography -->
+              <c-card class="mb-3 rounded shadow-lg">
+                <c-card-header>
+                  <strong class="text-lg font-bold">Role Commissions</strong>
+                  <div class="float-end">
+                    <button cButton color="primary" variant="outline" size="sm"
+                      (click)="openEditConfigModal('commission_settings_roles')" [disabled]="loadingConfig">
+                      <svg cIcon name="cilPencil" size="sm"></svg> Modify
+                    </button>
+                  </div>
+                </c-card-header>
+                <c-card-body>
+                  @if (guildConfig.commission_settings && guildConfig.commission_settings.roles &&
+                  objectKeys(guildConfig.commission_settings.roles).length > 0) {
+                  <ul class="list-unstyled mb-0 text-base">
+                    @for (roleId of objectKeys(guildConfig.commission_settings.roles); track roleId) {
+                    <li class="border-bottom pb-2 mb-2">
+                      Role: <strong>{{ getRoleName(roleId) }}</strong>: <strong>{{
+                        guildConfig.commission_settings.roles[roleId].commission_percentage }}%</strong>
+                    </li>
+                    }
+                  </ul>
+                  } @else {
+                  <div class="text-center text-muted py-3">
+                    <svg cIcon name="cilUserX" size="xl" class="mb-2"></svg>
+                    <p class="text-base">No role-specific commissions defined.</p>
+                  </div>
+                  }
+                </c-card-body>
+              </c-card>
+
+              <!-- User Overrides Card: Applying updated card styling and typography -->
+              <c-card class="mb-3 rounded shadow-lg">
+                <c-card-header>
+                  <strong class="text-lg font-bold">User Overrides</strong>
+                  <div class="float-end">
+                    <button cButton color="primary" variant="outline" size="sm"
+                      (click)="openEditConfigModal('commission_settings_users')" [disabled]="loadingConfig">
+                      <svg cIcon name="cilPencil" size="sm"></svg> Modify
+                    </button>
+                  </div>
+                </c-card-header>
+                <c-card-body>
+                  @if (guildConfig.commission_settings && guildConfig.commission_settings.users &&
+                  objectKeys(guildConfig.commission_settings.users).length > 0) {
+                  <ul class="list-unstyled mb-0 text-base">
+                    @for (userId of objectKeys(guildConfig.commission_settings.users); track userId) {
+                    <li class="border-bottom pb-2 mb-2">
+                      User: <strong>{{ getMemberDisplayName(userId) }}</strong>:
+                      @if (guildConfig.commission_settings.users[userId].hourly_rate != null) {
+                      <span class="ms-2"> Hourly Rate: <strong>{{
+                          guildConfig.commission_settings.users[userId].hourly_rate | currency }}</strong></span>
+                      }
+                      @if (guildConfig.commission_settings.users[userId].override_role) {
+                      <span class="border rounded py-1 px-2 d-inline-block text-body ms-2">Overrides Role %</span>
+                      }
+                    </li>
+                    }
+                  </ul>
+                  } @else {
+                  <div class="text-center text-muted py-3">
+                    <svg cIcon name="cilUserUnfollow" size="xl" class="mb-2"></svg>
+                    <p class="text-base">No user-specific overrides defined.</p>
+                  </div>
+                  }
+                </c-card-body>
+              </c-card>
+
+            </div>
           </c-card-body>
         </c-card>
 
@@ -317,15 +340,10 @@
 
 <!-- Guild Config Edit Modal -->
 @if (isConfigEditModalVisible && currentGuildId) {
-  <app-guild-config-edit-modal
-    [(visible)]="isConfigEditModalVisible"
-    [guildId]="currentGuildId"
-    [guildConfig]="guildConfig"
-    [editSection]="currentEditSection"
-    [availableRoles]="availableRoles"
-    [availableUsers]="availableUsers"
-    (configSaved)="onConfigSaved($event)">
-  </app-guild-config-edit-modal>
+<app-guild-config-edit-modal [(visible)]="isConfigEditModalVisible" [guildId]="currentGuildId"
+  [guildConfig]="guildConfig" [editSection]="currentEditSection" [availableRoles]="availableRoles"
+  [availableUsers]="availableUsers" (configSaved)="onConfigSaved($event)">
+</app-guild-config-edit-modal>
 }
 
 <!-- Note: Implementing confirmation modals for delete, responsive grid for display settings, toggle switches, tooltips, and copy-to-clipboard for Guild ID would require further changes in component logic (JS/TS) and potentially integrating additional libraries or custom CSS. The changes above focus on applying available styling classes within the existing CoreUI/Bootstrap framework. -->
