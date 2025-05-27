@@ -87,6 +87,7 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
   isEditingDisplaySettingsSubFlow: boolean = false;
   // This holds the LATEST state of display settings, whether from init or sub-modal result.
   currentDisplaySettings!: DisplaySettingsModalData;
+  topLevelRoleIds: string[] = [];
 
   get isEditMode(): boolean {
     return !!this.guildConfig; // Based on the initial @Input
@@ -108,6 +109,7 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
       ...this.getDefaultDisplaySettings(),
       ...(this.guildConfig?.display_settings || {}),
     };
+    this.updateTopLevelRoleIds();
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -128,6 +130,17 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
     } else if (changes['visible'] && !this.visible) {
       this.resetModalState();
     }
+    this.updateTopLevelRoleIds();
+  }
+
+  updateTopLevelRoleIds() {
+    if (this.topLevelRoles) {
+      this.topLevelRoleIds = Object.keys(this.topLevelRoles.controls).filter(id => !!this.topLevelRoles.get(id));
+    }
+  }
+
+  onTopLevelRoleDrop(event: CdkDragDrop<string[]>) {
+    moveItemInArray(this.topLevelRoleIds, event.previousIndex, event.currentIndex);
   }
 
   onArrayDrop(array: FormArray, event: CdkDragDrop<any[]>) {
@@ -517,7 +530,6 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
     if (roleId) {
       if (rolesGroup.get(roleId)) {
         console.warn(`Role ID ${roleId} already exists.`);
-        // this.errorMessage = `Role ID ${roleId} already exists.`;
       } else {
         rolesGroup.addControl(
           roleId,
@@ -525,21 +537,22 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
             value: [
               '',
               [Validators.required, Validators.pattern(/^\d+(\.\d+)?$/)],
-            ], // Allow integers and decimals
+            ],
           })
         );
         rolesGroup.markAsDirty();
         this.errorMessage = null;
+        this.updateTopLevelRoleIds(); // <-- Add this line
       }
     }
   }
 
-  // Method to remove a top-level role
   removeTopLevelRole(roleId: string): void {
     const rolesGroup = this.topLevelRoles;
     if (rolesGroup.get(roleId)) {
       rolesGroup.removeControl(roleId);
       rolesGroup.markAsDirty();
+      this.updateTopLevelRoleIds(); // <-- Add this line
     }
   }
 
@@ -559,12 +572,13 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
               value: [
                 value,
                 [Validators.required, Validators.pattern(/^\d+(\.\d+)?$/)],
-              ], // Allow integers and decimals
+              ],
             })
           );
         }
       });
     }
+    this.updateTopLevelRoleIds(); // <-- Add this line
   }
 
   private setStringArrayData(

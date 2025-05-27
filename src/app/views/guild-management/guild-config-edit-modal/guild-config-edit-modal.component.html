@@ -219,59 +219,62 @@
                     </select>
                     <input cFormControl type="text" id="newTopLevelRoleId" placeholder="Enter Role ID"
                       #newTopLevelRoleInput (blur)="addTopLevelRole(newTopLevelRoleInput.value)" (keydown.enter)="
-      addTopLevelRole(newTopLevelRoleInput.value);
-      $event.preventDefault()
-    " />
+              addTopLevelRole(newTopLevelRoleInput.value);
+              $event.preventDefault()
+            " />
                     <button cButton type="button" color="success" variant="outline"
                       (click)="addTopLevelRole(newTopLevelRoleInput.value)">
                       <svg cIcon name="cilPlus" size="sm"></svg> Add Role
                     </button>
                   </div>
-                  <div *ngIf="
-                      objectKeys(topLevelRoles.controls).length === 0;
-                      else topLevelRolesDefined
-                    ">
+                  <div *ngIf="objectKeys(topLevelRoles.controls).length === 0; else topLevelRolesDefined">
                     <p class="text-muted">No general role settings defined.</p>
                   </div>
                   <ng-template #topLevelRolesDefined>
-                    <c-row *ngFor="let roleId of objectKeys(topLevelRoles.controls)" [formGroupName]="roleId"
-                      class="g-2 mt-3 mb-2 align-items-center p-2 border rounded position-relative flex-wrap">
-                      <c-col xs="12" md="4" class="mb-1 mb-md-0">
-                        <label class="col-form-label text-truncate w-100">Role:
-                          <code class="text-info">{{ getRoleName(roleId) }}</code>
-                        </label>
-                      </c-col>
-                      <c-col xs="12" md="7" class="mb-1 mb-md-0">
-                        <input cFormControl type="number" [id]="'role_value_' + roleId" formControlName="value" required
-                          placeholder="Enter numeric value" class="form-control w-100" />
-                        <c-form-feedback [valid]="false" *ngIf="
+                    <div cdkDropList (cdkDropListDropped)="onTopLevelRoleDrop($event)"
+                      [cdkDropListData]="topLevelRoleIds">
+                      <div *ngFor="let roleId of topLevelRoleIds; let i = index" [formGroupName]="roleId" cdkDrag
+                        class="top-level-role-row d-flex align-items-center flex-wrap p-2 border rounded mb-3">
+                        <div cdkDragHandle class="me-2" style="cursor: grab;" title="Drag to reorder">
+                          <svg cIcon name="cilMenu" size="lg"></svg>
+                        </div>
+                        <div class="flex-grow-1 flex-shrink-1 min-width-0 me-2 mb-2 mb-md-0" style="max-width: 250px;">
+                          <label class="col-form-label text-truncate w-100 mb-0">
+                            <code class="text-info">{{ getRoleName(roleId) }}</code>
+                          </label>
+                        </div>
+                        <div class="flex-grow-1 flex-shrink-1 me-2 mb-2 mb-md-0"
+                          style="min-width: 120px; max-width: 200px;">
+                          <input cFormControl type="number" [id]="'role_value_' + roleId" formControlName="value"
+                            required placeholder="Enter numeric value" class="form-control w-100" />
+                          <c-form-feedback [valid]="false" *ngIf="
           topLevelRoles.get(roleId)?.get('value')?.hasError('required') &&
           (topLevelRoles.get(roleId)?.get('value')?.dirty ||
             topLevelRoles.get(roleId)?.get('value')?.touched ||
             submitAttempted)
         ">
-                          Value is required.
-                        </c-form-feedback>
-                        <c-form-feedback [valid]="false" *ngIf="
+                            Value is required.
+                          </c-form-feedback>
+                          <c-form-feedback [valid]="false" *ngIf="
           topLevelRoles.get(roleId)?.get('value')?.hasError('pattern') &&
           (topLevelRoles.get(roleId)?.get('value')?.dirty ||
             topLevelRoles.get(roleId)?.get('value')?.touched ||
             submitAttempted)
         ">
-                          Value must be a valid number (integer or decimal).
-                        </c-form-feedback>
-                      </c-col>
-                      <c-col xs="12" md="1" class="text-end mt-1 mt-md-0">
-                        <button cButton type="button" color="danger" variant="ghost" size="sm" class="p-1"
-                          (click)="removeTopLevelRole(roleId)" title="Remove Role">
-                          <svg cIcon name="cilTrash" size="lg"></svg>
-                        </button>
-                      </c-col>
-                    </c-row>
+                            Value must be a valid number (integer or decimal).
+                          </c-form-feedback>
+                        </div>
+                        <div class="ms-auto">
+                          <button cButton type="button" color="danger" variant="ghost" size="sm" class="p-1"
+                            (click)="removeTopLevelRole(roleId)" title="Remove Role">
+                            <svg cIcon name="cilTrash" size="lg"></svg>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
                   </ng-template>
                 </div>
               </c-card-body>
-              <!-- ✅ This was missing or misplaced -->
             </c-card>
           </ng-container>
 

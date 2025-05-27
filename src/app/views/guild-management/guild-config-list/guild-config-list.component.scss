@@ -1,0 +1,17 @@
+$border-radius: 0.5rem;
+$card-shadow: 0 4px 16px rgba(0,0,0,0.06);
+
+.card {
+    background: transparent;
+    border: none;
+    border-radius: $border-radius;
+    box-shadow: none;
+    padding: 1.5rem 1.25rem;
+    margin-bottom: 1.5rem;
+    transition: box-shadow 0.2s, background 0.2s;
+
+    &:hover {
+        box-shadow: 0 8px 24px rgba(0,0,0,0.10);
+        background: rgba(13, 110, 253, 0.06); // subtle primary tint on hover
+    }
+}

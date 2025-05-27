@@ -1,6 +1,20 @@
+$primary-color: #0d6efd;
+$border-radius: 0.5rem;
+$box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+
+.modal-body {
+    position: relative;
+    flex: 1 1 auto;
+    /* padding: var(--cui-modal-padding); */
+}
+
+.card {
+    border: 0 solid transparent;
+}
+
 .cdk-drag-preview {
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
-    border-radius: 0.5rem;
+    box-shadow: $box-shadow;
+    border-radius: $border-radius;
     opacity: 0.95;
 }
 
@@ -10,14 +24,14 @@
 
 [cdkDropList] {
     min-height: 40px;
-    border-radius: 0.5rem;
+    border-radius: $border-radius;
     padding-top: 0.5rem;
     padding-bottom: 0.5rem;
     transition: border-color 0.2s;
 }
 
 [cdkDropList].cdk-drop-list-dragging {
-    border-color: #0d6efd;
+    border-color: $primary-color;
 }
 
 .bonus-rule-row {
@@ -50,6 +64,23 @@
     margin-bottom: 0;
 }
 
+.top-level-role-row {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 1rem;
+    gap: 0.5rem 1rem;
+}
+
+.top-level-role-row>.ms-auto {
+    margin-left: auto !important;
+}
+
+.top-level-role-row input[type="number"] {
+    min-width: 100px;
+    max-width: 200px;
+}
+
 @media (max-width: 576px) {
 
     .row.g-3>[class^="col-"],
@@ -62,5 +93,16 @@
         min-width: unset;
         width: 100%;
         justify-content: flex-end;
+    }
+
+    .top-level-role-row {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.5rem 0;
+    }
+
+    .top-level-role-row>.ms-auto {
+        margin-left: 0 !important;
+        align-self: flex-end;
     }
 }

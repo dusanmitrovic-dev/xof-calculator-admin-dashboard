@@ -30,6 +30,7 @@ import { CommonModule, CurrencyPipe } from '@angular/common';
 
 @Component({
   selector: 'app-guild-config-list',
+  styleUrls: ['./guild-config-list.component.scss'],
   templateUrl: './guild-config-list.component.html',
   standalone: true,
   imports: [
