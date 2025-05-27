@@ -36,12 +36,54 @@ $card-shadow: 0 4px 16px rgba(0,0,0,0.06);
     margin-bottom: 2rem;
 }
 
+/* Table Soft Card-Like Styling */
+.table {
+    border-collapse: separate;
+    border-spacing: 0;
+    background: transparent;
+    border-radius: $border-radius;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(13,110,253,0.04);
+    margin-bottom: 1.5rem;
+}
+
+.table th,
+.table td {
+    border: none;
+    padding: 0.75rem 1rem;
+    vertical-align: middle;
+    background: transparent;
+}
+
 .table-striped > tbody > tr:nth-of-type(odd) {
-    background-color: rgba(13,110,253,0.03);
+    background-color: rgba(13,110,253,0.02);
 }
+
 .table > tbody > tr:hover {
-    background: rgba(13,110,253,0.08);
+    background: rgba(13,110,253,0.06);
+    transition: background 0.2s;
 }
+
+.table > thead > tr {
+    background: rgba(13,110,253,0.04);
+}
+
+.table > thead th {
+    font-weight: 600;
+    color: #0d6efd;
+    background: transparent;
+    border-bottom: 1px solid rgba(13,110,253,0.08);
+}
+
+.table > tbody > tr:first-child td {
+    border-top: none;
+}
+
+.table > tbody > tr:last-child td {
+    border-bottom-left-radius: $border-radius;
+    border-bottom-right-radius: $border-radius;
+}
+
 .text-muted.bg-soft {
     background: rgba(13,110,253,0.04);
     border-radius: $border-radius;
