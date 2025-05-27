@@ -66,9 +66,9 @@
                   <div class="input-group">
                     <input cFormControl type="text" id="newModelName" placeholder="Enter model name" #newModelInput
                       (blur)="handleItemAddOnBlur(models, newModelInput)" (keydown.enter)="
-                        handleItemAdd(models, newModelInput);
-                        $event.preventDefault()
-                      " />
+              handleItemAdd(models, newModelInput);
+              $event.preventDefault()
+            " />
                     <button cButton type="button" color="success" variant="outline"
                       (click)="handleItemAdd(models, newModelInput)">
                       <svg cIcon name="cilPlus" size="sm"></svg> Add Model
@@ -78,13 +78,18 @@
                 <div *ngIf="models.controls.length === 0" class="text-center text-muted py-3">
                   <p>No models defined.</p>
                 </div>
-                <div *ngFor="let modelCtrl of models.controls; let i = index"
-                  class="d-flex justify-content-between align-items-center mb-2 p-2 border rounded">
-                  <span>{{ modelCtrl.value }}</span>
-                  <button cButton type="button" color="danger" variant="ghost" size="sm" (click)="removeItem(models, i)"
-                    title="Remove Model">
-                    <svg cIcon name="cilTrash" size="lg"></svg>
-                  </button>
+                <div cdkDropList (cdkDropListDropped)="onArrayDrop(models, $event)" [cdkDropListData]="models.controls">
+                  <div *ngFor="let modelCtrl of models.controls; let i = index" cdkDrag
+                    class="d-flex justify-content-between align-items-center mb-2 p-2 border rounded model-row">
+                    <div cdkDragHandle class="me-2" style="cursor: grab;" title="Drag to reorder">
+                      <svg cIcon name="cilMenu" size="lg"></svg>
+                    </div>
+                    <span>{{ modelCtrl.value }}</span>
+                    <button cButton type="button" color="danger" variant="ghost" size="sm"
+                      (click)="removeItem(models, i)" title="Remove Model">
+                      <svg cIcon name="cilTrash" size="lg"></svg>
+                    </button>
+                  </div>
                 </div>
               </c-card-body>
             </c-card>

@@ -130,6 +130,14 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
     }
   }
 
+  onArrayDrop(array: FormArray, event: CdkDragDrop<any[]>) {
+    if (event.previousIndex !== event.currentIndex) {
+      moveItemInArray(array.controls, event.previousIndex, event.currentIndex);
+      array.updateValueAndValidity();
+      array.markAsDirty();
+    }
+  }
+
   onUserDropdownChange(event: Event, input: HTMLInputElement) {
     const value = (event.target as HTMLSelectElement).value;
     input.value = value;
