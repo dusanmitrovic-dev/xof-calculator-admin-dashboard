@@ -3,6 +3,7 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, throwError, forkJoin, of } from 'rxjs'; // Import forkJoin, of
 import { catchError, map, switchMap, defaultIfEmpty } from 'rxjs/operators'; // Import switchMap, defaultIfEmpty
 import { UserService, AvailableGuild } from './user.service'; // Import UserService and AvailableGuild
+import { AuthService } from '../auth/auth.service';
 
 // Define an interface for the Earning structure
 export interface Earning {
@@ -31,6 +32,7 @@ interface DeleteResponse {
 export class EarningsService {
   private apiUrl = '/api/earnings'; // Base URL
   private userService = inject(UserService); // Inject UserService
+  private authService = inject(AuthService);
 
   constructor(private http: HttpClient) { }
 
@@ -47,9 +49,9 @@ export class EarningsService {
     return this.http.get<Earning[]>(`${this.apiUrl}/${guildId}`).pipe(
       map(earnings => earnings || []), // Ensure array even if null/undefined returned
       catchError(err => {
-          console.error(`EarningsService: Error fetching earnings for guild ${guildId}:`, err.message);
-          // Return an empty array for this specific guild on error to allow forkJoin to complete
-          return of([]);
+        console.error(`EarningsService: Error fetching earnings for guild ${guildId}:`, err.message);
+        // Return an empty array for this specific guild on error to allow forkJoin to complete
+        return of([]);
       })
     );
   }
@@ -59,36 +61,71 @@ export class EarningsService {
    */
   getAllEarningsAcrossGuilds(): Observable<Earning[]> {
     console.log('EarningsService: Fetching all earnings across all guilds...');
-    return this.userService.getAvailableGuildIds().pipe(
-        switchMap((guilds: AvailableGuild[]) => {
-            console.log(`EarningsService: Found ${guilds.length} available guilds.`);
-            if (!guilds || guilds.length === 0) {
-                // No guilds found, return an empty array immediately
-                return of([]);
-            }
+    const userRole = this.authService.getUserRole();
+    const userId = this.authService.getUserId();
 
-            // Create an array of Observables, each fetching earnings for one guild
-            const earningsObservables = guilds.map(guild =>
-                this.getEarningsForGuild(guild.guild_id)
-            );
+    if (userRole === 'admin') {
+      // Admin: fetch all guilds as before
+      return this.userService.getAvailableGuildIds().pipe(
+        switchMap((guilds) => {
+          if (!guilds || guilds.length === 0) return of([]);
+          const earningsObservables = guilds.map(guild =>
+            this.getEarningsForGuild(guild.guild_id)
+          );
+          return forkJoin(earningsObservables).pipe(defaultIfEmpty([] as Earning[][]));
+        }),
+        map((arrayOfEarningsArrays) => arrayOfEarningsArrays.flat()),
+        catchError(this.handleError)
+      );
+    } else if (userRole === 'manager') {
+      // Manager: fetch only assigned guilds
+      return this.userService.getUserById(userId!).pipe(
+        switchMap(user => {
+          const managedGuilds = user.managed_guild_ids || [];
+          if (!managedGuilds.length) return of([]);
+          const earningsObservables = managedGuilds.map(guildId =>
+            this.getEarningsForGuild(guildId)
+          );
+          return forkJoin(earningsObservables).pipe(defaultIfEmpty([] as Earning[][]));
+        }),
+        map((arrayOfEarningsArrays) => arrayOfEarningsArrays.flat()),
+        catchError(this.handleError)
+      );
+    } else {
+      // User: no access
+      return of([]);
+    }
 
-            // Use forkJoin to run all fetches in parallel and combine results
-            // forkJoin emits an array containing the results of each inner observable
-            // We use defaultIfEmpty([]) in case the earningsObservables array is empty,
-            // although the previous check should prevent this.
-            return forkJoin(earningsObservables).pipe(
-                defaultIfEmpty([] as Earning[][]) // Ensure forkJoin emits even if input is empty
-            );
-        }),
-        map((arrayOfEarningsArrays: Earning[][]) => {
-            // Flatten the array of arrays into a single array of Earning objects
-            const allEarnings = arrayOfEarningsArrays.flat();
-            console.log(`EarningsService: Total earnings fetched across all guilds: ${allEarnings.length}`);
-            return allEarnings;
-        }),
-        catchError(this.handleError) // Catch errors from userService.getAvailableGuildIds or the overall process
-    );
-}
+    // return this.userService.getAvailableGuildIds().pipe(
+    //     switchMap((guilds: AvailableGuild[]) => {
+    //         console.log(`EarningsService: Found ${guilds.length} available guilds.`);
+    //         if (!guilds || guilds.length === 0) {
+    //             // No guilds found, return an empty array immediately
+    //             return of([]);
+    //         }
+
+    //         // Create an array of Observables, each fetching earnings for one guild
+    //         const earningsObservables = guilds.map(guild =>
+    //             this.getEarningsForGuild(guild.guild_id)
+    //         );
+
+    //         // Use forkJoin to run all fetches in parallel and combine results
+    //         // forkJoin emits an array containing the results of each inner observable
+    //         // We use defaultIfEmpty([]) in case the earningsObservables array is empty,
+    //         // although the previous check should prevent this.
+    //         return forkJoin(earningsObservables).pipe(
+    //             defaultIfEmpty([] as Earning[][]) // Ensure forkJoin emits even if input is empty
+    //         );
+    //     }),
+    //     map((arrayOfEarningsArrays: Earning[][]) => {
+    //         // Flatten the array of arrays into a single array of Earning objects
+    //         const allEarnings = arrayOfEarningsArrays.flat();
+    //         console.log(`EarningsService: Total earnings fetched across all guilds: ${allEarnings.length}`);
+    //         return allEarnings;
+    //     }),
+    //     catchError(this.handleError) // Catch errors from userService.getAvailableGuildIds or the overall process
+    // );
+  }
 
 
   /**
@@ -115,7 +152,7 @@ export class EarningsService {
    * Fetches a specific earning record by its custom ID.
    */
   getEarningByCustomId(customId: string): Observable<Earning> {
-     if (!customId) {
+    if (!customId) {
       return throwError(() => new Error('Custom Earning ID cannot be empty.'));
     }
     console.log(`EarningsService: Fetching earning with custom ID ${customId}...`);

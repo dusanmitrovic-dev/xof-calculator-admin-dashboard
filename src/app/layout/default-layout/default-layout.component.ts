@@ -66,34 +66,30 @@ export class DefaultLayoutComponent implements OnInit { // Implemented OnInit
   // Recursive function to filter nav items and their children
   filterNavItems(items: INavData[]): INavData[] {
     if (!this.userRole) {
-       // If no role, return only items without explicit roles defined
-       return items.filter(item => !item.attributes?.['roles']);
+      // If no role, return only items without explicit roles defined
+      return items.filter(item => !item.attributes?.['roles']);
     }
 
-    return items.filter(item => {
-      const requiredRoles = item.attributes?.['roles'] as string[];
+    return items
+      .map(item => {
+        const requiredRoles = item.attributes?.['roles'] as string[] | undefined;
+        const hasRequiredRole = requiredRoles?.includes(this.userRole!);
+        const noRoleRestriction = !requiredRoles || requiredRoles.length === 0;
 
-      // Check if the item has required roles and if the user has one of them
-      const hasRequiredRole = requiredRoles && this.userRole != null && requiredRoles.includes(this.userRole);
-
-      // Check if the item has no role restrictions
-      const noRoleRestriction = !requiredRoles || requiredRoles.length === 0;
-
-      // If the item is a group with children, filter its children recursively
-      if (item.children && item.children.length > 0) {
-        const filteredChildren = this.filterNavItems(item.children);
-        // Include the group if it has no role restrictions OR if the user has the required role for the group AND it has filtered children
-        // Or if it has no role restrictions but has filtered children
-         if ((noRoleRestriction || hasRequiredRole) && filteredChildren.length > 0) {
-            // Create a new item object to ensure immutability and update children
+        // If the item has children, filter them recursively
+        if (item.children && item.children.length > 0) {
+          const filteredChildren = this.filterNavItems(item.children);
+          // Only include the group if user can see the group AND there are visible children
+          if ((noRoleRestriction || hasRequiredRole) && filteredChildren.length > 0) {
             return { ...item, children: filteredChildren };
-         }
-         // Exclude the group if it has no allowed children after filtering
-         return false;
-      }
+          }
+          // Otherwise, exclude the group
+          return null;
+        }
 
-      // For items without children, include if there are no role restrictions or user has the required role
-      return noRoleRestriction || hasRequiredRole;
-    });
+        // For leaf items, include if no restriction or user has required role
+        return (noRoleRestriction || hasRequiredRole) ? item : null;
+      })
+      .filter(Boolean) as INavData[];
   }
 }

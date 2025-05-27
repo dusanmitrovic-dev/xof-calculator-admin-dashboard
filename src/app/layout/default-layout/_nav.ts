@@ -5,31 +5,33 @@ export const navItems: INavData[] = [
     name: 'Dashboard',
     url: '/dashboard',
     iconComponent: { name: 'cil-speedometer' }
+    // No roles: visible to all
   },
   {
-    name: 'Manage Data', // Changed from a title to a collapsible group
-    url: '/manage-data', // Base URL for the group, can be non-navigable if needed
-    iconComponent: { name: 'cil-layers' }, // Added an icon for the group
+    name: 'Manage Data',
+    url: '/manage-data',
+    iconComponent: { name: 'cil-layers' },
+    attributes: { roles: ['admin', 'manager'] }, // Only admin and manager
     children: [
       {
         name: 'Guild Configurations',
         url: '/guild-configurations',
-        iconComponent: { name: 'cil-settings' }
+        iconComponent: { name: 'cil-settings' },
+        attributes: { roles: ['admin', 'manager'] }
       },
       {
         name: 'Earnings Records',
         url: '/earnings-records',
-        iconComponent: { name: 'cil-dollar' }
+        iconComponent: { name: 'cil-dollar' },
+        attributes: { roles: ['admin', 'manager'] }
       },
       {
         name: 'User Management',
         url: '/user-management',
         iconComponent: { name: 'cil-user' },
-        attributes: { roles: ['admin'] } // Add this line to restrict visibility
+        attributes: { roles: ['admin'] } // Only admin
       }
     ]
   }
-  // ... (rest of the commented out items remain unchanged) ...
 ];
 export { INavData };
-
