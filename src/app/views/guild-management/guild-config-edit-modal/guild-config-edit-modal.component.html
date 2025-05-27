@@ -459,7 +459,6 @@
                     editSection === 'commission_settings_users'
                   ">
                   <div>
-                    <h6 class="fw-semibold mb-1">By User (Overrides)</h6>
                     <!-- Add New User Override Input Group -->
                     <div class="mb-3">
                       <label cLabel for="newUserOverrideId" class="fw-semibold">Add User Override</label>
@@ -481,45 +480,38 @@
                       </div>
                     </div>
                     <div formGroupName="users">
-                      <div *ngIf="
-                          commissionUsers &&
-                            objectKeys(commissionUsers.controls).length > 0;
-                          else noCommissionUsersDefined
-                        ">
-                        <div *ngFor="
-                            let userId of objectKeys(commissionUsers.controls)
-                          " class="p-2 border rounded mb-2" [formGroupName]="userId">
-                          <label class="col-form-label text-truncate fw-medium">
-                            <code class="text-info">
-    {{
-      getUserDisplayName(userId)
-    }}
-  </code>
-                          </label>
-                          <c-row class="g-3 align-items-center">
-                            <c-col sm="6">
+                      <div *ngIf="userOverrideIds.length > 0; else noCommissionUsersDefined">
+                        <div cdkDropList (cdkDropListDropped)="onUserOverrideDrop($event)"
+                          [cdkDropListData]="userOverrideIds">
+                          <div *ngFor="let userId of userOverrideIds" cdkDrag [formGroupName]="userId"
+                            class="user-override-row d-flex align-items-center flex-wrap p-2 border rounded mb-2">
+                            <div cdkDragHandle class="me-2" style="cursor: grab;" title="Drag to reorder">
+                              <svg cIcon name="cilMenu" size="lg"></svg>
+                            </div>
+                            <div class="flex-grow-1 min-width-0 me-2 mb-2 mb-md-0" style="max-width: 250px;">
+                              <label class="col-form-label text-truncate fw-medium">
+                                <code class="text-info">{{ getUserDisplayName(userId) }}</code>
+                              </label>
+                            </div>
+                            <div class="flex-grow-1 me-2 mb-2 mb-md-0" style="min-width: 120px; max-width: 200px;">
                               <label [for]="'hourly_rate_' + userId" class="small">Hourly Rate ($)</label>
                               <input cFormControl type="number" [id]="'hourly_rate_' + userId"
                                 formControlName="hourly_rate" min="0" />
-                            </c-col>
-                            <c-col sm="5" class="pt-4">
+                            </div>
+                            <div class="flex-grow-1 me-2 mb-2 mb-md-0" style="min-width: 120px; max-width: 200px;">
                               <c-form-check>
                                 <input cFormCheckInput type="checkbox" formControlName="override_role"
-                                  [id]="'override_role_' + userId" [checked]="
-                                    commissionUsers
-                                      .get(userId)
-                                      ?.get('override_role')?.value === true
-                                  " />
+                                  [id]="'override_role_' + userId" />
                                 <label cFormCheckLabel [for]="'override_role_' + userId">Override Role %?</label>
                               </c-form-check>
-                            </c-col>
-                            <c-col sm="1" class="text-end">
+                            </div>
+                            <div class="ms-auto">
                               <button cButton type="button" color="danger" variant="ghost" size="sm" class="p-1"
                                 (click)="removeUserOverride(userId)" title="Remove User Override">
                                 <svg cIcon name="cilTrash" size="lg"></svg>
                               </button>
-                            </c-col>
-                          </c-row>
+                            </div>
+                          </div>
                         </div>
                       </div>
                       <ng-template #noCommissionUsersDefined>

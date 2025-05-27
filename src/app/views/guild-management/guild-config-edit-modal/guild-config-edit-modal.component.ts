@@ -89,6 +89,7 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
   currentDisplaySettings!: DisplaySettingsModalData;
   topLevelRoleIds: string[] = [];
   commissionRoleIds: string[] = [];
+  userOverrideIds: string[] = [];
 
   get isEditMode(): boolean {
     return !!this.guildConfig; // Based on the initial @Input
@@ -132,6 +133,12 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
       this.resetModalState();
     }
     this.updateTopLevelRoleIds();
+  }
+
+  private updateUserOverrideIds() {
+    if (this.commissionUsers) {
+      this.userOverrideIds = Object.keys(this.commissionUsers.controls).filter(id => !!this.commissionUsers.get(id));
+    }
   }
 
   updateTopLevelRoleIds() {
@@ -511,6 +518,7 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
         );
         usersGroup.markAsDirty();
         this.errorMessage = null; // Clear error message if successful
+        this.updateUserOverrideIds();
       }
       // newUserOverrideInput.value = ''; // Clear input after attempt
     }
@@ -522,6 +530,7 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
     if (usersGroup.get(userId)) {
       usersGroup.removeControl(userId);
       usersGroup.markAsDirty();
+      this.updateUserOverrideIds();
     }
   }
 
@@ -673,6 +682,11 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
       });
     }
     this.updateCommissionRoleIds();
+    this.updateUserOverrideIds();
+  }
+
+  onUserOverrideDrop(event: CdkDragDrop<string[]>) {
+    moveItemInArray(this.userOverrideIds, event.previousIndex, event.currentIndex);
   }
 
   private clearAllFormArraysAndGroups(): void {
