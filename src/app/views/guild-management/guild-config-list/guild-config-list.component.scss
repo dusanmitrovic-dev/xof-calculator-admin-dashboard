@@ -50,29 +50,29 @@ $card-shadow: 0 4px 16px rgba(0,0,0,0.06);
 .table th,
 .table td {
     border: none;
-    padding: 0.75rem 1rem;
+    padding: 1rem 1.25rem; // more vertical space for softness
     vertical-align: middle;
     background: transparent;
 }
 
 .table-striped > tbody > tr:nth-of-type(odd) {
-    background-color: rgba(13,110,253,0.02);
+    background-color: rgba(13,110,253,0.015); // softer stripe
 }
 
 .table > tbody > tr:hover {
-    background: rgba(13,110,253,0.06);
+    background: rgba(13,110,253,0.04); // softer hover
     transition: background 0.2s;
 }
 
 .table > thead > tr {
-    background: rgba(13,110,253,0.04);
+    background: rgba(13,110,253,0.025); // softer header
 }
 
 .table > thead th {
     font-weight: 600;
     color: #0d6efd;
     background: transparent;
-    border-bottom: 1px solid rgba(13,110,253,0.08);
+    border-bottom: 1px solid rgba(13,110,253,0.06); // lighter border
 }
 
 .table > tbody > tr:first-child td {
@@ -82,6 +82,14 @@ $card-shadow: 0 4px 16px rgba(0,0,0,0.06);
 .table > tbody > tr:last-child td {
     border-bottom-left-radius: $border-radius;
     border-bottom-right-radius: $border-radius;
+}
+
+// Optional: pill corners for first/last cell in each row
+.table > tbody > tr {
+    &:first-child td:first-child { border-top-left-radius: $border-radius; }
+    &:first-child td:last-child { border-top-right-radius: $border-radius; }
+    &:last-child td:first-child { border-bottom-left-radius: $border-radius; }
+    &:last-child td:last-child { border-bottom-right-radius: $border-radius; }
 }
 
 .text-muted.bg-soft {
