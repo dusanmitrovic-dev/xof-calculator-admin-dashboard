@@ -1,206 +1,170 @@
-<c-modal id="earningEditModal" [visible]="visible" (visibleChange)="handleVisibleChange($event)" backdrop="static"
-    size="lg">
-    <c-modal-header>
-        <h5 cModalTitle>{{ isEditMode ? 'Edit' : 'Add' }} Earning Record</h5>
-        <button (click)="closeModal()" cButtonClose></button>
-    </c-modal-header>
-    <c-modal-body>
-        <c-alert color="danger" *ngIf="errorMessage">
-            {{ errorMessage }}
-        </c-alert>
-        <div *ngIf="loadingConfigOptions" class="text-center">
-            <c-spinner size="sm"></c-spinner> Loading form options...
+<c-modal id="earningEditModal" [visible]="visible" (visibleChange)="handleVisibleChange($event)" backdrop="static" size="lg">
+  <c-modal-header>
+    <h5 cModalTitle>{{ isEditMode ? 'Edit' : 'Add' }} Earning Record</h5>
+    <button (click)="closeModal()" cButtonClose></button>
+  </c-modal-header>
+
+  <c-modal-body>
+    <c-alert color="danger" *ngIf="errorMessage">{{ errorMessage }}</c-alert>
+
+    <div *ngIf="loadingConfigOptions" class="text-center my-4">
+      <c-spinner size="sm"></c-spinner> Loading form options...
+    </div>
+
+    <form *ngIf="earningForm && !loadingConfigOptions" [formGroup]="earningForm" (ngSubmit)="saveChanges()">
+      <!-- Guild ID -->
+      <div class="mb-3 row">
+        <label cLabel class="col-sm-3 col-form-label">Guild ID</label>
+        <div class="col-sm-9 d-flex align-items-center">
+          <input cFormControl type="text" formControlName="guild_id" readonly />
+          <button type="button" cButton size="sm" class="ms-2" (click)="copyToClipboard(earningForm.get('guild_id')?.value)" [disabled]="!earningForm.get('guild_id')?.value">
+            <svg cIcon name="cilCopy" size="sm"></svg>
+          </button>
         </div>
+      </div>
 
-        <form *ngIf="earningForm && !loadingConfigOptions" [formGroup]="earningForm" (ngSubmit)="saveChanges()">
-            <!-- Guild ID (disabled) -->
-            <div class="mb-3 row">
-                <label cLabel class="col-sm-3 col-form-label">Guild ID</label>
-                <div class="col-sm-9 d-flex align-items-center">
-                    <input cFormControl type="text" formControlName="guild_id" readonly />
-                    <button type="button" cButton color="" size="sm" class="ms-2"
-                        (click)="copyToClipboard(earningForm.get('guild_id')?.value)"
-                        [disabled]="!earningForm.get('guild_id')?.value">
-                        <svg cIcon name="cilCopy" size="sm"></svg>
-                    </button>
-                </div>
-            </div>
- 
-            <!-- Record ID (disabled) -->
-            <div class="mb-3 row" *ngIf="isEditMode">
-                <label cLabel class="col-sm-3 col-form-label">Record ID</label>
-                <div class="col-sm-9 d-flex align-items-center">
-                    <input cFormControl type="text" formControlName="id" readonly />
-                    <button type="button" cButton color="" variant="ghost" size="sm"
-                        title="Copy Record ID"
-                        (click)="copyToClipboard(earningForm.get('id')?.value)"
-                        [disabled]="!earningForm.get('id')?.value"
-                        style="padding: 0.25rem 0.5rem; min-width:unset; min-height:unset; line-height:1;">
-                        <svg cIcon name="cilCopy" size="sm"></svg>
-                    </button>
-                </div>
-            </div>
+      <!-- Record ID -->
+      <div class="mb-3 row" *ngIf="isEditMode">
+        <label cLabel class="col-sm-3 col-form-label">Record ID</label>
+        <div class="col-sm-9 d-flex align-items-center">
+          <input cFormControl type="text" formControlName="id" readonly />
+          <button type="button" cButton variant="ghost" size="sm" class="ms-2" title="Copy Record ID" (click)="copyToClipboard(earningForm.get('id')?.value)" [disabled]="!earningForm.get('id')?.value">
+            <svg cIcon name="cilCopy" size="sm"></svg>
+          </button>
+        </div>
+      </div>
 
-            <!-- User Dropdown -->
-            <div class="mb-3 row">
-                <label cLabel for="userDropdown" class="col-sm-3 col-form-label">User</label>
-                <div class="col-sm-9">
-                    <select cFormControl class="form-select" id="userDropdown" formControlName="user_mention" required>
-                        <option value="">Select user...</option>
-                        <option *ngFor="let member of guildMembersList" [value]="member.mention">
-                            {{ member.display }}
-                        </option>
-                    </select>
-                    <div *ngIf="earningForm.get('user_mention')?.invalid && (earningForm.get('user_mention')?.dirty || earningForm.get('user_mention')?.touched)"
-                        class="invalid-feedback d-block">
-                        User mention is required.
-                    </div>
-                </div>
-            </div>
+      <!-- User Dropdown -->
+      <div class="mb-3 row">
+        <label cLabel for="userDropdown" class="col-sm-3 col-form-label">User</label>
+        <div class="col-sm-9">
+          <select cFormControl class="form-select" id="userDropdown" formControlName="user_mention" required>
+            <option value="">Select user...</option>
+            <option *ngFor="let member of guildMembersList" [value]="member.mention">{{ member.display }}</option>
+          </select>
+          <div *ngIf="earningForm.get('user_mention')?.invalid && (earningForm.get('user_mention')?.dirty || earningForm.get('user_mention')?.touched)" class="invalid-feedback d-block">
+            User mention is required.
+          </div>
+        </div>
+      </div>
 
-            <!-- User Mention (disabled, with copy button) -->
-            <div class="mb-3 row">
-                <label cLabel for="userMention" class="col-sm-3 col-form-label">User Mention</label>
-                <div class="col-sm-9 d-flex align-items-center">
-                    <input cFormControl type="text" id="userMention" formControlName="user_mention" readonly />
-                    <button type="button" cButton color="" variant="ghost" size="sm"
-                        title="Copy User Mention"
-                        (click)="copyToClipboard(earningForm.get('user_mention')?.value)"
-                        [disabled]="!earningForm.get('user_mention')?.value"
-                        style="padding: 0.25rem 0.5rem; min-width:unset; min-height:unset; line-height:1;">
-                        <svg cIcon name="cilCopy" size="sm"></svg>
-                    </button>
-                </div>
-            </div>
+      <!-- Role Dropdown -->
+      <div class="mb-3 row">
+        <label cLabel for="roleDropdown" class="col-sm-3 col-form-label">Role</label>
+        <div class="col-sm-9">
+          <select cFormControl class="form-select" id="roleDropdown" formControlName="role" required>
+            <option value="">Select role...</option>
+            <option *ngFor="let role of availableRoles" [value]="role.name">{{ role.name }}</option>
+          </select>
+          <div *ngIf="earningForm.get('role')?.invalid && (earningForm.get('role')?.dirty || earningForm.get('role')?.touched)" class="invalid-feedback d-block">
+            Role is required.
+          </div>
+        </div>
+      </div>
 
-            <!-- Role Dropdown -->
-            <div class="mb-3 row">
-                <label cLabel for="roleDropdown" class="col-sm-3 col-form-label">Role</label>
-                <div class="col-sm-9">
-                    <select cFormControl class="form-select" id="roleDropdown" formControlName="role" required>
-                        <option value="">Select role...</option>
-                        <option *ngFor="let role of availableRoles" [value]="role.name">{{ role.name }}</option>
-                    </select>
-                    <div *ngIf="earningForm.get('role')?.invalid && (earningForm.get('role')?.dirty || earningForm.get('role')?.touched)"
-                        class="invalid-feedback d-block">
-                        Role is required.
-                    </div>
-                </div>
-            </div>
+      <!-- Date -->
+      <div class="mb-3 row">
+        <label cLabel for="earningDate" class="col-sm-3 col-form-label">Date</label>
+        <div class="col-sm-9">
+          <input cFormControl type="text" id="earningDate" formControlName="date" placeholder="DD/MM/YYYY" required
+            [class.is-invalid]="earningForm.get('date')?.invalid && (earningForm.get('date')?.dirty || earningForm.get('date')?.touched)" />
+          <div *ngIf="earningForm.get('date')?.invalid && (earningForm.get('date')?.dirty || earningForm.get('date')?.touched)" class="invalid-feedback">
+            Date is required.
+          </div>
+        </div>
+      </div>
 
-            <!-- Date -->
-            <div class="mb-3 row">
-                <label cLabel for="earningDate" class="col-sm-3 col-form-label">Date</label>
-                <div class="col-sm-9">
-                    <input cFormControl type="text" id="earningDate" formControlName="date" placeholder="DD/MM/YYYY"
-                        required
-                        [class.is-invalid]="earningForm.get('date')?.invalid && (earningForm.get('date')?.dirty || earningForm.get('date')?.touched)" />
-                    <div *ngIf="earningForm.get('date')?.invalid && (earningForm.get('date')?.dirty || earningForm.get('date')?.touched)"
-                        class="invalid-feedback">
-                        Date is required.
-                    </div>
-                </div>
-            </div>
+      <!-- Models -->
+      <div class="mb-3 row">
+        <label cLabel class="col-sm-3 col-form-label">Models</label>
+        <div class="col-sm-9">
+          <div>
+            <button *ngFor="let model of availableModels" cButton type="button" variant="outline" size="sm"
+              [color]="isModelSelected(model) ? 'success' : 'primary'" [active]="isModelSelected(model)"
+              (click)="toggleModelSelection(model)" class="me-2 mb-2">
+              {{ model }}
+            </button>
+          </div>
+          <input type="hidden" formControlName="models" />
+          <div *ngIf="earningForm.get('models')?.invalid && (earningForm.get('models')?.dirty || earningForm.get('models')?.touched)" class="invalid-feedback d-block">
+            At least one model must be selected.
+          </div>
+        </div>
+      </div>
 
-            <!-- Models Buttons -->
-            <div class="mb-3 row">
-                <label cLabel class="col-sm-3 col-form-label">Models</label>
-                <div class="col-sm-9">
-                    <div [class.is-invalid]="earningForm.get('models')?.invalid && (earningForm.get('models')?.dirty || earningForm.get('models')?.touched)"
-                        [class.needs-validation]="earningForm.get('models')?.invalid && (earningForm.get('models')?.dirty || earningForm.get('models')?.touched)">
-                        <button *ngFor="let model of availableModels" cButton type="button"
-                            [color]="isModelSelected(model) ? 'success' : 'primary'"
-                            (click)="toggleModelSelection(model)" class="me-2 mb-2 btn-sm" variant="outline"
-                            [active]="isModelSelected(model)">
-                            {{ model }}
-                        </button>
-                    </div>
-                    <input type="hidden" formControlName="models">
-                    <div *ngIf="earningForm.get('models')?.invalid && (earningForm.get('models')?.dirty || earningForm.get('models')?.touched)"
-                        class="invalid-feedback d-block">
-                        At least one model must be selected.
-                    </div>
-                </div>
-            </div>
+      <!-- Shift -->
+      <div class="mb-3 row">
+        <label cLabel for="shift" class="col-sm-3 col-form-label">Shift</label>
+        <div class="col-sm-9">
+          <select cSelect id="shift" formControlName="shift" required
+            [class.is-invalid]="earningForm.get('shift')?.invalid && (earningForm.get('shift')?.dirty || earningForm.get('shift')?.touched)">
+            <option value="" disabled>Select a shift</option>
+            <option *ngFor="let shift of availableShifts" [value]="shift">{{ shift }}</option>
+          </select>
+          <div *ngIf="earningForm.get('shift')?.invalid && (earningForm.get('shift')?.dirty || earningForm.get('shift')?.touched)" class="invalid-feedback">
+            Shift is required.
+          </div>
+        </div>
+      </div>
 
-            <!-- Shift Dropdown -->
-            <div class="mb-3 row">
-                <label cLabel for="shift" class="col-sm-3 col-form-label">Shift</label>
-                <div class="col-sm-9">
-                    <select cSelect id="shift" formControlName="shift" required
-                        [class.is-invalid]="earningForm.get('shift')?.invalid && (earningForm.get('shift')?.dirty || earningForm.get('shift')?.touched)">
-                        <option value="" disabled>Select a shift</option>
-                        <option *ngFor="let shift of availableShifts" [value]="shift">{{ shift }}</option>
-                    </select>
-                    <div *ngIf="earningForm.get('shift')?.invalid && (earningForm.get('shift')?.dirty || earningForm.get('shift')?.touched)"
-                        class="invalid-feedback">
-                        Shift is required.
-                    </div>
-                </div>
-            </div>
+      <!-- Period -->
+      <div class="mb-3 row">
+        <label cLabel for="period" class="col-sm-3 col-form-label">Period</label>
+        <div class="col-sm-9">
+          <select cSelect id="period" formControlName="period" required
+            [class.is-invalid]="earningForm.get('period')?.invalid && (earningForm.get('period')?.dirty || earningForm.get('period')?.touched)">
+            <option value="" disabled>Select a period</option>
+            <option *ngFor="let period of availablePeriods" [value]="period">{{ period }}</option>
+          </select>
+          <div *ngIf="earningForm.get('period')?.invalid && (earningForm.get('period')?.dirty || earningForm.get('period')?.touched)" class="invalid-feedback">
+            Period is required.
+          </div>
+        </div>
+      </div>
 
-            <!-- Period Dropdown -->
-            <div class="mb-3 row">
-                <label cLabel for="period" class="col-sm-3 col-form-label">Period</label>
-                <div class="col-sm-9">
-                    <select cSelect id="period" formControlName="period" required
-                        [class.is-invalid]="earningForm.get('period')?.invalid && (earningForm.get('period')?.dirty || earningForm.get('period')?.touched)">
-                        <option value="" disabled>Select a period</option>
-                        <option *ngFor="let period of availablePeriods" [value]="period">{{ period }}</option>
-                    </select>
-                    <div *ngIf="earningForm.get('period')?.invalid && (earningForm.get('period')?.dirty || earningForm.get('period')?.touched)"
-                        class="invalid-feedback">
-                        Period is required.
-                    </div>
-                </div>
-            </div>
+      <!-- Hours Worked -->
+      <div class="mb-3 row">
+        <label cLabel for="hoursWorked" class="col-sm-3 col-form-label">Hours Worked</label>
+        <div class="col-sm-9">
+          <input cFormControl type="number" id="hoursWorked" formControlName="hours_worked" required min="0"
+            [class.is-invalid]="earningForm.get('hours_worked')?.invalid && (earningForm.get('hours_worked')?.dirty || earningForm.get('hours_worked')?.touched)" />
+          <div *ngIf="earningForm.get('hours_worked')?.invalid && (earningForm.get('hours_worked')?.dirty || earningForm.get('hours_worked')?.touched)" class="invalid-feedback">
+            Hours worked is required.
+          </div>
+        </div>
+      </div>
 
-            <!-- Hours Worked -->
-            <div class="mb-3 row">
-                <label cLabel for="hoursWorked" class="col-sm-3 col-form-label">Hours Worked</label>
-                <div class="col-sm-9">
-                    <input cFormControl type="number" id="hoursWorked" formControlName="hours_worked" required min="0"
-                        [class.is-invalid]="earningForm.get('hours_worked')?.invalid && (earningForm.get('hours_worked')?.dirty || earningForm.get('hours_worked')?.touched)" />
-                    <div *ngIf="earningForm.get('hours_worked')?.invalid && (earningForm.get('hours_worked')?.dirty || earningForm.get('hours_worked')?.touched)"
-                        class="invalid-feedback">
-                        Hours worked is required (must be 0 or more).
-                    </div>
-                </div>
-            </div>
+      <!-- Gross Revenue -->
+      <div class="mb-3 row">
+        <label cLabel for="grossRevenue" class="col-sm-3 col-form-label">Gross Revenue ($)</label>
+        <div class="col-sm-9">
+          <input cFormControl type="number" id="grossRevenue" formControlName="gross_revenue" required min="0"
+            [class.is-invalid]="earningForm.get('gross_revenue')?.invalid && (earningForm.get('gross_revenue')?.dirty || earningForm.get('gross_revenue')?.touched)" />
+          <div *ngIf="earningForm.get('gross_revenue')?.invalid && (earningForm.get('gross_revenue')?.dirty || earningForm.get('gross_revenue')?.touched)" class="invalid-feedback">
+            Gross revenue is required.
+          </div>
+        </div>
+      </div>
 
-            <!-- Gross Revenue -->
-            <div class="mb-3 row">
-                <label cLabel for="grossRevenue" class="col-sm-3 col-form-label">Gross Revenue ($)</label>
-                <div class="col-sm-9">
-                    <input cFormControl type="number" id="grossRevenue" formControlName="gross_revenue" required min="0"
-                        [class.is-invalid]="earningForm.get('gross_revenue')?.invalid && (earningForm.get('gross_revenue')?.dirty || earningForm.get('gross_revenue')?.touched)" />
-                    <div *ngIf="earningForm.get('gross_revenue')?.invalid && (earningForm.get('gross_revenue')?.dirty || earningForm.get('gross_revenue')?.touched)"
-                        class="invalid-feedback">
-                        Gross revenue is required (must be 0 or more).
-                    </div>
-                </div>
-            </div>
+      <!-- Total Cut -->
+      <div class="mb-3 row">
+        <label cLabel for="totalCut" class="col-sm-3 col-form-label">Total Cut ($)</label>
+        <div class="col-sm-9">
+          <input cFormControl type="number" id="totalCut" formControlName="total_cut" required min="0"
+            [class.is-invalid]="earningForm.get('total_cut')?.invalid && (earningForm.get('total_cut')?.dirty || earningForm.get('total_cut')?.touched)" />
+          <div *ngIf="earningForm.get('total_cut')?.invalid && (earningForm.get('total_cut')?.dirty || earningForm.get('total_cut')?.touched)" class="invalid-feedback">
+            Total cut is required.
+          </div>
+        </div>
+      </div>
+    </form>
+  </c-modal-body>
 
-            <!-- Total Cut -->
-            <div class="mb-3 row">
-                <label cLabel for="totalCut" class="col-sm-3 col-form-label">Total Cut ($)</label>
-                <div class="col-sm-9">
-                    <input cFormControl type="number" id="totalCut" formControlName="total_cut" required min="0"
-                        [class.is-invalid]="earningForm.get('total_cut')?.invalid && (earningForm.get('total_cut')?.dirty || earningForm.get('total_cut')?.touched)" />
-                    <div *ngIf="earningForm.get('total_cut')?.invalid && (earningForm.get('total_cut')?.dirty || earningForm.get('total_cut')?.touched)"
-                        class="invalid-feedback">
-                        Total cut is required (must be 0 or more).
-                    </div>
-                </div>
-            </div>
-        </form>
-    </c-modal-body>
-    <c-modal-footer>
-        <button (click)="closeModal()" cButton color="secondary">Cancel</button>
-        <button cButton color="primary" type="submit" (click)="saveChanges()"
-            [disabled]="isLoading || earningForm.invalid || loadingConfigOptions">
-            <c-spinner *ngIf="isLoading" component="span" size="sm" aria-hidden="true"></c-spinner>
-            {{ isLoading ? 'Saving...' : (isEditMode ? 'Save Changes' : 'Add Earning') }}
-        </button>
-    </c-modal-footer>
+  <c-modal-footer>
+    <button (click)="closeModal()" cButton color="secondary">Cancel</button>
+    <button cButton color="primary" type="submit" (click)="saveChanges()" [disabled]="isLoading || earningForm.invalid || loadingConfigOptions">
+      <c-spinner *ngIf="isLoading" component="span" size="sm" aria-hidden="true"></c-spinner>
+      {{ isLoading ? 'Saving...' : (isEditMode ? 'Save Changes' : 'Add Earning') }}
+    </button>
+  </c-modal-footer>
 </c-modal>
