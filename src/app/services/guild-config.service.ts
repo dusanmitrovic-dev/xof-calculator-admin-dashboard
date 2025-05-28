@@ -29,11 +29,11 @@ export interface BonusRule {
 }
 
 export interface DisplaySettings {
-  ephemeral_responses: boolean;
-  show_average: boolean;
-  agency_name: string;
-  show_ids: boolean;
-  bot_name: string;
+  ephemeral_responses?: boolean;
+  show_average?: boolean;
+  agency_name?: string;
+  show_ids?: boolean;
+  bot_name?: string;
 }
 
 export interface CommissionRoleSetting {
@@ -59,7 +59,7 @@ export interface GuildConfig {
   shifts: string[]; // Changed to string array
   periods: string[]; // Changed to string array
   bonus_rules: BonusRule[];
-  display_settings: DisplaySettings;
+  display_settings?: DisplaySettings;
   commission_settings: CommissionSettings;
   roles: { [roleId: string]: number };
 }
@@ -98,8 +98,8 @@ export class GuildConfigService {
     return this.http.get<any[]>(this.apiUrl).pipe(
       tap(rawConfigs => console.log('[LOG_SERVICE_RAW_GUILDS] GuildConfigService: RAW configs from /api/config:', JSON.stringify(rawConfigs))),
       map((configs: any[]) => configs.map(config => ({
-        id: config.id, 
-        name: config.name 
+        id: config.id,
+        name: config.name
       }))),
       tap(guilds => console.log(`[LOG_SERVICE_MAPPED_GUILDS] GuildConfigService: Found ${guilds.length} available guilds after mapping. First guild.id: "${guilds.length > 0 ? guilds[0].id : 'N/A'}"`)),
       catchError(this.handleError)
@@ -122,7 +122,7 @@ export class GuildConfigService {
 
   createGuildConfig(config: GuildConfig): Observable<GuildConfig> {
     // Uses POST /api/config/:guild_id - handled by createOrUpdateGuildConfig on backend
-    const targetUrl = `${this.apiUrl}/${config.guild_id}`; 
+    const targetUrl = `${this.apiUrl}/${config.guild_id}`;
     console.log(`GuildConfigService: Creating config for guild ${config.guild_id} at ${targetUrl}`);
     const { _id, ...configData } = config;
     return this.http.post<GuildConfig>(targetUrl, configData).pipe(
@@ -137,10 +137,10 @@ export class GuildConfigService {
       return throwError(() => new Error('Guild ID cannot be empty for update'));
     }
     const { _id, ...payload } = configDataToSave;
-    payload.guild_id = guildId; 
+    payload.guild_id = guildId;
 
     const targetUrl = `${this.apiUrl}/${guildId}`;
-    console.log(`[LOG_SERVICE_UPDATE_URL] GuildConfigService: Updating config using POST. Target URL: "${targetUrl}"`); 
+    console.log(`[LOG_SERVICE_UPDATE_URL] GuildConfigService: Updating config using POST. Target URL: "${targetUrl}"`);
     return this.http.post<GuildConfig>(targetUrl, payload).pipe(
       catchError(this.handleError)
     );

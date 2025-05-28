@@ -73,7 +73,7 @@
                       <svg cIcon name="cil-speech" size="sm" class="me-1"></svg> Display Name
                     </c-col>
                     <c-col sm="9" class="text-base">
-                      {{ guildConfig.display_settings.agency_name || 'Not Set' }}
+                      {{ guildConfig.display_settings?.agency_name || 'Not Set' }}
                     </c-col>
                   </c-row>
                   <c-row class="mb-2 border-bottom pb-2 align-items-center">
@@ -81,7 +81,7 @@
                       <svg cIcon name="cil-speech" size="sm" class="me-1"></svg> Bot Name
                     </c-col>
                     <c-col sm="9" class="text-base">
-                      {{ guildConfig.display_settings.bot_name || 'Not Set' }}
+                      {{ guildConfig.display_settings?.bot_name || 'Not Set' }}
                     </c-col>
                   </c-row>
                   <c-row class="mb-2 border-bottom pb-2 align-items-center">
@@ -90,8 +90,8 @@
                     </c-col>
                     <c-col sm="9" class="text-base">
                       <span class="border rounded py-1 px-2 d-inline-block text-body ms-2"
-                        [ngClass]="guildConfig.display_settings.ephemeral_responses ? 'border-success' : 'border-danger'">
-                        {{ guildConfig.display_settings.ephemeral_responses ? 'Enabled' : 'Disabled' }}
+                        [ngClass]="guildConfig.display_settings?.ephemeral_responses ? 'border-success' : 'border-danger'">
+                        {{ guildConfig.display_settings?.ephemeral_responses ? 'Enabled' : 'Disabled' }}
                       </span>
                     </c-col>
                   </c-row>
@@ -101,8 +101,8 @@
                     </c-col>
                     <c-col sm="9" class="text-base">
                       <span class="border rounded py-1 px-2 d-inline-block text-body ms-2"
-                        [ngClass]="guildConfig.display_settings.show_average ? 'border-success' : 'border-danger'">
-                        {{ guildConfig.display_settings.show_average ? 'Enabled' : 'Disabled' }}
+                        [ngClass]="guildConfig.display_settings?.show_average ? 'border-success' : 'border-danger'">
+                        {{ guildConfig.display_settings?.show_average ? 'Enabled' : 'Disabled' }}
                       </span>
                     </c-col>
                   </c-row>
@@ -112,8 +112,8 @@
                     </c-col>
                     <c-col sm="9" class="text-base">
                       <span class="border rounded py-1 px-2 d-inline-block text-body ms-2"
-                        [ngClass]="guildConfig.display_settings.show_ids ? 'border-success' : 'border-danger'">
-                        {{ guildConfig.display_settings.show_ids ? 'Enabled' : 'Disabled' }}
+                        [ngClass]="guildConfig.display_settings?.show_ids ? 'border-success' : 'border-danger'">
+                        {{ guildConfig.display_settings?.show_ids ? 'Enabled' : 'Disabled' }}
                       </span>
                     </c-col>
                   </c-row>
