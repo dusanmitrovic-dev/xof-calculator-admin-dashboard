@@ -75,6 +75,10 @@ export class GuildConfigListComponent implements OnInit, OnDestroy {
   isConfigEditModalVisible: boolean = false;
   currentEditSection: string = 'full'; // Default to 'full' for creating or general edit
 
+  // Copy to clipboard state
+  guildIdCopied: boolean = false;
+  copyTimeout: any = null;
+
   constructor(
     private router: Router,
     private guildConfigService: GuildConfigService,
@@ -299,5 +303,34 @@ export class GuildConfigListComponent implements OnInit, OnDestroy {
 
   getCommissionRoles(): { [roleId: string]: any } | null {
     return this.guildConfig?.commission_settings?.roles ?? null;
+  }
+
+  copyGuildId(guildId: string): void {
+    if (!guildId) return;
+    if (navigator && navigator.clipboard) {
+      navigator.clipboard.writeText(guildId).then(() => {
+        this.guildIdCopied = true;
+        if (this.copyTimeout) clearTimeout(this.copyTimeout);
+        this.copyTimeout = setTimeout(() => {
+          this.guildIdCopied = false;
+        }, 1500);
+      });
+    } else {
+      // fallback for older browsers
+      const textarea = document.createElement('textarea');
+      textarea.value = guildId;
+      document.body.appendChild(textarea);
+      textarea.select();
+      try {
+        document.execCommand('copy');
+        this.guildIdCopied = true;
+        if (this.copyTimeout) clearTimeout(this.copyTimeout);
+        this.copyTimeout = setTimeout(() => {
+          this.guildIdCopied = false;
+        }, 1500);
+      } finally {
+        document.body.removeChild(textarea);
+      }
+    }
   }
 }

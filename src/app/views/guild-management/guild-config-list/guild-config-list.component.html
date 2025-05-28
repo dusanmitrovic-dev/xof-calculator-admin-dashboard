@@ -47,8 +47,14 @@
                   <c-row class="align-items-center">
                     <!-- Guild ID: Applying typography suggestion (monospaced font) -->
                     <c-col sm="3" class="fw-semibold text-muted text-sm">Guild ID</c-col>
-                    <c-col sm="9"><strong class="text-base"><code
-                          class="font-mono">{{ guildConfig.guild_id }}</code></strong></c-col>
+                    <c-col sm="9" class="d-flex align-items-center">
+                      <strong class="text-base"><code class="font-mono">{{ guildConfig.guild_id }}</code></strong>
+                      <button cButton color="primary" variant="ghost" size="sm" class="ms-2 px-2 py-1"
+                        (click)="copyGuildId(guildConfig.guild_id)" title="Copy Guild ID">
+                        <svg cIcon name="cilCopy" size="sm"></svg>
+                      </button>
+                      <span class="copy-feedback" [class.show]="guildIdCopied">Copied!</span>
+                    </c-col>
                     <!-- Note: Copy-to-clipboard button requires JS/TS implementation -->
                   </c-row>
                 </c-card-body>
