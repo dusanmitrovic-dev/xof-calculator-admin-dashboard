@@ -11,7 +11,6 @@
       <c-alert color="danger" *ngIf="errorMessage && !isEditingDisplaySettingsSubFlow" class="mb-3">
         {{ errorMessage }}
       </c-alert>
-
       <!-- Main form content, hidden if in display settings sub-flow -->
       <ng-container *ngIf="!isEditingDisplaySettingsSubFlow">
         <form *ngIf="configForm" [formGroup]="configForm" (ngSubmit)="saveChanges()" novalidate>
