@@ -237,7 +237,6 @@
                       [cdkDropListData]="topLevelRoleIds">
                       <div *ngFor="let roleId of topLevelRoleIds; let i = index" [formGroupName]="roleId" cdkDrag
                         class="top-level-role-row d-flex align-items-center flex-wrap p-2 border rounded mb-3">
-
                         <div class="flex-grow-1 min-width-0 me-2 mb-2 mb-md-0" style="max-width: 250px;">
                           <label class="col-form-label text-truncate w-100 mb-0">
                             <code class="text-primary p-2">{{ getRoleName(roleId) }}</code>
