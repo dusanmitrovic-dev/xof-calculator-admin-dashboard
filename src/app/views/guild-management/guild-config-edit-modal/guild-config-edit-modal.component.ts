@@ -507,20 +507,19 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
       const usersGroup = this.commissionUsers;
       if (usersGroup.get(userId)) {
         console.warn(`User ID ${userId} already exists.`);
-        // this.errorMessage = `User ID ${userId} already exists.`;
       } else {
         usersGroup.addControl(
           userId,
           this.fb.group({
             hourly_rate: [null, [Validators.min(0)]],
+            commission_percentage: [null, [Validators.min(0), Validators.max(100)]],
             override_role: [false],
           })
         );
         usersGroup.markAsDirty();
-        this.errorMessage = null; // Clear error message if successful
+        this.errorMessage = null;
         this.updateUserOverrideIds();
       }
-      // newUserOverrideInput.value = ''; // Clear input after attempt
     }
   }
 
@@ -644,41 +643,47 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
   }
 
 
-  private patchCommissionSettings(
-    settings: CommissionSettings | undefined
-  ): void {
+  private patchCommissionSettings(settings: CommissionSettings | undefined): void {
     const rolesGroup = this.commissionRoles;
     const usersGroup = this.commissionUsers;
     this.clearCommissionControls();
     if (settings?.roles) {
       Object.entries(settings.roles).forEach(([roleId, roleSetting]) => {
-        if (roleId && roleSetting != null) {
-          rolesGroup.addControl(
-            roleId,
-            this.fb.group({
-              commission_percentage: [
-                roleSetting.commission_percentage,
-                [Validators.required, Validators.min(0), Validators.max(100)],
-              ],
-            })
-          );
-        }
+        rolesGroup.addControl(
+          roleId,
+          this.fb.group({
+            commission_percentage: [
+              roleSetting.commission_percentage !== undefined ? roleSetting.commission_percentage : null,
+              [Validators.min(0), Validators.max(100)],
+            ],
+            hourly_rate: [
+              roleSetting.hourly_rate !== undefined ? roleSetting.hourly_rate : null,
+              [Validators.min(0)],
+            ],
+          })
+        );
       });
     }
     if (settings?.users) {
       Object.entries(settings.users).forEach(([userId, userSetting]) => {
-        if (userId && userSetting != null) {
-          usersGroup.addControl(
-            userId,
-            this.fb.group({
-              hourly_rate: [
-                userSetting.hourly_rate ?? null,
-                [Validators.min(0)],
-              ],
-              override_role: [userSetting.override_role ?? false],
-            })
-          );
-        }
+        usersGroup.addControl(
+          userId,
+          this.fb.group({
+            hourly_rate: [
+              userSetting.hourly_rate !== undefined ? userSetting.hourly_rate : null,
+              [Validators.min(0)]
+            ],
+            commission_percentage: [
+              userSetting.commission_percentage !== undefined ? userSetting.commission_percentage : null,
+              [Validators.min(0), Validators.max(100)]
+            ],
+            // Always set to false if undefined
+            override_role: [
+              userSetting.override_role === true ? true :
+                userSetting.override_role === false ? false : false
+            ],
+          })
+        );
       });
     }
     this.updateCommissionRoleIds();
@@ -810,22 +815,19 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
       const rolesGroup = this.commissionRoles;
       if (rolesGroup.get(trimmedRoleId)) {
         console.warn(`Role ID ${trimmedRoleId} already exists.`);
-        // this.errorMessage = `Role ID ${trimmedRoleId} already exists.`;
       } else {
         rolesGroup.addControl(
           trimmedRoleId,
           this.fb.group({
-            commission_percentage: [
-              0,
-              [Validators.required, Validators.min(0), Validators.max(100)],
-            ],
+            commission_percentage: [0, [Validators.required, Validators.min(0), Validators.max(100)]],
+            hourly_rate: [null, [Validators.min(0)]],
           })
         );
         rolesGroup.markAsDirty();
-        this.errorMessage = null; // Clear error message if successful
+        this.errorMessage = null;
+        this.updateCommissionRoleIds();
       }
     }
-    this.updateCommissionRoleIds();
   }
 
   getRoleName(roleId: string): string {
@@ -957,6 +959,7 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
         const newCommissionUsers = this.prepareCommissionUsersPayload(
           formValue.commission_settings.users
         );
+        // Do NOT merge with originalConfig; send only current users to allow deletions
         const fullCommissionSettingsPayload: CommissionSettings = {
           roles: this.originalConfig?.commission_settings?.roles || {},
           users: newCommissionUsers,
@@ -1004,15 +1007,21 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
   }
 
   private prepareCommissionRolesPayload(formRoles: any): {
-    [roleId: string]: { commission_percentage: number };
+    [roleId: string]: { commission_percentage?: number; hourly_rate?: number };
   } {
-    const roles: { [roleId: string]: { commission_percentage: number } } = {};
+    const roles: { [roleId: string]: { commission_percentage?: number; hourly_rate?: number } } = {};
     if (formRoles) {
       Object.keys(formRoles).forEach((roleId) => {
+        const roleFormValue = formRoles[roleId];
         roles[roleId] = {
-          commission_percentage: Number(
-            formRoles[roleId].commission_percentage
-          ),
+          commission_percentage:
+            roleFormValue.commission_percentage !== undefined && roleFormValue.commission_percentage !== ''
+              ? Number(roleFormValue.commission_percentage)
+              : undefined,
+          hourly_rate:
+            roleFormValue.hourly_rate !== undefined && roleFormValue.hourly_rate !== ''
+              ? Number(roleFormValue.hourly_rate)
+              : undefined,
         };
       });
     }
@@ -1020,10 +1029,10 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
   }
 
   private prepareCommissionUsersPayload(formUsers: any): {
-    [userId: string]: { hourly_rate?: number; override_role?: boolean };
+    [userId: string]: { hourly_rate?: number; override_role?: boolean; commission_percentage?: number };
   } {
     const users: {
-      [userId: string]: { hourly_rate?: number; override_role?: boolean };
+      [userId: string]: { hourly_rate?: number; override_role?: boolean; commission_percentage?: number };
     } = {};
     if (formUsers) {
       Object.keys(formUsers).forEach((userId) => {
@@ -1038,6 +1047,14 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
           hourlyRateValue !== ''
         ) {
           users[userId].hourly_rate = Number(hourlyRateValue);
+        }
+        // Add this block to save commission_percentage
+        if (
+          userFormValue.commission_percentage !== null &&
+          userFormValue.commission_percentage !== undefined &&
+          userFormValue.commission_percentage !== ''
+        ) {
+          users[userId].commission_percentage = Number(userFormValue.commission_percentage);
         }
       });
     }

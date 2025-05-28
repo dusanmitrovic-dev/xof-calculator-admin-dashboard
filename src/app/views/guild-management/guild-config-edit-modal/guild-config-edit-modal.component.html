@@ -424,9 +424,7 @@
                         [cdkDropListData]="commissionRoleIds">
                         <div *ngFor="let roleId of commissionRoleIds" cdkDrag [formGroupName]="roleId"
                           class="commission-role-row d-flex align-items-center flex-wrap p-2 border rounded mb-2">
-                          <div cdkDragHandle class="me-2" style="cursor: grab;" title="Drag to reorder">
-                            <svg cIcon name="cilMenu" size="lg"></svg>
-                          </div>
+                          <div cdkDragHandle class="me-2" style="cursor: grab;" title="Drag to reorder"></div>
                           <div class="flex-grow-1 min-width-0 me-2 mb-2 mb-md-0" style="max-width: 250px;">
                             <label class="col-form-label text-truncate w-100 mb-0">
                               <code class="text-primary">{{ getRoleName(roleId) }}</code>
@@ -435,8 +433,15 @@
                           <div class="flex-grow-1 me-2 mb-2 mb-md-0" style="min-width: 120px; max-width: 200px;">
                             <div class="input-group">
                               <input cFormControl type="number" formControlName="commission_percentage" required min="0"
-                                max="100" />
+                                max="100" placeholder="Commission %" />
                               <span class="input-group-text">%</span>
+                            </div>
+                          </div>
+                          <div class="flex-grow-1 me-2 mb-2 mb-md-0" style="min-width: 120px; max-width: 200px;">
+                            <div class="input-group">
+                              <input cFormControl type="number" formControlName="hourly_rate" min="0"
+                                placeholder="Hourly Rate" />
+                              <span class="input-group-text">$</span>
                             </div>
                           </div>
                           <div class="ms-auto">
@@ -485,9 +490,7 @@
                           [cdkDropListData]="userOverrideIds">
                           <div *ngFor="let userId of userOverrideIds" cdkDrag [formGroupName]="userId"
                             class="user-override-row d-flex align-items-center flex-wrap p-2 border rounded mb-2">
-                            <div cdkDragHandle class="me-2" style="cursor: grab;" title="Drag to reorder">
-                              <svg cIcon name="cilMenu" size="lg"></svg>
-                            </div>
+                            <div cdkDragHandle class="me-2" style="cursor: grab;" title="Drag to reorder"></div>
                             <div class="flex-grow-1 min-width-0 me-2 mb-2 mb-md-0" style="max-width: 250px;">
                               <label class="col-form-label text-truncate fw-medium">
                                 <code class="text-info">{{ getUserDisplayName(userId) }}</code>
@@ -499,10 +502,16 @@
                                 formControlName="hourly_rate" min="0" />
                             </div>
                             <div class="flex-grow-1 me-2 mb-2 mb-md-0" style="min-width: 120px; max-width: 200px;">
+                              <label [for]="'commission_percentage_' + userId" class="small">Commission (%)</label>
+                              <input cFormControl type="number" [id]="'commission_percentage_' + userId"
+                                formControlName="commission_percentage" min="0" max="100" />
+                            </div>
+                            <div class="flex-grow-1 me-2 mb-2 mb-md-0" style="min-width: 120px; max-width: 200px;">
                               <c-form-check>
                                 <input cFormCheckInput type="checkbox" formControlName="override_role"
-                                  [id]="'override_role_' + userId" />
-                                <label cFormCheckLabel [for]="'override_role_' + userId">Override Role %?</label>
+                                  [id]="'override_role_' + userId"
+                                  [checked]="commissionUsers.get(userId)?.value.override_role === true" />
+                                <label cFormCheckLabel [for]="'override_role_' + userId">Overrides Role %?</label>
                               </c-form-check>
                             </div>
                             <div class="ms-auto">

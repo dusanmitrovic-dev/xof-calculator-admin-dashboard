@@ -20,7 +20,7 @@
                     <input cFormControl type="text" formControlName="guild_id" readonly />
                 </div>
             </div>
- 
+
             <!-- Record ID (disabled) -->
             <div class="mb-3 row" *ngIf="isEditMode">
                 <label cLabel class="col-sm-3 col-form-label">Record ID</label>
@@ -33,9 +33,10 @@
             <div class="mb-3 row">
                 <label cLabel for="userDropdown" class="col-sm-3 col-form-label">User</label>
                 <div class="col-sm-9">
-                    <select cFormControl class="form-select" id="userDropdown" formControlName="user_mention" required>
+                    <select cFormControl class="form-select" id="userDropdown" formControlName="user_id" required
+                        (change)="onUserDropdownChange($event)">
                         <option value="">Select user...</option>
-                        <option *ngFor="let member of guildMembersList" [value]="member.mention">
+                        <option *ngFor="let member of guildMembersList" [value]="member.id">
                             {{ member.display }}
                         </option>
                     </select>
@@ -46,7 +47,7 @@
                 </div>
             </div>
 
-            <!-- User Mention (disabled, no copy button) -->
+            <!-- User Mention (readonly) -->
             <div class="mb-3 row">
                 <label cLabel for="userMention" class="col-sm-3 col-form-label">User Mention</label>
                 <div class="col-sm-9 d-flex align-items-center">
@@ -73,17 +74,14 @@
             <div class="mb-3 row">
                 <label cLabel for="earningDateText" class="col-sm-3 col-form-label">Date</label>
                 <div class="col-sm-9">
-                    <input type="date"
-                        class="form-control"
-                        id="earningDateText"
+                    <input type="date" class="form-control" id="earningDateText"
                         [value]="formatDateForDatePicker(earningForm.get('date')?.value)"
-                        (change)="onDatePickerChange($event)"
-                        required />
+                        (change)="onDatePickerChange($event)" required />
                     <div *ngIf="earningForm.get('date')?.invalid && (earningForm.get('date')?.dirty || earningForm.get('date')?.touched)"
                         class="invalid-feedback">
                         Date is required.
                     </div>
-                </div> 
+                </div>
             </div>
 
             <!-- Models Buttons -->

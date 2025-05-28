@@ -37,11 +37,13 @@ export interface DisplaySettings {
 }
 
 export interface CommissionRoleSetting {
-  commission_percentage: number;
+  commission_percentage?: number;
+  hourly_rate?: number;
 }
 
 export interface CommissionUserSetting {
   hourly_rate?: number; // Optional
+  commission_percentage?: number; // Optional
   override_role?: boolean; // Optional
 }
 

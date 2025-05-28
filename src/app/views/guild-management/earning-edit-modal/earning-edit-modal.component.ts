@@ -46,7 +46,7 @@ export class EarningEditModalComponent implements OnInit, OnChanges {
   @Input() guildMembersMap: { [id: string]: { displayName: string, username: string } } = {};
   @Input() guildRolesMap: { [id: string]: string } = {};
   @Input() availableRoles: { id: string, name: string }[] = [];
-  @Input() guildMembersList: { mention: string, display: string }[] = [];
+  @Input() guildMembersList: { id: string; mention: string; display: string }[] = [];
   guildRolesList: string[] = [];
 
   earningForm!: FormGroup;
@@ -108,6 +108,7 @@ export class EarningEditModalComponent implements OnInit, OnChanges {
 
     if (changes['guildMembersMap']) {
       this.guildMembersList = Object.entries(this.guildMembersMap).map(([id, member]) => ({
+        id, // <-- add this line!
         mention: `<@${id}>`,
         display: member.displayName && member.username && member.displayName !== member.username
           ? `${member.displayName} (${member.username})`
@@ -116,6 +117,16 @@ export class EarningEditModalComponent implements OnInit, OnChanges {
     }
     if (changes['guildRolesMap']) {
       this.availableRoles = Object.entries(this.guildRolesMap).map(([id, name]) => ({ id, name }));
+    }
+  }
+
+  onUserDropdownChange(event: Event): void {
+    const select = event.target as HTMLSelectElement;
+    const userId = select.value;
+    if (userId) {
+      this.earningForm.get('user_mention')?.setValue(`<@${userId}>`);
+    } else {
+      this.earningForm.get('user_mention')?.setValue('');
     }
   }
 
@@ -201,17 +212,17 @@ export class EarningEditModalComponent implements OnInit, OnChanges {
   }
 
   private buildForm(): FormGroup {
-    console.log('[EarningModal] buildForm: Creating new FormGroup instance.');
     return this.fb.group({
       id: [{ value: null, disabled: true }],
       guild_id: [{ value: null, disabled: true }, Validators.required],
       date: [this.getTodayDateString(), Validators.required],
+      user_id: [''], // <-- add this line
       user_mention: ['', Validators.required],
       role: ['', Validators.required],
       models: [[], [Validators.required, Validators.minLength(1)]],
       shift: ['', Validators.required],
       period: ['', Validators.required],
-      hours_worked: [null, [Validators.required, Validators.min(0.1), Validators.pattern(/^\d*\.?\d+$/)]],
+      hours_worked: [null, [Validators.required, Validators.min(0), Validators.pattern(/^\d*\.?\d+$/)]],
       gross_revenue: [null, [Validators.required, Validators.min(0), Validators.pattern(/^\d*\.?\d+$/)]],
       total_cut: [null, [Validators.required, Validators.min(0), Validators.pattern(/^\d*\.?\d+$/)]],
     });
@@ -231,10 +242,16 @@ export class EarningEditModalComponent implements OnInit, OnChanges {
       console.warn('[EarningModal] Invalid or empty models data in earning record:', earning.models);
     }
 
+    let userId = '';
+    if (earning.user_mention && /^<@(.+)>$/.test(earning.user_mention)) {
+      userId = earning.user_mention.match(/^<@(.+)>$/)?.[1] || '';
+    }
+
     const patchedValues = {
-      ...earning, // Spread other earning properties
+      ...earning,
+      user_id: userId,
       date: earning.date ? this.formatDateForInput(earning.date) : this.getTodayDateString(),
-      models: modelsToPatch, // Use the sanitized array
+      models: modelsToPatch,
       shift: this.availableShifts.includes(earning.shift) ? earning.shift : '',
       period: this.availablePeriods.includes(earning.period) ? earning.period : ''
     };

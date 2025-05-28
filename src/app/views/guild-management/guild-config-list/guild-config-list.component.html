@@ -261,7 +261,7 @@
                 </c-card-body>
               </c-card>
 
-              <!-- Role Commissions Card: Applying updated card styling and typography -->
+              <!-- Role Commissions Card -->
               <c-card class="mb-3 rounded shadow-lg">
                 <c-card-header>
                   <strong class="text-lg font-bold">Role Commissions</strong>
@@ -278,8 +278,27 @@
                   <ul class="list-unstyled mb-0 text-base">
                     @for (roleId of objectKeys(guildConfig.commission_settings.roles); track roleId) {
                     <li class="border-bottom pb-2 mb-2">
-                      <strong>{{ getRoleName(roleId) }}</strong>: <strong>{{
-                        guildConfig.commission_settings.roles[roleId].commission_percentage }}%</strong>
+                      <strong>{{ getRoleName(roleId) }}</strong>:
+                      <span>
+                        Commission:
+                        <strong>
+                          {{
+                          guildConfig.commission_settings.roles[roleId].commission_percentage !== undefined
+                          ? guildConfig.commission_settings.roles[roleId].commission_percentage + '%'
+                          : '—'
+                          }}
+                        </strong>
+                      </span>
+                      <span class="ms-2">
+                        Hourly Rate:
+                        <strong>
+                          <ng-container
+                            *ngIf="guildConfig.commission_settings.roles[roleId].hourly_rate !== undefined; else dash">
+                            {{ guildConfig.commission_settings.roles[roleId].hourly_rate | currency }}
+                          </ng-container>
+                          <ng-template #dash>—</ng-template>
+                        </strong>
+                      </span>
                     </li>
                     }
                   </ul>
@@ -292,7 +311,7 @@
                 </c-card-body>
               </c-card>
 
-              <!-- User Overrides Card: Applying updated card styling and typography -->
+              <!-- User Overrides Card -->
               <c-card class="mb-3 rounded shadow-lg">
                 <c-card-header>
                   <strong class="text-lg font-bold">User Overrides</strong>
@@ -310,13 +329,36 @@
                     @for (userId of objectKeys(guildConfig.commission_settings.users); track userId) {
                     <li class="border-bottom pb-2 mb-2">
                       <strong>{{ getMemberDisplayName(userId) }}</strong>:
-                      @if (guildConfig.commission_settings.users[userId].hourly_rate != null) {
-                      <span class="ms-2"> Hourly Rate: <strong>{{
-                          guildConfig.commission_settings.users[userId].hourly_rate | currency }}</strong></span>
-                      }
-                      @if (guildConfig.commission_settings.users[userId].override_role) {
-                      <span class="border rounded py-1 px-2 d-inline-block text-body ms-2">Overrides Role %</span>
-                      }
+                      <span class="ms-2">
+                        Hourly Rate:
+                        <strong>
+                          <ng-container
+                            *ngIf="guildConfig.commission_settings.users[userId].hourly_rate !== undefined; else dash2">
+                            {{ guildConfig.commission_settings.users[userId].hourly_rate | currency }}
+                          </ng-container>
+                          <ng-template #dash2>—</ng-template>
+                        </strong>
+                      </span>
+                      <span class="ms-2">
+                        Commission:
+                        <strong>
+                          {{
+                          guildConfig.commission_settings.users[userId].commission_percentage !== undefined
+                          ? guildConfig.commission_settings.users[userId].commission_percentage + '%'
+                          : '—'
+                          }}
+                        </strong>
+                      </span>
+                      <span class="ms-2">
+                        Overrides Role %:
+                        <strong>
+                          {{
+                          guildConfig.commission_settings.users[userId].override_role
+                          ? 'Yes'
+                          : 'No'
+                          }}
+                        </strong>
+                      </span>
                     </li>
                     }
                   </ul>
