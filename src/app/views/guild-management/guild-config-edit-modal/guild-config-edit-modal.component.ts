@@ -64,7 +64,7 @@ import { DragDropModule } from '@angular/cdk/drag-drop';
     UtilitiesModule,
     CardModule,
     IconDirective,
-    DragDropModule
+    DragDropModule,
     // IconModule,
   ],
 })
@@ -73,8 +73,12 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
   @Input() guildConfig: GuildConfig | null = null;
   @Input() guildId: string | null = null;
   @Input() editSection: string = 'full';
-  @Input() availableRoles: { id: string, name: string }[] = [];
-  @Input() availableUsers: { id: string, displayName: string, username: string }[] = [];
+  @Input() availableRoles: { id: string; name: string }[] = [];
+  @Input() availableUsers: {
+    id: string;
+    displayName: string;
+    username: string;
+  }[] = [];
   @Output() visibleChange = new EventEmitter<boolean>();
   @Output() configSaved = new EventEmitter<GuildConfig | null>();
 
@@ -102,7 +106,7 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
     private guildConfigService: GuildConfigService,
     private changeDetectorRef: ChangeDetectorRef,
     private modalService: NgbModal
-  ) { }
+  ) {}
 
   ngOnInit(): void {
     this.configForm = this.buildForm();
@@ -137,18 +141,26 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
 
   private updateUserOverrideIds() {
     if (this.commissionUsers) {
-      this.userOverrideIds = Object.keys(this.commissionUsers.controls).filter(id => !!this.commissionUsers.get(id));
+      this.userOverrideIds = Object.keys(this.commissionUsers.controls).filter(
+        (id) => !!this.commissionUsers.get(id)
+      );
     }
   }
 
   updateTopLevelRoleIds() {
     if (this.topLevelRoles) {
-      this.topLevelRoleIds = Object.keys(this.topLevelRoles.controls).filter(id => !!this.topLevelRoles.get(id));
+      this.topLevelRoleIds = Object.keys(this.topLevelRoles.controls).filter(
+        (id) => !!this.topLevelRoles.get(id)
+      );
     }
   }
 
   onTopLevelRoleDrop(event: CdkDragDrop<string[]>) {
-    moveItemInArray(this.topLevelRoleIds, event.previousIndex, event.currentIndex);
+    moveItemInArray(
+      this.topLevelRoleIds,
+      event.previousIndex,
+      event.currentIndex
+    );
   }
 
   onArrayDrop(array: FormArray, event: CdkDragDrop<any[]>) {
@@ -176,8 +188,10 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
   }
 
   getUserDisplayName(userId: string): string {
-    const found = this.availableUsers.find(u => u.id === userId);
-    return found ? `${found.displayName || found.username} (${found.username})` : userId;
+    const found = this.availableUsers.find((u) => u.id === userId);
+    return found
+      ? `${found.displayName || found.username} (${found.username})`
+      : userId;
   }
 
   // Helper to get the definitive initial settings for the sub-modal, based on DB state if available.
@@ -512,7 +526,10 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
           userId,
           this.fb.group({
             hourly_rate: [null, [Validators.min(0)]],
-            commission_percentage: [null, [Validators.min(0), Validators.max(100)]],
+            commission_percentage: [
+              null,
+              [Validators.min(0), Validators.max(100)],
+            ],
             override_role: [false],
           })
         );
@@ -638,12 +655,15 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
 
   private updateCommissionRoleIds() {
     if (this.commissionRoles) {
-      this.commissionRoleIds = Object.keys(this.commissionRoles.controls).filter(id => !!this.commissionRoles.get(id));
+      this.commissionRoleIds = Object.keys(
+        this.commissionRoles.controls
+      ).filter((id) => !!this.commissionRoles.get(id));
     }
   }
 
-
-  private patchCommissionSettings(settings: CommissionSettings | undefined): void {
+  private patchCommissionSettings(
+    settings: CommissionSettings | undefined
+  ): void {
     const rolesGroup = this.commissionRoles;
     const usersGroup = this.commissionUsers;
     this.clearCommissionControls();
@@ -653,11 +673,15 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
           roleId,
           this.fb.group({
             commission_percentage: [
-              roleSetting.commission_percentage !== undefined ? roleSetting.commission_percentage : null,
+              roleSetting.commission_percentage !== undefined
+                ? roleSetting.commission_percentage
+                : null,
               [Validators.min(0), Validators.max(100)],
             ],
             hourly_rate: [
-              roleSetting.hourly_rate !== undefined ? roleSetting.hourly_rate : null,
+              roleSetting.hourly_rate !== undefined
+                ? roleSetting.hourly_rate
+                : null,
               [Validators.min(0)],
             ],
           })
@@ -670,17 +694,24 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
           userId,
           this.fb.group({
             hourly_rate: [
-              userSetting.hourly_rate !== undefined ? userSetting.hourly_rate : null,
-              [Validators.min(0)]
+              userSetting.hourly_rate !== undefined
+                ? userSetting.hourly_rate
+                : null,
+              [Validators.min(0)],
             ],
             commission_percentage: [
-              userSetting.commission_percentage !== undefined ? userSetting.commission_percentage : null,
-              [Validators.min(0), Validators.max(100)]
+              userSetting.commission_percentage !== undefined
+                ? userSetting.commission_percentage
+                : null,
+              [Validators.min(0), Validators.max(100)],
             ],
             // Always set to false if undefined
             override_role: [
-              userSetting.override_role === true ? true :
-                userSetting.override_role === false ? false : false
+              userSetting.override_role === true
+                ? true
+                : userSetting.override_role === false
+                ? false
+                : false,
             ],
           })
         );
@@ -691,7 +722,11 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
   }
 
   onUserOverrideDrop(event: CdkDragDrop<string[]>) {
-    moveItemInArray(this.userOverrideIds, event.previousIndex, event.currentIndex);
+    moveItemInArray(
+      this.userOverrideIds,
+      event.previousIndex,
+      event.currentIndex
+    );
   }
 
   private clearAllFormArraysAndGroups(): void {
@@ -806,7 +841,11 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
   }
 
   onCommissionRoleDrop(event: CdkDragDrop<string[]>) {
-    moveItemInArray(this.commissionRoleIds, event.previousIndex, event.currentIndex);
+    moveItemInArray(
+      this.commissionRoleIds,
+      event.previousIndex,
+      event.currentIndex
+    );
   }
 
   addRoleCommission(roleId: string): void {
@@ -819,7 +858,10 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
         rolesGroup.addControl(
           trimmedRoleId,
           this.fb.group({
-            commission_percentage: [0, [Validators.required, Validators.min(0), Validators.max(100)]],
+            commission_percentage: [
+              null,
+              [Validators.min(0), Validators.max(100)],
+            ],
             hourly_rate: [null, [Validators.min(0)]],
           })
         );
@@ -831,13 +873,17 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
   }
 
   getRoleName(roleId: string): string {
-    const found = this.availableRoles.find(r => r.id === roleId);
+    const found = this.availableRoles.find((r) => r.id === roleId);
     return found ? found.name : roleId;
   }
 
   onBonusRuleDrop(event: CdkDragDrop<any[]>) {
     if (event.previousIndex !== event.currentIndex) {
-      moveItemInArray(this.bonus_rules.controls, event.previousIndex, event.currentIndex);
+      moveItemInArray(
+        this.bonus_rules.controls,
+        event.previousIndex,
+        event.currentIndex
+      );
       this.bonus_rules.updateValueAndValidity();
       this.bonus_rules.markAsDirty();
     }
@@ -1009,30 +1055,51 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
   private prepareCommissionRolesPayload(formRoles: any): {
     [roleId: string]: { commission_percentage?: number; hourly_rate?: number };
   } {
-    const roles: { [roleId: string]: { commission_percentage?: number; hourly_rate?: number } } = {};
+    const roles: {
+      [roleId: string]: {
+        commission_percentage?: number;
+        hourly_rate?: number;
+      };
+    } = {};
     if (formRoles) {
       Object.keys(formRoles).forEach((roleId) => {
         const roleFormValue = formRoles[roleId];
-        roles[roleId] = {
-          commission_percentage:
-            roleFormValue.commission_percentage !== undefined && roleFormValue.commission_percentage !== ''
-              ? Number(roleFormValue.commission_percentage)
-              : undefined,
-          hourly_rate:
-            roleFormValue.hourly_rate !== undefined && roleFormValue.hourly_rate !== ''
-              ? Number(roleFormValue.hourly_rate)
-              : undefined,
-        };
+        roles[roleId] = {};
+        // Only assign if not null/undefined/empty string
+        if (
+          roleFormValue.commission_percentage !== null &&
+          roleFormValue.commission_percentage !== undefined &&
+          roleFormValue.commission_percentage !== ''
+        ) {
+          roles[roleId].commission_percentage = Number(
+            roleFormValue.commission_percentage
+          );
+        }
+        if (
+          roleFormValue.hourly_rate !== null &&
+          roleFormValue.hourly_rate !== undefined &&
+          roleFormValue.hourly_rate !== ''
+        ) {
+          roles[roleId].hourly_rate = Number(roleFormValue.hourly_rate);
+        }
       });
     }
     return roles;
   }
 
   private prepareCommissionUsersPayload(formUsers: any): {
-    [userId: string]: { hourly_rate?: number; override_role?: boolean; commission_percentage?: number };
+    [userId: string]: {
+      hourly_rate?: number;
+      override_role?: boolean;
+      commission_percentage?: number;
+    };
   } {
     const users: {
-      [userId: string]: { hourly_rate?: number; override_role?: boolean; commission_percentage?: number };
+      [userId: string]: {
+        hourly_rate?: number;
+        override_role?: boolean;
+        commission_percentage?: number;
+      };
     } = {};
     if (formUsers) {
       Object.keys(formUsers).forEach((userId) => {
@@ -1054,7 +1121,9 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
           userFormValue.commission_percentage !== undefined &&
           userFormValue.commission_percentage !== ''
         ) {
-          users[userId].commission_percentage = Number(userFormValue.commission_percentage);
+          users[userId].commission_percentage = Number(
+            userFormValue.commission_percentage
+          );
         }
       });
     }

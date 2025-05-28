@@ -29,12 +29,12 @@ $transition: 0.25s cubic-bezier(0.4,0,0.2,1);
   background: $modal-header-bg;
   padding: 1.25rem 1.5rem;
   border-radius: $border-radius $border-radius 0 0;
-  border-bottom: 1px solid #e5e7ef;
+  border-bottom: 1px solid rgba(60,60,60,0.12); // theme-friendly border
   box-shadow: 0 2px 8px rgba(13,110,253,0.04);
 }
 .c-modal-footer {
   border-radius: 0 0 $border-radius $border-radius;
-  border-top: 1px solid #e5e7ef;
+  border-top: 1px solid rgba(60,60,60,0.12); // theme-friendly border
   background: $modal-header-bg;
 }
 .c-modal-body {
@@ -44,7 +44,7 @@ $transition: 0.25s cubic-bezier(0.4,0,0.2,1);
 }
 
 .card {
-  border: 0 solid transparent;
+  border: 1px solid rgba(60,60,60,0.12); // theme-friendly border
   border-radius: 0.75rem;
   box-shadow: 0 2px 8px rgba(13,110,253,0.04);
   background: none;
@@ -55,11 +55,15 @@ $transition: 0.25s cubic-bezier(0.4,0,0.2,1);
   }
 }
 
+option{
+  color: black;
+}
+
 input[cFormControl], select[cFormControl] {
   border-radius: 0.5rem;
   min-height: 2.25rem;
   font-size: 1rem;
-  border: 1px solid #e5e7ef;
+  border: 1px solid rgba(140, 120, 120, 0.1); // lighter, theme-friendly border
   background: none;
   transition: border-color 0.2s, box-shadow 0.2s;
   &:focus {
@@ -108,9 +112,11 @@ button[cButton] {
   border-radius: $border-radius;
   opacity: 0.95;
 }
+
 .cdk-drag-placeholder {
   opacity: 0.2;
 }
+
 [cdkDropList] {
   min-height: 40px;
   border-radius: $border-radius;
@@ -118,9 +124,88 @@ button[cButton] {
   padding-bottom: 0.5rem;
   transition: border-color 0.2s;
 }
+
 [cdkDropList].cdk-drop-list-dragging {
   border-color: $primary-color;
 }
+
+// Bonus Rules Layout Fix
+.bonus-rule-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  align-items: stretch;
+  margin-bottom: 1.5rem; // moderate gap between rules
+  padding-bottom: 0.5rem;
+  border-bottom: 1px dashed rgba(60,60,60,0.10);
+  > * {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+  }
+  .delete-col {
+    align-self: flex-end;
+    width: auto;
+    margin-top: 0.25rem;
+  }
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+@media (min-width: 1200px) {
+  .bonus-rule-row {
+    flex-direction: row;
+    align-items: flex-end;
+    gap: 1.5rem 1rem;
+    > * {
+      flex: 1 1 220px;
+      min-width: 180px;
+      max-width: 260px;
+    }
+    .delete-col {
+      min-width: 40px;
+      flex: 0 0 auto;
+      align-self: center;
+      max-width: 48px;
+      margin-top: 0;
+    }
+  }
+}
+
+// Remove any extra margin or padding from bonus rule fields
+.bonus-rule-row > * {
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+@media (max-width: 992px) {
+  .bonus-rule-row {
+    > * {
+      flex: 1 1 100%;
+      min-width: 0;
+      max-width: 100%;
+    }
+  }
+}
+@media (max-width: 576px) {
+  .bonus-rule-row {
+    flex-direction: column;
+    gap: 0.5rem;
+    > * {
+      max-width: 100%;
+      min-width: 0;
+      width: 100%;
+    }
+    .delete-col {
+      align-self: flex-end;
+      width: 100%;
+      justify-content: flex-end;
+    }
+  }
+}
+
 
 // Responsive
 @media (max-width: 576px) {
