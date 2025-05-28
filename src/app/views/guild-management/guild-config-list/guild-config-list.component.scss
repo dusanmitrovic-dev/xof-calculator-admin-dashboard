@@ -4,8 +4,8 @@ $background: none;
 $card-bg: none;
 $text-main: none;
 $text-muted: #7a869a;
-$border-radius: 1.25rem;
-$card-shadow: 0 8px 32px rgba(35,64,160,0.10);
+$border-radius: 0.5rem;
+$card-shadow: 0 4px 16px rgba(0,0,0,0.06);
 $transition: 0.25s cubic-bezier(0.4,0,0.2,1);
 
 body, .c-container, .c-card-body {
@@ -14,21 +14,28 @@ body, .c-container, .c-card-body {
 }
 
 .c-card, .card {
-  background: $card-bg;
+  background: transparent;
   border: none;
   border-radius: $border-radius;
-  box-shadow: $card-shadow;
-  padding: 2.25rem 2rem;
-  margin-bottom: 2.5rem;
+  box-shadow: none;
+  padding: 1.5rem 1.25rem;
+  margin-bottom: 2rem;
   position: relative;
-  transition: box-shadow $transition, background $transition, transform $transition;
-  animation: fadeInUp 0.7s $transition;
-  will-change: box-shadow, background, transform;
+  transition: box-shadow 0.2s, background 0.2s;
+  animation: fadeIn 0.4s cubic-bezier(0.4,0,0.2,1);
   &:hover {
-    box-shadow: 0 16px 48px rgba(35,64,160,0.18);
-    // background: lighten($card-bg, 2%);
-    background: none;
-    transform: translateY(-2px) scale(1.01);
+    box-shadow: 0 8px 24px rgba(13,110,253,0.12);
+    background: rgba(13, 110, 253, 0.06);
+    &::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      width: 4px;
+      border-radius: $border-radius 0 0 $border-radius;
+      background: #0d6efd;
+      opacity: 0.5;
+      transition: opacity 0.2s;
+    }
   }
 }
 
@@ -37,7 +44,7 @@ body, .c-container, .c-card-body {
   border: none;
   padding-bottom: 0.5rem;
   strong {
-    font-size: 1.25rem;
+    font-size: 1.15rem;
     letter-spacing: 0.01em;
     color: $primary;
     font-weight: 700;
@@ -45,7 +52,7 @@ body, .c-container, .c-card-body {
   svg {
     vertical-align: middle;
     margin-right: 0.5rem;
-    filter: drop-shadow(0 1px 2px rgba(35,64,160,0.10));
+    filter: drop-shadow(0 1px 2px rgba(13,110,253,0.10));
   }
 }
 
@@ -54,7 +61,7 @@ body, .c-container, .c-card-body {
   font-size: 1.1rem;
   padding: 1.25rem 1.5rem;
   margin-bottom: 1.5rem;
-  animation: fadeIn 0.5s $transition;
+  animation: fadeIn 0.4s cubic-bezier(0.4,0,0.2,1);
 }
 
 button[cButton] {
@@ -72,37 +79,74 @@ button[cButton] {
   }
 }
 
+/* Table Soft Card-Like Styling */
 .table {
+  border-collapse: separate;
+  border-spacing: 0;
+  background: transparent;
   border-radius: $border-radius;
   overflow: hidden;
-  box-shadow: 0 2px 12px rgba(35,64,160,0.06);
-  background: $card-bg;
-  margin-bottom: 2rem;
-  animation: fadeInUp 0.7s $transition;
+  box-shadow: 0 2px 8px rgba(13,110,253,0.04);
+  margin-bottom: 1.5rem;
 }
-.table th, .table td {
+.table th,
+.table td {
   border: none;
-  padding: 1.1rem 1.5rem;
+  padding: 1rem 1.25rem;
   vertical-align: middle;
   background: transparent;
-  font-size: 1.05rem;
-  color: $text-main;
 }
 .table-striped > tbody > tr:nth-of-type(odd) {
-  background-color: rgba(35,64,160,0.025);
+  background-color: rgba(13,110,253,0.015);
 }
 .table > tbody > tr:hover {
-  background: rgba(79,140,255,0.08);
-  transition: background $transition;
+  background: rgba(13,110,253,0.04);
+  transition: background 0.2s;
 }
 .table > thead > tr {
-  background: rgba(35,64,160,0.04);
+  background: rgba(13,110,253,0.025);
 }
 .table > thead th {
-  font-weight: 700;
-  color: $primary;
+  font-weight: 600;
   background: transparent;
-  border-bottom: 2px solid rgba(35,64,160,0.10);
+  border-bottom: 1px solid rgba(13,110,253,0.06);
+}
+.table > tbody > tr:first-child td {
+  border-top: none;
+}
+.table > tbody > tr:last-child td {
+  border-bottom-left-radius: $border-radius;
+  border-bottom-right-radius: $border-radius;
+}
+.table > tbody > tr {
+  &:first-child td:first-child { border-top-left-radius: $border-radius; }
+  &:first-child td:last-child { border-top-right-radius: $border-radius; }
+  &:last-child td:first-child { border-bottom-left-radius: $border-radius; }
+  &:last-child td:last-child { border-bottom-right-radius: $border-radius; }
+}
+
+.text-muted.bg-soft {
+  background: rgba(13,110,253,0.04);
+  border-radius: $border-radius;
+  padding: 1rem;
+}
+
+button[cButton][color="primary"]:hover {
+  box-shadow: 0 2px 8px rgba(13,110,253,0.15);
+}
+
+@media (max-width: 576px) {
+  .c-card {
+    padding: 1rem 0.5rem;
+  }
+  .c-card-header, .c-card-body {
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+  }
+  .table th, .table td {
+    padding: 0.7rem 0.5rem;
+    font-size: 0.98rem;
+  }
 }
 
 // Animations
@@ -127,20 +171,5 @@ button[cButton] {
   &.show {
     opacity: 1;
     transform: translateY(0);
-  }
-}
-
-// Responsive
-@media (max-width: 576px) {
-  .c-card, .card {
-    padding: 1.25rem 0.5rem;
-  }
-  .c-card-header, .c-card-body {
-    padding-left: 0.5rem;
-    padding-right: 0.5rem;
-  }
-  .table th, .table td {
-    padding: 0.7rem 0.5rem;
-    font-size: 0.98rem;
   }
 }
