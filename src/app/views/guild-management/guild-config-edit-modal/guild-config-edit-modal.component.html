@@ -235,12 +235,12 @@
                       [cdkDropListData]="topLevelRoleIds">
                       <div *ngFor="let roleId of topLevelRoleIds; let i = index" [formGroupName]="roleId" cdkDrag
                         class="top-level-role-row d-flex align-items-center flex-wrap p-2 border rounded mb-3">
-                        <div cdkDragHandle class="me-2" style="cursor: grab;" title="Drag to reorder">
+                        <!-- <div cdkDragHandle class="me-2" style="cursor: grab;" title="Drag to reorder">
                           <svg cIcon name="cilMenu" size="lg"></svg>
-                        </div>
-                        <div class="flex-grow-1 flex-shrink-1 min-width-0 me-2 mb-2 mb-md-0" style="max-width: 250px;">
+                        </div> -->
+                        <div class="flex-grow-1 min-width-0 me-2 mb-2 mb-md-0" style="max-width: 250px;">
                           <label class="col-form-label text-truncate w-100 mb-0">
-                            <code class="text-info">{{ getRoleName(roleId) }}</code>
+                            <code class="text-primary p-2">{{ getRoleName(roleId) }}</code>
                           </label>
                         </div>
                         <div class="flex-grow-1 flex-shrink-1 me-2 mb-2 mb-md-0"
@@ -493,7 +493,7 @@
                             <div cdkDragHandle class="me-2" style="cursor: grab;" title="Drag to reorder"></div>
                             <div class="flex-grow-1 min-width-0 me-2 mb-2 mb-md-0" style="max-width: 250px;">
                               <label class="col-form-label text-truncate fw-medium">
-                                <code class="text-info">{{ getUserDisplayName(userId) }}</code>
+                                <code class="text-primary">{{ getUserDisplayName(userId) }}</code>
                               </label>
                             </div>
                             <div class="flex-grow-1 me-2 mb-2 mb-md-0" style="min-width: 120px; max-width: 200px;">
