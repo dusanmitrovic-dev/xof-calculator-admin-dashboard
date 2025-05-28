@@ -3,7 +3,7 @@
   <ng-container *ngIf="!isEditingDisplaySettingsSubFlow; else displaySettingsFlow">
     <c-modal-header>
       <h5 cModalTitle>{{ title }}</h5>
-      <button (click)="closeModal()" cButtonClose>
+      <button (click)="closeModal()" cButtonClose title="Close" aria-label="Close">
         <svg cIcon name="cilX"></svg>
       </button>
     </c-modal-header>
@@ -51,7 +51,8 @@
                 </div>
                 <div class="mb-0" *ngIf="isEditMode && guildConfig">
                   <label cLabel class="fw-semibold">Guild ID</label>
-                  <input cFormControl type="text" [value]="guildConfig.guild_id" readonly disabled />
+                  <input cFormControl type="text" [value]="guildConfig.guild_id" readonly disabled
+                    title="Guild ID" placeholder="Guild ID" />
                 </div>
               </c-card-body>
             </c-card>
@@ -213,7 +214,8 @@
                   <label cLabel for="newTopLevelRoleId" class="fw-semibold">Add New Role</label>
                   <div class="input-group mb-3">
                     <select cFormControl class="form-select" id="roleDropdown"
-                      (change)="onRoleDropdownChange($event, newTopLevelRoleInput)">
+                      (change)="onRoleDropdownChange($event, newTopLevelRoleInput)"
+                      aria-label="Select existing role for top-level roles" title="Select existing role">
                       <option value="">Select existing role...</option>
                       <option *ngFor="let role of availableRoles" [value]="role.id">{{ role.name }}</option>
                     </select>
@@ -402,7 +404,8 @@
                     <label cLabel for="newRoleCommissionId" class="fw-semibold">Add Role Commission</label>
                     <div class="input-group mb-3">
                       <select cFormControl class="form-select" id="commissionRoleDropdown"
-                        (change)="onCommissionRoleDropdownChange($event, newRoleCommissionInput)">
+                        (change)="onCommissionRoleDropdownChange($event, newRoleCommissionInput)"
+                        title="Select existing role for commission settings">
                         <option value="">Select existing role...</option>
                         <option *ngFor="let role of availableRoles" [value]="role.id">{{ role.name }}</option>
                       </select>
@@ -469,7 +472,8 @@
                       <label cLabel for="newUserOverrideId" class="fw-semibold">Add User Override</label>
                       <div class="input-group">
                         <select cFormControl class="form-select" id="userOverrideDropdown"
-                          (change)="onUserDropdownChange($event, newUserOverrideInput)">
+                          (change)="onUserDropdownChange($event, newUserOverrideInput)"
+                          title="Select existing user for user override">
                           <option value="">Select existing user...</option>
                           <option *ngFor="let user of availableUsers" [value]="user.id">
                             {{ user.displayName || user.username }} ({{ user.username }})
@@ -504,13 +508,16 @@
                             <div class="flex-grow-1 me-2 mb-2 mb-md-0" style="min-width: 120px; max-width: 200px;">
                               <label [for]="'commission_percentage_' + userId" class="small">Commission (%)</label>
                               <input cFormControl type="number" [id]="'commission_percentage_' + userId"
-                                formControlName="commission_percentage" min="0" max="100" />
+                                formControlName="commission_percentage" min="0" max="100"
+                                placeholder="Commission (%)"
+                                title="Enter commission percentage for this user" />
                             </div>
                             <div class="flex-grow-1 me-2 mb-2 mb-md-0" style="min-width: 120px; max-width: 200px;">
                               <c-form-check>
                                 <input cFormCheckInput type="checkbox" formControlName="override_role"
                                   [id]="'override_role_' + userId"
-                                  [checked]="commissionUsers.get(userId)?.value.override_role === true" />
+                                  [checked]="commissionUsers.get(userId)?.value.override_role === true"
+                                  title="Overrides Role Percentage" />
                                 <label cFormCheckLabel [for]="'override_role_' + userId">Overrides Role %?</label>
                               </c-form-check>
                             </div>
