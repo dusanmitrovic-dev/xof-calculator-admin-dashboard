@@ -17,6 +17,7 @@ import {
 import { IconDirective } from '@coreui/icons-angular';
 import { GuildConfigService, AvailableGuild } from '../../../services/guild-config.service'; // Adjusted path
 import { AuthService } from '../../../auth/auth.service'; // Import AuthService
+import { DefaultLayoutComponent } from '..';
 
 @Component({
     selector: 'app-default-header',
@@ -104,6 +105,20 @@ export class DefaultHeaderComponent extends HeaderComponent implements OnInit, O
   onGuildSelect(guildId: string | null): void {
       console.log('DefaultHeaderComponent: Guild selected:', guildId);
       this.guildConfigService.selectGuild(guildId);
+      const selectedGuildConfig$ = this.guildConfigService.getGuildConfig(guildId);
+      const sub = selectedGuildConfig$.subscribe(selectedGuild => {
+        console.log(selectedGuild);
+        if (selectedGuild) {
+          DefaultLayoutComponent.setCurrentGuildConfig({
+            logo_image_base64:
+              selectedGuild.display_settings?.logo_image_base64 || '',
+            logo_text: selectedGuild.display_settings?.logo_text || '',
+          });
+          console.log('DefaultHeaderComponent: Current guild config set:', DefaultLayoutComponent.currentGuildConfig);
+          this.router.navigate(['/dashboard']); // Redirect to dashboard or appropriate page
+        }
+      });
+      this.subscriptions.add(sub);
   }
 
   /**

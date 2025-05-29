@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core'; // Added OnInit
 import { RouterOutlet } from '@angular/router';
 import { NgScrollbar } from 'ngx-scrollbar';
+import { CommonModule } from '@angular/common';
 
 import { IconDirective } from '@coreui/icons-angular';
 import {
@@ -12,7 +13,7 @@ import {
   SidebarHeaderComponent,
   SidebarNavComponent,
   SidebarToggleDirective,
-  SidebarTogglerDirective
+  SidebarTogglerDirective,
 } from '@coreui/angular';
 
 import { DefaultHeaderComponent } from './';
@@ -43,16 +44,26 @@ function isOverflown(element: HTMLElement) {
     SidebarTogglerDirective,
     ContainerComponent,
     DefaultHeaderComponent,
-    IconDirective,
+    // IconDirective,
     NgScrollbar,
     RouterOutlet,
-    ShadowOnScrollDirective
-  ]
+    ShadowOnScrollDirective,
+    CommonModule,
+  ],
 })
-export class DefaultLayoutComponent implements OnInit { // Implemented OnInit
+export class DefaultLayoutComponent implements OnInit {
+  // Implemented OnInit
   // Initialize with the original nav items
   public navItems: INavData[] = [];
   private userRole: string | null = null;
+  static currentGuildConfig: {
+    logo_image_base64?: string;
+    logo_text?: string;
+  } = {
+    // Example default values for testing
+    logo_image_base64: '',
+    logo_text: '',
+  };
 
   constructor(private authService: AuthService) {} // Injected AuthService
 
@@ -63,16 +74,32 @@ export class DefaultLayoutComponent implements OnInit { // Implemented OnInit
     console.log('DefaultLayoutComponent: Filtered nav items:', this.navItems); // Log filtered nav items
   }
 
+  get currentGuildConfig() {
+    return DefaultLayoutComponent.currentGuildConfig;
+  }
+
+  public static setCurrentGuildConfig(config: {
+    logo_image_base64?: string;
+    logo_text?: string;
+  }) {
+    DefaultLayoutComponent.currentGuildConfig = {
+      logo_image_base64: config.logo_image_base64 || '',
+      logo_text: config.logo_text || '',
+    };
+  }
+
   // Recursive function to filter nav items and their children
   filterNavItems(items: INavData[]): INavData[] {
     if (!this.userRole) {
       // If no role, return only items without explicit roles defined
-      return items.filter(item => !item.attributes?.['roles']);
+      return items.filter((item) => !item.attributes?.['roles']);
     }
 
     return items
-      .map(item => {
-        const requiredRoles = item.attributes?.['roles'] as string[] | undefined;
+      .map((item) => {
+        const requiredRoles = item.attributes?.['roles'] as
+          | string[]
+          | undefined;
         const hasRequiredRole = requiredRoles?.includes(this.userRole!);
         const noRoleRestriction = !requiredRoles || requiredRoles.length === 0;
 
@@ -80,7 +107,10 @@ export class DefaultLayoutComponent implements OnInit { // Implemented OnInit
         if (item.children && item.children.length > 0) {
           const filteredChildren = this.filterNavItems(item.children);
           // Only include the group if user can see the group AND there are visible children
-          if ((noRoleRestriction || hasRequiredRole) && filteredChildren.length > 0) {
+          if (
+            (noRoleRestriction || hasRequiredRole) &&
+            filteredChildren.length > 0
+          ) {
             return { ...item, children: filteredChildren };
           }
           // Otherwise, exclude the group
@@ -88,7 +118,7 @@ export class DefaultLayoutComponent implements OnInit { // Implemented OnInit
         }
 
         // For leaf items, include if no restriction or user has required role
-        return (noRoleRestriction || hasRequiredRole) ? item : null;
+        return noRoleRestriction || hasRequiredRole ? item : null;
       })
       .filter(Boolean) as INavData[];
   }

@@ -7,12 +7,22 @@
   visible
 >
   <c-sidebar-header class="border-bottom">
-    
     <c-sidebar-brand [routerLink]="[]">
-      <svg [class]="{icon: false}" cIcon class="sidebar-brand-full" height="32" name="logo" title="CoreUI Logo"></svg>
-      <svg cIcon class="sidebar-brand-narrow" height="32" name="signet" title="CoreUI Logo"></svg>
+      <img
+        *ngIf="currentGuildConfig?.logo_image_base64"
+        [src]="currentGuildConfig.logo_image_base64"
+        alt="Agency Logo"
+        height="32"
+        class="sidebar-brand-full me-2"
+        style="object-fit: contain; max-width: 40px"
+      />
+      <span
+        *ngIf="currentGuildConfig?.logo_text"
+        class="sidebar-logo-text fw-bold"
+      >
+        {{ currentGuildConfig.logo_text }}
+      </span>
     </c-sidebar-brand>
-   
   </c-sidebar-header>
 
   <ng-scrollbar pointerEventsMethod="scrollbar" visibility="hover">
@@ -20,9 +30,14 @@
   </ng-scrollbar>
 
   @if (!sidebar1.narrow) {
-    <c-sidebar-footer cSidebarToggle="sidebar1" class="border-top d-none d-lg-flex" toggle="unfoldable" style="cursor: pointer;">
-      <button cSidebarToggler aria-label="Toggle sidebar fold"></button>
-    </c-sidebar-footer>
+  <c-sidebar-footer
+    cSidebarToggle="sidebar1"
+    class="border-top d-none d-lg-flex"
+    toggle="unfoldable"
+    style="cursor: pointer"
+  >
+    <button cSidebarToggler aria-label="Toggle sidebar fold"></button>
+  </c-sidebar-footer>
   }
 </c-sidebar>
 
@@ -40,7 +55,7 @@
     <c-container breakpoint="lg" class="h-auto px-4">
       <router-outlet />
     </c-container>
-  </div> 
+  </div>
   <!--app footer-->
   <!-- <app-default-footer /> -->
 </div>

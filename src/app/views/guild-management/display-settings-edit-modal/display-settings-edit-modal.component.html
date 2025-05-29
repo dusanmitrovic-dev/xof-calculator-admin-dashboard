@@ -19,6 +19,18 @@
         Bot name is required.
       </div>
     </div>
+    <!-- Logo Section -->
+    <div class="mb-4">
+      <label cLabel for="logo_text" class="mb-1">Logo Text</label>
+      <input cFormControl id="logo_text" type="text" [value]="logoText" (input)="onLogoTextInput($event)" class="w-100 form-control" placeholder="Enter logo text" />
+    </div>
+    <div class="mb-4">
+      <label cLabel for="logo_image_base64" class="mb-1">Logo Image</label>
+      <input id="logo_image_base64" type="file" accept="image/*" (change)="onLogoImageChange($event)" class="form-control" />
+      <div *ngIf="logoImageBase64" class="mt-2">
+        <img [src]="logoImageBase64" alt="Logo Preview" class="logo-preview" />
+      </div>
+    </div>
     <!-- Section: Toggles -->
     <div class="mb-3">
       <c-form-check class="form-switch">

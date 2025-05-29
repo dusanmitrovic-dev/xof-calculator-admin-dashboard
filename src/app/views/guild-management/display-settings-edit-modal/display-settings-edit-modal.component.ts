@@ -19,6 +19,8 @@ export interface DisplaySettings {
   agency_name: string;
   show_ids: boolean;
   bot_name: string;
+  logo_image_base64?: string; // Optional field for logo image in base64 format
+  logo_text?: string; // Optional field for logo text
 }
 
 @Component({
@@ -44,6 +46,9 @@ export class DisplaySettingsEditModalComponent implements OnInit {
 
   displaySettingsForm!: FormGroup;
 
+  @Input() logoText: string = '';
+  @Input() logoImageBase64: string = '';
+
   constructor(
     public activeModal: NgbActiveModal,
     private fb: FormBuilder
@@ -57,12 +62,43 @@ export class DisplaySettingsEditModalComponent implements OnInit {
       show_ids: [this.currentDisplaySettings?.show_ids ?? true, Validators.required],
       bot_name: [this.currentDisplaySettings?.bot_name || 'Shift Calculator', Validators.required]
     });
+
+    // Initialize logo fields if provided
+    if (this.currentDisplaySettings && this.currentDisplaySettings['logo_text']) {
+      this.logoText = this.currentDisplaySettings['logo_text'];
+    }
+    if (this.currentDisplaySettings && this.currentDisplaySettings['logo_image_base64']) {
+      this.logoImageBase64 = this.currentDisplaySettings['logo_image_base64'];
+    }
+  }
+
+  onLogoTextInput(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    this.logoText = input.value;
+  }
+
+  onLogoImageChange(event: Event): void {
+    const file = (event.target as HTMLInputElement).files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      this.logoImageBase64 = reader.result as string;
+    };
+    reader.readAsDataURL(file);
   }
 
   save(): void {
     if (this.displaySettingsForm.valid) {
-      this.displaySettingsSaved.emit(this.displaySettingsForm.value);
-      this.activeModal.close(this.displaySettingsForm.value);
+      this.displaySettingsSaved.emit({
+        ...this.displaySettingsForm.value,
+        logo_text: this.logoText,
+        logo_image_base64: this.logoImageBase64
+      });
+      this.activeModal.close({
+        ...this.displaySettingsForm.value,
+        logo_text: this.logoText,
+        logo_image_base64: this.logoImageBase64
+      });
     } else {
       this.displaySettingsForm.markAllAsTouched();
     }

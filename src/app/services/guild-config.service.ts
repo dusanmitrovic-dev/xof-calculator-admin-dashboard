@@ -34,6 +34,8 @@ export interface DisplaySettings {
   agency_name?: string;
   show_ids?: boolean;
   bot_name?: string;
+  logo_image_base64?: string; // base64-encoded image for logo (optional)
+  logo_text?: string; // logo text (optional)
 }
 
 export interface CommissionRoleSetting {
@@ -62,8 +64,6 @@ export interface GuildConfig {
   display_settings?: DisplaySettings;
   commission_settings: CommissionSettings;
   roles: { [roleId: string]: number };
-  logo_image_base64?: string; // base64-encoded image for logo (optional)
-  logo_text?: string; // logo text (optional)
 }
 // --- End Interfaces ---
 
@@ -109,7 +109,7 @@ export class GuildConfigService {
   }
 
 
-  getGuildConfig(guildId: string): Observable<GuildConfig> {
+  getGuildConfig(guildId: string | null): Observable<GuildConfig> {
     if (!guildId) {
       console.error('GuildConfigService: getGuildConfig called with empty guildId.');
       return throwError(() => new Error('Guild ID cannot be empty'));
