@@ -105,134 +105,136 @@
           <!-- Earnings Table -->
           <ng-container
             *ngIf="!loadingConfig && guildConfig && !loadingEarnings && !earningsError && earnings.length > 0">
-            <table cTable class="mb-0 border table-hover" responsive striped align="middle">
-              <thead>
-                <tr>
-                  <th>
-                    <span class="sortable-header" (click)="setSort('date')">
-                      Date
-                      <svg *ngIf="sortColumn === 'date' && sortDirection === 'asc'" cIcon name="cilArrowTop"></svg>
-                      <svg *ngIf="sortColumn === 'date' && sortDirection === 'desc'" cIcon name="cilArrowBottom"></svg>
-                    </span>
-                  </th>
-                  <th>
-                    <span class="sortable-header" (click)="setSort('user_mention')">
-                      User
-                      <span *ngIf="sortColumn === 'user_mention'">
-                        <svg *ngIf="sortDirection === 'asc'" cIcon name="cilArrowTop"></svg>
-                        <svg *ngIf="sortDirection === 'desc'" cIcon name="cilArrowBottom"></svg>
+            <div class="table-responsive">
+              <table cTable class="mb-0 border table-hover" responsive striped align="middle">
+                <thead>
+                  <tr>
+                    <th>
+                      <span class="sortable-header" (click)="setSort('date')">
+                        Date
+                        <svg *ngIf="sortColumn === 'date' && sortDirection === 'asc'" cIcon name="cilArrowTop"></svg>
+                        <svg *ngIf="sortColumn === 'date' && sortDirection === 'desc'" cIcon name="cilArrowBottom"></svg>
                       </span>
-                    </span>
-                  </th>
-                  <th>
-                    <span class="sortable-header" (click)="setSort('role')">
-                      Role
-                      <span *ngIf="sortColumn === 'role'">
-                        <svg *ngIf="sortDirection === 'asc'" cIcon name="cilArrowTop"></svg>
-                        <svg *ngIf="sortDirection === 'desc'" cIcon name="cilArrowBottom"></svg>
+                    </th>
+                    <th>
+                      <span class="sortable-header" (click)="setSort('user_mention')">
+                        User
+                        <span *ngIf="sortColumn === 'user_mention'">
+                          <svg *ngIf="sortDirection === 'asc'" cIcon name="cilArrowTop"></svg>
+                          <svg *ngIf="sortDirection === 'desc'" cIcon name="cilArrowBottom"></svg>
+                        </span>
                       </span>
-                    </span>
-                  </th>
-                  <th>
-                    <span class="sortable-header" (click)="setSort('models')">
-                      Models
-                      <span *ngIf="sortColumn === 'models'">
-                        <svg *ngIf="sortDirection === 'asc'" cIcon name="cilArrowTop"></svg>
-                        <svg *ngIf="sortDirection === 'desc'" cIcon name="cilArrowBottom"></svg>
+                    </th>
+                    <th>
+                      <span class="sortable-header" (click)="setSort('role')">
+                        Role
+                        <span *ngIf="sortColumn === 'role'">
+                          <svg *ngIf="sortDirection === 'asc'" cIcon name="cilArrowTop"></svg>
+                          <svg *ngIf="sortDirection === 'desc'" cIcon name="cilArrowBottom"></svg>
+                        </span>
                       </span>
-                    </span>
-                  </th>
-                  <th>
-                    <span class="sortable-header" (click)="setSort('shift')">
-                      Shift
-                      <span *ngIf="sortColumn === 'shift'">
-                        <svg *ngIf="sortDirection === 'asc'" cIcon name="cilArrowTop"></svg>
-                        <svg *ngIf="sortDirection === 'desc'" cIcon name="cilArrowBottom"></svg>
+                    </th>
+                    <th>
+                      <span class="sortable-header" (click)="setSort('models')">
+                        Models
+                        <span *ngIf="sortColumn === 'models'">
+                          <svg *ngIf="sortDirection === 'asc'" cIcon name="cilArrowTop"></svg>
+                          <svg *ngIf="sortDirection === 'desc'" cIcon name="cilArrowBottom"></svg>
+                        </span>
                       </span>
-                    </span>
-                  </th>
-                  <th>
-                    <span class="sortable-header" (click)="setSort('period')">
-                      Period
-                      <span *ngIf="sortColumn === 'period'">
-                        <svg *ngIf="sortDirection === 'asc'" cIcon name="cilArrowTop"></svg>
-                        <svg *ngIf="sortDirection === 'desc'" cIcon name="cilArrowBottom"></svg>
+                    </th>
+                    <th>
+                      <span class="sortable-header" (click)="setSort('shift')">
+                        Shift
+                        <span *ngIf="sortColumn === 'shift'">
+                          <svg *ngIf="sortDirection === 'asc'" cIcon name="cilArrowTop"></svg>
+                          <svg *ngIf="sortDirection === 'desc'" cIcon name="cilArrowBottom"></svg>
+                        </span>
                       </span>
-                    </span>
-                  </th>
-                  <th>
-                    <span class="sortable-header" (click)="setSort('hours_worked')">
-                      Hours
-                      <span *ngIf="sortColumn === 'hours_worked'">
-                        <svg *ngIf="sortDirection === 'asc'" cIcon name="cilArrowTop"></svg>
-                        <svg *ngIf="sortDirection === 'desc'" cIcon name="cilArrowBottom"></svg>
+                    </th>
+                    <th>
+                      <span class="sortable-header" (click)="setSort('period')">
+                        Period
+                        <span *ngIf="sortColumn === 'period'">
+                          <svg *ngIf="sortDirection === 'asc'" cIcon name="cilArrowTop"></svg>
+                          <svg *ngIf="sortDirection === 'desc'" cIcon name="cilArrowBottom"></svg>
+                        </span>
                       </span>
-                    </span>
-                  </th>
-                  <th>
-                    <span class="sortable-header" (click)="setSort('gross_revenue')">
-                      Gross Rev.
-                      <span *ngIf="sortColumn === 'gross_revenue'">
-                        <svg *ngIf="sortDirection === 'asc'" cIcon name="cilArrowTop"></svg>
-                        <svg *ngIf="sortDirection === 'desc'" cIcon name="cilArrowBottom"></svg>
+                    </th>
+                    <th>
+                      <span class="sortable-header" (click)="setSort('hours_worked')">
+                        Hours
+                        <span *ngIf="sortColumn === 'hours_worked'">
+                          <svg *ngIf="sortDirection === 'asc'" cIcon name="cilArrowTop"></svg>
+                          <svg *ngIf="sortDirection === 'desc'" cIcon name="cilArrowBottom"></svg>
+                        </span>
                       </span>
-                    </span>
-                  </th>
-                  <th>
-                    <span class="sortable-header" (click)="setSort('total_cut')">
-                      Total Cut
-                      <span *ngIf="sortColumn === 'total_cut'">
-                        <svg *ngIf="sortDirection === 'asc'" cIcon name="cilArrowTop"></svg>
-                        <svg *ngIf="sortDirection === 'desc'" cIcon name="cilArrowBottom"></svg>
+                    </th>
+                    <th>
+                      <span class="sortable-header" (click)="setSort('gross_revenue')">
+                        Gross Rev.
+                        <span *ngIf="sortColumn === 'gross_revenue'">
+                          <svg *ngIf="sortDirection === 'asc'" cIcon name="cilArrowTop"></svg>
+                          <svg *ngIf="sortDirection === 'desc'" cIcon name="cilArrowBottom"></svg>
+                        </span>
                       </span>
-                    </span>
-                  </th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr *ngFor="let earning of paginatedEarnings; trackBy: trackById">
-                  <!-- ...existing table cells... -->
-                  <td>{{ earning.date }}</td>
-                  <td>{{ getMemberDisplayName(earning.user_mention) }}</td>
-                  <td><span class="">{{ getRoleName(earning.role) }}</span></td>
-                  <td>
-                    <ng-container *ngIf="earning.models && earning.models.length > 0; else noModels">
-                      <c-dropdown alignment="end">
-                        <button cButton cDropdownToggle color="secondary" variant="outline" size="sm">
-                          {{ earning.models.length }} {{ earning.models.length === 1 ? 'Model' : 'Models' }}
-                        </button>
-                        <ul cDropdownMenu>
-                          <li *ngFor="let model of earning.models">
-                            <span cDropdownItem class="disabled" style="cursor: default; color: inherit;">{{ model
-                              }}</span>
-                          </li>
-                        </ul>
-                      </c-dropdown>
-                    </ng-container>
-                    <ng-template #noModels>
-                      <span>-</span>
-                    </ng-template>
-                  </td>
-                  <td>{{ earning.shift }}</td>
-                  <td>{{ earning.period }}</td>
-                  <td>{{ earning.hours_worked }}</td>
-                  <td>{{ earning.gross_revenue | currency }}</td>
-                  <td>{{ earning.total_cut | currency }}</td>
-                  <td>
-                    <button cButton color="primary" variant="outline" size="sm" class="rounded-circle action-btn"
-                      (click)="openEditEarningModal(earning)" title="Edit Earning">
-                      <svg cIcon name="cilPencil" size="sm"></svg>
-                    </button>
-                    <button cButton color="danger" variant="outline" size="sm"
-                      class="ms-1 rounded-circle action-btn delete" (click)="openDeleteConfirmModal(earning)"
-                      title="Delete Earning">
-                      <svg cIcon name="cilTrash" size="sm"></svg>
-                    </button>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+                    </th>
+                    <th>
+                      <span class="sortable-header" (click)="setSort('total_cut')">
+                        Total Cut
+                        <span *ngIf="sortColumn === 'total_cut'">
+                          <svg *ngIf="sortDirection === 'asc'" cIcon name="cilArrowTop"></svg>
+                          <svg *ngIf="sortDirection === 'desc'" cIcon name="cilArrowBottom"></svg>
+                        </span>
+                      </span>
+                    </th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let earning of paginatedEarnings; trackBy: trackById">
+                    <!-- ...existing table cells... -->
+                    <td>{{ earning.date }}</td>
+                    <td>{{ getMemberDisplayName(earning.user_mention) }}</td>
+                    <td><span class="">{{ getRoleName(earning.role) }}</span></td>
+                    <td>
+                      <ng-container *ngIf="earning.models && earning.models.length > 0; else noModels">
+                        <c-dropdown alignment="end">
+                          <button cButton cDropdownToggle color="secondary" variant="outline" size="sm">
+                            {{ earning.models.length }} {{ earning.models.length === 1 ? 'Model' : 'Models' }}
+                          </button>
+                          <ul cDropdownMenu>
+                            <li *ngFor="let model of earning.models">
+                              <span cDropdownItem class="disabled" style="cursor: default; color: inherit;">{{ model
+                                }}</span>
+                            </li>
+                          </ul>
+                        </c-dropdown>
+                      </ng-container>
+                      <ng-template #noModels>
+                        <span>-</span>
+                      </ng-template>
+                    </td>
+                    <td>{{ earning.shift }}</td>
+                    <td>{{ earning.period }}</td>
+                    <td>{{ earning.hours_worked }}</td>
+                    <td>{{ earning.gross_revenue | currency }}</td>
+                    <td>{{ earning.total_cut | currency }}</td>
+                    <td>
+                      <button cButton color="primary" variant="outline" size="sm" class="rounded-circle action-btn"
+                        (click)="openEditEarningModal(earning)" title="Edit Earning">
+                        <svg cIcon name="cilPencil" size="sm"></svg>
+                      </button>
+                      <button cButton color="danger" variant="outline" size="sm"
+                        class="ms-1 rounded-circle action-btn delete" (click)="openDeleteConfirmModal(earning)"
+                        title="Delete Earning">
+                        <svg cIcon name="cilTrash" size="sm"></svg>
+                      </button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
 
             <!-- Pagination Controls -->
             <nav class="mt-3" *ngIf="totalPages > 1">

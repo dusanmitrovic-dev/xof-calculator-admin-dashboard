@@ -358,27 +358,29 @@
                 <c-card-body>
                   @if (guildConfig.bonus_rules && guildConfig.bonus_rules.length
                   > 0) {
-                  <!-- Table structure remains, improved typography for table headers and data -->
-                  <table class="table table-striped mb-0 text-base">
-                    <thead>
-                      <tr>
-                        <th scope="col">#</th>
-                        <th scope="col">Minimum Revenue</th>
-                        <th scope="col">Maximum Revenue</th>
-                        <th scope="col">Bonus Amount</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      @for (rule of guildConfig.bonus_rules; track $index) {
-                      <tr>
-                        <th scope="row">{{ $index + 1 }}</th>
-                        <td>{{ rule.from | currency }}</td>
-                        <td>{{ rule.to | currency }}</td>
-                        <td>{{ rule.amount | currency }}</td>
-                      </tr>
-                      }
-                    </tbody>
-                  </table>
+                  <div class="table-responsive">
+                    <!-- Table structure remains, improved typography for table headers and data -->
+                    <table class="table table-striped mb-0 text-base">
+                      <thead>
+                        <tr>
+                          <th scope="col">#</th>
+                          <th scope="col">Minimum Revenue</th>
+                          <th scope="col">Maximum Revenue</th>
+                          <th scope="col">Bonus Amount</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        @for (rule of guildConfig.bonus_rules; track $index) {
+                        <tr>
+                          <th scope="row">{{ $index + 1 }}</th>
+                          <td>{{ rule.from | currency }}</td>
+                          <td>{{ rule.to | currency }}</td>
+                          <td>{{ rule.amount | currency }}</td>
+                        </tr>
+                        }
+                      </tbody>
+                    </table>
+                  </div>
                   } @else {
                   <div class="text-center text-muted py-3">
                     <svg cIcon name="cilBan" size="xl" class="mb-2"></svg>
@@ -410,28 +412,30 @@
                 <c-card-body>
                   @if (guildConfig.roles && objectKeys(guildConfig.roles).length
                   > 0) {
-                  <!-- Table structure remains, improved typography for table headers and data -->
-                  <table class="table table-striped mb-0 text-base">
-                    <thead>
-                      <tr>
-                        <th scope="col">#</th>
-                        <th scope="col">Role</th>
-                        <th scope="col">Value</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      @for (roleId of objectKeys(guildConfig.roles); track
-                      $index) {
-                      <tr>
-                        <th scope="row">{{ $index + 1 }}</th>
-                        <td>{{ getRoleName(roleId) }}</td>
-                        <td>
-                          <strong>{{ guildConfig.roles[roleId] }}</strong>
-                        </td>
-                      </tr>
-                      }
-                    </tbody>
-                  </table>
+                  <div class="table-responsive">
+                    <!-- Table structure remains, improved typography for table headers and data -->
+                    <table class="table table-striped mb-0 text-base">
+                      <thead>
+                        <tr>
+                          <th scope="col">#</th>
+                          <th scope="col">Role</th>
+                          <th scope="col">Value</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        @for (roleId of objectKeys(guildConfig.roles); track
+                        $index) {
+                        <tr>
+                          <th scope="row">{{ $index + 1 }}</th>
+                          <td>{{ getRoleName(roleId) }}</td>
+                          <td>
+                            <strong>{{ guildConfig.roles[roleId] }}</strong>
+                          </td>
+                        </tr>
+                        }
+                      </tbody>
+                    </table>
+                  </div>
                   } @else {
                   <div class="text-center text-muted py-3">
                     <svg cIcon name="cilBan" size="xl" class="mb-2"></svg>
@@ -459,58 +463,57 @@
                   </div>
                 </c-card-header>
                 <c-card-body>
-                  @if ( guildConfig.commission_settings &&
-                  guildConfig.commission_settings.roles &&
-                  objectKeys(guildConfig.commission_settings.roles).length > 0 )
-                  {
-                  <table class="table table-striped mb-0 text-base">
-                    <thead>
-                      <tr>
-                        <th scope="col">#</th>
-                        <th scope="col">Role</th>
-                        <th scope="col">Commission</th>
-                        <th scope="col">Hourly Rate</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      @for (roleId of
-                      objectKeys(guildConfig.commission_settings.roles); track
-                      $index) {
-                      <tr>
-                        <th scope="row">{{ $index + 1 }}</th>
-                        <td>{{ getRoleName(roleId) }}</td>
-                        <td>
-                          <strong>
-                            {{
-                              guildConfig.commission_settings.roles[roleId]
-                                .commission_percentage !== undefined
-                                ? guildConfig.commission_settings.roles[roleId]
-                                    .commission_percentage + "%"
-                                : "—"
-                            }}
-                          </strong>
-                        </td>
-                        <td>
-                          <strong>
-                            <ng-container
-                              *ngIf="
-                                guildConfig.commission_settings.roles[roleId]
-                                  .hourly_rate !== undefined;
-                                else dash
-                              "
-                            >
+                  @if (guildConfig.commission_settings && guildConfig.commission_settings.roles && objectKeys(guildConfig.commission_settings.roles).length > 0) {
+                  <div class="table-responsive">
+                    <table class="table table-striped mb-0 text-base">
+                      <thead>
+                        <tr>
+                          <th scope="col">#</th>
+                          <th scope="col">Role</th>
+                          <th scope="col">Commission</th>
+                          <th scope="col">Hourly Rate</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        @for (roleId of
+                        objectKeys(guildConfig.commission_settings.roles); track
+                        $index) {
+                        <tr>
+                          <th scope="row">{{ $index + 1 }}</th>
+                          <td>{{ getRoleName(roleId) }}</td>
+                          <td>
+                            <strong>
                               {{
                                 guildConfig.commission_settings.roles[roleId]
-                                  .hourly_rate | currency
+                                  .commission_percentage !== undefined
+                                  ? guildConfig.commission_settings.roles[roleId]
+                                      .commission_percentage + "%"
+                                  : "—"
                               }}
-                            </ng-container>
-                            <ng-template #dash>—</ng-template>
-                          </strong>
-                        </td>
-                      </tr>
-                      }
-                    </tbody>
-                  </table>
+                            </strong>
+                          </td>
+                          <td>
+                            <strong>
+                              <ng-container
+                                *ngIf="
+                                  guildConfig.commission_settings.roles[roleId]
+                                    .hourly_rate !== undefined;
+                                  else dash
+                                "
+                              >
+                                {{
+                                  guildConfig.commission_settings.roles[roleId]
+                                    .hourly_rate | currency
+                                }}
+                              </ng-container>
+                              <ng-template #dash>—</ng-template>
+                            </strong>
+                          </td>
+                        </tr>
+                        }
+                      </tbody>
+                    </table>
+                  </div>
                   } @else {
                   <div class="text-center text-muted py-3">
                     <svg cIcon name="cilUserX" size="xl" class="mb-2"></svg>
@@ -540,69 +543,68 @@
                   </div>
                 </c-card-header>
                 <c-card-body>
-                  @if ( guildConfig.commission_settings &&
-                  guildConfig.commission_settings.users &&
-                  objectKeys(guildConfig.commission_settings.users).length > 0 )
-                  {
-                  <table class="table table-striped mb-0 text-base">
-                    <thead>
-                      <tr>
-                        <th scope="col">#</th>
-                        <th scope="col">User</th>
-                        <th scope="col">Commission</th>
-                        <th scope="col">Hourly Rate</th>
-                        <th scope="col">Overrides Role</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      @for (userId of
-                      objectKeys(guildConfig.commission_settings.users); track
-                      $index) {
-                      <tr>
-                        <th scope="row">{{ $index + 1 }}</th>
-                        <td>{{ getMemberDisplayName(userId) }}</td>
-                        <td>
-                          <strong>
-                            {{
-                              guildConfig.commission_settings.users[userId]
-                                .commission_percentage !== undefined
-                                ? guildConfig.commission_settings.users[userId]
-                                    .commission_percentage + "%"
-                                : "—"
-                            }}
-                          </strong>
-                        </td>
-                        <td>
-                          <strong>
-                            <ng-container
-                              *ngIf="
-                                guildConfig.commission_settings.users[userId]
-                                  .hourly_rate !== undefined;
-                                else dash2
-                              "
-                            >
+                  @if (guildConfig.commission_settings && guildConfig.commission_settings.users && objectKeys(guildConfig.commission_settings.users).length > 0) {
+                  <div class="table-responsive">
+                    <table class="table table-striped mb-0 text-base">
+                      <thead>
+                        <tr>
+                          <th scope="col">#</th>
+                          <th scope="col">User</th>
+                          <th scope="col">Commission</th>
+                          <th scope="col">Hourly Rate</th>
+                          <th scope="col">Overrides Role</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        @for (userId of
+                        objectKeys(guildConfig.commission_settings.users); track
+                        $index) {
+                        <tr>
+                          <th scope="row">{{ $index + 1 }}</th>
+                          <td>{{ getMemberDisplayName(userId) }}</td>
+                          <td>
+                            <strong>
                               {{
                                 guildConfig.commission_settings.users[userId]
-                                  .hourly_rate | currency
+                                  .commission_percentage !== undefined
+                                  ? guildConfig.commission_settings.users[userId]
+                                      .commission_percentage + "%"
+                                  : "—"
                               }}
-                            </ng-container>
-                            <ng-template #dash2>—</ng-template>
-                          </strong>
-                        </td>
-                        <td>
-                          <strong>
-                            {{
-                              guildConfig.commission_settings.users[userId]
-                                .override_role
+                            </strong>
+                          </td>
+                          <td>
+                            <strong>
+                              <ng-container
+                                *ngIf="
+                                  guildConfig.commission_settings.users[userId]
+                                    .hourly_rate !== undefined;
+                                  else dash2
+                                "
+                              >
+                                {{
+                                  guildConfig.commission_settings.users[userId]
+                                    .hourly_rate | currency
+                                }}
+                              </ng-container>
+                              <ng-template #dash2>—</ng-template>
+                            </strong>
+                          </td>
+                          <td>
+                            <strong>
+                              {{
+                                guildConfig.commission_settings.users[userId]
+                                  .override_role
                                 ? "Yes"
                                 : "No"
-                            }}
-                          </strong>
-                        </td>
-                      </tr>
-                      }
-                    </tbody>
-                  </table>
+                              }}
+                            </strong>
+                          </td>
+                        </tr>
+                        }
+                      </tbody>
+                    </table>
+                  </div>
                   } @else {
                   <div class="text-center text-muted py-3">
                     <svg
