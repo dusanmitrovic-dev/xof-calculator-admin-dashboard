@@ -1,6 +1,6 @@
 <ng-container>
   <c-container [fluid]="true" class="border-bottom px-4">
-    
+
     <button
       [cSidebarToggle]="sidebarId()"
       cHeaderToggler
@@ -11,10 +11,10 @@
     >
       <svg cIcon name="cilMenu" size="lg"></svg>
     </button>
-   
+
 
     <!-- Guild Selector Dropdown -->
-    <c-header-nav class="ms-auto d-none d-md-flex"> <!-- Hide on smaller screens if needed -->
+    <c-header-nav class="ms-auto"> <!-- Visible on all screen sizes -->
         <ng-container *ngIf="guildLoadingError">
             <span class="text-danger px-2">{{ guildLoadingError }}</span>
         </ng-container>
