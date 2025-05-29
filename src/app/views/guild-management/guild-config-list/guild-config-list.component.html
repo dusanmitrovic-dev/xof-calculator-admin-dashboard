@@ -76,25 +76,13 @@
                       >Guild ID</c-col
                     >
                     <c-col sm="9" class="d-flex align-items-center">
-                      <strong class="text-base"
-                        ><code class="font-mono">{{
-                          guildConfig.guild_id
-                        }}</code></strong
+                      <strong class="text-base copyable"
+                        (click)="copyToClipboard(guildConfig.guild_id, 'guild_id')"
+                        [ngClass]="{'text-success': copiedField === 'guild_id', 'cursor-pointer': true}"
+                        title="Click to copy Guild ID"
+                        ><code class="font-mono">{{ guildConfig.guild_id }}</code></strong
                       >
-                      <button
-                        cButton
-                        color="primary"
-                        variant="ghost"
-                        size="sm"
-                        class="ms-2 px-2 py-1"
-                        (click)="copyGuildId(guildConfig.guild_id)"
-                        title="Copy Guild ID"
-                      >
-                        <svg cIcon name="cilCopy" size="sm"></svg>
-                      </button>
-                      <span class="copy-feedback" [class.show]="guildIdCopied"
-                        >Copied!</span
-                      >
+                      <span *ngIf="copiedField === 'guild_id'" class="ms-2 text-success small">Copied!</span>
                     </c-col>
                     <!-- Note: Copy-to-clipboard button requires JS/TS implementation -->
                   </c-row>
@@ -129,9 +117,12 @@
                       Display Name
                     </c-col>
                     <c-col sm="9" class="text-base">
-                      {{
-                        guildConfig.display_settings?.agency_name || "Not Set"
-                      }}
+                      <span class="copyable" (click)="copyToClipboard(guildConfig.display_settings?.agency_name || '', 'agency_name')"
+                        [ngClass]="{'text-success': copiedField === 'agency_name', 'cursor-pointer': true}"
+                        title="Click to copy Display Name">
+                        {{ guildConfig.display_settings?.agency_name || 'Not Set' }}
+                      </span>
+                      <span *ngIf="copiedField === 'agency_name'" class="ms-2 text-success small">Copied!</span>
                     </c-col>
                   </c-row>
                   <c-row class="mb-2 border-bottom pb-2 align-items-center">
@@ -140,7 +131,12 @@
                       Bot Name
                     </c-col>
                     <c-col sm="9" class="text-base">
-                      {{ guildConfig.display_settings?.bot_name || "Not Set" }}
+                      <span class="copyable" (click)="copyToClipboard(guildConfig.display_settings?.bot_name || '', 'bot_name')"
+                        [ngClass]="{'text-success': copiedField === 'bot_name', 'cursor-pointer': true}"
+                        title="Click to copy Bot Name">
+                        {{ guildConfig.display_settings?.bot_name || 'Not Set' }}
+                      </span>
+                      <span *ngIf="copiedField === 'bot_name'" class="ms-2 text-success small">Copied!</span>
                     </c-col>
                   </c-row>
                   <c-row class="mb-2 border-bottom pb-2 align-items-center">
@@ -197,7 +193,7 @@
                       </span>
                     </c-col>
                   </c-row>
-                  <c-row class="mb-0 align-items-center">
+                  <c-row class="mb-2 border-bottom pb-2 align-items-center">
                     <c-col sm="3" class="fw-semibold text-muted text-sm">
                       <svg
                         cIcon
@@ -463,7 +459,10 @@
                   </div>
                 </c-card-header>
                 <c-card-body>
-                  @if (guildConfig.commission_settings && guildConfig.commission_settings.roles && objectKeys(guildConfig.commission_settings.roles).length > 0) {
+                  @if (guildConfig.commission_settings &&
+                  guildConfig.commission_settings.roles &&
+                  objectKeys(guildConfig.commission_settings.roles).length > 0)
+                  {
                   <div class="table-responsive">
                     <table class="table table-striped mb-0 text-base">
                       <thead>
@@ -486,8 +485,9 @@
                               {{
                                 guildConfig.commission_settings.roles[roleId]
                                   .commission_percentage !== undefined
-                                  ? guildConfig.commission_settings.roles[roleId]
-                                      .commission_percentage + "%"
+                                  ? guildConfig.commission_settings.roles[
+                                      roleId
+                                    ].commission_percentage + "%"
                                   : "—"
                               }}
                             </strong>
@@ -543,7 +543,10 @@
                   </div>
                 </c-card-header>
                 <c-card-body>
-                  @if (guildConfig.commission_settings && guildConfig.commission_settings.users && objectKeys(guildConfig.commission_settings.users).length > 0) {
+                  @if (guildConfig.commission_settings &&
+                  guildConfig.commission_settings.users &&
+                  objectKeys(guildConfig.commission_settings.users).length > 0)
+                  {
                   <div class="table-responsive">
                     <table class="table table-striped mb-0 text-base">
                       <thead>
@@ -567,8 +570,9 @@
                               {{
                                 guildConfig.commission_settings.users[userId]
                                   .commission_percentage !== undefined
-                                  ? guildConfig.commission_settings.users[userId]
-                                      .commission_percentage + "%"
+                                  ? guildConfig.commission_settings.users[
+                                      userId
+                                    ].commission_percentage + "%"
                                   : "—"
                               }}
                             </strong>
@@ -595,8 +599,8 @@
                               {{
                                 guildConfig.commission_settings.users[userId]
                                   .override_role
-                                ? "Yes"
-                                : "No"
+                                  ? "Yes"
+                                  : "No"
                               }}
                             </strong>
                           </td>

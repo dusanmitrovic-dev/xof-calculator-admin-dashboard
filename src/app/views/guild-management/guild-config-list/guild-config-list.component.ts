@@ -77,6 +77,7 @@ export class GuildConfigListComponent implements OnInit, OnDestroy {
 
   // Copy to clipboard state
   guildIdCopied: boolean = false;
+  copiedField: string | null = null;
   copyTimeout: any = null;
 
   constructor(
@@ -305,28 +306,31 @@ export class GuildConfigListComponent implements OnInit, OnDestroy {
     return this.guildConfig?.commission_settings?.roles ?? null;
   }
 
-  copyGuildId(guildId: string): void {
-    if (!guildId) return;
+  /**
+   * Copies any value to clipboard and sets copiedField for feedback
+   */
+  copyToClipboard(value: string, field: string): void {
+    if (!value) return;
     if (navigator && navigator.clipboard) {
-      navigator.clipboard.writeText(guildId).then(() => {
-        this.guildIdCopied = true;
+      navigator.clipboard.writeText(value).then(() => {
+        this.copiedField = field;
         if (this.copyTimeout) clearTimeout(this.copyTimeout);
         this.copyTimeout = setTimeout(() => {
-          this.guildIdCopied = false;
+          this.copiedField = null;
         }, 1500);
       });
     } else {
       // fallback for older browsers
       const textarea = document.createElement('textarea');
-      textarea.value = guildId;
+      textarea.value = value;
       document.body.appendChild(textarea);
       textarea.select();
       try {
         document.execCommand('copy');
-        this.guildIdCopied = true;
+        this.copiedField = field;
         if (this.copyTimeout) clearTimeout(this.copyTimeout);
         this.copyTimeout = setTimeout(() => {
-          this.guildIdCopied = false;
+          this.copiedField = null;
         }, 1500);
       } finally {
         document.body.removeChild(textarea);
