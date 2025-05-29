@@ -1,6 +1,11 @@
 import { CommonModule } from '@angular/common';
 import { Component, Input, OnInit, Output, EventEmitter } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import {
+  FormBuilder,
+  FormGroup,
+  Validators,
+  ReactiveFormsModule,
+} from '@angular/forms';
 import { NgbActiveModal, NgbModalModule } from '@ng-bootstrap/ng-bootstrap';
 
 // CoreUI Modules for UI consistency
@@ -9,9 +14,8 @@ import {
   FormModule,
   GridModule,
   CardModule,
-  ModalModule as CoreUIModalModule
+  ModalModule as CoreUIModalModule,
 } from '@coreui/angular';
-// import { IconDirective } from '@coreui/icons-angular'; // Removed unused import
 
 export interface DisplaySettings {
   ephemeral_responses: boolean;
@@ -36,9 +40,8 @@ export interface DisplaySettings {
     FormModule,
     GridModule,
     CardModule,
-    CoreUIModalModule
-    // IconDirective removed from imports array
-  ]
+    CoreUIModalModule,
+  ],
 })
 export class DisplaySettingsEditModalComponent implements OnInit {
   @Input() currentDisplaySettings!: DisplaySettings;
@@ -46,35 +49,36 @@ export class DisplaySettingsEditModalComponent implements OnInit {
 
   displaySettingsForm!: FormGroup;
 
-  @Input() logoText: string = '';
-  @Input() logoImageBase64: string = '';
-
-  constructor(
-    public activeModal: NgbActiveModal,
-    private fb: FormBuilder
-  ) {}
+  constructor(public activeModal: NgbActiveModal, private fb: FormBuilder) {}
 
   ngOnInit(): void {
     this.displaySettingsForm = this.fb.group({
-      ephemeral_responses: [this.currentDisplaySettings?.ephemeral_responses ?? false, Validators.required],
-      show_average: [this.currentDisplaySettings?.show_average ?? true, Validators.required],
-      agency_name: [this.currentDisplaySettings?.agency_name || 'Agency', Validators.required],
-      show_ids: [this.currentDisplaySettings?.show_ids ?? true, Validators.required],
-      bot_name: [this.currentDisplaySettings?.bot_name || 'Shift Calculator', Validators.required]
+      ephemeral_responses: [
+        this.currentDisplaySettings?.ephemeral_responses ?? false,
+        Validators.required,
+      ],
+      show_average: [
+        this.currentDisplaySettings?.show_average ?? true,
+        Validators.required,
+      ],
+      agency_name: [
+        this.currentDisplaySettings?.agency_name || 'Agency',
+        Validators.required,
+      ],
+      show_ids: [
+        this.currentDisplaySettings?.show_ids ?? true,
+        Validators.required,
+      ],
+      bot_name: [
+        this.currentDisplaySettings?.bot_name || 'Shift Calculator',
+        Validators.required,
+      ],
+      logo_text: [this.currentDisplaySettings?.logo_text || '', []],
+      logo_image_base64: [
+        this.currentDisplaySettings?.logo_image_base64 || '',
+        [],
+      ],
     });
-
-    // Initialize logo fields if provided
-    if (this.currentDisplaySettings && this.currentDisplaySettings['logo_text']) {
-      this.logoText = this.currentDisplaySettings['logo_text'];
-    }
-    if (this.currentDisplaySettings && this.currentDisplaySettings['logo_image_base64']) {
-      this.logoImageBase64 = this.currentDisplaySettings['logo_image_base64'];
-    }
-  }
-
-  onLogoTextInput(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    this.logoText = input.value;
   }
 
   onLogoImageChange(event: Event): void {
@@ -82,23 +86,18 @@ export class DisplaySettingsEditModalComponent implements OnInit {
     if (!file) return;
     const reader = new FileReader();
     reader.onload = () => {
-      this.logoImageBase64 = reader.result as string;
+      this.displaySettingsForm.patchValue({
+        logo_image_base64: reader.result as string,
+      });
     };
     reader.readAsDataURL(file);
   }
 
   save(): void {
     if (this.displaySettingsForm.valid) {
-      this.displaySettingsSaved.emit({
-        ...this.displaySettingsForm.value,
-        logo_text: this.logoText,
-        logo_image_base64: this.logoImageBase64
-      });
-      this.activeModal.close({
-        ...this.displaySettingsForm.value,
-        logo_text: this.logoText,
-        logo_image_base64: this.logoImageBase64
-      });
+      const formValue = this.displaySettingsForm.value;
+      this.displaySettingsSaved.emit(formValue);
+      this.activeModal.close(formValue);
     } else {
       this.displaySettingsForm.markAllAsTouched();
     }

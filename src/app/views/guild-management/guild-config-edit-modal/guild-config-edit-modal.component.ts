@@ -45,6 +45,7 @@ import {
 import { IconDirective, IconModule } from '@coreui/icons-angular';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { DragDropModule } from '@angular/cdk/drag-drop';
+import { DefaultLayoutComponent } from '../../../layout/default-layout';
 
 @Component({
   selector: 'app-guild-config-edit-modal',
@@ -297,38 +298,29 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
   }
 
   private saveDisplaySettingsOnly(
-    displaySettings: any, // Accepts logo_text and logo_image_base64
+    displaySettings: any,
     guildIdToSave: string
   ): void {
     this.isLoading = true;
-    // Save logo_text and logo_image_base64 as top-level fields if present
-    const logoText = displaySettings.logo_text;
-    const logoImageBase64 = displaySettings.logo_image_base64;
-    const displaySettingsPayload = { ...displaySettings };
-    delete displaySettingsPayload.logo_text;
-    delete displaySettingsPayload.logo_image_base64;
-
-    // Save logo_text and logo_image_base64 if present
-    const saveLogoText$ = logoText !== undefined ? this.guildConfigService.updateGuildConfigField(guildIdToSave, 'logo_text' as any, logoText) : undefined;
-    const saveLogoImage$ = logoImageBase64 !== undefined ? this.guildConfigService.updateGuildConfigField(guildIdToSave, 'logo_image_base64' as any, logoImageBase64) : undefined;
-    const saveDisplaySettings$ = this.guildConfigService.updateDisplaySettings(guildIdToSave, displaySettingsPayload);
-
-    // Wait for all saves to complete
-    Promise.all([
-      saveLogoText$ ? saveLogoText$.toPromise() : Promise.resolve(),
-      saveLogoImage$ ? saveLogoImage$.toPromise() : Promise.resolve(),
-      saveDisplaySettings$.toPromise()
-    ]).then(([logoTextResult, logoImageResult, displaySettingsResult]) => {
-      this.isLoading = false;
-      this.configSaved.emit(displaySettingsResult);
-      this.isEditingDisplaySettingsSubFlow = false;
-      this.changeDetectorRef.detectChanges();
-    }).catch((err) => {
-      this.isLoading = false;
-      this.errorMessage = err?.error?.message || err?.message || 'Failed to save display settings.';
-      this.isEditingDisplaySettingsSubFlow = false;
-      this.changeDetectorRef.detectChanges();
-    });
+    // Send all fields (including logo_text and logo_image_base64) in one call
+    this.guildConfigService.updateDisplaySettings(guildIdToSave, displaySettings)
+      .toPromise()
+      .then((displaySettingsResult) => {
+        this.isLoading = false;
+        this.configSaved.emit(displaySettingsResult);
+        this.isEditingDisplaySettingsSubFlow = false;
+        DefaultLayoutComponent.setCurrentGuildConfig({
+          logo_image_base64: displaySettingsResult?.display_settings?.logo_image_base64 || '',
+          logo_text: displaySettingsResult?.display_settings?.logo_text || '',
+        });
+        this.changeDetectorRef.detectChanges();
+      })
+      .catch((err) => {
+        this.isLoading = false;
+        this.errorMessage = err?.error?.message || err?.message || 'Failed to save display settings.';
+        this.isEditingDisplaySettingsSubFlow = false;
+        this.changeDetectorRef.detectChanges();
+      });
   }
 
   private getDefaultDisplaySettings(): DisplaySettingsModalData {
