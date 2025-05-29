@@ -1,5 +1,10 @@
 import { Component, OnInit, inject } from '@angular/core';
-import { CommonModule, DatePipe, DecimalPipe, CurrencyPipe } from '@angular/common';
+import {
+  CommonModule,
+  DatePipe,
+  DecimalPipe,
+  CurrencyPipe,
+} from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ChartData, ChartOptions } from 'chart.js';
 import { catchError, of, finalize } from 'rxjs'; // Import finalize
@@ -28,7 +33,7 @@ import {
   DropdownComponent,
   DropdownToggleDirective,
   DropdownMenuDirective,
-  DropdownItemDirective
+  DropdownItemDirective,
 } from '@coreui/angular';
 import { ChartjsComponent } from '@coreui/angular-chartjs';
 import { IconModule, IconSetService } from '@coreui/icons-angular';
@@ -42,7 +47,7 @@ import {
   cilArrowBottom,
   cilSearch,
   cilSave,
-  cilInfo
+  cilInfo,
 } from '@coreui/icons';
 
 interface TrendData {
@@ -65,8 +70,11 @@ interface DisplayEarning extends Earning {
   parsedDate: Date | null;
 }
 
-type MetricKey = 'totalGrossRevenue' | 'totalCut' | 'totalEntries' | 'avgCutPerEntry';
-
+type MetricKey =
+  | 'totalGrossRevenue'
+  | 'totalCut'
+  | 'totalEntries'
+  | 'avgCutPerEntry';
 
 @Component({
   templateUrl: './dashboard.component.html',
@@ -97,9 +105,9 @@ type MetricKey = 'totalGrossRevenue' | 'totalCut' | 'totalEntries' | 'avgCutPerE
     DropdownComponent,
     DropdownToggleDirective,
     DropdownMenuDirective,
-    DropdownItemDirective
+    DropdownItemDirective,
   ],
-  providers: [DatePipe, DecimalPipe, CurrencyPipe, IconSetService]
+  providers: [DatePipe, DecimalPipe, CurrencyPipe, IconSetService],
 })
 export class DashboardComponent implements OnInit {
   private earningsService = inject(EarningsService);
@@ -129,12 +137,21 @@ export class DashboardComponent implements OnInit {
 
   constructor() {
     this.iconSetService.icons = {
-      cilChartLine, cilDollar, cilCalculator, cilListNumbered, cilChartPie,
-      cilArrowTop, cilArrowBottom, cilSearch, cilSave, cilInfo
+      cilChartLine,
+      cilDollar,
+      cilCalculator,
+      cilListNumbered,
+      cilChartPie,
+      cilArrowTop,
+      cilArrowBottom,
+      cilSearch,
+      cilSave,
+      cilInfo,
     };
 
     // Helper to get CSS variable values
-    const getCssVar = (name: string) => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+    const getCssVar = (name: string) =>
+      getComputedStyle(document.documentElement).getPropertyValue(name).trim();
 
     this.lineChartOptions = {
       responsive: true,
@@ -149,13 +166,14 @@ export class DashboardComponent implements OnInit {
             // color: getCssVar('--cui-body-color') // Use CSS var for dynamic color
           },
           ticks: {
-            callback: (value) => typeof value === 'number' ? '$' + value.toLocaleString() : value,
+            callback: (value) =>
+              typeof value === 'number' ? '$' + value.toLocaleString() : value,
             // color: getCssVar('--cui-body-color') // Use CSS var for dynamic color
           },
           grid: {
             display: true, // Display Y-axis grid lines
-            color: getCssVar('--cui-border-color-translucent') // Theme-aware grid color
-          }
+            color: getCssVar('--cui-border-color-translucent'), // Theme-aware grid color
+          },
         },
         x: {
           title: {
@@ -169,9 +187,9 @@ export class DashboardComponent implements OnInit {
           },
           grid: {
             display: true, // Display X-axis grid lines (Changed from false)
-            color: getCssVar('--cui-border-color-translucent') // Theme-aware grid color
-          }
-        }
+            color: getCssVar('--cui-border-color-translucent'), // Theme-aware grid color
+          },
+        },
       },
       plugins: {
         legend: {
@@ -179,7 +197,7 @@ export class DashboardComponent implements OnInit {
           labels: {
             font: { size: 13, weight: 500 },
             // color: getCssVar('--cui-body-color')
-          }
+          },
         },
         tooltip: {
           enabled: true,
@@ -197,12 +215,15 @@ export class DashboardComponent implements OnInit {
                 label += ': ';
               }
               if (context.parsed.y !== null) {
-                label += new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(context.parsed.y);
+                label += new Intl.NumberFormat('en-US', {
+                  style: 'currency',
+                  currency: 'USD',
+                }).format(context.parsed.y);
               }
               return label;
-            }
-          }
-        }
+            },
+          },
+        },
       },
       elements: {
         point: {
@@ -211,9 +232,9 @@ export class DashboardComponent implements OnInit {
           hitRadius: 10,
         },
         line: {
-          tension: 0.1
-        }
-      }
+          tension: 0.1,
+        },
+      },
     };
   }
 
@@ -225,53 +246,60 @@ export class DashboardComponent implements OnInit {
 
   // Method to update chart colors based on current CSS variables
   updateChartColors(): void {
-    const getCssVar = (name: string) => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+    const getCssVar = (name: string) =>
+      getComputedStyle(document.documentElement).getPropertyValue(name).trim();
     if (this.lineChartOptions?.scales?.['y']?.title) {
-        // (this.lineChartOptions.scales['y'].title.color as any) = getCssVar('--cui-body-color');
+      // (this.lineChartOptions.scales['y'].title.color as any) = getCssVar('--cui-body-color');
     }
     if (this.lineChartOptions?.scales?.['y']?.ticks) {
-        // (this.lineChartOptions.scales['y'].ticks.color as any) = getCssVar('--cui-body-color');
+      // (this.lineChartOptions.scales['y'].ticks.color as any) = getCssVar('--cui-body-color');
     }
     if (this.lineChartOptions?.scales?.['y']?.grid) {
-        this.lineChartOptions.scales['y'].grid.color = getCssVar('--cui-border-color-translucent');
+      this.lineChartOptions.scales['y'].grid.color = getCssVar(
+        '--cui-border-color-translucent'
+      );
     }
     if (this.lineChartOptions?.scales?.['x']?.title) {
-        // (this.lineChartOptions.scales['x'].title.color as any) = getCssVar('--cui-body-color');
+      // (this.lineChartOptions.scales['x'].title.color as any) = getCssVar('--cui-body-color');
     }
     if (this.lineChartOptions?.scales?.['x']?.ticks) {
-        // (this.lineChartOptions.scales['x'].ticks.color as any) = getCssVar('--cui-body-color');
+      // (this.lineChartOptions.scales['x'].ticks.color as any) = getCssVar('--cui-body-color');
     }
     if (this.lineChartOptions?.plugins?.legend?.labels) {
-        // (this.lineChartOptions.plugins.legend.labels.color as any) = getCssVar('--cui-body-color');
+      // (this.lineChartOptions.plugins.legend.labels.color as any) = getCssVar('--cui-body-color');
     }
     if (this.lineChartOptions?.plugins?.tooltip) {
-        (this.lineChartOptions.plugins.tooltip.backgroundColor as any) = getCssVar('--cui-body-bg');
-        // (this.lineChartOptions.plugins.tooltip.titleColor as any) = getCssVar('--cui-body-color');
-        // (this.lineChartOptions.plugins.tooltip.bodyColor as any) = getCssVar('--cui-body-color');
-        this.lineChartOptions.plugins.tooltip.borderColor = getCssVar('--cui-border-color');
+      (this.lineChartOptions.plugins.tooltip.backgroundColor as any) =
+        getCssVar('--cui-body-bg');
+      // (this.lineChartOptions.plugins.tooltip.titleColor as any) = getCssVar('--cui-body-color');
+      // (this.lineChartOptions.plugins.tooltip.bodyColor as any) = getCssVar('--cui-body-color');
+      this.lineChartOptions.plugins.tooltip.borderColor =
+        getCssVar('--cui-border-color');
     }
     // Trigger chart update if it's already rendered
     if (this.revenueOverTimeChartData.datasets.length > 0) {
-        this.revenueOverTimeChartData = { ...this.revenueOverTimeChartData };
+      this.revenueOverTimeChartData = { ...this.revenueOverTimeChartData };
     }
   }
 
-
   private getInitialSummaryStats(): DashboardSummaryStats {
     return {
-      totalGrossRevenue: 0, totalEntries: 0, avgCutPerEntry: 0, totalCut: 0,
+      totalGrossRevenue: 0,
+      totalEntries: 0,
+      avgCutPerEntry: 0,
+      totalCut: 0,
       totalGrossRevenueTrend: { trend: 'neutral', deltaPercentage: '—' },
       totalCutTrend: { trend: 'neutral', deltaPercentage: '—' },
       totalEntriesTrend: { trend: 'neutral', deltaPercentage: '—' },
-      avgCutPerEntryTrend: { trend: 'neutral', deltaPercentage: '—' }
+      avgCutPerEntryTrend: { trend: 'neutral', deltaPercentage: '—' },
     };
   }
 
   private parseDateString(dateStr: string): Date | null {
     if (!dateStr || typeof dateStr !== 'string') return null;
     if (/^\d{4}-\d{2}-\d{2}/.test(dateStr)) {
-        const isoDate = new Date(dateStr);
-        if (!isNaN(isoDate.getTime())) return isoDate;
+      const isoDate = new Date(dateStr);
+      if (!isNaN(isoDate.getTime())) return isoDate;
     }
     const parts = dateStr.split('/');
     if (parts.length === 3) {
@@ -280,7 +308,11 @@ export class DashboardComponent implements OnInit {
       const year = parseInt(parts[2], 10);
       if (!isNaN(day) && !isNaN(month) && !isNaN(year)) {
         const date = new Date(Date.UTC(year, month, day));
-        if (date.getUTCFullYear() === year && date.getUTCMonth() === month && date.getUTCDate() === day) {
+        if (
+          date.getUTCFullYear() === year &&
+          date.getUTCMonth() === month &&
+          date.getUTCDate() === day
+        ) {
           return date;
         }
       }
@@ -288,28 +320,36 @@ export class DashboardComponent implements OnInit {
     return null;
   }
 
-
   fetchAndProcessAllData(): void {
     this.loading = true; // Set loading to true
-    this.earningsService.getAllEarningsAcrossGuilds().pipe(
-      catchError(err => {
-        console.error('[Dashboard] Error fetching all earnings:', err);
-        return of([]);
-      }),
-      finalize(() => { // Set loading to false when the observable completes or errors
-        this.loading = false;
-      })
-    ).subscribe((earnings: Earning[]) => {
-      this.allRevenueEntries = [...earnings]
-        .map(earning => ({ ...earning, parsedDate: this.parseDateString(earning.date) }))
-        .filter(e => e.parsedDate instanceof Date)
-        .sort((a, b) => (b.parsedDate!.getTime()) - (a.parsedDate!.getTime()));
+    this.earningsService
+      .getAllEarningsAcrossGuilds()
+      .pipe(
+        catchError((err) => {
+          console.error('[Dashboard] Error fetching all earnings:', err);
+          return of([]);
+        }),
+        finalize(() => {
+          // Set loading to false when the observable completes or errors
+          this.loading = false;
+        })
+      )
+      .subscribe((earnings: Earning[]) => {
+        this.allRevenueEntries = [...earnings]
+          .map((earning) => ({
+            ...earning,
+            parsedDate: this.parseDateString(earning.date),
+          }))
+          .filter((e) => e.parsedDate instanceof Date)
+          .sort((a, b) => b.parsedDate!.getTime() - a.parsedDate!.getTime());
 
-      this.setDateRange('30days');
-    });
+        this.setDateRange('all');
+      });
   }
 
-  setDateRange(rangeKey: '7days' | '30days' | '90days' | '365days' | 'all'): void {
+  setDateRange(
+    rangeKey: '7days' | '30days' | '90days' | '365days' | 'all'
+  ): void {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
@@ -343,11 +383,13 @@ export class DashboardComponent implements OnInit {
     }
 
     if (rangeKey === 'all') {
-        this.currentPeriodEntries = [...this.allRevenueEntries];
+      this.currentPeriodEntries = [...this.allRevenueEntries];
     } else {
-        this.currentPeriodEntries = this.allRevenueEntries.filter(entry => {
-            return entry.parsedDate && entry.parsedDate.getTime() >= startDate.getTime();
-        });
+      this.currentPeriodEntries = this.allRevenueEntries.filter((entry) => {
+        return (
+          entry.parsedDate && entry.parsedDate.getTime() >= startDate.getTime()
+        );
+      });
     }
 
     this.searchTerm = '';
@@ -361,28 +403,42 @@ export class DashboardComponent implements OnInit {
     let searchFilteredEntries = this.currentPeriodEntries;
     if (this.searchTerm && this.searchTerm.trim() !== '') {
       const lowerSearchTerm = this.searchTerm.toLowerCase().trim();
-      searchFilteredEntries = this.currentPeriodEntries.filter(entry => {
-        return (entry.user_mention?.toLowerCase().includes(lowerSearchTerm) ||
-                entry.role?.toLowerCase().includes(lowerSearchTerm) ||
-                entry.shift?.toLowerCase().includes(lowerSearchTerm) ||
-                (entry.parsedDate && this.datePipe.transform(entry.parsedDate, 'shortDate')?.toLowerCase().includes(lowerSearchTerm)) ||
-                (entry.gross_revenue?.toString().toLowerCase().includes(lowerSearchTerm)) ||
-                (entry.total_cut?.toString().toLowerCase().includes(lowerSearchTerm)));
+      searchFilteredEntries = this.currentPeriodEntries.filter((entry) => {
+        return (
+          entry.user_mention?.toLowerCase().includes(lowerSearchTerm) ||
+          entry.role?.toLowerCase().includes(lowerSearchTerm) ||
+          entry.shift?.toLowerCase().includes(lowerSearchTerm) ||
+          (entry.parsedDate &&
+            this.datePipe
+              .transform(entry.parsedDate, 'shortDate')
+              ?.toLowerCase()
+              .includes(lowerSearchTerm)) ||
+          entry.gross_revenue
+            ?.toString()
+            .toLowerCase()
+            .includes(lowerSearchTerm) ||
+          entry.total_cut?.toString().toLowerCase().includes(lowerSearchTerm)
+        );
       });
     }
     this.filteredForExport = searchFilteredEntries;
 
-    this.totalPages = Math.ceil(searchFilteredEntries.length / this.itemsPerPage);
-    if (this.totalPages > 0 && this.currentPage > this.totalPages) this.currentPage = this.totalPages;
+    this.totalPages = Math.ceil(
+      searchFilteredEntries.length / this.itemsPerPage
+    );
+    if (this.totalPages > 0 && this.currentPage > this.totalPages)
+      this.currentPage = this.totalPages;
     else if (this.totalPages === 0) this.currentPage = 1;
 
     const startIndex = (this.currentPage - 1) * this.itemsPerPage;
-    this.displayableEntries = searchFilteredEntries.slice(startIndex, startIndex + this.itemsPerPage);
+    this.displayableEntries = searchFilteredEntries.slice(
+      startIndex,
+      startIndex + this.itemsPerPage
+    );
 
     this.calculateSummaryStats(this.currentPeriodEntries);
     this.prepareRevenueChartData(this.currentPeriodEntries);
   }
-
 
   calculateSummaryStats(entriesForPeriod: DisplayEarning[]): void {
     this.summaryStats = this.getInitialSummaryStats();
@@ -391,25 +447,51 @@ export class DashboardComponent implements OnInit {
       return;
     }
 
-    this.summaryStats.totalGrossRevenue = entriesForPeriod.reduce((sum, e) => sum + (e.gross_revenue || 0), 0);
+    this.summaryStats.totalGrossRevenue = entriesForPeriod.reduce(
+      (sum, e) => sum + (e.gross_revenue || 0),
+      0
+    );
     this.summaryStats.totalEntries = entriesForPeriod.length;
-    this.summaryStats.totalCut = entriesForPeriod.reduce((sum, e) => sum + (e.total_cut || 0), 0);
-    this.summaryStats.avgCutPerEntry = this.summaryStats.totalEntries > 0 ? (this.summaryStats.totalCut / this.summaryStats.totalEntries) : 0;
+    this.summaryStats.totalCut = entriesForPeriod.reduce(
+      (sum, e) => sum + (e.total_cut || 0),
+      0
+    );
+    this.summaryStats.avgCutPerEntry =
+      this.summaryStats.totalEntries > 0
+        ? this.summaryStats.totalCut / this.summaryStats.totalEntries
+        : 0;
 
     const mockPreviousPeriodFactor = 0.9;
 
-    this.summaryStats.totalGrossRevenueTrend = this.calculateTrend(this.summaryStats.totalGrossRevenue, this.summaryStats.totalGrossRevenue * mockPreviousPeriodFactor);
-    this.summaryStats.totalCutTrend = this.calculateTrend(this.summaryStats.totalCut, this.summaryStats.totalCut * mockPreviousPeriodFactor);
-    this.summaryStats.totalEntriesTrend = this.calculateTrend(this.summaryStats.totalEntries, this.summaryStats.totalEntries * mockPreviousPeriodFactor, false);
-    this.summaryStats.avgCutPerEntryTrend = this.calculateTrend(this.summaryStats.avgCutPerEntry, this.summaryStats.avgCutPerEntry * mockPreviousPeriodFactor);
+    this.summaryStats.totalGrossRevenueTrend = this.calculateTrend(
+      this.summaryStats.totalGrossRevenue,
+      this.summaryStats.totalGrossRevenue * mockPreviousPeriodFactor
+    );
+    this.summaryStats.totalCutTrend = this.calculateTrend(
+      this.summaryStats.totalCut,
+      this.summaryStats.totalCut * mockPreviousPeriodFactor
+    );
+    this.summaryStats.totalEntriesTrend = this.calculateTrend(
+      this.summaryStats.totalEntries,
+      this.summaryStats.totalEntries * mockPreviousPeriodFactor,
+      false
+    );
+    this.summaryStats.avgCutPerEntryTrend = this.calculateTrend(
+      this.summaryStats.avgCutPerEntry,
+      this.summaryStats.avgCutPerEntry * mockPreviousPeriodFactor
+    );
   }
 
-  private calculateTrend(currentValue: number, previousValue: number, lowerIsBetter: boolean = false): TrendData {
+  private calculateTrend(
+    currentValue: number,
+    previousValue: number,
+    lowerIsBetter: boolean = false
+  ): TrendData {
     if (previousValue === 0 && currentValue > 0) {
       return { trend: 'up', deltaPercentage: '+100%' }; // Simplified from +100.0% (New)
     }
     if (previousValue === 0 && currentValue === 0) {
-        return { trend: 'neutral', deltaPercentage: '—' };
+      return { trend: 'neutral', deltaPercentage: '—' };
     }
     if (currentValue === previousValue) {
       return { trend: 'neutral', deltaPercentage: '0.0%' };
@@ -421,53 +503,80 @@ export class DashboardComponent implements OnInit {
 
     let trend: 'up' | 'down';
     if (lowerIsBetter) {
-        trend = diff < 0 ? 'up' : 'down';
+      trend = diff < 0 ? 'up' : 'down';
     } else {
-        trend = diff > 0 ? 'up' : 'down';
+      trend = diff > 0 ? 'up' : 'down';
     }
 
     const sign = percentageChange > 0 ? '+' : '';
 
     return {
       trend: trend,
-      deltaPercentage: `${sign}${percentageChange.toFixed(1)}%`
+      deltaPercentage: `${sign}${percentageChange.toFixed(1)}%`,
     };
   }
 
-
   prepareRevenueChartData(entriesForPeriod: DisplayEarning[]): void {
     const revenueByDate: { [key: string]: number } = {};
-    entriesForPeriod.forEach(e => {
+    const cutByDate: { [key: string]: number } = {};
+    entriesForPeriod.forEach((e) => {
       if (e.parsedDate) {
         const dateStrKey = this.datePipe.transform(e.parsedDate, 'yyyy-MM-dd');
         if (dateStrKey) {
-          revenueByDate[dateStrKey] = (revenueByDate[dateStrKey] || 0) + (e.gross_revenue || 0);
+          revenueByDate[dateStrKey] =
+            (revenueByDate[dateStrKey] || 0) + (e.gross_revenue || 0);
+          cutByDate[dateStrKey] =
+            (cutByDate[dateStrKey] || 0) + (e.total_cut || 0);
         }
       }
     });
 
-    const sortedDates = Object.keys(revenueByDate).sort((a, b) => new Date(a).getTime() - new Date(b).getTime());
+    const sortedDates = Object.keys(revenueByDate).sort(
+      (a, b) => new Date(a).getTime() - new Date(b).getTime()
+    );
 
-    const getCssVar = (name: string) => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+    const getCssVar = (name: string) =>
+      getComputedStyle(document.documentElement).getPropertyValue(name).trim();
     const brandInfo = getCssVar('--cui-info') || 'rgba(75, 192, 192, 1)';
-    const brandInfoRgb = getCssVar('--cui-info-rgb') || '75, 192, 192'; // Default RGB if var not found
+    const brandInfoRgb = getCssVar('--cui-info-rgb') || '75, 192, 192';
     const brandInfoBg = `rgba(${brandInfoRgb}, 0.2)`;
 
+    const brandWarning = getCssVar('--cui-warning') || 'rgba(255, 193, 7, 1)';
+    const brandWarningRgb = getCssVar('--cui-warning-rgb') || '255, 193, 7';
+    const brandWarningBg = `rgba(${brandWarningRgb}, 0.2)`;
+
     this.revenueOverTimeChartData = {
-      labels: sortedDates.map(dateKey => this.datePipe.transform(dateKey, 'MMM d')),
-      datasets: [{
-        label: 'Gross Revenue',
-        data: sortedDates.map(dateKey => revenueByDate[dateKey]),
-        borderColor: brandInfo,
-        backgroundColor: brandInfoBg,
-        borderWidth: 2,
-        tension: 0.1,
-        fill: true,
-        pointBackgroundColor: brandInfo,
-        pointBorderColor: getCssVar('--cui-card-bg'), // Use card-bg for contrast with line
-        pointHoverBackgroundColor: getCssVar('--cui-card-bg'),
-        pointHoverBorderColor: brandInfo
-      }]
+      labels: sortedDates.map((dateKey) =>
+        this.datePipe.transform(dateKey, 'MMM d')
+      ),
+      datasets: [
+        {
+          label: 'Gross Revenue',
+          data: sortedDates.map((dateKey) => revenueByDate[dateKey]),
+          borderColor: brandInfo,
+          backgroundColor: brandInfoBg,
+          borderWidth: 2,
+          tension: 0.1,
+          fill: true,
+          pointBackgroundColor: brandInfo,
+          pointBorderColor: getCssVar('--cui-card-bg'),
+          pointHoverBackgroundColor: getCssVar('--cui-card-bg'),
+          pointHoverBorderColor: brandInfo,
+        },
+        {
+          label: 'Cut',
+          data: sortedDates.map((dateKey) => cutByDate[dateKey] || 0),
+          borderColor: brandWarning,
+          backgroundColor: brandWarningBg,
+          borderWidth: 2,
+          tension: 0.1,
+          fill: true,
+          pointBackgroundColor: brandWarning,
+          pointBorderColor: getCssVar('--cui-card-bg'),
+          pointHoverBackgroundColor: getCssVar('--cui-card-bg'),
+          pointHoverBorderColor: brandWarning,
+        },
+      ],
     };
   }
 
@@ -513,14 +622,25 @@ export class DashboardComponent implements OnInit {
       return;
     }
 
-    const csvHeaders = ['Date', 'User', 'Role', 'Shift', 'Gross Revenue', 'Total Cut'];
+    const csvHeaders = [
+      'Date',
+      'User',
+      'Role',
+      'Shift',
+      'Gross Revenue',
+      'Total Cut',
+    ];
 
     const escapeCsvValue = (value: any): string => {
       if (value === null || typeof value === 'undefined') {
         return '';
       }
       let strValue = String(value);
-      if (strValue.includes(',') || strValue.includes('"') || strValue.includes('')) {
+      if (
+        strValue.includes(',') ||
+        strValue.includes('"') ||
+        strValue.includes('')
+      ) {
         strValue = '"' + strValue.replace(/"/g, '""') + '"';
       }
       return strValue;
@@ -534,7 +654,7 @@ export class DashboardComponent implements OnInit {
         escapeCsvValue(entry.role || 'N/A'),
         escapeCsvValue(entry.shift || 'N/A'),
         escapeCsvValue(entry.gross_revenue?.toString() || '0'),
-        escapeCsvValue(entry.total_cut?.toString() || '0')
+        escapeCsvValue(entry.total_cut?.toString() || '0'),
       ];
       csvContent += row.join(',') + ''; // Added newline
     });
@@ -551,7 +671,7 @@ export class DashboardComponent implements OnInit {
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
     } else {
-        alert('CSV export is not fully supported in this browser.');
+      alert('CSV export is not fully supported in this browser.');
     }
   }
 }
