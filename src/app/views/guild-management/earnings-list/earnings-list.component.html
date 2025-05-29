@@ -221,15 +221,17 @@
                     <td>{{ earning.gross_revenue | currency }}</td>
                     <td>{{ earning.total_cut | currency }}</td>
                     <td>
-                      <button cButton color="primary" variant="outline" size="sm" class="rounded-circle action-btn"
-                        (click)="openEditEarningModal(earning)" title="Edit Earning">
-                        <svg cIcon name="cilPencil" size="sm"></svg>
-                      </button>
-                      <button cButton color="danger" variant="outline" size="sm"
-                        class="ms-1 rounded-circle action-btn delete" (click)="openDeleteConfirmModal(earning)"
-                        title="Delete Earning">
-                        <svg cIcon name="cilTrash" size="sm"></svg>
-                      </button>
+                      <span class="d-inline-flex gap-1">
+                        <button cButton color="primary" variant="outline" size="sm" class="rounded-circle action-btn"
+                          (click)="openEditEarningModal(earning)" title="Edit Earning">
+                          <svg cIcon name="cilPencil" size="sm"></svg>
+                        </button>
+                        <button cButton color="danger" variant="outline" size="sm"
+                          class="rounded-circle action-btn delete" (click)="openDeleteConfirmModal(earning)"
+                          title="Delete Earning">
+                          <svg cIcon name="cilTrash" size="sm"></svg>
+                        </button>
+                      </span>
                     </td>
                   </tr>
                 </tbody>
