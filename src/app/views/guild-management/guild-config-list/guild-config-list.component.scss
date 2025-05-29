@@ -13,12 +13,17 @@ body, .c-container, .c-card-body {
   color: $text-main;
 }
 
+// .px-4 {
+//   padding-right: 0rem !important;
+//   padding-left: 0rem !important;
+// }
+
 .c-card, .card {
   background: $card-bg;
   border: none;
   border-radius: $border-radius;
   box-shadow: $card-shadow;
-  padding: 1.5rem 1.25rem;
+  // padding: 1.5rem 1.25rem;Vixen Shift Calculator
   margin-bottom: 2rem;
   position: relative;
   transition: box-shadow 0.2s, background 0.2s, transform 0.2s;

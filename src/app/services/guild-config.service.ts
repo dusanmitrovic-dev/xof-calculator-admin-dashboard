@@ -62,6 +62,8 @@ export interface GuildConfig {
   display_settings?: DisplaySettings;
   commission_settings: CommissionSettings;
   roles: { [roleId: string]: number };
+  logo_image_base64?: string; // base64-encoded image for logo (optional)
+  logo_text?: string; // logo text (optional)
 }
 // --- End Interfaces ---
 
