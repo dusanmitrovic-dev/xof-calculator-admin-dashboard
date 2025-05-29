@@ -7,7 +7,10 @@
   visible
 >
   <c-sidebar-header class="border-bottom">
-    <c-sidebar-brand [routerLink]="[]">
+    <c-sidebar-brand
+      [routerLink]="[]"
+      style="display: flex; align-items: center"
+    >
       <img
         *ngIf="currentGuildConfig?.logo_image_base64"
         [src]="currentGuildConfig.logo_image_base64"
