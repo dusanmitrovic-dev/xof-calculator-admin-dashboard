@@ -202,7 +202,8 @@ c-widget-stat-a {
 // ======================
 .chart-legend-above {
   text-align: left;
-  margin-bottom: 1rem;
+  // margin-bottom: 1rem;
+  color: var(--cui-gray-700) !important;
   font-weight: 600;
   font-size: 1.2rem;
   color: var(--cui-body-color);
@@ -243,7 +244,7 @@ c-row.mb-4>c-col>c-card {
   border-radius: 0.75rem;
   box-shadow: 0 6px 24px rgba(13, 110, 253, 0.10), 0 1.5px 4px rgba(0, 0, 0, 0.08);
   padding: 1.5rem 1.25rem;
-  margin-bottom: 2rem;
+  margin-bottom: 1rem;
   position: relative;
   transition: box-shadow 0.22s, background 0.22s, border-color 0.22s, transform 0.22s;
   animation: fadeInUp 0.5s 0.15s cubic-bezier(0.4, 0, 0.2, 1);
@@ -302,5 +303,13 @@ c-row.mb-4>c-col>c-card {
   to {
     opacity: 1;
     transform: none;
+  }
+}
+
+.dashboard-chart-visible {
+  min-height: 500px;
+
+  @media (min-width: 992px) {
+    min-height: 580px;
   }
 }

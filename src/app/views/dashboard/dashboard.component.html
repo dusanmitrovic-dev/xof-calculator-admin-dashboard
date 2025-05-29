@@ -29,7 +29,7 @@
 
   <c-row class="mb-4 kpi-cards-container" *ngIf="!loading">
     <!-- Total Gross Revenue -->
-    <c-col [xs]="12" [sm]="6" [lg]="3">
+    <c-col [xs]="12" [sm]="6" [lg]="3" class="mb-3 mb-lg-0">
       <c-card class="h-100 shadow-sm hover-shadow">
         <c-card-body class="text-center">
           <div class="text-muted small mb-1 d-flex justify-content-center align-items-center">
@@ -46,7 +46,7 @@
     </c-col>
 
     <!-- Total Cut -->
-    <c-col [xs]="12" [sm]="6" [lg]="3">
+    <c-col [xs]="12" [sm]="6" [lg]="3" class="mb-3 mb-lg-0">
       <c-card class="h-100 shadow-sm hover-shadow">
         <c-card-body class="text-center">
           <div class="text-muted small mb-1 d-flex justify-content-center align-items-center">
@@ -63,7 +63,7 @@
     </c-col>
 
     <!-- Total Entries -->
-    <c-col [xs]="12" [sm]="6" [lg]="3">
+    <c-col [xs]="12" [sm]="6" [lg]="3" class="mb-3 mb-lg-0">
       <c-card class="h-100 shadow-sm hover-shadow">
         <c-card-body class="text-center">
           <div class="text-muted small mb-1 d-flex justify-content-center align-items-center">
@@ -80,7 +80,7 @@
     </c-col>
 
     <!-- Average Cut per Entry -->
-    <c-col [xs]="12" [sm]="6" [lg]="3">
+    <c-col [xs]="12" [sm]="6" [lg]="3" class="mb-3 mb-lg-0">
       <c-card class="h-100 shadow-sm hover-shadow">
         <c-card-body class="text-center">
           <div class="text-muted small mb-1 d-flex justify-content-center align-items-center">
@@ -99,14 +99,14 @@
   <!-- Revenue Over Time Chart -->
   <c-row class="mb-4" *ngIf="!loading">
     <c-col>
-      <c-card>
-        <c-card-header>
-          <div class="chart-legend-above">
+      <c-card class="p-3 shadow-lg">
+        <c-card-header class="bg-transparent border-0 pb-1">
+          <div class="chart-legend-above text-center fs-5 fw-bold text-info">
             Gross Revenue Over Time
           </div>
         </c-card-header>
-        <c-card-body>
-          <c-chart type="line" [data]="revenueOverTimeChartData" [options]="lineChartOptions"></c-chart>
+        <c-card-body class="pt-0">
+          <c-chart type="line" [data]="revenueOverTimeChartData" [options]="lineChartOptions" class="dashboard-chart-visible"></c-chart>
         </c-card-body>
       </c-card>
     </c-col>
