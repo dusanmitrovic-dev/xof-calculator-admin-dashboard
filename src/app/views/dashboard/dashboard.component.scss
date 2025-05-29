@@ -79,9 +79,11 @@ c-widget-stat-a {
   &.positive {
     color: var(--cui-success);
   }
+
   &.negative {
     color: var(--cui-danger);
   }
+
   &.neutral {
     color: var(--cui-gray-600);
   }
@@ -97,7 +99,7 @@ c-widget-stat-a {
 
   // Fix white cards in dark mode
   c-card,
-  c-col > c-card,
+  c-col>c-card,
   .kpi-cards-container c-card {
     background-color: var(--cui-gray-800) !important;
     color: var(--cui-gray-100) !important;
@@ -121,9 +123,11 @@ c-widget-stat-a {
     &.positive {
       color: var(--cui-green);
     }
+
     &.negative {
       color: var(--cui-red);
     }
+
     &.neutral {
       color: var(--cui-gray-500);
     }
@@ -133,6 +137,7 @@ c-widget-stat-a {
   c-widget-stat-a[color="success"],
   c-widget-stat-a[color="info"],
   c-widget-stat-a[color="primary"] {
+
     .dashboard-card-title,
     .fs-3.fw-semibold,
     .trend-indicator {
@@ -141,6 +146,7 @@ c-widget-stat-a {
   }
 
   c-widget-stat-a[color="warning"] {
+
     .dashboard-card-title,
     .fs-3.fw-semibold,
     .trend-indicator {
@@ -154,9 +160,8 @@ c-widget-stat-a {
 // ======================
 @include color-mode.color-mode(light) {
   c-widget-stat-a {
-    background-color: var(--cui-white);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    border: 1px solid var(--cui-gray-300);
+    // border: 1px solid var(--cui-gray-300);
 
     .text-medium-emphasis {
       color: var(--cui-gray-700) !important;
@@ -169,12 +174,12 @@ c-widget-stat-a {
 
   c-card,
   .kpi-cards-container c-card {
-    background-color: var(--cui-white) !important;
     color: var(--cui-body-color) !important;
-    border: 1px solid var(--cui-gray-300);
+    // border: 1px solid var(--cui-gray-300);
   }
 
   c-widget-stat-a[color="warning"] {
+
     .dashboard-card-title,
     .fs-3.fw-semibold,
     .trend-indicator {
@@ -183,6 +188,7 @@ c-widget-stat-a {
   }
 
   c-widget-stat-a[color="success"] {
+
     .dashboard-card-title,
     .fs-3.fw-semibold,
     .trend-indicator {
@@ -202,7 +208,7 @@ c-widget-stat-a {
   color: var(--cui-body-color);
 }
 
-c-row.mb-4:has(c-widget-stat-a) + c-row.mb-4:has(c-card c-chart) {
+c-row.mb-4:has(c-widget-stat-a)+c-row.mb-4:has(c-card c-chart) {
   margin-top: 2rem !important;
 }
 
@@ -212,7 +218,7 @@ c-card {
 }
 
 // Ensure KPI cards have equal height
-.kpi-cards-row c-col > div > c-widget-stat-a > .card {
+.kpi-cards-row c-col>div>c-widget-stat-a>.card {
   height: 100%;
 
   .card-body {
@@ -226,4 +232,75 @@ c-card {
 .dashboard-card-title .ms-1 {
   margin-top: 0;
   margin-bottom: 0;
+}
+
+// ======================
+// Dashboard Card Animations & Hover (matching guild-config-list)
+// ======================
+.kpi-cards-container c-card,
+c-row.mb-4>c-col>c-card {
+  // border: 1.5px solid var(--cui-gray-300);
+  border-radius: 0.75rem;
+  box-shadow: 0 6px 24px rgba(13, 110, 253, 0.10), 0 1.5px 4px rgba(0, 0, 0, 0.08);
+  padding: 1.5rem 1.25rem;
+  margin-bottom: 2rem;
+  position: relative;
+  transition: box-shadow 0.22s, background 0.22s, border-color 0.22s, transform 0.22s;
+  animation: fadeInUp 0.5s 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: box-shadow, background, transform, border-color;
+  z-index: 1;
+
+  &:hover {
+    box-shadow: 0 12px 32px rgba(13, 110, 253, 0.18), 0 2px 8px rgba(35, 64, 160, 0.10);
+    border-color: #0d6efd;
+    transform: translateY(-4px) scale(1.025);
+
+    &::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 6px;
+      border-radius: 0.75rem 0 0 0.75rem;
+      background: #0d6efd;
+      opacity: 0.85;
+      transition: opacity 0.2s, width 0.2s;
+      z-index: 2;
+    }
+  }
+}
+
+// Dark theme adjustments for card visibility
+@include color-mode.color-mode(dark) {
+
+  .kpi-cards-container c-card,
+  c-row.mb-4>c-col>c-card {
+    background: var(--cui-gray-900) !important;
+    color: var(--cui-gray-100) !important;
+    box-shadow: 0 8px 32px rgba(13, 110, 253, 0.22), 0 2px 8px rgba(0, 0, 0, 0.18);
+
+    &:hover {
+      background: #1a2332 !important;
+      border-color: #4f8cff;
+
+      &::before {
+        background: #4f8cff;
+        opacity: 0.95;
+      }
+    }
+  }
+}
+
+// Animation keyframes (reuse from guild-config-list)
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(32px);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
 }

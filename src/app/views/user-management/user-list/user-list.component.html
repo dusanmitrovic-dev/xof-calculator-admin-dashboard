@@ -1,9 +1,6 @@
 <c-card class="mb-4">
   <c-card-header class="d-flex justify-content-between align-items-center">
     <strong>User Management</strong>
-    <button cButton color="success" variant="outline" size="sm" (click)="openAddUserModal()" title="Add New User" cTooltip="Add New User">
-      <svg cIcon name="cilUserPlus" size="sm" class="me-1"></svg> Add User
-    </button>
   </c-card-header>
   <c-card-body>
     <div *ngIf="isLoading" class="text-center py-3">
@@ -25,7 +22,7 @@
         </button>
       </div>
 
-      <table *ngIf="users.length > 0" 
+      <table *ngIf="users.length > 0"
              cTable class="mb-0 border" hover responsive striped bordered align="middle">
         <thead>
           <tr>
@@ -53,14 +50,14 @@
             <td>
               <ng-container *ngIf="user.role === 'admin'">
                 <svg cIcon name="cilGlobeAlt" size="sm" class="me-1 text-info align-text-bottom"></svg>
-                <span class="text-body-secondary">All Guilds</span> 
+                <span class="text-body-secondary">All Guilds</span>
                 <!-- If allGuildsCount is available in component: <span class="badge bg-info-gradient ms-1">{{ allGuildsCount }}</span> -->
               </ng-container>
               <ng-container *ngIf="user.role === 'manager'">
                 <ng-container *ngIf="user.managed_guild_ids && user.managed_guild_ids.length > 0; else noGuilds">
                     <svg cIcon name="cilListNumbered" size="sm" class="me-1 text-success align-text-bottom"></svg>
                     {{ user.managed_guild_ids.length }} Guild(s)
-                    <button cButton variant="ghost" size="sm" class="p-0 ms-1 align-baseline" 
+                    <button cButton variant="ghost" size="sm" class="p-0 ms-1 align-baseline"
                             [cTooltip]="getGuildsTooltipText(user.managed_guild_ids)" placement="top">
                         <svg cIcon name="cilSearch" size="sm"></svg>
                     </button>

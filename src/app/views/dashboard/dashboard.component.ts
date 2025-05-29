@@ -25,10 +25,10 @@ import {
   FormControlDirective,
   InputGroupComponent,
   InputGroupTextDirective,
-  DropdownComponent, 
-  DropdownToggleDirective, 
-  DropdownMenuDirective, 
-  DropdownItemDirective 
+  DropdownComponent,
+  DropdownToggleDirective,
+  DropdownMenuDirective,
+  DropdownItemDirective
 } from '@coreui/angular';
 import { ChartjsComponent } from '@coreui/angular-chartjs';
 import { IconModule, IconSetService } from '@coreui/icons-angular';
@@ -42,7 +42,7 @@ import {
   cilArrowBottom,
   cilSearch,
   cilSave,
-  cilInfo 
+  cilInfo
 } from '@coreui/icons';
 
 interface TrendData {
@@ -146,11 +146,11 @@ export class DashboardComponent implements OnInit {
             display: true,
             text: 'Revenue (USD)',
             font: { size: 14, weight: 'bold' }, // Increased size and weight
-            color: getCssVar('--cui-body-color') // Use CSS var for dynamic color
+            // color: getCssVar('--cui-body-color') // Use CSS var for dynamic color
           },
           ticks: {
             callback: (value) => typeof value === 'number' ? '$' + value.toLocaleString() : value,
-            color: getCssVar('--cui-body-color') // Use CSS var for dynamic color
+            // color: getCssVar('--cui-body-color') // Use CSS var for dynamic color
           },
           grid: {
             display: true, // Display Y-axis grid lines
@@ -162,10 +162,10 @@ export class DashboardComponent implements OnInit {
             display: true,
             text: 'Date',
             font: { size: 14, weight: 'bold' }, // Increased size and weight
-            color: getCssVar('--cui-body-color') // Use CSS var for dynamic color
+            // color: getCssVar('--cui-body-color') // Use CSS var for dynamic color
           },
           ticks: {
-            color: getCssVar('--cui-body-color') // Use CSS var for dynamic color
+            // color: getCssVar('--cui-body-color') // Use CSS var for dynamic color
           },
           grid: {
             display: true, // Display X-axis grid lines (Changed from false)
@@ -178,7 +178,7 @@ export class DashboardComponent implements OnInit {
           display: true, // Changed to true to display the legend
           labels: {
             font: { size: 13, weight: 500 },
-            color: getCssVar('--cui-body-color')
+            // color: getCssVar('--cui-body-color')
           }
         },
         tooltip: {
@@ -186,8 +186,8 @@ export class DashboardComponent implements OnInit {
           mode: 'index',
           intersect: false,
           backgroundColor: getCssVar('--cui-body-bg'),
-          titleColor: getCssVar('--cui-body-color'),
-          bodyColor: getCssVar('--cui-body-color'),
+          // titleColor: getCssVar('--cui-body-color'),
+          // bodyColor: getCssVar('--cui-body-color'),
           borderColor: getCssVar('--cui-border-color'),
           borderWidth: 1,
           callbacks: {
@@ -227,27 +227,27 @@ export class DashboardComponent implements OnInit {
   updateChartColors(): void {
     const getCssVar = (name: string) => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
     if (this.lineChartOptions?.scales?.['y']?.title) {
-        (this.lineChartOptions.scales['y'].title.color as any) = getCssVar('--cui-body-color');
+        // (this.lineChartOptions.scales['y'].title.color as any) = getCssVar('--cui-body-color');
     }
     if (this.lineChartOptions?.scales?.['y']?.ticks) {
-        (this.lineChartOptions.scales['y'].ticks.color as any) = getCssVar('--cui-body-color');
+        // (this.lineChartOptions.scales['y'].ticks.color as any) = getCssVar('--cui-body-color');
     }
     if (this.lineChartOptions?.scales?.['y']?.grid) {
         this.lineChartOptions.scales['y'].grid.color = getCssVar('--cui-border-color-translucent');
     }
     if (this.lineChartOptions?.scales?.['x']?.title) {
-        (this.lineChartOptions.scales['x'].title.color as any) = getCssVar('--cui-body-color');
+        // (this.lineChartOptions.scales['x'].title.color as any) = getCssVar('--cui-body-color');
     }
     if (this.lineChartOptions?.scales?.['x']?.ticks) {
-        (this.lineChartOptions.scales['x'].ticks.color as any) = getCssVar('--cui-body-color');
+        // (this.lineChartOptions.scales['x'].ticks.color as any) = getCssVar('--cui-body-color');
     }
     if (this.lineChartOptions?.plugins?.legend?.labels) {
-        (this.lineChartOptions.plugins.legend.labels.color as any) = getCssVar('--cui-body-color');
+        // (this.lineChartOptions.plugins.legend.labels.color as any) = getCssVar('--cui-body-color');
     }
     if (this.lineChartOptions?.plugins?.tooltip) {
         (this.lineChartOptions.plugins.tooltip.backgroundColor as any) = getCssVar('--cui-body-bg');
-        (this.lineChartOptions.plugins.tooltip.titleColor as any) = getCssVar('--cui-body-color');
-        (this.lineChartOptions.plugins.tooltip.bodyColor as any) = getCssVar('--cui-body-color');
+        // (this.lineChartOptions.plugins.tooltip.titleColor as any) = getCssVar('--cui-body-color');
+        // (this.lineChartOptions.plugins.tooltip.bodyColor as any) = getCssVar('--cui-body-color');
         this.lineChartOptions.plugins.tooltip.borderColor = getCssVar('--cui-border-color');
     }
     // Trigger chart update if it's already rendered
@@ -276,16 +276,16 @@ export class DashboardComponent implements OnInit {
     const parts = dateStr.split('/');
     if (parts.length === 3) {
       const day = parseInt(parts[0], 10);
-      const month = parseInt(parts[1], 10) - 1; 
+      const month = parseInt(parts[1], 10) - 1;
       const year = parseInt(parts[2], 10);
       if (!isNaN(day) && !isNaN(month) && !isNaN(year)) {
-        const date = new Date(Date.UTC(year, month, day)); 
+        const date = new Date(Date.UTC(year, month, day));
         if (date.getUTCFullYear() === year && date.getUTCMonth() === month && date.getUTCDate() === day) {
           return date;
         }
       }
     }
-    return null; 
+    return null;
   }
 
 
@@ -302,18 +302,18 @@ export class DashboardComponent implements OnInit {
     ).subscribe((earnings: Earning[]) => {
       this.allRevenueEntries = [...earnings]
         .map(earning => ({ ...earning, parsedDate: this.parseDateString(earning.date) }))
-        .filter(e => e.parsedDate instanceof Date) 
+        .filter(e => e.parsedDate instanceof Date)
         .sort((a, b) => (b.parsedDate!.getTime()) - (a.parsedDate!.getTime()));
-      
-      this.setDateRange('30days'); 
+
+      this.setDateRange('30days');
     });
   }
 
   setDateRange(rangeKey: '7days' | '30days' | '90days' | '365days' | 'all'): void {
     const today = new Date();
-    today.setHours(0, 0, 0, 0); 
+    today.setHours(0, 0, 0, 0);
 
-    let startDate = new Date(0); 
+    let startDate = new Date(0);
 
     switch (rangeKey) {
       case '7days':
@@ -349,7 +349,7 @@ export class DashboardComponent implements OnInit {
             return entry.parsedDate && entry.parsedDate.getTime() >= startDate.getTime();
         });
     }
-    
+
     this.searchTerm = '';
     this.currentPage = 1;
     this.updateDataViews();
@@ -385,10 +385,10 @@ export class DashboardComponent implements OnInit {
 
 
   calculateSummaryStats(entriesForPeriod: DisplayEarning[]): void {
-    this.summaryStats = this.getInitialSummaryStats(); 
+    this.summaryStats = this.getInitialSummaryStats();
 
     if (!entriesForPeriod || entriesForPeriod.length === 0) {
-      return; 
+      return;
     }
 
     this.summaryStats.totalGrossRevenue = entriesForPeriod.reduce((sum, e) => sum + (e.gross_revenue || 0), 0);
@@ -396,11 +396,11 @@ export class DashboardComponent implements OnInit {
     this.summaryStats.totalCut = entriesForPeriod.reduce((sum, e) => sum + (e.total_cut || 0), 0);
     this.summaryStats.avgCutPerEntry = this.summaryStats.totalEntries > 0 ? (this.summaryStats.totalCut / this.summaryStats.totalEntries) : 0;
 
-    const mockPreviousPeriodFactor = 0.9; 
-    
+    const mockPreviousPeriodFactor = 0.9;
+
     this.summaryStats.totalGrossRevenueTrend = this.calculateTrend(this.summaryStats.totalGrossRevenue, this.summaryStats.totalGrossRevenue * mockPreviousPeriodFactor);
     this.summaryStats.totalCutTrend = this.calculateTrend(this.summaryStats.totalCut, this.summaryStats.totalCut * mockPreviousPeriodFactor);
-    this.summaryStats.totalEntriesTrend = this.calculateTrend(this.summaryStats.totalEntries, this.summaryStats.totalEntries * mockPreviousPeriodFactor, false); 
+    this.summaryStats.totalEntriesTrend = this.calculateTrend(this.summaryStats.totalEntries, this.summaryStats.totalEntries * mockPreviousPeriodFactor, false);
     this.summaryStats.avgCutPerEntryTrend = this.calculateTrend(this.summaryStats.avgCutPerEntry, this.summaryStats.avgCutPerEntry * mockPreviousPeriodFactor);
   }
 
@@ -425,7 +425,7 @@ export class DashboardComponent implements OnInit {
     } else {
         trend = diff > 0 ? 'up' : 'down';
     }
-    
+
     const sign = percentageChange > 0 ? '+' : '';
 
     return {
@@ -438,7 +438,7 @@ export class DashboardComponent implements OnInit {
   prepareRevenueChartData(entriesForPeriod: DisplayEarning[]): void {
     const revenueByDate: { [key: string]: number } = {};
     entriesForPeriod.forEach(e => {
-      if (e.parsedDate) { 
+      if (e.parsedDate) {
         const dateStrKey = this.datePipe.transform(e.parsedDate, 'yyyy-MM-dd');
         if (dateStrKey) {
           revenueByDate[dateStrKey] = (revenueByDate[dateStrKey] || 0) + (e.gross_revenue || 0);
@@ -447,7 +447,7 @@ export class DashboardComponent implements OnInit {
     });
 
     const sortedDates = Object.keys(revenueByDate).sort((a, b) => new Date(a).getTime() - new Date(b).getTime());
-    
+
     const getCssVar = (name: string) => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
     const brandInfo = getCssVar('--cui-info') || 'rgba(75, 192, 192, 1)';
     const brandInfoRgb = getCssVar('--cui-info-rgb') || '75, 192, 192'; // Default RGB if var not found
@@ -460,10 +460,10 @@ export class DashboardComponent implements OnInit {
         data: sortedDates.map(dateKey => revenueByDate[dateKey]),
         borderColor: brandInfo,
         backgroundColor: brandInfoBg,
-        borderWidth: 2, 
+        borderWidth: 2,
         tension: 0.1,
         fill: true,
-        pointBackgroundColor: brandInfo, 
+        pointBackgroundColor: brandInfo,
         pointBorderColor: getCssVar('--cui-card-bg'), // Use card-bg for contrast with line
         pointHoverBackgroundColor: getCssVar('--cui-card-bg'),
         pointHoverBorderColor: brandInfo
@@ -473,7 +473,7 @@ export class DashboardComponent implements OnInit {
 
   onSearchTermChange(): void {
     this.currentPage = 1;
-    this.updateDataViews(); 
+    this.updateDataViews();
   }
 
   goToPage(page: number): void {
@@ -496,7 +496,7 @@ export class DashboardComponent implements OnInit {
       this.updateDataViews();
     }
   }
-  
+
   navigateToEntryDetail(entryId: string | undefined): void {
     if (!entryId) return;
     console.log('Navigate to detail for entry ID:', entryId);
@@ -514,7 +514,7 @@ export class DashboardComponent implements OnInit {
     }
 
     const csvHeaders = ['Date', 'User', 'Role', 'Shift', 'Gross Revenue', 'Total Cut'];
-    
+
     const escapeCsvValue = (value: any): string => {
       if (value === null || typeof value === 'undefined') {
         return '';
@@ -529,7 +529,7 @@ export class DashboardComponent implements OnInit {
     let csvContent = csvHeaders.join(',') + ''; // Added newline
     dataToExport.forEach((entry: DisplayEarning) => {
       const row = [
-        this.datePipe.transform(entry.parsedDate, 'yyyy-MM-dd') || '', 
+        this.datePipe.transform(entry.parsedDate, 'yyyy-MM-dd') || '',
         escapeCsvValue(entry.user_mention || 'N/A'),
         escapeCsvValue(entry.role || 'N/A'),
         escapeCsvValue(entry.shift || 'N/A'),
@@ -544,7 +544,7 @@ export class DashboardComponent implements OnInit {
     if (link.download !== undefined) {
       const url = URL.createObjectURL(blob);
       link.setAttribute('href', url);
-      link.setAttribute('download', 'revenue_entries_dashboard.csv'); 
+      link.setAttribute('download', 'revenue_entries_dashboard.csv');
       link.style.visibility = 'hidden';
       document.body.appendChild(link);
       link.click();
