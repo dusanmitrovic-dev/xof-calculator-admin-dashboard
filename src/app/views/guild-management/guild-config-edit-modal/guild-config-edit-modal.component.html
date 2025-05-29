@@ -1,21 +1,43 @@
-<c-modal id="guildConfigEditModal" [visible]="visible" (visibleChange)="handleVisibleChange($event)" backdrop="static"
-  size="xl">
-  <ng-container *ngIf="!isEditingDisplaySettingsSubFlow; else displaySettingsFlow">
+<c-modal
+  id="guildConfigEditModal"
+  [visible]="visible"
+  (visibleChange)="handleVisibleChange($event)"
+  backdrop="static"
+  size="xl"
+>
+  <ng-container
+    *ngIf="!isEditingDisplaySettingsSubFlow; else displaySettingsFlow"
+  >
     <c-modal-header>
       <h5 cModalTitle>{{ title }}</h5>
-      <button (click)="closeModal()" cButtonClose title="Close" aria-label="Close">
+      <button
+        (click)="closeModal()"
+        cButtonClose
+        title="Close"
+        aria-label="Close"
+      >
         <svg cIcon name="cilX"></svg>
       </button>
     </c-modal-header>
     <c-modal-body>
-      <c-alert color="danger" *ngIf="errorMessage && !isEditingDisplaySettingsSubFlow" class="mb-3">
+      <c-alert
+        color="danger"
+        *ngIf="errorMessage && !isEditingDisplaySettingsSubFlow"
+        class="mb-3"
+      >
         {{ errorMessage }}
       </c-alert>
       <!-- Main form content, hidden if in display settings sub-flow -->
       <ng-container *ngIf="!isEditingDisplaySettingsSubFlow">
-        <form *ngIf="configForm" [formGroup]="configForm" (ngSubmit)="saveChanges()" novalidate>
+        <form
+          *ngIf="configForm"
+          [formGroup]="configForm"
+          (ngSubmit)="saveChanges()"
+          novalidate
+        >
           <!-- Guild ID -->
-          <ng-container *ngIf="
+          <ng-container
+            *ngIf="
               editSection === 'full' ||
               (isEditMode &&
                 editSection !== 'models' &&
@@ -25,21 +47,34 @@
                 editSection !== 'bonus_rules' &&
                 editSection !== 'commission_settings_roles' &&
                 editSection !== 'commission_settings_users')
-            ">
+            "
+          >
             <c-card class="mb-3">
               <c-card-header>Guild Identification</c-card-header>
               <c-card-body>
                 <div class="mb-0" *ngIf="!isEditMode && editSection === 'full'">
-                  <label cLabel for="guild_id" class="fw-semibold">Guild ID</label>
-                  <input cFormControl type="text" id="guild_id" formControlName="guild_id" required
-                    placeholder="Enter Discord Guild ID" [class.is-invalid]="
+                  <label cLabel for="guild_id" class="fw-semibold"
+                    >Guild ID</label
+                  >
+                  <input
+                    cFormControl
+                    type="text"
+                    id="guild_id"
+                    formControlName="guild_id"
+                    required
+                    placeholder="Enter Discord Guild ID"
+                    [class.is-invalid]="
                       guild_id_control.invalid &&
                       (guild_id_control.dirty || guild_id_control.touched)
-                    " />
-                  <c-form-feedback [valid]="false" *ngIf="
+                    "
+                  />
+                  <c-form-feedback
+                    [valid]="false"
+                    *ngIf="
                       guild_id_control.invalid &&
                       (guild_id_control.dirty || guild_id_control.touched)
-                    ">
+                    "
+                  >
                     <div *ngIf="guild_id_control.hasError('required')">
                       Guild ID is required.
                     </div>
@@ -50,43 +85,88 @@
                 </div>
                 <div class="mb-0" *ngIf="isEditMode && guildConfig">
                   <label cLabel class="fw-semibold">Guild ID</label>
-                  <input cFormControl type="text" [value]="guildConfig.guild_id" readonly disabled
-                    title="Guild ID" placeholder="Guild ID" />
+                  <input
+                    cFormControl
+                    type="text"
+                    [value]="guildConfig.guild_id"
+                    readonly
+                    disabled
+                    title="Guild ID"
+                    placeholder="Guild ID"
+                  />
                 </div>
               </c-card-body>
             </c-card>
           </ng-container>
 
           <!-- Models Management -->
-          <ng-container *ngIf="editSection === 'full' || editSection === 'models'">
+          <ng-container
+            *ngIf="editSection === 'full' || editSection === 'models'"
+          >
             <c-card class="mb-3">
               <c-card-body formArrayName="models">
                 <div class="mb-3">
-                  <label cLabel for="newModelName" class="fw-semibold">Add New Model</label>
+                  <label cLabel for="newModelName" class="fw-semibold"
+                    >Add New Model</label
+                  >
                   <div class="input-group">
-                    <input cFormControl type="text" id="newModelName" placeholder="Enter model name" #newModelInput
-                      (blur)="handleItemAddOnBlur(models, newModelInput)" (keydown.enter)="
-              handleItemAdd(models, newModelInput);
-              $event.preventDefault()
-            " />
-                    <button cButton type="button" color="success" variant="outline"
-                      (click)="handleItemAdd(models, newModelInput)">
+                    <input
+                      cFormControl
+                      type="text"
+                      id="newModelName"
+                      placeholder="Enter model name"
+                      #newModelInput
+                      (blur)="handleItemAddOnBlur(models, newModelInput)"
+                      (keydown.enter)="
+                        handleItemAdd(models, newModelInput);
+                        $event.preventDefault()
+                      "
+                    />
+                    <button
+                      cButton
+                      type="button"
+                      color="success"
+                      variant="outline"
+                      (click)="handleItemAdd(models, newModelInput)"
+                    >
                       <svg cIcon name="cilPlus" size="sm"></svg> Add Model
                     </button>
                   </div>
                 </div>
-                <div *ngIf="models.controls.length === 0" class="text-center text-muted py-3">
+                <div
+                  *ngIf="models.controls.length === 0"
+                  class="text-center text-muted py-3"
+                >
                   <p>No models defined.</p>
                 </div>
-                <div cdkDropList (cdkDropListDropped)="onArrayDrop(models, $event)" [cdkDropListData]="models.controls">
-                  <div *ngFor="let modelCtrl of models.controls; let i = index" cdkDrag
-                    class="d-flex justify-content-between align-items-center mb-2 p-2 border rounded model-row">
-                    <div cdkDragHandle class="me-2" style="cursor: grab;" title="Drag to reorder">
+                <div
+                  cdkDropList
+                  (cdkDropListDropped)="onArrayDrop(models, $event)"
+                  [cdkDropListData]="models.controls"
+                >
+                  <div
+                    *ngFor="let modelCtrl of models.controls; let i = index"
+                    cdkDrag
+                    class="d-flex justify-content-between align-items-center mb-2 p-2 border rounded model-row"
+                  >
+                    <div
+                      cdkDragHandle
+                      class="me-2"
+                      style="cursor: grab"
+                      title="Drag to reorder"
+                    >
                       <svg cIcon name="cilMenu" size="lg"></svg>
                     </div>
                     <span>{{ modelCtrl.value }}</span>
-                    <button cButton type="button" color="danger" variant="ghost" size="sm"
-                      (click)="removeItem(models, i)" title="Remove Model">
+                    <button
+                      cButton
+                      type="button"
+                      color="danger"
+                      variant="ghost"
+                      size="sm"
+                      (click)="removeItem(models, i)"
+                      title="Remove Model"
+                    >
                       <svg cIcon name="cilTrash" size="lg"></svg>
                     </button>
                   </div>
@@ -96,35 +176,73 @@
           </ng-container>
 
           <!-- Shifts Management -->
-          <ng-container *ngIf="editSection === 'full' || editSection === 'shifts'">
+          <ng-container
+            *ngIf="editSection === 'full' || editSection === 'shifts'"
+          >
             <c-card class="mb-3">
               <c-card-body formArrayName="shifts">
                 <div class="mb-3">
-                  <label cLabel for="newShiftName" class="fw-semibold">Add New Shift</label>
+                  <label cLabel for="newShiftName" class="fw-semibold"
+                    >Add New Shift</label
+                  >
                   <div class="input-group">
-                    <input cFormControl type="text" id="newShiftName" placeholder="Enter shift name" #newShiftInput
-                      (blur)="handleItemAddOnBlur(shifts, newShiftInput)" (keydown.enter)="
-              handleItemAdd(shifts, newShiftInput);
-              $event.preventDefault()
-            " />
-                    <button cButton type="button" color="success" variant="outline"
-                      (click)="handleItemAdd(shifts, newShiftInput)">
+                    <input
+                      cFormControl
+                      type="text"
+                      id="newShiftName"
+                      placeholder="Enter shift name"
+                      #newShiftInput
+                      (blur)="handleItemAddOnBlur(shifts, newShiftInput)"
+                      (keydown.enter)="
+                        handleItemAdd(shifts, newShiftInput);
+                        $event.preventDefault()
+                      "
+                    />
+                    <button
+                      cButton
+                      type="button"
+                      color="success"
+                      variant="outline"
+                      (click)="handleItemAdd(shifts, newShiftInput)"
+                    >
                       <svg cIcon name="cilPlus" size="sm"></svg> Add Shift
                     </button>
                   </div>
                 </div>
-                <div *ngIf="shifts.controls.length === 0" class="text-center text-muted py-3">
+                <div
+                  *ngIf="shifts.controls.length === 0"
+                  class="text-center text-muted py-3"
+                >
                   <p>No shifts defined.</p>
                 </div>
-                <div cdkDropList (cdkDropListDropped)="onArrayDrop(shifts, $event)" [cdkDropListData]="shifts.controls">
-                  <div *ngFor="let shiftCtrl of shifts.controls; let i = index" cdkDrag
-                    class="d-flex justify-content-between align-items-center mb-2 p-2 border rounded shift-row">
-                    <div cdkDragHandle class="me-2" style="cursor: grab;" title="Drag to reorder">
+                <div
+                  cdkDropList
+                  (cdkDropListDropped)="onArrayDrop(shifts, $event)"
+                  [cdkDropListData]="shifts.controls"
+                >
+                  <div
+                    *ngFor="let shiftCtrl of shifts.controls; let i = index"
+                    cdkDrag
+                    class="d-flex justify-content-between align-items-center mb-2 p-2 border rounded shift-row"
+                  >
+                    <div
+                      cdkDragHandle
+                      class="me-2"
+                      style="cursor: grab"
+                      title="Drag to reorder"
+                    >
                       <svg cIcon name="cilMenu" size="lg"></svg>
                     </div>
                     <span>{{ shiftCtrl.value }}</span>
-                    <button cButton type="button" color="danger" variant="ghost" size="sm"
-                      (click)="removeItem(shifts, i)" title="Remove Shift">
+                    <button
+                      cButton
+                      type="button"
+                      color="danger"
+                      variant="ghost"
+                      size="sm"
+                      (click)="removeItem(shifts, i)"
+                      title="Remove Shift"
+                    >
                       <svg cIcon name="cilTrash" size="lg"></svg>
                     </button>
                   </div>
@@ -134,36 +252,73 @@
           </ng-container>
 
           <!-- Periods Management -->
-          <ng-container *ngIf="editSection === 'full' || editSection === 'periods'">
+          <ng-container
+            *ngIf="editSection === 'full' || editSection === 'periods'"
+          >
             <c-card class="mb-3">
               <c-card-body formArrayName="periods">
                 <div class="mb-3">
-                  <label cLabel for="newPeriodName" class="fw-semibold">Add New Period</label>
+                  <label cLabel for="newPeriodName" class="fw-semibold"
+                    >Add New Period</label
+                  >
                   <div class="input-group">
-                    <input cFormControl type="text" id="newPeriodName" placeholder="Enter period name" #newPeriodInput
-                      (blur)="handleItemAddOnBlur(periods, newPeriodInput)" (keydown.enter)="
-              handleItemAdd(periods, newPeriodInput);
-              $event.preventDefault()
-            " />
-                    <button cButton type="button" color="success" variant="outline"
-                      (click)="handleItemAdd(periods, newPeriodInput)">
+                    <input
+                      cFormControl
+                      type="text"
+                      id="newPeriodName"
+                      placeholder="Enter period name"
+                      #newPeriodInput
+                      (blur)="handleItemAddOnBlur(periods, newPeriodInput)"
+                      (keydown.enter)="
+                        handleItemAdd(periods, newPeriodInput);
+                        $event.preventDefault()
+                      "
+                    />
+                    <button
+                      cButton
+                      type="button"
+                      color="success"
+                      variant="outline"
+                      (click)="handleItemAdd(periods, newPeriodInput)"
+                    >
                       <svg cIcon name="cilPlus" size="sm"></svg> Add Period
                     </button>
                   </div>
                 </div>
-                <div *ngIf="periods.controls.length === 0" class="text-center text-muted py-3">
+                <div
+                  *ngIf="periods.controls.length === 0"
+                  class="text-center text-muted py-3"
+                >
                   <p>No periods defined.</p>
                 </div>
-                <div cdkDropList (cdkDropListDropped)="onArrayDrop(periods, $event)"
-                  [cdkDropListData]="periods.controls">
-                  <div *ngFor="let periodCtrl of periods.controls; let i = index" cdkDrag
-                    class="d-flex justify-content-between align-items-center mb-2 p-2 border rounded period-row">
-                    <div cdkDragHandle class="me-2" style="cursor: grab;" title="Drag to reorder">
+                <div
+                  cdkDropList
+                  (cdkDropListDropped)="onArrayDrop(periods, $event)"
+                  [cdkDropListData]="periods.controls"
+                >
+                  <div
+                    *ngFor="let periodCtrl of periods.controls; let i = index"
+                    cdkDrag
+                    class="d-flex justify-content-between align-items-center mb-2 p-2 border rounded period-row"
+                  >
+                    <div
+                      cdkDragHandle
+                      class="me-2"
+                      style="cursor: grab"
+                      title="Drag to reorder"
+                    >
                       <svg cIcon name="cilMenu" size="lg"></svg>
                     </div>
                     <span>{{ periodCtrl.value }}</span>
-                    <button cButton type="button" color="danger" variant="ghost" size="sm"
-                      (click)="removeItem(periods, i)" title="Remove Period">
+                    <button
+                      cButton
+                      type="button"
+                      color="danger"
+                      variant="ghost"
+                      size="sm"
+                      (click)="removeItem(periods, i)"
+                      title="Remove Period"
+                    >
                       <svg cIcon name="cilTrash" size="lg"></svg>
                     </button>
                   </div>
@@ -173,32 +328,44 @@
           </ng-container>
 
           <!-- Display Settings Card -->
-          <ng-container *ngIf="editSection === 'full' || editSection === 'display_settings'">
+          <ng-container
+            *ngIf="editSection === 'full' || editSection === 'display_settings'"
+          >
             <c-card class="mb-3">
               <c-card-body>
-                <button cButton type="button" color="info" variant="outline" (click)="openDisplaySettingsModal()">
+                <button
+                  cButton
+                  type="button"
+                  color="info"
+                  variant="outline"
+                  (click)="openDisplaySettingsModal()"
+                >
                   <svg cIcon name="cilPaint" class="me-2"></svg>Edit Display
                   Settings
                 </button>
-                <div *ngIf="currentDisplaySettings" class="mt-2 small text-muted">
+                <div
+                  *ngIf="currentDisplaySettings"
+                  class="mt-2 small text-muted"
+                >
                   <p class="mb-1">
                     Current Bot:
                     <strong>{{
                       currentDisplaySettings.bot_name || "N/A"
-                      }}</strong>
+                    }}</strong>
                     for Agency:
                     <strong>{{
                       currentDisplaySettings.agency_name || "N/A"
-                      }}</strong>
+                    }}</strong>
                   </p>
                   <p class="mb-0">
                     Ephemeral:
                     {{
-                    currentDisplaySettings.ephemeral_responses ? "Yes" : "No"
+                      currentDisplaySettings.ephemeral_responses ? "Yes" : "No"
                     }}
                     | Show Average:
                     {{ currentDisplaySettings.show_average ? "Yes" : "No" }} |
-                    Show IDs: {{ currentDisplaySettings.show_ids ? "Yes" : "No" }}
+                    Show IDs:
+                    {{ currentDisplaySettings.show_ids ? "Yes" : "No" }}
                   </p>
                 </div>
               </c-card-body>
@@ -206,65 +373,146 @@
           </ng-container>
 
           <!-- Top-Level Roles Management -->
-          <ng-container *ngIf="editSection === 'full' || editSection === 'top_level_roles'">
+          <ng-container
+            *ngIf="editSection === 'full' || editSection === 'top_level_roles'"
+          >
             <c-card class="mb-3">
               <c-card-body formGroupName="roles">
                 <div class="mb-3">
-                  <label cLabel for="newTopLevelRoleId" class="fw-semibold">Add New Role</label>
+                  <label cLabel for="newTopLevelRoleId" class="fw-semibold"
+                    >Add New Role</label
+                  >
                   <div class="input-group mb-3">
-                    <select cFormControl class="form-select" id="roleDropdown"
-                      (change)="onRoleDropdownChange($event, newTopLevelRoleInput)"
-                      aria-label="Select existing role for top-level roles" title="Select existing role">
+                    <select
+                      cFormControl
+                      class="form-select"
+                      id="roleDropdown"
+                      (change)="
+                        onRoleDropdownChange($event, newTopLevelRoleInput)
+                      "
+                      aria-label="Select existing role for top-level roles"
+                      title="Select existing role"
+                    >
                       <option value="">Select existing role...</option>
-                      <option *ngFor="let role of availableRoles" [value]="role.id">{{ role.name }}</option>
+                      <option
+                        *ngFor="let role of availableRoles"
+                        [value]="role.id"
+                      >
+                        {{ role.name }}
+                      </option>
                     </select>
-                    <input cFormControl type="text" id="newTopLevelRoleId" placeholder="Enter Role ID"
-                      #newTopLevelRoleInput (blur)="addTopLevelRole(newTopLevelRoleInput.value)" (keydown.enter)="
-              addTopLevelRole(newTopLevelRoleInput.value);
-              $event.preventDefault()
-            " />
-                    <button cButton type="button" color="success" variant="outline"
-                      (click)="addTopLevelRole(newTopLevelRoleInput.value)">
+                    <input
+                      cFormControl
+                      type="text"
+                      id="newTopLevelRoleId"
+                      placeholder="Enter Role ID"
+                      #newTopLevelRoleInput
+                      (blur)="addTopLevelRole(newTopLevelRoleInput.value)"
+                      (keydown.enter)="
+                        addTopLevelRole(newTopLevelRoleInput.value);
+                        $event.preventDefault()
+                      "
+                    />
+                    <button
+                      cButton
+                      type="button"
+                      color="success"
+                      variant="outline"
+                      (click)="addTopLevelRole(newTopLevelRoleInput.value)"
+                    >
                       <svg cIcon name="cilPlus" size="sm"></svg> Add Role
                     </button>
                   </div>
-                  <div *ngIf="objectKeys(topLevelRoles.controls).length === 0; else topLevelRolesDefined">
-                    <p class="text-muted">No general role settings defined.</p>
+                  <div
+                    *ngIf="
+                      objectKeys(topLevelRoles.controls).length === 0;
+                      else topLevelRolesDefined
+                    "
+                  >
+                    <p class="text-muted text-center">No general role settings defined.</p>
                   </div>
                   <ng-template #topLevelRolesDefined>
-                    <div cdkDropList (cdkDropListDropped)="onTopLevelRoleDrop($event)"
-                      [cdkDropListData]="topLevelRoleIds">
-                      <div *ngFor="let roleId of topLevelRoleIds; let i = index" [formGroupName]="roleId" cdkDrag
-                        class="top-level-role-row d-flex align-items-center flex-wrap p-2 border rounded mb-3">
-                        <div class="flex-grow-1 min-width-0 me-2 mb-2 mb-md-0" style="max-width: 250px;">
-                          <label class="col-form-label text-truncate w-100 mb-0">
-                            <code class="text-primary p-2">{{ getRoleName(roleId) }}</code>
+                    <div
+                      cdkDropList
+                      (cdkDropListDropped)="onTopLevelRoleDrop($event)"
+                      [cdkDropListData]="topLevelRoleIds"
+                    >
+                      <div
+                        *ngFor="let roleId of topLevelRoleIds; let i = index"
+                        [formGroupName]="roleId"
+                        cdkDrag
+                        class="top-level-role-row d-flex align-items-center flex-wrap p-2 border rounded mb-3"
+                      >
+                        <div
+                          class="flex-grow-1 min-width-0 me-2 mb-2 mb-md-0"
+                          style="max-width: 250px"
+                        >
+                          <label
+                            class="col-form-label text-truncate w-100 mb-0"
+                          >
+                            <code class="text-primary p-2">{{
+                              getRoleName(roleId)
+                            }}</code>
                           </label>
                         </div>
-                        <div class="flex-grow-1 flex-shrink-1 me-2 mb-2 mb-md-0"
-                          style="min-width: 120px; max-width: 200px;">
-                          <input cFormControl type="number" [id]="'role_value_' + roleId" formControlName="value"
-                            required placeholder="Enter numeric value" class="form-control w-100" />
-                          <c-form-feedback [valid]="false" *ngIf="
-          topLevelRoles.get(roleId)?.get('value')?.hasError('required') &&
-          (topLevelRoles.get(roleId)?.get('value')?.dirty ||
-            topLevelRoles.get(roleId)?.get('value')?.touched ||
-            submitAttempted)
-        ">
+                        <div
+                          class="flex-grow-1 flex-shrink-1 me-2 mb-2 mb-md-0"
+                          style="min-width: 120px; max-width: 200px"
+                        >
+                          <div class="input-group">
+                            <input
+                              cFormControl
+                              type="number"
+                              [id]="'role_value_' + roleId"
+                              formControlName="value"
+                              min="0"
+                              max="100"
+                              placeholder="Commission %"
+                            />
+                            <span class="input-group-text">%</span>
+                          </div>
+                          <c-form-feedback
+                            [valid]="false"
+                            *ngIf="
+                              topLevelRoles
+                                .get(roleId)
+                                ?.get('value')
+                                ?.hasError('required') &&
+                              (topLevelRoles.get(roleId)?.get('value')?.dirty ||
+                                topLevelRoles.get(roleId)?.get('value')
+                                  ?.touched ||
+                                submitAttempted)
+                            "
+                          >
                             Value is required.
                           </c-form-feedback>
-                          <c-form-feedback [valid]="false" *ngIf="
-          topLevelRoles.get(roleId)?.get('value')?.hasError('pattern') &&
-          (topLevelRoles.get(roleId)?.get('value')?.dirty ||
-            topLevelRoles.get(roleId)?.get('value')?.touched ||
-            submitAttempted)
-        ">
+                          <c-form-feedback
+                            [valid]="false"
+                            *ngIf="
+                              topLevelRoles
+                                .get(roleId)
+                                ?.get('value')
+                                ?.hasError('pattern') &&
+                              (topLevelRoles.get(roleId)?.get('value')?.dirty ||
+                                topLevelRoles.get(roleId)?.get('value')
+                                  ?.touched ||
+                                submitAttempted)
+                            "
+                          >
                             Value must be a valid number (integer or decimal).
                           </c-form-feedback>
                         </div>
                         <div class="ms-auto">
-                          <button cButton type="button" color="danger" variant="ghost" size="sm" class="p-1"
-                            (click)="removeTopLevelRole(roleId)" title="Remove Role">
+                          <button
+                            cButton
+                            type="button"
+                            color="danger"
+                            variant="ghost"
+                            size="sm"
+                            class="p-1"
+                            (click)="removeTopLevelRole(roleId)"
+                            title="Remove Role"
+                          >
                             <svg cIcon name="cilTrash" size="lg"></svg>
                           </button>
                         </div>
@@ -277,12 +525,21 @@
           </ng-container>
 
           <!-- Bonus Rules Card -->
-          <ng-container *ngIf="editSection === 'full' || editSection === 'bonus_rules'">
+          <ng-container
+            *ngIf="editSection === 'full' || editSection === 'bonus_rules'"
+          >
             <c-card class="mb-3">
               <c-card-header>
                 <!-- Bonus Rules -->
-                <button cButton type="button" color="success" variant="outline" size="sm" class="float-end"
-                  (click)="addBonusRule()">
+                <button
+                  cButton
+                  type="button"
+                  color="success"
+                  variant="outline"
+                  size="sm"
+                  class="float-end"
+                  (click)="addBonusRule()"
+                >
                   <svg cIcon name="cilPlus" size="sm"></svg> Add Rule
                 </button>
               </c-card-header>
@@ -291,89 +548,216 @@
                   <!-- Define bonus payouts based on value ranges. Each rule applies a bonus if the value falls within the -->
                   <!-- specified range. -->
                 </p>
-                <div *ngIf="bonus_rules.controls.length === 0" class="text-center text-muted py-3">
+                <div
+                  *ngIf="bonus_rules.controls.length === 0"
+                  class="text-center text-muted py-3"
+                >
                   <svg cIcon name="cilMoney" size="xl" class="mb-2"></svg>
                   <p>No bonus rules defined.</p>
                 </div>
-                <div cdkDropList (cdkDropListDropped)="onBonusRuleDrop($event)"
-                  [cdkDropListData]="bonus_rules.controls">
-                  <div *ngFor="let ruleGroup of bonus_rules.controls; let i = index" [formGroupName]="i" cdkDrag
-                    class="bonus-rule-wrapper">
+                <div
+                  cdkDropList
+                  (cdkDropListDropped)="onBonusRuleDrop($event)"
+                  [cdkDropListData]="bonus_rules.controls"
+                >
+                  <div
+                    *ngFor="
+                      let ruleGroup of bonus_rules.controls;
+                      let i = index
+                    "
+                    [formGroupName]="i"
+                    cdkDrag
+                    class="bonus-rule-wrapper"
+                  >
                     <div
-                      class="row g-3 align-items-center p-2 border rounded position-relative flex-wrap bonus-rule-row">
-                      <div cdkDragHandle class="col-auto d-flex align-items-center me-2" style="cursor: grab;"
-                        title="Drag to reorder" aria-label="Drag to reorder bonus rule">
+                      class="row g-3 align-items-center p-2 border rounded position-relative flex-wrap bonus-rule-row"
+                    >
+                      <div
+                        cdkDragHandle
+                        class="col-auto d-flex align-items-center me-2"
+                        style="cursor: grab"
+                        title="Drag to reorder"
+                        aria-label="Drag to reorder bonus rule"
+                      >
                         <svg cIcon name="cilMenu" size="lg"></svg>
                       </div>
                       <c-col xs="12" md="3">
                         <label cLabel [for]="'bonus_from_' + i" class="small">
                           From ($)
-                          <svg cIcon name="cilInfo" size="sm" class="ms-1"
-                            title="Minimum value for this bonus rule"></svg>
+                          <svg
+                            cIcon
+                            name="cilInfo"
+                            size="sm"
+                            class="ms-1"
+                            title="Minimum value for this bonus rule"
+                          ></svg>
                         </label>
-                        <input cFormControl type="number" [id]="'bonus_from_' + i" formControlName="from" required
-                          min="0" placeholder="Min value"
-                          [class.is-invalid]="ruleGroup.get('from')?.invalid && (ruleGroup.get('from')?.dirty || ruleGroup.get('from')?.touched || submitAttempted)" />
-                        <c-form-feedback [valid]="false" *ngIf="
-              ruleGroup.get('from')?.hasError('required') &&
-              (ruleGroup.get('from')?.dirty || ruleGroup.get('from')?.touched || submitAttempted)">
+                        <input
+                          cFormControl
+                          type="number"
+                          [id]="'bonus_from_' + i"
+                          formControlName="from"
+                          required
+                          min="0"
+                          placeholder="Min value"
+                          [class.is-invalid]="
+                            ruleGroup.get('from')?.invalid &&
+                            (ruleGroup.get('from')?.dirty ||
+                              ruleGroup.get('from')?.touched ||
+                              submitAttempted)
+                          "
+                        />
+                        <c-form-feedback
+                          [valid]="false"
+                          *ngIf="
+                            ruleGroup.get('from')?.hasError('required') &&
+                            (ruleGroup.get('from')?.dirty ||
+                              ruleGroup.get('from')?.touched ||
+                              submitAttempted)
+                          "
+                        >
                           Value is required.
                         </c-form-feedback>
-                        <c-form-feedback [valid]="false" *ngIf="
-              ruleGroup.get('from')?.hasError('min') &&
-              (ruleGroup.get('from')?.dirty || ruleGroup.get('from')?.touched || submitAttempted)">
+                        <c-form-feedback
+                          [valid]="false"
+                          *ngIf="
+                            ruleGroup.get('from')?.hasError('min') &&
+                            (ruleGroup.get('from')?.dirty ||
+                              ruleGroup.get('from')?.touched ||
+                              submitAttempted)
+                          "
+                        >
                           Value must be non-negative.
                         </c-form-feedback>
                       </c-col>
                       <c-col xs="12" md="3">
                         <label cLabel [for]="'bonus_to_' + i" class="small">
                           To ($)
-                          <svg cIcon name="cilInfo" size="sm" class="ms-1"
-                            title="Maximum value for this bonus rule"></svg>
+                          <svg
+                            cIcon
+                            name="cilInfo"
+                            size="sm"
+                            class="ms-1"
+                            title="Maximum value for this bonus rule"
+                          ></svg>
                         </label>
-                        <input cFormControl type="number" [id]="'bonus_to_' + i" formControlName="to" required min="0"
-                          placeholder="Max value" [class.is-invalid]="
-                (ruleGroup.get('to')?.invalid && (ruleGroup.get('to')?.dirty || ruleGroup.get('to')?.touched || submitAttempted)) ||
-                (ruleGroup.hasError('toLessThanFrom') && (ruleGroup.get('to')?.dirty || ruleGroup.get('to')?.touched || submitAttempted))
-              " />
-                        <c-form-feedback [valid]="false" *ngIf="
-              ruleGroup.hasError('toLessThanFrom') &&
-              (ruleGroup.get('to')?.dirty || ruleGroup.get('to')?.touched || submitAttempted)">
+                        <input
+                          cFormControl
+                          type="number"
+                          [id]="'bonus_to_' + i"
+                          formControlName="to"
+                          required
+                          min="0"
+                          placeholder="Max value"
+                          [class.is-invalid]="
+                            (ruleGroup.get('to')?.invalid &&
+                              (ruleGroup.get('to')?.dirty ||
+                                ruleGroup.get('to')?.touched ||
+                                submitAttempted)) ||
+                            (ruleGroup.hasError('toLessThanFrom') &&
+                              (ruleGroup.get('to')?.dirty ||
+                                ruleGroup.get('to')?.touched ||
+                                submitAttempted))
+                          "
+                        />
+                        <c-form-feedback
+                          [valid]="false"
+                          *ngIf="
+                            ruleGroup.hasError('toLessThanFrom') &&
+                            (ruleGroup.get('to')?.dirty ||
+                              ruleGroup.get('to')?.touched ||
+                              submitAttempted)
+                          "
+                        >
                           'To' must be greater than or equal to 'From'.
                         </c-form-feedback>
-                        <c-form-feedback [valid]="false" *ngIf="
-              ruleGroup.get('to')?.hasError('required') &&
-              (ruleGroup.get('to')?.dirty || ruleGroup.get('to')?.touched || submitAttempted)">
+                        <c-form-feedback
+                          [valid]="false"
+                          *ngIf="
+                            ruleGroup.get('to')?.hasError('required') &&
+                            (ruleGroup.get('to')?.dirty ||
+                              ruleGroup.get('to')?.touched ||
+                              submitAttempted)
+                          "
+                        >
                           Value is required.
                         </c-form-feedback>
-                        <c-form-feedback [valid]="false" *ngIf="
-              ruleGroup.get('to')?.hasError('min') &&
-              (ruleGroup.get('to')?.dirty || ruleGroup.get('to')?.touched || submitAttempted)">
+                        <c-form-feedback
+                          [valid]="false"
+                          *ngIf="
+                            ruleGroup.get('to')?.hasError('min') &&
+                            (ruleGroup.get('to')?.dirty ||
+                              ruleGroup.get('to')?.touched ||
+                              submitAttempted)
+                          "
+                        >
                           Value must be non-negative.
                         </c-form-feedback>
                       </c-col>
                       <c-col xs="12" md="3">
                         <label cLabel [for]="'bonus_amount_' + i" class="small">
                           Bonus ($)
-                          <svg cIcon name="cilInfo" size="sm" class="ms-1" title="Bonus amount for this rule"></svg>
+                          <svg
+                            cIcon
+                            name="cilInfo"
+                            size="sm"
+                            class="ms-1"
+                            title="Bonus amount for this rule"
+                          ></svg>
                         </label>
-                        <input cFormControl type="number" [id]="'bonus_amount_' + i" formControlName="amount" required
-                          min="0" placeholder="Bonus amount"
-                          [class.is-invalid]="ruleGroup.get('amount')?.invalid && (ruleGroup.get('amount')?.dirty || ruleGroup.get('amount')?.touched || submitAttempted)" />
-                        <c-form-feedback [valid]="false" *ngIf="
-              ruleGroup.get('amount')?.hasError('required') &&
-              (ruleGroup.get('amount')?.dirty || ruleGroup.get('amount')?.touched || submitAttempted)">
+                        <input
+                          cFormControl
+                          type="number"
+                          [id]="'bonus_amount_' + i"
+                          formControlName="amount"
+                          required
+                          min="0"
+                          placeholder="Bonus amount"
+                          [class.is-invalid]="
+                            ruleGroup.get('amount')?.invalid &&
+                            (ruleGroup.get('amount')?.dirty ||
+                              ruleGroup.get('amount')?.touched ||
+                              submitAttempted)
+                          "
+                        />
+                        <c-form-feedback
+                          [valid]="false"
+                          *ngIf="
+                            ruleGroup.get('amount')?.hasError('required') &&
+                            (ruleGroup.get('amount')?.dirty ||
+                              ruleGroup.get('amount')?.touched ||
+                              submitAttempted)
+                          "
+                        >
                           Value is required.
                         </c-form-feedback>
-                        <c-form-feedback [valid]="false" *ngIf="
-              ruleGroup.get('amount')?.hasError('min') &&
-              (ruleGroup.get('amount')?.dirty || ruleGroup.get('amount')?.touched || submitAttempted)">
+                        <c-form-feedback
+                          [valid]="false"
+                          *ngIf="
+                            ruleGroup.get('amount')?.hasError('min') &&
+                            (ruleGroup.get('amount')?.dirty ||
+                              ruleGroup.get('amount')?.touched ||
+                              submitAttempted)
+                          "
+                        >
                           Value must be non-negative.
                         </c-form-feedback>
                       </c-col>
-                      <c-col xs="12" md="1" class="delete-col text-end mt-2 mt-md-0">
-                        <button cButton type="button" color="danger" variant="ghost" size="sm" class="p-1"
-                          (click)="removeBonusRule(i)" title="Remove Rule">
+                      <c-col
+                        xs="12"
+                        md="1"
+                        class="delete-col text-end mt-2 mt-md-0"
+                      >
+                        <button
+                          cButton
+                          type="button"
+                          color="danger"
+                          variant="ghost"
+                          size="sm"
+                          class="p-1"
+                          (click)="removeBonusRule(i)"
+                          title="Remove Rule"
+                        >
                           <svg cIcon name="cilTrash" size="lg"></svg>
                         </button>
                       </c-col>
@@ -385,67 +769,149 @@
           </ng-container>
 
           <!-- Commission Settings Card -->
-          <ng-container *ngIf="
-    editSection === 'full' ||
-    editSection === 'commission_settings_roles' ||
-    editSection === 'commission_settings_users'
-  ">
+          <ng-container
+            *ngIf="
+              editSection === 'full' ||
+              editSection === 'commission_settings_roles' ||
+              editSection === 'commission_settings_users'
+            "
+          >
             <c-card class="mb-3">
               <c-card-body formGroupName="commission_settings">
-                <ng-container *ngIf="
-          editSection === 'full' ||
-          editSection === 'commission_settings_roles'
-        ">
+                <ng-container
+                  *ngIf="
+                    editSection === 'full' ||
+                    editSection === 'commission_settings_roles'
+                  "
+                >
                   <div class="mb-3">
-                    <label cLabel for="newRoleCommissionId" class="fw-semibold">Add Role Commission</label>
+                    <label cLabel for="newRoleCommissionId" class="fw-semibold"
+                      >Add Role Commission</label
+                    >
                     <div class="input-group mb-3">
-                      <select cFormControl class="form-select" id="commissionRoleDropdown"
-                        (change)="onCommissionRoleDropdownChange($event, newRoleCommissionInput)"
-                        title="Select existing role for commission settings">
+                      <select
+                        cFormControl
+                        class="form-select"
+                        id="commissionRoleDropdown"
+                        (change)="
+                          onCommissionRoleDropdownChange(
+                            $event,
+                            newRoleCommissionInput
+                          )
+                        "
+                        title="Select existing role for commission settings"
+                      >
                         <option value="">Select existing role...</option>
-                        <option *ngFor="let role of availableRoles" [value]="role.id">{{ role.name }}</option>
+                        <option
+                          *ngFor="let role of availableRoles"
+                          [value]="role.id"
+                        >
+                          {{ role.name }}
+                        </option>
                       </select>
-                      <input cFormControl type="text" id="newRoleCommissionId" placeholder="Enter Role ID"
-                        #newRoleCommissionInput (blur)="addRoleCommission(newRoleCommissionInput.value)"
+                      <input
+                        cFormControl
+                        type="text"
+                        id="newRoleCommissionId"
+                        placeholder="Enter Role ID"
+                        #newRoleCommissionInput
+                        (blur)="addRoleCommission(newRoleCommissionInput.value)"
                         (keydown.enter)="
-    addRoleCommission(newRoleCommissionInput.value);
-    $event.preventDefault()
-  " />
-                      <button cButton type="button" color="success" variant="outline"
-                        (click)="addRoleCommission(newRoleCommissionInput.value)">
+                          addRoleCommission(newRoleCommissionInput.value);
+                          $event.preventDefault()
+                        "
+                      />
+                      <button
+                        cButton
+                        type="button"
+                        color="success"
+                        variant="outline"
+                        (click)="
+                          addRoleCommission(newRoleCommissionInput.value)
+                        "
+                      >
                         <svg cIcon name="cilPlus" size="sm"></svg> Add Role
                       </button>
                     </div>
                   </div>
                   <div formGroupName="roles">
-                    <div *ngIf="commissionRoles && commissionRoleIds.length > 0; else noCommissionRolesDefined">
-                      <div cdkDropList (cdkDropListDropped)="onCommissionRoleDrop($event)"
-                        [cdkDropListData]="commissionRoleIds">
-                        <div *ngFor="let roleId of commissionRoleIds" cdkDrag [formGroupName]="roleId"
-                          class="commission-role-row d-flex align-items-center flex-wrap p-2 border rounded mb-2">
-                          <div cdkDragHandle class="me-2" style="cursor: grab;" title="Drag to reorder"></div>
-                          <div class="flex-grow-1 min-width-0 me-2 mb-2 mb-md-0" style="max-width: 250px;">
-                            <label class="col-form-label text-truncate w-100 mb-0">
-                              <code class="text-primary">{{ getRoleName(roleId) }}</code>
+                    <div
+                      *ngIf="
+                        commissionRoles && commissionRoleIds.length > 0;
+                        else noCommissionRolesDefined
+                      "
+                    >
+                      <div
+                        cdkDropList
+                        (cdkDropListDropped)="onCommissionRoleDrop($event)"
+                        [cdkDropListData]="commissionRoleIds"
+                      >
+                        <div
+                          *ngFor="let roleId of commissionRoleIds"
+                          cdkDrag
+                          [formGroupName]="roleId"
+                          class="commission-role-row d-flex align-items-center flex-wrap p-2 border rounded mb-2"
+                        >
+                          <div
+                            cdkDragHandle
+                            class="me-2"
+                            style="cursor: grab"
+                            title="Drag to reorder"
+                          ></div>
+                          <div
+                            class="flex-grow-1 min-width-0 me-2 mb-2 mb-md-0"
+                            style="max-width: 250px"
+                          >
+                            <label
+                              class="col-form-label text-truncate w-100 mb-0"
+                            >
+                              <code class="text-primary">{{
+                                getRoleName(roleId)
+                              }}</code>
                             </label>
                           </div>
-                          <div class="flex-grow-1 me-2 mb-2 mb-md-0" style="min-width: 120px; max-width: 200px;">
+                          <div
+                            class="flex-grow-1 me-2 mb-2 mb-md-0"
+                            style="min-width: 120px; max-width: 200px"
+                          >
                             <div class="input-group">
-                              <input cFormControl type="number" formControlName="commission_percentage" min="0"
-                                max="100" placeholder="Commission %" />
+                              <input
+                                cFormControl
+                                type="number"
+                                formControlName="commission_percentage"
+                                min="0"
+                                max="100"
+                                placeholder="Commission %"
+                              />
                               <span class="input-group-text">%</span>
                             </div>
                           </div>
-                          <div class="flex-grow-1 me-2 mb-2 mb-md-0" style="min-width: 120px; max-width: 200px;">
+                          <div
+                            class="flex-grow-1 me-2 mb-2 mb-md-0"
+                            style="min-width: 120px; max-width: 200px"
+                          >
                             <div class="input-group">
-                              <input cFormControl type="number" formControlName="hourly_rate" min="0"
-                                placeholder="Hourly Rate ($)" />
+                              <input
+                                cFormControl
+                                type="number"
+                                formControlName="hourly_rate"
+                                min="0"
+                                placeholder="Hourly Rate ($)"
+                              />
                               <span class="input-group-text">$</span>
                             </div>
                           </div>
                           <div class="ms-auto">
-                            <button cButton type="button" color="danger" variant="ghost" size="sm" class="p-1"
-                              (click)="removeRoleCommission(roleId)" title="Remove Role Commission">
+                            <button
+                              cButton
+                              type="button"
+                              color="danger"
+                              variant="ghost"
+                              size="sm"
+                              class="p-1"
+                              (click)="removeRoleCommission(roleId)"
+                              title="Remove Role Commission"
+                            >
                               <svg cIcon name="cilTrash" size="lg"></svg>
                             </button>
                           </div>
@@ -453,75 +919,169 @@
                       </div>
                     </div>
                     <ng-template #noCommissionRolesDefined>
-                      <p class="text-muted">No role commissions defined.</p>
+                      <p class="text-muted text-center">No role commissions defined.</p>
                     </ng-template>
                   </div>
                 </ng-container>
                 <!-- <hr *ngIf="editSection === 'full'" /> -->
-                <ng-container *ngIf="
+                <ng-container
+                  *ngIf="
                     editSection === 'full' ||
                     editSection === 'commission_settings_users'
-                  ">
+                  "
+                >
                   <div>
                     <!-- Add New User Override Input Group -->
                     <div class="mb-3">
-                      <label cLabel for="newUserOverrideId" class="fw-semibold">Add User Override</label>
+                      <label cLabel for="newUserOverrideId" class="fw-semibold"
+                        >Add User Override</label
+                      >
                       <div class="input-group">
-                        <select cFormControl class="form-select" id="userOverrideDropdown"
-                          (change)="onUserDropdownChange($event, newUserOverrideInput)"
-                          title="Select existing user for user override">
+                        <select
+                          cFormControl
+                          class="form-select"
+                          id="userOverrideDropdown"
+                          (change)="
+                            onUserDropdownChange($event, newUserOverrideInput)
+                          "
+                          title="Select existing user for user override"
+                        >
                           <option value="">Select existing user...</option>
-                          <option *ngFor="let user of availableUsers" [value]="user.id">
-                            {{ user.displayName || user.username }} ({{ user.username }})
+                          <option
+                            *ngFor="let user of availableUsers"
+                            [value]="user.id"
+                          >
+                            {{ user.displayName || user.username }} ({{
+                              user.username
+                            }})
                           </option>
                         </select>
-                        <input cFormControl type="text" id="newUserOverrideId" placeholder="Enter User ID"
-                          #newUserOverrideInput (blur)="addUserOverride(newUserOverrideInput)"
-                          (keydown.enter)="addUserOverride(newUserOverrideInput); $event.preventDefault()" />
-                        <button cButton type="button" color="success" variant="outline"
-                          (click)="addUserOverride(newUserOverrideInput)">
+                        <input
+                          cFormControl
+                          type="text"
+                          id="newUserOverrideId"
+                          placeholder="Enter User ID"
+                          #newUserOverrideInput
+                          (blur)="addUserOverride(newUserOverrideInput)"
+                          (keydown.enter)="
+                            addUserOverride(newUserOverrideInput);
+                            $event.preventDefault()
+                          "
+                        />
+                        <button
+                          cButton
+                          type="button"
+                          color="success"
+                          variant="outline"
+                          (click)="addUserOverride(newUserOverrideInput)"
+                        >
                           <svg cIcon name="cilPlus" size="sm"></svg> Add User
                         </button>
                       </div>
                     </div>
                     <div formGroupName="users">
-                      <div *ngIf="userOverrideIds.length > 0; else noCommissionUsersDefined">
-                        <div cdkDropList (cdkDropListDropped)="onUserOverrideDrop($event)"
-                          [cdkDropListData]="userOverrideIds">
-                          <div *ngFor="let userId of userOverrideIds" cdkDrag [formGroupName]="userId"
-                            class="user-override-row d-flex align-items-center flex-wrap p-2 border rounded mb-2">
-                            <div cdkDragHandle class="me-2" style="cursor: grab;" title="Drag to reorder"></div>
-                            <div class="flex-grow-1 min-width-0 me-2 mb-2 mb-md-0" style="max-width: 250px;">
-                              <label class="col-form-label text-truncate fw-medium">
-                                <code class="text-primary">{{ getUserDisplayName(userId) }}</code>
+                      <div
+                        *ngIf="
+                          userOverrideIds.length > 0;
+                          else noCommissionUsersDefined
+                        "
+                      >
+                        <div
+                          cdkDropList
+                          (cdkDropListDropped)="onUserOverrideDrop($event)"
+                          [cdkDropListData]="userOverrideIds"
+                        >
+                          <div
+                            *ngFor="let userId of userOverrideIds"
+                            cdkDrag
+                            [formGroupName]="userId"
+                            class="user-override-row d-flex align-items-center flex-wrap p-2 border rounded mb-2"
+                          >
+                            <div
+                              cdkDragHandle
+                              class="me-2"
+                              style="cursor: grab"
+                              title="Drag to reorder"
+                            ></div>
+                            <div
+                              class="flex-grow-1 min-width-0 me-2 mb-2 mb-md-0"
+                              style="max-width: 250px"
+                            >
+                              <label
+                                class="col-form-label text-truncate fw-medium"
+                              >
+                                <code class="text-primary">{{
+                                  getUserDisplayName(userId)
+                                }}</code>
                               </label>
                             </div>
-                            <div class="flex-grow-1 me-2 mb-2 mb-md-0" style="min-width: 120px; max-width: 200px;">
-                            <div class="input-group">
-                              <input cFormControl type="number" [id]="'hourly_rate_' + userId" formControlName="commission_percentage" min="0"
-                                max="100" placeholder="Commission %" />
-                              <span class="input-group-text">%</span>
+                            <div
+                              class="flex-grow-1 me-2 mb-2 mb-md-0"
+                              style="min-width: 120px; max-width: 200px"
+                            >
+                              <div class="input-group">
+                                <input
+                                  cFormControl
+                                  type="number"
+                                  [id]="'hourly_rate_' + userId"
+                                  formControlName="commission_percentage"
+                                  min="0"
+                                  max="100"
+                                  placeholder="Commission %"
+                                />
+                                <span class="input-group-text">%</span>
+                              </div>
                             </div>
-                          </div>
-                          <div class="flex-grow-1 me-2 mb-2 mb-md-0" style="min-width: 120px; max-width: 200px;">
-                            <div class="input-group">
-                              <input cFormControl type="number" [id]="'commission_percentage_' + userId" formControlName="hourly_rate" min="0"
-                                placeholder="Hourly Rate ($)" />
-                              <span class="input-group-text">$</span>
+                            <div
+                              class="flex-grow-1 me-2 mb-2 mb-md-0"
+                              style="min-width: 120px; max-width: 200px"
+                            >
+                              <div class="input-group">
+                                <input
+                                  cFormControl
+                                  type="number"
+                                  [id]="'commission_percentage_' + userId"
+                                  formControlName="hourly_rate"
+                                  min="0"
+                                  placeholder="Hourly Rate ($)"
+                                />
+                                <span class="input-group-text">$</span>
+                              </div>
                             </div>
-                          </div>
-                            <div class="flex-grow-1 me-2 mb-2 mb-md-0" style="min-width: 120px; max-width: 200px;">
+                            <div
+                              class="flex-grow-1 me-2 mb-2 mb-md-0"
+                              style="min-width: 120px; max-width: 200px"
+                            >
                               <c-form-check>
-                                <input cFormCheckInput type="checkbox" formControlName="override_role"
+                                <input
+                                  cFormCheckInput
+                                  type="checkbox"
+                                  formControlName="override_role"
                                   [id]="'override_role_' + userId"
-                                  [checked]="commissionUsers.get(userId)?.value.override_role === true"
-                                  title="Overrides Role Percentage" />
-                                <label cFormCheckLabel [for]="'override_role_' + userId">Overrides Role %?</label>
+                                  [checked]="
+                                    commissionUsers.get(userId)?.value
+                                      .override_role === true
+                                  "
+                                  title="Overrides Role Percentage"
+                                />
+                                <label
+                                  cFormCheckLabel
+                                  [for]="'override_role_' + userId"
+                                  >Overrides Role %?</label
+                                >
                               </c-form-check>
                             </div>
                             <div class="ms-auto">
-                              <button cButton type="button" color="danger" variant="ghost" size="sm" class="p-1"
-                                (click)="removeUserOverride(userId)" title="Remove User Override">
+                              <button
+                                cButton
+                                type="button"
+                                color="danger"
+                                variant="ghost"
+                                size="sm"
+                                class="p-1"
+                                (click)="removeUserOverride(userId)"
+                                title="Remove User Override"
+                              >
                                 <svg cIcon name="cilTrash" size="lg"></svg>
                               </button>
                             </div>
@@ -529,7 +1089,7 @@
                         </div>
                       </div>
                       <ng-template #noCommissionUsersDefined>
-                        <p class="text-muted">No user overrides defined.</p>
+                        <p class="text-muted text-center">No user overrides defined.</p>
                       </ng-template>
                     </div>
                   </div>
@@ -540,18 +1100,35 @@
         </form>
       </ng-container>
     </c-modal-body>
-    <c-modal-footer class="justify-content-between" *ngIf="!isEditingDisplaySettingsSubFlow">
+    <c-modal-footer
+      class="justify-content-between"
+      *ngIf="!isEditingDisplaySettingsSubFlow"
+    >
       <div>
-        <span *ngIf="configForm?.invalid && submitAttempted && !isLoading" class="text-danger small align-middle">
-          <svg cIcon name="cilWarning" size="sm" class="me-1"></svg>Please correct
-          the errors.
+        <span
+          *ngIf="configForm?.invalid && submitAttempted && !isLoading"
+          class="text-danger small align-middle"
+        >
+          <svg cIcon name="cilWarning" size="sm" class="me-1"></svg>Please
+          correct the errors.
         </span>
       </div>
       <div>
-        <button (click)="closeModal()" cButton color="secondary" variant="outline" class="me-2">
+        <button
+          (click)="closeModal()"
+          cButton
+          color="secondary"
+          variant="outline"
+          class="me-2"
+        >
           <svg cIcon name="cilBan" size="sm" class="me-1"></svg>Cancel
         </button>
-        <button cButton color="primary" type="submit" (click)="saveChanges()" [disabled]="
+        <button
+          cButton
+          color="primary"
+          type="submit"
+          (click)="saveChanges()"
+          [disabled]="
             isLoading ||
             (configForm &&
               configForm.invalid &&
@@ -559,22 +1136,35 @@
               isEditMode &&
               editSection === 'full') ||
             (configForm && configForm.invalid && submitAttempted)
-          ">
-          <c-spinner *ngIf="isLoading" component="span" size="sm" aria-hidden="true" class="me-1"></c-spinner>
-          <svg *ngIf="!isLoading" cIcon [name]="isEditMode ? 'cilSave' : 'cilPlus'" size="sm" class="me-1"></svg>
+          "
+        >
+          <c-spinner
+            *ngIf="isLoading"
+            component="span"
+            size="sm"
+            aria-hidden="true"
+            class="me-1"
+          ></c-spinner>
+          <svg
+            *ngIf="!isLoading"
+            cIcon
+            [name]="isEditMode ? 'cilSave' : 'cilPlus'"
+            size="sm"
+            class="me-1"
+          ></svg>
           {{
-          isLoading
-          ? "Saving..."
-          : isEditMode
-          ? "Save Changes"
-          : "Create Config"
+            isLoading
+              ? "Saving..."
+              : isEditMode
+              ? "Save Changes"
+              : "Create Config"
           }}
         </button>
       </div>
     </c-modal-footer>
   </ng-container>
   <ng-template #displaySettingsFlow>
-    <c-modal-body style="display: none;">
+    <c-modal-body style="display: none">
       <div *ngIf="isLoading">
         <c-spinner></c-spinner>
         <p>Loading Display Settings...</p>
