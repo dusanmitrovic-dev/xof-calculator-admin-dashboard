@@ -4,6 +4,7 @@ import { Observable, BehaviorSubject, throwError, of } from 'rxjs';
 import { map, catchError, tap } from 'rxjs/operators';
 import { jwtDecode } from 'jwt-decode'; // Ensure jwt-decode is installed (npm install jwt-decode)
 import { Router } from '@angular/router';
+import { environment } from '../../environments/environment'; // Use environment.ts or environment.prod.ts automatically
 
 // Interface for the expected response from login/register API
 interface AuthResponse {
@@ -28,7 +29,7 @@ export interface UserPayload {
 })
 export class AuthService {
   // Adjust if your API base path is different or use proxy.conf.json
-  private apiUrl = '/api';
+  private apiUrl = environment.apiUrl; // Always use environment.apiUrl
   private tokenKey = 'authToken';
 
   private isAuthenticatedSubject = new BehaviorSubject<boolean>(false);
@@ -91,7 +92,7 @@ export class AuthService {
    */
   register(credentials: any): Observable<AuthResponse> {
     console.log('AuthService: Attempting registration...');
-    // IMPORTANT: Backend should implement POST /api/auth/register
+    // Use apiUrl directly, do not add extra /api
     return this.http.post<AuthResponse>(`${this.apiUrl}/auth/register`, credentials)
       .pipe(
         tap(response => {
@@ -111,7 +112,7 @@ export class AuthService {
    */
   login(credentials: any): Observable<boolean> {
     console.log('AuthService: Attempting login...');
-    // IMPORTANT: Backend should implement POST /api/auth/login
+    // Use apiUrl directly, do not add extra /api
     return this.http.post<AuthResponse>(`${this.apiUrl}/auth/login`, credentials)
       .pipe(
         map(response => {

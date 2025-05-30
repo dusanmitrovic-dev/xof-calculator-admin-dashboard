@@ -4,6 +4,7 @@ import { Observable, throwError, forkJoin, of } from 'rxjs'; // Import forkJoin,
 import { catchError, map, switchMap, defaultIfEmpty } from 'rxjs/operators'; // Import switchMap, defaultIfEmpty
 import { UserService, AvailableGuild } from './user.service'; // Import UserService and AvailableGuild
 import { AuthService } from '../auth/auth.service';
+import { environment } from '../../environments/environment'; // Import environment
 
 // Define an interface for the Earning structure
 export interface Earning {
@@ -30,7 +31,7 @@ interface DeleteResponse {
   providedIn: 'root'
 })
 export class EarningsService {
-  private apiUrl = '/api/earnings'; // Base URL
+  private apiUrl = `${environment.apiUrl}/earnings`; // Base URL
   private userService = inject(UserService); // Inject UserService
   private authService = inject(AuthService);
 

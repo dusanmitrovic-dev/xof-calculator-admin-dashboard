@@ -1,4 +1,4 @@
-import { environment } from '../environments/environment.prod';
+import { environment } from '../environments/environment';
 
 export function logEnvironment(): void {
   // Log the environment variables at runtime

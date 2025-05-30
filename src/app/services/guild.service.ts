@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from 'src/environments/environment';
 
 interface GuildMember {
   _id: string;
@@ -21,7 +22,7 @@ interface GuildRole {
   providedIn: 'root'
 })
 export class GuildService {
-  private apiUrl = '/api/guilds'; // Assuming your new routes are under /api/guilds
+  private apiUrl = `${environment.apiUrl}/guilds`; // Assuming your new routes are under /api/guilds
 
   constructor(private http: HttpClient) { }
 

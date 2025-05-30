@@ -1,7 +1,7 @@
 {
-  "name": "coreui-free-angular-admin-template",
-  "version": "5.4.5",
-  "copyright": "Copyright 2024 creativeLabs Łukasz Holeczek",
+  "name": "vixen-admin-dashboard",
+  "version": "1.0.0",
+  "copyright": "Copyright 2025 Vixen Agency",
   "license": "MIT",
   "author": "The CoreUI Team (https://github.com/orgs/coreui/people) and contributors",
   "homepage": "https://coreui.io/angular",
@@ -12,16 +12,13 @@
   },
   "scripts": {
     "ng": "ng",
-    "start:old": "ng serve --proxy-config proxy.conf.json",
-    "start": "ng serve --configuration production",
+    "start": "node server.js",
     "build": "ng build --configuration production",
-    "start:portprod": "serve -s dist -l $PORT",
-    "watch": "ng build --watch --configuration development",
-    "start:port": "node run-ng-serve.js",
-    "start:proxy": "ng serve --proxy-config proxy.conf.json",
-    "start:dev": "ng serve --proxy-config proxy.conf.dev.json --port $PORT --host 0.0.0.0",
-    "start:prod": "serve -s dist/browser -l $PORT",
-    "test": "ng test"
+    "start:fullstack": "npm run install:all && npm run build && node server.js",
+    "install:all": "npm install && cd backend && npm install && cd ..",
+    "copy:env": "copy .env backend/.env",
+    "dev": "ng serve --proxy-config proxy.conf.dev.json --open",
+    "dev:backend": "cd backend && nodemon server.js"
   },
   "private": true,
   "dependencies": {
@@ -46,7 +43,9 @@
     "@types/jwt-decode": "^2.2.1",
     "bcryptjs": "^3.0.2",
     "chart.js": "^4.4.8",
+    "cors": "^2.8.5",
     "express": "^5.1.0",
+    "http-proxy-middleware": "^2.0.1",
     "jsonwebtoken": "^9.0.2",
     "jwt-decode": "^4.0.0",
     "lodash-es": "^4.17.21",

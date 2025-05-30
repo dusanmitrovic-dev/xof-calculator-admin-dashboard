@@ -3,6 +3,7 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, throwError, of } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators'; // Import tap
 import { AuthService } from '../auth/auth.service'; // Adjust path if needed
+import { environment } from '../../environments/environment'; // Import environment
 
 // ... (User, UserUpdateData, DeleteResponse interfaces remain the same) ...
 export interface User {
@@ -36,7 +37,7 @@ export interface AvailableGuild {
   providedIn: 'root'
 })
 export class UserService {
-  private apiUrl = '/api/users';
+  private apiUrl = `${environment.apiUrl}/users`; // Use environment.apiUrl
 
   constructor(private http: HttpClient, private authService: AuthService) { }
 

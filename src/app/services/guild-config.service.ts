@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, throwError, BehaviorSubject, map, catchError, tap } from 'rxjs';
+import { environment } from 'src/environments/environment';
 
 // --- Interfaces matching DB structure ---
 // Note: Model, Shift, Period interfaces here are for potential broader use,
@@ -79,7 +80,7 @@ export interface AvailableGuild {
 })
 export class GuildConfigService {
 
-  private apiUrl = '/api/config'; // Consolidated API URL for all config operations
+  private apiUrl = `${environment.apiUrl}/config`; // Consolidated API URL for all config operations
 
   private selectedGuildIdSource = new BehaviorSubject<string | null>(null);
   selectedGuildId$ = this.selectedGuildIdSource.asObservable();
