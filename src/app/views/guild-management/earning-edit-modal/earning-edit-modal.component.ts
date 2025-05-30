@@ -154,34 +154,34 @@ export class EarningEditModalComponent implements OnInit, OnChanges {
     }
 
     this.earningForm.get('guild_id')?.setValue(this.guildId);
-    // No need to mark guild_id as dirty on init
-    console.log('[EarningModal] guild_id control value after setValue:', this.earningForm.get('guild_id')?.value);
     this.earningForm.get('guild_id')?.disable();
-    console.log('[EarningModal] guild_id control status (after disable):', this.earningForm.get('guild_id')?.status);
 
     if (this.guildConfig) {
-      console.log('[EarningModal] Using provided guildConfig for options:', this.guildConfig);
       this.availableModels = this.guildConfig.models || [];
       this.availableShifts = this.guildConfig.shifts || [];
       this.availablePeriods = this.guildConfig.periods || [];
     } else {
-      console.warn('[EarningModal] guildConfig not provided. Dropdown options might be limited.');
       this.availableModels = [];
       this.availableShifts = [];
       this.availablePeriods = [];
     }
 
+    // Ensure the current earning's shift/period are in the available options for editing
     if (this.isEditMode && this.earningToEdit) {
+      if (this.earningToEdit.shift && !this.availableShifts.includes(this.earningToEdit.shift)) {
+        this.availableShifts.push(this.earningToEdit.shift);
+      }
+      if (this.earningToEdit.period && !this.availablePeriods.includes(this.earningToEdit.period)) {
+        this.availablePeriods.push(this.earningToEdit.period);
+      }
       this.title = `Edit Earning Record (ID: ${this.earningToEdit.id})`;
       this.patchForm(this.earningToEdit);
       this.earningForm.get('id')?.setValue(this.earningToEdit.id);
       this.earningForm.get('id')?.disable();
     } else {
       this.title = 'Add New Earning Record';
-      // Date and models already set during reset
       this.earningForm.get('id')?.disable();
     }
-    // Ensure the models field validity is checked after potential patching
     this.earningForm.get('models')?.updateValueAndValidity();
   }
 

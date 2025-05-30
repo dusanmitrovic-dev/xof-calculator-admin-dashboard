@@ -115,7 +115,7 @@ export class DefaultHeaderComponent extends HeaderComponent implements OnInit, O
             logo_text: selectedGuild.display_settings?.logo_text || '',
           });
           console.log('DefaultHeaderComponent: Current guild config set:', DefaultLayoutComponent.currentGuildConfig);
-          this.router.navigate(['/dashboard']); // Redirect to dashboard or appropriate page
+          // this.router.navigate(['/dashboard']); // Redirect to dashboard or appropriate page
         }
       });
       this.subscriptions.add(sub);
