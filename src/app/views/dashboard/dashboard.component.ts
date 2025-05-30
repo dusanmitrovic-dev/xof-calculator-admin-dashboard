@@ -11,6 +11,9 @@ import { catchError, of, finalize } from 'rxjs'; // Import finalize
 import { Router } from '@angular/router';
 
 import { EarningsService, Earning } from '../../services/earnings.service';
+import { GuildConfigService } from '../../services/guild-config.service';
+import { Observable, Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 import {
   ButtonDirective,
@@ -114,6 +117,7 @@ export class DashboardComponent implements OnInit {
   private datePipe = inject(DatePipe);
   private iconSetService = inject(IconSetService);
   private router = inject(Router);
+  private guildConfigService = inject(GuildConfigService);
 
   loading: boolean = true; // Add loading property
   userName: string = 'Dule'; // Add userName property (example)
@@ -134,6 +138,9 @@ export class DashboardComponent implements OnInit {
   summaryStats: DashboardSummaryStats = this.getInitialSummaryStats();
   revenueOverTimeChartData: ChartData<'line'> = { labels: [], datasets: [] };
   lineChartOptions: ChartOptions<'line'>;
+
+  selectedGuildId$: Observable<string | null>;
+  private destroy$ = new Subject<void>();
 
   constructor() {
     this.iconSetService.icons = {
@@ -236,12 +243,24 @@ export class DashboardComponent implements OnInit {
         },
       },
     };
+
+    this.selectedGuildId$ = this.guildConfigService.selectedGuildId$;
   }
 
   ngOnInit(): void {
-    this.fetchAndProcessAllData();
-    // Update chart options dynamically after view init when CSS variables are available
+    // Subscribe to selected guild changes and load data for that guild
+    this.selectedGuildId$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((guildId) => {
+        this.selectedGuildName = null; // Optionally set name if you have it
+        this.fetchAndProcessGuildData(guildId);
+      });
     setTimeout(() => this.updateChartColors(), 0);
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   // Method to update chart colors based on current CSS variables
@@ -343,6 +362,57 @@ export class DashboardComponent implements OnInit {
           .filter((e) => e.parsedDate instanceof Date)
           .sort((a, b) => b.parsedDate!.getTime() - a.parsedDate!.getTime());
 
+        this.setDateRange('all');
+      });
+  }
+
+  fetchAndProcessGuildData(guildId: string | null): void {
+    this.loading = true;
+    if (!guildId) {
+      // If no guild is selected, load all data across all guilds
+      this.earningsService
+        .getAllEarningsAcrossGuilds()
+        .pipe(
+          catchError((err) => {
+            console.error('[Dashboard] Error fetching all earnings:', err);
+            return of([]);
+          }),
+          finalize(() => {
+            this.loading = false;
+          })
+        )
+        .subscribe((earnings: Earning[]) => {
+          this.allRevenueEntries = [...earnings]
+            .map((earning) => ({
+              ...earning,
+              parsedDate: this.parseDateString(earning.date),
+            }))
+            .filter((e) => e.parsedDate instanceof Date)
+            .sort((a, b) => b.parsedDate!.getTime() - a.parsedDate!.getTime());
+          this.setDateRange('all');
+        });
+      return;
+    }
+    // If guild is selected, load only for that guild
+    this.earningsService
+      .getEarningsForGuild(guildId)
+      .pipe(
+        catchError((err) => {
+          console.error('[Dashboard] Error fetching earnings for guild:', guildId, err);
+          return of([]);
+        }),
+        finalize(() => {
+          this.loading = false;
+        })
+      )
+      .subscribe((earnings: Earning[]) => {
+        this.allRevenueEntries = [...earnings]
+          .map((earning) => ({
+            ...earning,
+            parsedDate: this.parseDateString(earning.date),
+          }))
+          .filter((e) => e.parsedDate instanceof Date)
+          .sort((a, b) => b.parsedDate!.getTime() - a.parsedDate!.getTime());
         this.setDateRange('all');
       });
   }
