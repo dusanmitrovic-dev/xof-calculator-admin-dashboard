@@ -275,7 +275,7 @@
   (visibleChange)="handleDeleteModalVisibleChange($event)">
   <c-modal-header>
     <h5 cModalTitle>Confirm Dletion</h5>
-    <button (click)="closeDeleteModal()" cButtonClose></button>
+    <button (click)="closeDeleteModal()" cButtonClose aria-label="Close"></button>
   </c-modal-header>
   <c-modal-body *ngIf="earningToDelete">
     Are you sure you want to delete the earning record from <strong>{{ earningToDelete.date }}</strong> for user

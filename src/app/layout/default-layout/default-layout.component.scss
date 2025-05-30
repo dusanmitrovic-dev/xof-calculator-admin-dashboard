@@ -34,6 +34,7 @@
     .container-lg,
     .container-md,
     .container-sm {
+      text-align: center !important;
       width: 100% !important;
       padding-left: 0 !important;
       padding-right: 0 !important;
@@ -42,51 +43,64 @@
     }
     .c-card,
     .card {
+      text-align: center !important;
       width: 100% !important;
       margin-left: 0 !important;
       margin-right: 0 !important;
       border-radius: 0 !important;
     }
     .c-card-body {
+      text-align: center !important;
       padding-left: 0 !important;
       padding-right: 0 !important;
     }
     .table-responsive,
     .table {
+      text-align: center !important;
       width: 100% !important;
       overflow-x: auto !important;
       display: block !important;
     }
     img,
     .img-fluid {
+      text-align: center !important;
       max-width: 100% !important;
       height: auto !important;
     }
     button,
     .btn,
     [cButton] {
+      text-align: center !important;
       width: 100%;
       box-sizing: border-box;
       margin-bottom: 0.5rem;
     }
     .text-base {
+      text-align: center !important;
       font-size: 1rem !important;
       margin-top: 0.5rem !important;
       margin-bottom: 0.5rem !important;
     }
     .text-lg {
+      text-align: center !important;
       font-size: 1.1rem !important;
     }
     .text-xl {
+      text-align: center !important;
       font-size: 1.2rem !important;
     }
     .mb-3,
     .mb-4 {
+      text-align: center !important;
       margin-bottom: 1rem !important;
     }
     .px-4 {
+      text-align: center !important;
       padding-left: 0 !important;
       padding-right: 0 !important;
+    }
+    .text-center {
+      text-align: center !important;
     }
   }
 }

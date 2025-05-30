@@ -11,23 +11,21 @@
       <ng-container *ngIf="currentGuildId">
         <!-- Guild Configuration Section: Applying updated card styling -->
         <c-card class="mb-4 rounded shadow-lg hover-shadow">
-          <c-card-header>
-            <strong class="text-xl font-semibold">Guild Configuration</strong>
-            <div class="float-end">
-              <button
-                *ngIf="isAdmin"
-                cButton
-                color="danger"
-                variant="outline"
-                size="sm"
-                class="ms-2"
-                (click)="deleteGuildConfig()"
-                [disabled]="loadingConfig || !guildConfig"
-                title="Delete Entire Guild Config"
-              >
-                <svg cIcon name="cilTrash" size="sm"></svg> Delete Config
-              </button>
-            </div>
+          <c-card-header class="d-flex flex-row justify-content-between align-items-center flex-wrap flex-md-nowrap">
+            <strong class="text-xl font-semibold mb-0">Guild Configuration</strong>
+            <button
+              *ngIf="isAdmin"
+              cButton
+              color="danger"
+              variant="outline"
+              size="sm"
+              class="ms-2 ms-md-3"
+              (click)="deleteGuildConfig()"
+              [disabled]="loadingConfig || !guildConfig"
+              title="Delete Entire Guild Config"
+            >
+              <svg cIcon name="cilTrash" size="sm"></svg> Delete Config
+            </button>
           </c-card-header>
           <c-card-body>
             <!-- Loading State -->
@@ -89,24 +87,21 @@
                 </c-card-body>
               </c-card>
 
-              <!-- Display Settings Card: Applying updated card styling, renaming Agency Name, and improving typography -->
+              <!-- Display Settings Card: Responsive header and button -->
               <c-card class="mb-3 rounded shadow-lg">
-                <c-card-header>
-                  <strong class="text-lg font-bold"
-                    >Display Settings (Bot, Display, Behavior)</strong
+                <c-card-header class="d-flex flex-row justify-content-between align-items-center flex-wrap flex-md-nowrap">
+                  <strong class="text-lg font-bold mb-0">Display Settings</strong>
+                  <button
+                    cButton
+                    color="primary"
+                    variant="outline"
+                    size="sm"
+                    class="ms-2 ms-md-3"
+                    (click)="openEditConfigModal('display_settings')"
+                    [disabled]="loadingConfig"
                   >
-                  <div class="float-end">
-                    <button
-                      cButton
-                      color="primary"
-                      variant="outline"
-                      size="sm"
-                      (click)="openEditConfigModal('display_settings')"
-                      [disabled]="loadingConfig"
-                    >
-                      <svg cIcon name="cilPencil" size="sm"></svg> Modify
-                    </button>
-                  </div>
+                    <svg cIcon name="cilPencil" size="sm"></svg> Modify
+                  </button>
                 </c-card-header>
                 <c-card-body>
                   <!-- Note: Implementing a responsive grid or toggle switches requires significant component/layout changes beyond simple class updates. Keeping existing layout structure. -->
@@ -365,22 +360,21 @@
                 </c-card-body>
               </c-card>
 
-              <!-- Bonus Rules Card: Applying updated card styling and typography -->
+              <!-- Bonus Rules Card: Responsive header and button -->
               <c-card class="mb-3 rounded shadow-lg">
-                <c-card-header>
-                  <strong class="text-lg font-bold">Bonus Rules</strong>
-                  <div class="float-end">
-                    <button
-                      cButton
-                      color="primary"
-                      variant="outline"
-                      size="sm"
-                      (click)="openEditConfigModal('bonus_rules')"
-                      [disabled]="loadingConfig"
-                    >
-                      <svg cIcon name="cilPencil" size="sm"></svg> Modify
-                    </button>
-                  </div>
+                <c-card-header class="d-flex flex-row justify-content-between align-items-center flex-wrap flex-md-nowrap">
+                  <strong class="text-lg font-bold mb-0">Bonus Rules</strong>
+                  <button
+                    cButton
+                    color="primary"
+                    variant="outline"
+                    size="sm"
+                    class="ms-2 ms-md-3"
+                    (click)="openEditConfigModal('bonus_rules')"
+                    [disabled]="loadingConfig"
+                  >
+                    <svg cIcon name="cilPencil" size="sm"></svg> Modify
+                  </button>
                 </c-card-header>
                 <c-card-body>
                   @if (guildConfig.bonus_rules && guildConfig.bonus_rules.length
@@ -417,31 +411,26 @@
                 </c-card-body>
               </c-card>
 
-              <!-- Top-Level Roles Card: Applying updated card styling and typography -->
+              <!-- Top-Level Roles Card: Responsive header and button -->
               <c-card class="mb-3 rounded shadow-lg">
-                <c-card-header>
-                  <strong class="text-lg font-bold"
-                    >General Role Settings (Numeric Values)</strong
+                <c-card-header class="d-flex flex-row justify-content-between align-items-center flex-wrap flex-md-nowrap">
+                  <strong class="text-lg font-bold mb-0">Role Settings</strong>
+                  <button
+                    cButton
+                    color="primary"
+                    variant="outline"
+                    size="sm"
+                    class="ms-2 ms-md-3"
+                    (click)="openEditConfigModal('top_level_roles')"
+                    [disabled]="loadingConfig"
                   >
-                  <div class="float-end">
-                    <button
-                      cButton
-                      color="primary"
-                      variant="outline"
-                      size="sm"
-                      (click)="openEditConfigModal('top_level_roles')"
-                      [disabled]="loadingConfig"
-                    >
-                      <svg cIcon name="cilTags" size="sm"></svg> Modify
-                    </button>
-                  </div>
+                    <svg cIcon name="cilTags" size="sm"></svg> Modify
+                  </button>
                 </c-card-header>
-                <c-card-body>
-                  @if (guildConfig.roles && objectKeys(guildConfig.roles).length
-                  > 0) {
-                  <div class="table-responsive">
-                    <!-- Table structure remains, improved typography for table headers and data -->
-                    <table class="table table-striped mb-0 text-base">
+                <c-card-body class="text-center">
+                  @if (guildConfig.roles && objectKeys(guildConfig.roles).length > 0) {
+                  <div class="table-responsive w-100 text-center">
+                    <table class="table table-striped mb-0 text-base w-100 text-center">
                       <thead>
                         <tr>
                           <th scope="col">#</th>
@@ -449,9 +438,8 @@
                           <th scope="col">Value</th>
                         </tr>
                       </thead>
-                      <tbody>
-                        @for (roleId of objectKeys(guildConfig.roles); track
-                        $index) {
+                      <tbody class="text-center align-middle">
+                        @for (roleId of objectKeys(guildConfig.roles); track $index) {
                         <tr>
                           <th scope="row">{{ $index + 1 }}</th>
                           <td>{{ getRoleName(roleId) }}</td>
@@ -472,22 +460,21 @@
                 </c-card-body>
               </c-card>
 
-              <!-- Role Commissions Card -->
+              <!-- Role Commissions Card: Responsive header and button -->
               <c-card class="mb-3 rounded shadow-lg">
-                <c-card-header>
-                  <strong class="text-lg font-bold">Role Commissions</strong>
-                  <div class="float-end">
-                    <button
-                      cButton
-                      color="primary"
-                      variant="outline"
-                      size="sm"
-                      (click)="openEditConfigModal('commission_settings_roles')"
-                      [disabled]="loadingConfig"
-                    >
-                      <svg cIcon name="cilPencil" size="sm"></svg> Modify
-                    </button>
-                  </div>
+                <c-card-header class="d-flex flex-row justify-content-between align-items-center flex-wrap flex-md-nowrap">
+                  <strong class="text-lg font-bold mb-0">Role Commissions</strong>
+                  <button
+                    cButton
+                    color="primary"
+                    variant="outline"
+                    size="sm"
+                    class="ms-2 ms-md-3"
+                    (click)="openEditConfigModal('commission_settings_roles')"
+                    [disabled]="loadingConfig"
+                  >
+                    <svg cIcon name="cilPencil" size="sm"></svg> Modify
+                  </button>
                 </c-card-header>
                 <c-card-body>
                   @if (guildConfig.commission_settings &&
@@ -556,22 +543,21 @@
                 </c-card-body>
               </c-card>
 
-              <!-- User Overrides Card -->
+              <!-- User Overrides Card: Responsive header and button -->
               <c-card class="mb-3 rounded shadow-lg">
-                <c-card-header>
-                  <strong class="text-lg font-bold">User Overrides</strong>
-                  <div class="float-end">
-                    <button
-                      cButton
-                      color="primary"
-                      variant="outline"
-                      size="sm"
-                      (click)="openEditConfigModal('commission_settings_users')"
-                      [disabled]="loadingConfig"
-                    >
-                      <svg cIcon name="cilPencil" size="sm"></svg> Modify
-                    </button>
-                  </div>
+                <c-card-header class="d-flex flex-row justify-content-between align-items-center flex-wrap flex-md-nowrap">
+                  <strong class="text-lg font-bold mb-0">User Overrides</strong>
+                  <button
+                    cButton
+                    color="primary"
+                    variant="outline"
+                    size="sm"
+                    class="ms-2 ms-md-3"
+                    (click)="openEditConfigModal('commission_settings_users')"
+                    [disabled]="loadingConfig"
+                  >
+                    <svg cIcon name="cilPencil" size="sm"></svg> Modify
+                  </button>
                 </c-card-header>
                 <c-card-body>
                   @if (guildConfig.commission_settings &&
