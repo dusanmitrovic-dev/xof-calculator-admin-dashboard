@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core'; // Added OnInit
 import { RouterOutlet } from '@angular/router';
 import { NgScrollbar } from 'ngx-scrollbar';
 import { CommonModule } from '@angular/common';
+import { trigger, transition, style, animate } from '@angular/animations';
 
 import { IconDirective } from '@coreui/icons-angular';
 import {
@@ -49,6 +50,17 @@ function isOverflown(element: HTMLElement) {
     RouterOutlet,
     ShadowOnScrollDirective,
     CommonModule,
+  ],
+  animations: [
+    trigger('fadeInOut', [
+      transition(':enter', [
+        style({ opacity: 0 }),
+        animate('300ms ease', style({ opacity: 1 })),
+      ]),
+      transition(':leave', [
+        animate('300ms ease', style({ opacity: 0 })),
+      ]),
+    ]),
   ],
 })
 export class DefaultLayoutComponent implements OnInit {

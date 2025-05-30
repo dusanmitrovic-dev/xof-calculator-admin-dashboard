@@ -3,6 +3,7 @@ import { Component, computed, inject, input, OnInit, OnDestroy } from '@angular/
 import { Router } from '@angular/router'; // Import Router
 import { Observable, Subscription, combineLatest } from 'rxjs';
 import { map, startWith, shareReplay, catchError, tap } from 'rxjs/operators';
+import { trigger, transition, style, animate } from '@angular/animations';
 
 import {
   ColorModeService,
@@ -32,7 +33,18 @@ import { DefaultLayoutComponent } from '..';
         NgTemplateOutlet,
         DropdownModule,
     ],
-    standalone: true
+    standalone: true,
+    animations: [
+      trigger('fadeInOut', [
+        transition(':enter', [
+          style({ opacity: 0 }),
+          animate('300ms ease', style({ opacity: 1 }))
+        ]),
+        transition(':leave', [
+          animate('300ms ease', style({ opacity: 0 }))
+        ])
+      ])
+    ]
 })
 export class DefaultHeaderComponent extends HeaderComponent implements OnInit, OnDestroy {
 
@@ -128,6 +140,10 @@ export class DefaultHeaderComponent extends HeaderComponent implements OnInit, O
     console.log('DefaultHeaderComponent: Logging out...');
     this.authService.logout();
     this.router.navigate(['/login']); // Redirect to login page
+  }
+
+  get currentGuildConfig() {
+    return DefaultLayoutComponent.currentGuildConfig;
   }
 
 }

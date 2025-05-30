@@ -11,14 +11,16 @@
       [routerLink]="[]"
       style="display: flex; align-items: center"
     >
-      <img
-        *ngIf="currentGuildConfig?.logo_image_base64"
-        [src]="currentGuildConfig.logo_image_base64"
-        alt="Agency Logo"
-        height="32"
-        class="sidebar-brand-full me-2"
-        style="object-fit: contain; max-width: 40px"
-      />
+      <ng-container *ngIf="currentGuildConfig?.logo_image_base64 as logoSrc; else noLogo">
+        <img
+          [@fadeInOut]
+          [src]="logoSrc"
+          alt="Agency Logo"
+          height="32"
+          class="sidebar-brand-full me-2 sidebar-logo-anim"
+        />
+      </ng-container>
+      <ng-template #noLogo></ng-template>
       <span
         *ngIf="currentGuildConfig?.logo_text"
         class="sidebar-logo-text fw-bold"
