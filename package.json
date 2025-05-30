@@ -12,11 +12,13 @@
   },
   "scripts": {
     "ng": "ng",
-    "start": "node run-ng-serve.js",
-    "start:port": "dotenv -e .env ng serve --port $env:PORT --proxy-config proxy.conf.json",
+    "start": "ng serve --proxy-config proxy.conf.json",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
+    "start:port": "node run-ng-serve.js",
     "start:proxy": "ng serve --proxy-config proxy.conf.json",
+    "start:dev": "ng serve --proxy-config proxy.conf.dev.json",
+    "start:prod": "ng serve --proxy-config proxy.conf.prod.json",
     "test": "ng test"
   },
   "private": true,

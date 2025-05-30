@@ -7,6 +7,7 @@ import { delay, filter, map, tap } from 'rxjs/operators';
 import { ColorModeService } from '@coreui/angular';
 import { IconSetService } from '@coreui/icons-angular';
 import { iconSubset } from './icons/icon-subset';
+import { logEnvironment } from './log-environment';
 
 @Component({
     selector: 'app-root',
@@ -33,6 +34,7 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    logEnvironment(); // Log environment at startup
 
     this.#router.events.pipe(
         takeUntilDestroyed(this.#destroyRef)
