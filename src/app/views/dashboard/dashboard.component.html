@@ -97,7 +97,7 @@
     </c-col>
   </c-row>
   <!-- Revenue Over Time Chart -->
-  <c-row class="mb-4" *ngIf="!loading">
+  <c-row class="mb-4 d-none d-sm-flex" *ngIf="!loading">
     <c-col>
       <c-card class="p-3 shadow-lg">
         <c-card-header class="bg-transparent border-0 pb-1">
@@ -107,6 +107,18 @@
         </c-card-header>
         <c-card-body class="pt-0">
           <c-chart type="line" [data]="revenueOverTimeChartData" [options]="lineChartOptions" class="dashboard-chart-visible"></c-chart>
+        </c-card-body>
+      </c-card>
+    </c-col>
+  </c-row>
+  <!-- Chart hidden on xs screens, show message instead -->
+  <c-row class="mb-4 d-flex d-sm-none" *ngIf="!loading">
+    <c-col>
+      <c-card class="p-3 shadow-lg text-center">
+        <c-card-body>
+          <c-icon name="cilChartPie" size="xl" class="mb-2 text-info"></c-icon>
+          <div class="fs-5 fw-bold mb-2">Revenue chart is hidden on small screens</div>
+          <div class="text-muted">For the best experience, please view this dashboard on a larger device.</div>
         </c-card-body>
       </c-card>
     </c-col>

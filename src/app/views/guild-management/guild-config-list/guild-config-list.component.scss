@@ -178,6 +178,16 @@ button.copy-btn[cButton][color="primary"] {
   border: 1px solid $primary !important;
 }
 
+// Make enabled/disabled status spans full width on mobile
+.c-card-body .border.rounded.py-1.px-2.d-inline-block.text-body.ms-2 {
+  display: block !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  text-align: center !important;
+}
+
 /* Table Soft Card-Like Styling */
 .table {
   border-collapse: separate;
@@ -292,6 +302,106 @@ button.copy-btn[cButton][color="primary"] {
   &.show {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+// Responsive improvements for Android/mobile screens
+@media (max-width: 576px) {
+  .c-card,
+  .card {
+    width: 100% !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    border-radius: 0 !important;
+  }
+  .c-card-body {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+  .table-responsive,
+  .table {
+    width: 100% !important;
+    overflow-x: auto !important;
+    display: block !important;
+  }
+  img,
+  .img-fluid {
+    max-width: 100% !important;
+    height: auto !important;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  button,
+  .btn,
+  [cButton] {
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    display: block !important;
+    margin-bottom: 0.75rem !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    font-size: 1.08rem !important;
+    padding: 0.85rem 1.1rem !important;
+    border-radius: 0.5rem !important;
+    text-align: center !important;
+  }
+  .c-card-header {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 0.5rem !important;
+  }
+  .c-card-header strong {
+    order: 0;
+    margin-bottom: 0.25rem !important;
+  }
+  .c-card-header .float-end,
+  .c-card-header > div {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.5rem;
+  }
+  .c-card-header button,
+  .c-card-header [cButton] {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    align-self: stretch !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    display: block !important;
+  }
+  .c-card-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .text-base {
+    font-size: 1rem !important;
+    margin-top: 0.5rem !important;
+    margin-bottom: 0.5rem !important;
+  }
+  .text-lg {
+    font-size: 1.1rem !important;
+  }
+  .text-xl {
+    font-size: 1.2rem !important;
+  }
+  .mb-3,
+  .mb-4 {
+    margin-bottom: 1rem !important;
+  }
+  .px-4 {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
   }
 }
 
