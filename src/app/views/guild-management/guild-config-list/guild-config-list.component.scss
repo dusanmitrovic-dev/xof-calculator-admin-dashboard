@@ -403,6 +403,15 @@ button.copy-btn[cButton][color="primary"] {
     padding-left: 0 !important;
     padding-right: 0 !important;
   }
+  button[cButton]:hover,
+  .c-card:hover,
+  .card:hover {
+    background: initial !important;
+    color: initial !important;
+    box-shadow: initial !important;
+    transform: none !important;
+    /* Remove hover effects on mobile */
+  }
 }
 
 
