@@ -23,7 +23,7 @@ const allowedOrigins = process.env.FRONTEND_ORIGINS
 app.use(cors());
 
 // Serve static files from Angular dist folder
-app.use(express.static(path.join(__dirname, "dist/backend/browser")));
+app.use(express.static(path.join(__dirname, "../dist/xof-calculator-admin-dashboard/browser")));
 
 // Define Routes
 app.get("/", (req, res) => res.send("API Running")); // Simple check
@@ -42,7 +42,7 @@ app.use("/api/guilds", guildRoutes); // Use guild routes
 
 // Catch-all: send index.html for any other route (for Angular routing)
 app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "dist/backend/browser/index.html"));
+  res.sendFile(path.join(__dirname, "../dist/xof-calculator-admin-dashboard/browser/index.html"));
 });
 
 const PORT = process.env.PORT || 5000;
