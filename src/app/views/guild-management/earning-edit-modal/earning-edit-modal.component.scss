@@ -1,0 +1,17 @@
+.calendar-picker-btn {
+  background: none;
+  border: none;
+  padding: 0.25rem 0.5rem;
+  display: flex;
+  align-items: center;
+  color: white;
+  transition: background 0.2s;
+  &:hover {
+    background: rgba(60, 110, 255, 0.08);
+    color: var(--cui-primary-dark, #2340a0);
+    outline: none;
+  }
+  svg {
+    display: block;
+  }
+}

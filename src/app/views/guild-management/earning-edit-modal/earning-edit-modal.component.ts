@@ -185,24 +185,37 @@ export class EarningEditModalComponent implements OnInit, OnChanges {
     this.earningForm.get('models')?.updateValueAndValidity();
   }
 
-  // Converts DD/MM/YYYY to YYYY-MM-DD for the date picker
+  // Converts any date string (DD/MM/YYYY or YYYY-MM-DD) to YYYY-MM-DD for the date picker
   formatDateForDatePicker(dateStr: string): string {
     if (!dateStr) return '';
-    const parts = dateStr.split('/');
-    if (parts.length === 3) {
-      return `${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}`;
+    // If already in YYYY-MM-DD
+    if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
+      return dateStr;
     }
-    return dateStr;
+    // If in DD/MM/YYYY
+    if (/^\d{2}\/\d{2}\/\d{4}$/.test(dateStr)) {
+      const [day, month, year] = dateStr.split('/');
+      return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+    }
+    // Try to parse as Date
+    const d = new Date(dateStr);
+    if (!isNaN(d.getTime())) {
+      const year = d.getFullYear();
+      const month = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    }
+    return '';
   }
 
+  // When user picks a date, always store as DD/MM/YYYY in the form
   onDatePickerChange(event: Event): void {
     const input = event.target as HTMLInputElement;
     if (!input.value) return;
-    const parts = input.value.split('-');
-    if (parts.length === 3) {
-      const formatted = `${parts[2]}/${parts[1]}/${parts[0]}`;
-      this.earningForm.get('date')?.setValue(formatted);
-    }
+    // input.value is always YYYY-MM-DD
+    const [year, month, day] = input.value.split('-');
+    const formatted = `${day}/${month}/${year}`;
+    this.earningForm.get('date')?.setValue(formatted);
   }
 
   public copyToClipboard(value: string): void {

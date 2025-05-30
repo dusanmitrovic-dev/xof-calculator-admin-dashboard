@@ -73,12 +73,26 @@
             <!-- Date -->
             <div class="mb-3 row">
                 <label cLabel for="earningDateText" class="col-sm-3 col-form-label">Date</label>
-                <div class="col-sm-9">
-                    <input type="date" class="form-control" id="earningDateText"
+                <div class="col-sm-9 d-flex align-items-center">
+                    <!-- Visible formatted date input (readonly, for display only) -->
+                    <input cFormControl type="text" class="form-control me-2" id="earningDateDisplay"
+                        [value]="earningForm.get('date')?.value" readonly
+                        placeholder="DD/MM/YYYY" title="Date (DD/MM/YYYY)" />
+                    <!-- Hidden native date input for calendar only -->
+                    <input #dateInputRef type="date" class="visually-hidden" id="earningDateText"
                         [value]="formatDateForDatePicker(earningForm.get('date')?.value)"
-                        (change)="onDatePickerChange($event)" required />
+                        (change)="onDatePickerChange($event)" tabindex="-1" />
+                    <button type="button" cButton color="light" class="ms-2 btn-sm calendar-picker-btn" (click)="dateInputRef.showPicker()"
+                        title="Pick date">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM1 3v1h14V3a1 1 0 0 0-1-1h-1v.5a.5.5 0 0 1-1 0V2h-8v.5a.5.5 0 0 1-1 0V2H2a1 1 0 0 0-1 1zm14 2H1v9a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V5z"/>
+                        </svg>
+                        <span class="visually-hidden">Pick date</span>
+                    </button>
+                </div>
+                <div class="col-sm-9 offset-sm-3">
                     <div *ngIf="earningForm.get('date')?.invalid && (earningForm.get('date')?.dirty || earningForm.get('date')?.touched)"
-                        class="invalid-feedback">
+                        class="invalid-feedback d-block">
                         Date is required.
                     </div>
                 </div>
