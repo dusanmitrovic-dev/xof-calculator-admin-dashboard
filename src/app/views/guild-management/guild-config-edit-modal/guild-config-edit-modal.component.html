@@ -440,25 +440,14 @@
                       <div
                         *ngFor="let roleId of topLevelRoleIds; let i = index"
                         [formGroupName]="roleId"
-                        cdkDrag
                         class="top-level-role-row d-flex align-items-center flex-wrap p-2 border rounded mb-3"
                       >
-                        <div
-                          class="flex-grow-1 min-width-0 me-2 mb-2 mb-md-0"
-                          style="max-width: 250px"
-                        >
-                          <label
-                            class="col-form-label text-truncate w-100 mb-0"
-                          >
-                            <code class="text-primary p-2">{{
-                              getRoleName(roleId)
-                            }}</code>
+                        <div class="flex-grow-1 min-width-0 me-2 mb-2 mb-md-0 role-label">
+                          <label class="col-form-label text-truncate w-100 mb-0">
+                            <code class="text-primary p-2">{{ getRoleName(roleId) }}</code>
                           </label>
                         </div>
-                        <div
-                          class="flex-grow-1 flex-shrink-1 me-2 mb-2 mb-md-0"
-                          style="min-width: 120px; max-width: 200px"
-                        >
+                        <div class="flex-grow-1 flex-shrink-1 me-2 mb-2 mb-md-0 commission-col">
                           <div class="input-group">
                             <input
                               cFormControl
@@ -474,14 +463,8 @@
                           <c-form-feedback
                             [valid]="false"
                             *ngIf="
-                              topLevelRoles
-                                .get(roleId)
-                                ?.get('value')
-                                ?.hasError('required') &&
-                              (topLevelRoles.get(roleId)?.get('value')?.dirty ||
-                                topLevelRoles.get(roleId)?.get('value')
-                                  ?.touched ||
-                                submitAttempted)
+                              topLevelRoles.get(roleId)?.get('value')?.hasError('required') &&
+                              (topLevelRoles.get(roleId)?.get('value')?.dirty || topLevelRoles.get(roleId)?.get('value')?.touched || submitAttempted)
                             "
                           >
                             Value is required.
@@ -489,14 +472,8 @@
                           <c-form-feedback
                             [valid]="false"
                             *ngIf="
-                              topLevelRoles
-                                .get(roleId)
-                                ?.get('value')
-                                ?.hasError('pattern') &&
-                              (topLevelRoles.get(roleId)?.get('value')?.dirty ||
-                                topLevelRoles.get(roleId)?.get('value')
-                                  ?.touched ||
-                                submitAttempted)
+                              topLevelRoles.get(roleId)?.get('value')?.hasError('pattern') &&
+                              (topLevelRoles.get(roleId)?.get('value')?.dirty || topLevelRoles.get(roleId)?.get('value')?.touched || submitAttempted)
                             "
                           >
                             Value must be a valid number (integer or decimal).

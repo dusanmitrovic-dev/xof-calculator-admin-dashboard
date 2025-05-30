@@ -177,7 +177,7 @@ button[cButton] {
 // Remove any extra margin or padding from bonus rule fields
 .bonus-rule-row > * {
   margin: 0 !important;
-  padding: 0 !important;
+  // padding: 0 !important;
 }
 
 @media (max-width: 992px) {
@@ -236,5 +236,193 @@ button[cButton] {
   .top-level-role-row > .ms-auto {
     margin-left: 0 !important;
     align-self: flex-end;
+  }
+  .input-group, .input-group.mb-3 {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.5rem;
+    width: 100%;
+  }
+  .input-group > * {
+    width: 100% !important;
+    min-width: 0;
+    max-width: 100%;
+  }
+  select.form-select, input[cFormControl] {
+    width: 100% !important;
+    min-width: 0;
+    max-width: 100%;
+  }
+  button[cButton] {
+    // width: 100%;
+    margin-top: 0.25rem;
+  }
+  .top-level-role-row input[cFormControl],
+  .top-level-role-row .input-group-text,
+  .bonus-rule-row input[cFormControl],
+  .bonus-rule-row .input-group-text,
+  .commission-row input[cFormControl],
+  .commission-row .input-group-text {
+    text-align: center;
+    justify-content: center;
+  }
+  .commission-row {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: stretch;
+    > * {
+      width: 100% !important;
+      min-width: 0;
+      max-width: 100%;
+      box-sizing: border-box;
+    }
+    .input-group {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 0.25rem;
+      width: 100%;
+    }
+    .input-group-text {
+      text-align: center;
+      justify-content: center;
+      width: 100%;
+    }
+    button[cButton] {
+      width: 100%;
+      margin-top: 0.25rem;
+    }
+  }
+}
+
+@media (max-width: 576px) {
+  .commission-row {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1rem;
+    padding: 0.5rem 0 0.5rem 0;
+    > * {
+      width: 100% !important;
+      min-width: 0;
+      max-width: 100%;
+      box-sizing: border-box;
+      margin-bottom: 0.5rem;
+    }
+    .input-group {
+      flex-direction: column !important;
+      align-items: stretch !important;
+      gap: 0.25rem;
+      width: 100%;
+      margin-bottom: 0.5rem;
+    }
+    .input-group-text {
+      text-align: center;
+      justify-content: center;
+      width: 100%;
+      margin-bottom: 0.25rem;
+    }
+    input[cFormControl] {
+      text-align: center;
+      width: 100%;
+      margin-bottom: 0.25rem;
+    }
+    .cdk-drag-handle {
+      margin-bottom: 0.5rem;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+    }
+    button[cButton] {
+      width: 100%;
+      margin-top: 0.25rem;
+      margin-bottom: 0.5rem;
+    }
+  }
+}
+
+.commission-role-row,
+.user-override-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.5rem 1rem;
+  border-radius: $border-radius;
+  background: rgba(13,110,253,0.03);
+  margin-bottom: 1rem;
+  position: relative;
+  .drag-handle {
+    cursor: grab;
+  }
+  .role-label,
+  .user-label {
+    max-width: 250px;
+    min-width: 0;
+  }
+  .commission-col,
+  .hourly-col,
+  .override-col {
+    min-width: 120px;
+    max-width: 200px;
+    width: 100%;
+  }
+}
+@media (max-width: 576px) {
+  .commission-role-row,
+  .user-override-row {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 0.5rem;
+    .role-label,
+    .user-label,
+    .commission-col,
+    .hourly-col,
+    .override-col {
+      max-width: 100%;
+      min-width: 0;
+      width: 100%;
+      margin-right: 0 !important;
+      margin-bottom: 0.5rem;
+    }
+    .drag-handle {
+      margin-bottom: 0.5rem;
+      margin-right: 0 !important;
+    }
+  }
+}
+
+.top-level-role-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.5rem 1rem;
+  border-radius: $border-radius;
+  background: rgba(13,110,253,0.03);
+  margin-bottom: 1rem;
+  position: relative;
+  .drag-handle {
+    cursor: grab;
+  }
+  .role-label,
+  .commission-col {
+    max-width: 250px;
+    min-width: 0;
+  }
+}
+@media (max-width: 576px) {
+  .top-level-role-row {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 0.5rem;
+    .role-label,
+    .commission-col {
+      max-width: 100%;
+      min-width: 0;
+      width: 100%;
+      margin-right: 0 !important;
+      margin-bottom: 0.5rem;
+    }
   }
 }
