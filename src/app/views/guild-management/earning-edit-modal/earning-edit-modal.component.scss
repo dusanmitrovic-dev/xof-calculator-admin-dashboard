@@ -4,7 +4,7 @@
   padding: 0.25rem 0.5rem;
   display: flex;
   align-items: center;
-  color: white;
+  color: inherit !important;
   transition: background 0.2s;
   &:hover {
     background: rgba(60, 110, 255, 0.08);
