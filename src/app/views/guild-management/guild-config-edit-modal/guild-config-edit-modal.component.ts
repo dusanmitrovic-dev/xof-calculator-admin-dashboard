@@ -31,6 +31,7 @@ import {
   DisplaySettingsEditModalComponent,
   DisplaySettings as DisplaySettingsModalData,
 } from '../display-settings-edit-modal/display-settings-edit-modal.component';
+import { trigger, transition, style, animate } from '@angular/animations';
 
 import {
   AlertModule,
@@ -68,6 +69,17 @@ import { DefaultLayoutComponent } from '../../../layout/default-layout';
     DragDropModule,
     // IconModule,
   ],
+  animations: [
+    trigger('modalAnimation', [
+      transition(':enter', [
+        style({ opacity: 0, transform: 'scale(0.9)' }),
+        animate('200ms ease-out', style({ opacity: 1, transform: 'scale(1)' }))
+      ]),
+      transition(':leave', [
+        animate('150ms ease-in', style({ opacity: 0, transform: 'scale(0.9)' }))
+      ])
+    ])
+  ]
 })
 export class GuildConfigEditModalComponent implements OnInit, OnChanges {
   @Input() visible: boolean = false;
@@ -107,7 +119,7 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
     private guildConfigService: GuildConfigService,
     private changeDetectorRef: ChangeDetectorRef,
     private modalService: NgbModal
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.configForm = this.buildForm();
@@ -712,8 +724,8 @@ export class GuildConfigEditModalComponent implements OnInit, OnChanges {
               userSetting.override_role === true
                 ? true
                 : userSetting.override_role === false
-                ? false
-                : false,
+                  ? false
+                  : false,
             ],
           })
         );

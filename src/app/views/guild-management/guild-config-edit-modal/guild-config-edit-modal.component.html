@@ -4,6 +4,7 @@
   (visibleChange)="handleVisibleChange($event)"
   backdrop="static"
   size="xl"
+  [@modalAnimation]="visible"
 >
   <ng-container
     *ngIf="!isEditingDisplaySettingsSubFlow; else displaySettingsFlow"

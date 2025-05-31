@@ -24,6 +24,9 @@
                     [color]="color"
                     [disabled]="state === 'disabled'"
                     cButton
+                    [@buttonHover]="buttonState"
+                    (mouseenter)="onButtonHover(true)"
+                    (mouseleave)="onButtonHover(false)"
                   >
                     {{ color.charAt(0).toUpperCase() + color.slice(1) }}
                   </button>

@@ -36,7 +36,7 @@ exports.register = async (req, res) => {
             email,
             password,
             role: userRole,
-            managedGuilds: [] // Initialize as empty
+            managedGuilds: isFirstUser ? null : [] // Initialize as empty
         });
 
         const salt = await bcrypt.genSalt(10);

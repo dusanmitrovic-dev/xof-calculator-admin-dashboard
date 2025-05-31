@@ -12,8 +12,9 @@
     "start:fullstack": "npm run install:all && npm run build && node server.js",
     "install:all": "npm install && cd backend && npm install && cd ..",
     "copy:env": "copy .env backend/.env",
-    "dev": "ng serve --proxy-config proxy.conf.dev.json --open",
-    "dev:backend": "cd backend && nodemon server.js"
+    "dev": "ng serve --proxy-config proxy.conf.dev.json",
+    "backend:dev": "npm run build && cd backend && nodemon server.js",
+    "backend": "cd backend && node server.js"
   },
   "dependencies": {
     "@angular/animations": "^19.2.2",

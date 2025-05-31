@@ -18,6 +18,7 @@ import {
 import { IconDirective } from '@coreui/icons-angular';
 import { GuildConfigService, AvailableGuild } from '../../../services/guild-config.service'; // Adjusted path
 import { AuthService } from '../../../auth/auth.service'; // Import AuthService
+import { TitleService } from '../../../services/title.service'; // Import TitleService
 import { DefaultLayoutComponent } from '..';
 
 @Component({
@@ -53,6 +54,7 @@ export class DefaultHeaderComponent extends HeaderComponent implements OnInit, O
   private guildConfigService = inject(GuildConfigService);
   private authService = inject(AuthService); // Inject AuthService
   private router = inject(Router); // Inject Router
+  private titleService = inject(TitleService); // Inject TitleService
 
   readonly colorModes = [
     { name: 'light', text: 'Light', icon: 'cilSun' },
@@ -107,6 +109,10 @@ export class DefaultHeaderComponent extends HeaderComponent implements OnInit, O
         startWith('Select Guild') // Provide an initial value before observables emit
     );
 
+    // Set initial title and favicon when component initializes
+    this.titleService.setTitle('Guild Application');
+    this.titleService.setFavicon(''); // Clear existing favicon if any
+    DefaultLayoutComponent.setCurrentGuildConfig({ logo_image_base64: '', logo_text: 'Guild Application' });
   }
 
   ngOnDestroy(): void {
@@ -117,20 +123,35 @@ export class DefaultHeaderComponent extends HeaderComponent implements OnInit, O
   onGuildSelect(guildId: string | null): void {
       console.log('DefaultHeaderComponent: Guild selected:', guildId);
       this.guildConfigService.selectGuild(guildId);
-      const selectedGuildConfig$ = this.guildConfigService.getGuildConfig(guildId);
-      const sub = selectedGuildConfig$.subscribe(selectedGuild => {
-        console.log(selectedGuild);
-        if (selectedGuild) {
-          DefaultLayoutComponent.setCurrentGuildConfig({
-            logo_image_base64:
-              selectedGuild.display_settings?.logo_image_base64 || '',
-            logo_text: selectedGuild.display_settings?.logo_text || '',
-          });
-          console.log('DefaultHeaderComponent: Current guild config set:', DefaultLayoutComponent.currentGuildConfig);
-          // this.router.navigate(['/dashboard']); // Redirect to dashboard or appropriate page
-        }
-      });
-      this.subscriptions.add(sub);
+      if (guildId) {
+        const selectedGuildConfig$ = this.guildConfigService.getGuildConfig(guildId);
+        const sub = selectedGuildConfig$.subscribe(selectedGuild => {
+          console.log(selectedGuild);
+          if (selectedGuild) {
+            DefaultLayoutComponent.setCurrentGuildConfig({
+              logo_image_base64:
+                selectedGuild.display_settings?.logo_image_base64 || '',
+              logo_text: selectedGuild.display_settings?.logo_text || 'Guild Application',
+            });
+            // Use the TitleService to set the title
+            this.titleService.setTitle(selectedGuild.display_settings?.logo_text || 'Guild Application');
+            // Use the TitleService to set the favicon
+            if (selectedGuild.display_settings?.logo_image_base64) {
+              this.titleService.setFavicon(selectedGuild.display_settings.logo_image_base64);
+            } else {
+              this.titleService.setFavicon(''); // Clear favicon if no image for selected guild
+            }
+            console.log('DefaultHeaderComponent: Current guild config set:', DefaultLayoutComponent.currentGuildConfig);
+            // this.router.navigate(['/dashboard']); // Redirect to dashboard or appropriate page
+          }
+        });
+        this.subscriptions.add(sub);
+      } else {
+        // If no guild is selected (guildId is null)
+        DefaultLayoutComponent.setCurrentGuildConfig({ logo_image_base64: '', logo_text: 'Guild Application' });
+        this.titleService.setTitle('Guild Application');
+        this.titleService.setFavicon(''); // Clear favicon
+      }
   }
 
   /**
