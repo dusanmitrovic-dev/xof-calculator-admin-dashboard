@@ -1,5 +1,5 @@
 /* Responsive table for user management */
-@media (max-width: 767.98px) {
+/* @media (max-width: 767.98px) {
   .user-table-responsive {
     overflow-x: auto;
   }
@@ -45,10 +45,9 @@
     flex: 1 1 55%;
     text-align: right;
   }
-}
+} */
 
-/* Visually hidden utility (if not already present) */
-.visually-hidden {
+/* .visually-hidden {
   position: absolute !important;
   width: 1px !important;
   height: 1px !important;
@@ -58,4 +57,4 @@
   clip: rect(0,0,0,0) !important;
   white-space: nowrap !important;
   border: 0 !important;
-}
+} */

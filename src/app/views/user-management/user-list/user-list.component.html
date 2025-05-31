@@ -3,9 +3,42 @@
     <strong>User Management</strong>
   </c-card-header>
   <c-card-body>
-    <div *ngIf="isLoading" class="text-center py-3">
-      <c-spinner aria-hidden="true"></c-spinner> <!-- Removed size="lg" -->
+    <!-- <div *ngIf="isLoading" class="text-center py-3">
+      <c-spinner aria-hidden="true"></c-spinner>
       <p class="mt-2">Loading users...</p>
+    </div> -->
+    <div *ngIf="isLoading" class="skeleton-loader py-3">
+      <div class="table-responsive user-table-responsive">
+        <table cTable class="mb-0 border user-table" hover responsive striped bordered align="middle">
+          <thead class="d-none d-md-table-header-group">
+            <tr>
+              <th style="width: 35%;">User Details</th>
+              <th style="width: 20%;">Role</th>
+              <th style="width: 25%;">Managed Guilds</th>
+              <th style="width: 20%;" class="text-center">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Skeleton Rows -->
+            <tr *ngFor="let i of [1,2,3,4,5,6,7,8,9,10]" class="user-row skeleton-row">
+              <td data-label="User Details">
+                <div class="skeleton-line short-line"></div>
+                <div class="skeleton-line long-line mt-1"></div>
+              </td>
+              <td data-label="Role">
+                <div class="skeleton-badge"></div>
+              </td>
+              <td data-label="Managed Guilds">
+                <div class="skeleton-line medium-line"></div>
+              </td>
+              <td class="text-center" data-label="Actions">
+                <div class="skeleton-button"></div>
+                <div class="skeleton-button ms-2"></div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
 
     <c-alert color="danger" *ngIf="errorMessage && !isLoading" dismissible (click)="errorMessage=null">
@@ -17,14 +50,14 @@
         <svg cIcon name="cilPeople" size="xxl" class="text-muted mb-3"></svg>
         <h5 class="text-muted">No users found.</h5>
         <p class="text-muted">Click "Add User" to get started.</p>
-         <button cButton color="success" variant="ghost" size="lg" class="mt-2" (click)="openAddUserModal()">
-            <svg cIcon name="cilUserPlus" size="lg" class="me-1"></svg> Add First User
+        <button cButton color="success" variant="ghost" size="lg" class="mt-2" (click)="openAddUserModal()">
+          <svg cIcon name="cilUserPlus" size="lg" class="me-1"></svg> Add First User
         </button>
       </div>
 
       <div class="table-responsive user-table-responsive">
-        <table *ngIf="users.length > 0"
-               cTable class="mb-0 border user-table" hover responsive striped bordered align="middle">
+        <table *ngIf="users.length > 0" cTable class="mb-0 border user-table" hover responsive striped bordered
+          align="middle">
           <thead class="d-none d-md-table-header-group">
             <tr>
               <th style="width: 35%;">User Details</th>
@@ -43,7 +76,8 @@
                 </div>
               </td>
               <td data-label="Role">
-                <c-badge [color]="getRoleBadgeColor(user.role)" shape="rounded-pill" class="px-2 py-1 d-inline-flex align-items-center shadow-sm">
+                <c-badge [color]="getRoleBadgeColor(user.role)" shape="rounded-pill"
+                  class="px-2 py-1 d-inline-flex align-items-center shadow-sm">
                   <svg cIcon [name]="getRoleIcon(user.role)" size="sm" class="me-1"></svg>
                   {{ user.role | titlecase }}
                 </c-badge>
@@ -55,32 +89,36 @@
                 </ng-container>
                 <ng-container *ngIf="user.role === 'manager'">
                   <ng-container *ngIf="user.managed_guild_ids && user.managed_guild_ids.length > 0; else noGuilds">
-                      <svg cIcon name="cilListNumbered" size="sm" class="me-1 text-success align-text-bottom"></svg>
-                      {{ user.managed_guild_ids.length }} Guild(s)
-                      <button cButton variant="ghost" size="sm" class="p-0 ms-1 align-baseline"
-                          [cTooltip]="getGuildsTooltipText(user.managed_guild_ids)" placement="top"
-                          title="View Managed Guilds">
+                    <svg cIcon name="cilListNumbered" size="sm" class="me-1 text-success align-text-bottom"></svg>
+                    {{ user.managed_guild_ids.length }} Guild(s)
+                    <button cButton variant="ghost" size="sm" class="p-0 ms-1 align-baseline"
+                      [cTooltip]="getGuildsTooltipText(user.managed_guild_ids)" placement="top"
+                      title="View Managed Guilds">
                       <svg cIcon name="cilSearch" size="sm"></svg>
                       <span class="visually-hidden">View Managed Guilds</span>
-                  </button>
+                    </button>
                   </ng-container>
                   <ng-template #noGuilds>
-                      <svg cIcon name="cilBan" size="sm" class="me-1 text-warning align-text-bottom"></svg><span class="text-body-secondary">No Guilds Assigned</span>
+                    <svg cIcon name="cilBan" size="sm" class="me-1 text-warning align-text-bottom"></svg><span
+                      class="text-body-secondary">No Guilds Assigned</span>
                   </ng-template>
                 </ng-container>
                 <ng-container *ngIf="user.role === 'user'">
-                  <svg cIcon name="cilXCircle" size="sm" class="me-1 text-secondary align-text-bottom"></svg><span class="text-body-secondary">N/A</span>
+                  <svg cIcon name="cilXCircle" size="sm" class="me-1 text-secondary align-text-bottom"></svg><span
+                    class="text-body-secondary">N/A</span>
                 </ng-container>
               </td>
               <td class="text-center" data-label="Actions">
-                  <button cButton color="primary" variant="ghost" size="sm" class="p-1" (click)="openEditUserModal(user)" cTooltip="Edit User" title="Edit User">
-                    <svg cIcon name="cilPencil" size="lg"></svg>
-                    <span class="visually-hidden">Edit User</span>
-                  </button>
-                  <button cButton color="danger" variant="ghost" size="sm" class="p-1 ms-2" (click)="deleteUser(user)" [disabled]="user._id === currentUserId" cTooltip="Delete User" title="Delete User">
-                    <svg cIcon name="cilTrash" size="lg"></svg>
-                    <span class="visually-hidden">Delete User</span>
-                  </button>
+                <button cButton color="primary" variant="ghost" size="sm" class="p-1" (click)="openEditUserModal(user)"
+                  cTooltip="Edit User" title="Edit User">
+                  <svg cIcon name="cilPencil" size="lg"></svg>
+                  <span class="visually-hidden">Edit User</span>
+                </button>
+                <button cButton color="danger" variant="ghost" size="sm" class="p-1 ms-2" (click)="deleteUser(user)"
+                  [disabled]="user._id === currentUserId" cTooltip="Delete User" title="Delete User">
+                  <svg cIcon name="cilTrash" size="lg"></svg>
+                  <span class="visually-hidden">Delete User</span>
+                </button>
               </td>
             </tr>
           </tbody>
@@ -92,9 +130,6 @@
 </c-card>
 
 <!-- User Edit Modal -->
-<app-user-edit-modal
-  [(visible)]="isUserEditModalVisible"
-  [userToEdit]="selectedUserForEdit"
-  (userSaved)="onUserSaved($event)"
-  (visibleChange)="handleVisibleChange($event)">
+<app-user-edit-modal [(visible)]="isUserEditModalVisible" [userToEdit]="selectedUserForEdit"
+  (userSaved)="onUserSaved($event)" (visibleChange)="handleVisibleChange($event)">
 </app-user-edit-modal>
