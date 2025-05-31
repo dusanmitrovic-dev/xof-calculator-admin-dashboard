@@ -20,6 +20,7 @@ import { GuildConfigService, AvailableGuild } from '../../../services/guild-conf
 import { AuthService } from '../../../auth/auth.service'; // Import AuthService
 import { TitleService } from '../../../services/title.service'; // Import TitleService
 import { DefaultLayoutComponent } from '..';
+import { logoBase64, logoText } from 'src/app/icons/logo';
 
 @Component({
     selector: 'app-default-header',
@@ -110,9 +111,9 @@ export class DefaultHeaderComponent extends HeaderComponent implements OnInit, O
     );
 
     // Set initial title and favicon when component initializes
-    this.titleService.setTitle('Guild Application');
+    this.titleService.setTitle(logoText);
     this.titleService.setFavicon(''); // Clear existing favicon if any
-    DefaultLayoutComponent.setCurrentGuildConfig({ logo_image_base64: '', logo_text: 'Guild Application' });
+    DefaultLayoutComponent.setCurrentGuildConfig({ logo_image_base64: logoBase64, logo_text: logoText });
   }
 
   ngOnDestroy(): void {
@@ -131,10 +132,10 @@ export class DefaultHeaderComponent extends HeaderComponent implements OnInit, O
             DefaultLayoutComponent.setCurrentGuildConfig({
               logo_image_base64:
                 selectedGuild.display_settings?.logo_image_base64 || '',
-              logo_text: selectedGuild.display_settings?.logo_text || 'Guild Application',
+              logo_text: selectedGuild.display_settings?.logo_text || logoText,
             });
             // Use the TitleService to set the title
-            this.titleService.setTitle(selectedGuild.display_settings?.logo_text || 'Guild Application');
+            this.titleService.setTitle(selectedGuild.display_settings?.logo_text || logoText);
             // Use the TitleService to set the favicon
             if (selectedGuild.display_settings?.logo_image_base64) {
               this.titleService.setFavicon(selectedGuild.display_settings.logo_image_base64);
@@ -148,8 +149,8 @@ export class DefaultHeaderComponent extends HeaderComponent implements OnInit, O
         this.subscriptions.add(sub);
       } else {
         // If no guild is selected (guildId is null)
-        DefaultLayoutComponent.setCurrentGuildConfig({ logo_image_base64: '', logo_text: 'Guild Application' });
-        this.titleService.setTitle('Guild Application');
+        DefaultLayoutComponent.setCurrentGuildConfig({ logo_image_base64: logoBase64, logo_text: logoText });
+        this.titleService.setTitle(logoText);
         this.titleService.setFavicon(''); // Clear favicon
       }
   }
