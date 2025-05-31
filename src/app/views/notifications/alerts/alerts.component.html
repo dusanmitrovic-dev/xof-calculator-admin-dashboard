@@ -198,7 +198,7 @@
         </p>
         <app-docs-example href="components/alert#dismissing">
           @if (visible[0]) {
-            <c-alert [(visible)]="visible[0]" dismissible color="warning" fade>
+            <c-alert [(visible)]="visible[0]" dismissible color="warning" fade [@alertAnimation]> <!-- ADD [@alertAnimation] -->
               <strong>Go right ahead</strong> and click that dismiss over there on the right.
             </c-alert>
           }

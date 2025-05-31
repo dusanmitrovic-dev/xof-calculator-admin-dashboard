@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.0.0
+## 0.0.1
 
 ### Features
 
@@ -11,6 +11,7 @@
     *   User registration process.
     *   Comprehensive user listing with ability to view and manage user details.
     *   User editing functionality through a dedicated modal interface.
+    *   Loading skeleton animation
 
 *   **Guild Management:**
     *   Centralized management for guild configurations, allowing for listing, viewing, and modification.
@@ -19,6 +20,8 @@
     *   Ability to delete entire guild configurations.
     *   Functionality to copy guild IDs to clipboard for easy reference.
     *   Specialized configuration management for MSP (Member Service Provider) settings within guilds.
+    *   buttons animation
+    *   edit modal show and disappear animations
 
 *   **Earnings Management:**
     *   Fetching and displaying all earning records for a specific guild.
@@ -41,3 +44,4 @@
     *   Implemented a modular application design for better organization and scalability.
     *   Default application layout defined, including a consistent header, footer, and navigation system.
     *   Improved error handling and loading indicators across data-intensive views.
+    *   Alert Entrance/Exit animation (specifically within the User Edit Modal)

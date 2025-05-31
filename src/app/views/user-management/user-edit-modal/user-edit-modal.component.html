@@ -1,10 +1,23 @@
-<c-modal id="userEditModal" [visible]="visible" (visibleChange)="handleVisibleChange($event)" backdrop="static" size="lg">
+<c-modal
+  id="userEditModal"
+  [visible]="visible"
+  (visibleChange)="handleVisibleChange($event)"
+  backdrop="static"
+  size="lg"
+>
   <c-modal-header>
-    <h5 cModalTitle>Edit User: {{ userToEdit?.email }}</h5>
-    <button (click)="closeModal()" cButtonClose></button>
+    <h5 cModalTitle>{{ title }}</h5>
+    <button
+      (click)="closeModal()"
+      cButtonClose
+      title="Close"
+      aria-label="Close"
+    >
+      <svg cIcon name="cilX"></svg>
+    </button>
   </c-modal-header>
   <c-modal-body>
-    <c-alert color="danger" *ngIf="errorMessage">
+    <c-alert color="danger" *ngIf="errorMessage" [@alertAnimation]>
       {{ errorMessage }}
     </c-alert>
     <div *ngIf="loadingGuilds" class="text-center">

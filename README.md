@@ -1,6 +1,6 @@
 # Vixen Calculator Admin Dashboard
 
-## Completed Features (Version 1.0.0)
+## Completed Features (Version 0.0.1)
 
 This section outlines the key features and enhancements implemented as part of the 1.0.0 release of the XOF Calculator Admin Dashboard.
 
@@ -12,6 +12,7 @@ This section outlines the key features and enhancements implemented as part of t
 *   [x] User registration process.
 *   [x] Comprehensive user listing with ability to view and manage user details.
 *   [x] User editing functionality through a dedicated modal interface.
+*   [x] Loading skeleton
 
 ### Guild Management
 
@@ -21,6 +22,8 @@ This section outlines the key features and enhancements implemented as part of t
 *   [x] Ability to delete entire guild configurations.
 *   [x] Functionality to copy guild IDs to clipboard for easy reference.
 *   [x] Specialized configuration management for MSP (Member Service Provider) settings within guilds.
+*   [x] Buttons animation
+*   [x] Edit modal show and disappear animations
 
 ### Earnings Management
 
@@ -44,8 +47,9 @@ This section outlines the key features and enhancements implemented as part of t
 *   [x] Implemented a modular application design for better organization and scalability.
 *   [x] Default application layout defined, including a consistent header, footer, and navigation system.
 *   [x] Improved error handling and loading indicators across data-intensive views.
+*   [x] Alert Entrance/Exit animation (specifically within the User Edit Modal)
 
-## Backend Features (Version 1.0.0)
+## Backend Features (Version 0.0.1)
 
 This section details the backend features implemented in the 1.0.0 release.
 

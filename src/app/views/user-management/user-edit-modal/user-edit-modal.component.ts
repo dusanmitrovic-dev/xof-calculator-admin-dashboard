@@ -3,10 +3,11 @@ import { FormBuilder, FormGroup, FormControl, FormArray, Validators, ReactiveFor
 import { CommonModule } from '@angular/common';
 import { UserService, User, UserUpdateData } from '../../../services/user.service'; // Adjust path
 // *** Import specific types from GuildConfigService ***
-import { GuildConfigService, GuildConfig, AvailableGuild } from '../../../services/guild-config.service'; 
+import { GuildConfigService, GuildConfig, AvailableGuild } from '../../../services/guild-config.service';
 import { AuthService } from '../../../auth/auth.service'; // To check if editing self
 import { finalize, tap, catchError, map } from 'rxjs/operators'; // Added map
 import { of } from 'rxjs'; // Import 'of' for catchError
+import { trigger, transition, style, animate } from '@angular/animations';
 
 // CoreUI Modules
 import {
@@ -15,8 +16,19 @@ import {
   SpinnerModule,
   GridModule,
   FormModule, // Includes FormCheckComponent, FormSelectDirective etc.
-  ButtonModule
+  ButtonModule,
+  ButtonCloseDirective,
+  ModalTitleDirective,
+  CardModule,
+  FormCheckComponent,
+  FormCheckInputDirective,
+  FormCheckLabelDirective,
+  ModalFooterComponent,
+  ModalHeaderComponent,
+  ModalBodyComponent,
+  ModalComponent
 } from '@coreui/angular';
+import { IconDirective } from '@coreui/icons-angular';
 
 @Component({
   selector: 'app-user-edit-modal',
@@ -26,12 +38,33 @@ import {
   imports: [
     CommonModule,
     ReactiveFormsModule,
-    ModalModule,
-    AlertModule,
-    SpinnerModule,
-    GridModule,
+    ButtonModule,
     FormModule,
-    ButtonModule
+    SpinnerModule,
+    AlertModule,
+    GridModule,
+    CardModule,
+    IconDirective,
+    FormCheckComponent,
+    FormCheckInputDirective,
+    FormCheckLabelDirective,
+    ModalComponent,
+    ModalBodyComponent, 
+    ModalFooterComponent,
+    ModalHeaderComponent,
+    ModalTitleDirective,
+    ButtonCloseDirective
+  ],
+  animations: [
+    trigger('alertAnimation', [
+      transition(':enter', [
+        style({ opacity: 0, transform: 'translateY(-10px)' }),
+        animate('300ms ease-out', style({ opacity: 1, transform: 'translateY(0)' }))
+      ]),
+      transition(':leave', [
+        animate('200ms ease-in', style({ opacity: 0, transform: 'translateY(-10px)' }))
+      ])
+    ])
   ]
 })
 export class UserEditModalComponent implements OnInit, OnChanges {
@@ -87,7 +120,7 @@ export class UserEditModalComponent implements OnInit, OnChanges {
     }
     // If already visible, react to data changes
     else if (this.visible && changes['userToEdit']) {
-        this.prepareModal();
+      this.prepareModal();
     }
   }
 
@@ -106,7 +139,7 @@ export class UserEditModalComponent implements OnInit, OnChanges {
       this.patchForm(this.userToEdit);
       // If the user is a manager, load guilds immediately
       if (this.userToEdit.role === 'manager') {
-          this.loadAvailableGuilds();
+        this.loadAvailableGuilds();
       }
     } else {
       this.errorMessage = "Error: User data is missing.";
@@ -132,8 +165,8 @@ export class UserEditModalComponent implements OnInit, OnChanges {
   private patchForm(user: User): void {
     if (!user) return;
     this.userForm.patchValue({
-        email: user.email,
-        role: user.role
+      email: user.email,
+      role: user.role
     });
 
     // Clear existing guild controls before patching new ones
@@ -216,20 +249,20 @@ export class UserEditModalComponent implements OnInit, OnChanges {
     const formValue = this.userForm.getRawValue(); // Get raw value for potentially disabled role
 
     if (this.isEditingSelf && formValue.role !== 'admin') {
-        this.errorMessage = "Action denied: Admin cannot change their own role.";
-        alert(this.errorMessage); // Simple alert for now
-        return;
+      this.errorMessage = "Action denied: Admin cannot change their own role.";
+      alert(this.errorMessage); // Simple alert for now
+      return;
     }
 
     this.isLoading = true;
     this.errorMessage = null;
 
     const updateData: UserUpdateData = {
-        role: formValue.role,
-        // Calculate managed_guild_ids based on the checkbox values if role is manager
-        managed_guild_ids: formValue.role === 'manager'
-            ? this.availableGuilds.filter((_, index) => formValue.managedGuilds[index])
-            : [] // Empty array if not a manager
+      role: formValue.role,
+      // Calculate managed_guild_ids based on the checkbox values if role is manager
+      managed_guild_ids: formValue.role === 'manager'
+        ? this.availableGuilds.filter((_, index) => formValue.managedGuilds[index])
+        : [] // Empty array if not a manager
     };
 
     console.log(`UserEditModal: Updating user ${this.userToEdit._id} with:`, updateData);
@@ -275,13 +308,13 @@ export class UserEditModalComponent implements OnInit, OnChanges {
     this.isEditingSelf = false;
     this.availableGuilds = [];
     if (this.userForm) {
-        this.clearManagedGuilds(); // Clear form array
-        this.userForm.reset({
-            role: 'user',
-            email: { value: '', disabled: true },
-            managedGuilds: [] // Ensure array is reset
-        });
-        this.userForm.get('role')?.enable();
+      this.clearManagedGuilds(); // Clear form array
+      this.userForm.reset({
+        role: 'user',
+        email: { value: '', disabled: true },
+        managedGuilds: [] // Ensure array is reset
+      });
+      this.userForm.get('role')?.enable();
     }
   }
 }

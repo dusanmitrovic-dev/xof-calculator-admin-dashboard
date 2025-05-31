@@ -226,7 +226,7 @@ Errors are logged to the console, and a generic error message is returned to the
 
 # XOF Calculator Backend
 
-## Completed Features (Version 1.0.0)
+## Completed Features (Version 0.0.1)
 
 This section outlines the key features and enhancements implemented as part of the 1.0.0 release of the XOF Calculator Backend.
 
