@@ -1,8 +1,0 @@
-{
-  "/api": {
-    "target": "https://xof-calculator-admin-database-server.onrender.com",
-    "secure": true,
-    "changeOrigin": true,
-    "logLevel": "debug"
-  }
-}
