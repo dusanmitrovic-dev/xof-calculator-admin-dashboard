@@ -1,10 +1,10 @@
 $primary-color: #0d6efd;
 $modal-bg: none;
 $modal-header-bg: none;
-$modal-shadow: 0 8px 32px rgba(60,60,60,0.18), 0 1.5px 4px rgba(0,0,0,0.08);
+$modal-shadow: 0 8px 32px rgba(60, 60, 60, 0.18), 0 1.5px 4px rgba(0, 0, 0, 0.08);
 $border-radius: 1rem;
 $box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
-$transition: 0.25s cubic-bezier(0.4,0,0.2,1);
+$transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 
 .c-modal {
   background: $modal-bg;
@@ -13,6 +13,7 @@ $transition: 0.25s cubic-bezier(0.4,0,0.2,1);
   opacity: 0;
   transform: scale(0.98);
   transition: opacity 0.3s $transition, transform 0.3s $transition;
+
   &.show {
     opacity: 1;
     transform: scale(1);
@@ -21,22 +22,32 @@ $transition: 0.25s cubic-bezier(0.4,0,0.2,1);
 }
 
 @keyframes modalFadeIn {
-  from { opacity: 0; transform: scale(0.96) translateY(32px); }
-  to { opacity: 1; transform: scale(1) translateY(0); }
+  from {
+    opacity: 0;
+    transform: scale(0.96) translateY(32px);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
 }
 
-.c-modal-header, .c-modal-footer {
+.c-modal-header,
+.c-modal-footer {
   background: $modal-header-bg;
   padding: 1.25rem 1.5rem;
   border-radius: $border-radius $border-radius 0 0;
-  border-bottom: 1px solid rgba(60,60,60,0.12); // theme-friendly border
-  box-shadow: 0 2px 8px rgba(13,110,253,0.04);
+  border-bottom: 1px solid rgba(60, 60, 60, 0.12); // theme-friendly border
+  box-shadow: 0 2px 8px rgba(13, 110, 253, 0.04);
 }
+
 .c-modal-footer {
   border-radius: 0 0 $border-radius $border-radius;
-  border-top: 1px solid rgba(60,60,60,0.12); // theme-friendly border
+  border-top: 1px solid rgba(60, 60, 60, 0.12); // theme-friendly border
   background: $modal-header-bg;
 }
+
 .c-modal-body {
   padding: 2rem 1.5rem;
   background: $modal-bg;
@@ -44,31 +55,34 @@ $transition: 0.25s cubic-bezier(0.4,0,0.2,1);
 }
 
 .card {
-  border: 1px solid rgba(60,60,60,0.12); // theme-friendly border
+  border: 1px solid rgba(60, 60, 60, 0.12); // theme-friendly border
   border-radius: 0.75rem;
-  box-shadow: 0 2px 8px rgba(13,110,253,0.04);
+  box-shadow: 0 2px 8px rgba(13, 110, 253, 0.04);
   background: none;
   transition: box-shadow 0.2s, background 0.2s;
+
   &:hover {
-    box-shadow: 0 8px 24px rgba(13,110,253,0.12);
+    box-shadow: 0 8px 24px rgba(13, 110, 253, 0.12);
     background: none;
   }
 }
 
-option{
+option {
   color: black;
 }
 
-input[cFormControl], select[cFormControl] {
+input[cFormControl],
+select[cFormControl] {
   border-radius: 0.5rem;
   min-height: 2.25rem;
   font-size: 1rem;
   border: 1px solid rgba(140, 120, 120, 0.1); // lighter, theme-friendly border
   background: none;
   transition: border-color 0.2s, box-shadow 0.2s;
+
   &:focus {
     border-color: $primary-color;
-    box-shadow: 0 0 0 2px rgba(13,110,253,0.08);
+    box-shadow: 0 0 0 2px rgba(13, 110, 253, 0.08);
     background: none;
   }
 }
@@ -79,11 +93,13 @@ button[cButton] {
   font-size: 1rem;
   padding: 0.5rem 1.25rem;
   transition: background $transition, color $transition, box-shadow $transition, transform $transition;
-  box-shadow: 0 2px 8px rgba(35,64,160,0.08);
-  &:hover, &:focus {
+  box-shadow: 0 2px 8px rgba(35, 64, 160, 0.08);
+
+  &:hover,
+  &:focus {
     background: $primary-color !important;
     color: #fff !important;
-    box-shadow: 0 4px 16px rgba(35,64,160,0.18);
+    box-shadow: 0 4px 16px rgba(35, 64, 160, 0.18);
     transform: translateY(-1px) scale(1.03);
   }
 }
@@ -98,12 +114,27 @@ button[cButton] {
 
 // Animations
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(16px);}
-  to { opacity: 1; transform: none;}
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
 }
+
 @keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(32px);}
-  to { opacity: 1; transform: none;}
+  from {
+    opacity: 0;
+    transform: translateY(32px);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
 }
 
 // Drag & Drop
@@ -137,18 +168,21 @@ button[cButton] {
   align-items: stretch;
   margin-bottom: 1.5rem; // moderate gap between rules
   padding-bottom: 0.5rem;
-  border-bottom: 1px dashed rgba(60,60,60,0.10);
-  > * {
+  border-bottom: 1px dashed rgba(60, 60, 60, 0.10);
+
+  >* {
     width: 100%;
     max-width: 100%;
     min-width: 0;
     box-sizing: border-box;
   }
+
   .delete-col {
     align-self: flex-end;
     width: auto;
     margin-top: 0.25rem;
   }
+
   &:last-child {
     border-bottom: none;
   }
@@ -159,11 +193,13 @@ button[cButton] {
     flex-direction: row;
     align-items: flex-end;
     gap: 1.5rem 1rem;
-    > * {
+
+    >* {
       flex: 1 1 220px;
       min-width: 180px;
       max-width: 260px;
     }
+
     .delete-col {
       min-width: 40px;
       flex: 0 0 auto;
@@ -175,29 +211,32 @@ button[cButton] {
 }
 
 // Remove any extra margin or padding from bonus rule fields
-.bonus-rule-row > * {
+.bonus-rule-row>* {
   margin: 0 !important;
   // padding: 0 !important;
 }
 
 @media (max-width: 992px) {
   .bonus-rule-row {
-    > * {
+    >* {
       flex: 1 1 100%;
       min-width: 0;
       max-width: 100%;
     }
   }
 }
+
 @media (max-width: 576px) {
   .bonus-rule-row {
     flex-direction: column;
     gap: 0.5rem;
-    > * {
+
+    >* {
       max-width: 100%;
       min-width: 0;
       width: 100%;
     }
+
     .delete-col {
       align-self: flex-end;
       width: 100%;
@@ -215,48 +254,60 @@ button[cButton] {
     margin: 1vw;
     padding: 0.5rem;
   }
+
   .c-modal-body {
     padding: 1rem 0.5rem;
   }
-  .row.g-3 > [class^="col-"],
-  .row.g-3 > [class*=" col-"] {
+
+  .row.g-3>[class^="col-"],
+  .row.g-3>[class*=" col-"] {
     margin-bottom: 0.5rem;
   }
-  .bonus-rule-row > .delete-col {
+
+  .bonus-rule-row>.delete-col {
     margin-top: 0.5rem;
     min-width: unset;
     width: 100%;
     justify-content: flex-end;
   }
+
   .top-level-role-row {
     flex-direction: column;
     align-items: stretch;
     gap: 0.5rem 0;
   }
-  .top-level-role-row > .ms-auto {
+
+  .top-level-role-row>.ms-auto {
     margin-left: 0 !important;
     align-self: flex-end;
   }
-  .input-group, .input-group.mb-3 {
+
+  .input-group,
+  .input-group.mb-3 {
     flex-direction: column;
     align-items: stretch;
     gap: 0.5rem;
     width: 100%;
   }
-  .input-group > * {
+
+  .input-group>* {
     width: 100% !important;
     min-width: 0;
     max-width: 100%;
   }
-  select.form-select, input[cFormControl] {
+
+  select.form-select,
+  input[cFormControl] {
     width: 100% !important;
     min-width: 0;
     max-width: 100%;
   }
+
   button[cButton] {
     // width: 100%;
     margin-top: 0.25rem;
   }
+
   .top-level-role-row input[cFormControl],
   .top-level-role-row .input-group-text,
   .bonus-rule-row input[cFormControl],
@@ -266,28 +317,33 @@ button[cButton] {
     text-align: center;
     justify-content: center;
   }
+
   .commission-row {
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
     align-items: stretch;
-    > * {
+
+    >* {
       width: 100% !important;
       min-width: 0;
       max-width: 100%;
       box-sizing: border-box;
     }
+
     .input-group {
       flex-direction: column;
       align-items: stretch;
       gap: 0.25rem;
       width: 100%;
     }
+
     .input-group-text {
       text-align: center;
       justify-content: center;
       width: 100%;
     }
+
     button[cButton] {
       width: 100%;
       margin-top: 0.25rem;
@@ -302,13 +358,15 @@ button[cButton] {
     align-items: stretch;
     gap: 1rem;
     padding: 0.5rem 0 0.5rem 0;
-    > * {
+
+    >* {
       width: 100% !important;
       min-width: 0;
       max-width: 100%;
       box-sizing: border-box;
       margin-bottom: 0.5rem;
     }
+
     .input-group {
       flex-direction: column !important;
       align-items: stretch !important;
@@ -316,23 +374,27 @@ button[cButton] {
       width: 100%;
       margin-bottom: 0.5rem;
     }
+
     .input-group-text {
       text-align: center;
       justify-content: center;
       width: 100%;
       margin-bottom: 0.25rem;
     }
+
     input[cFormControl] {
       text-align: center;
       width: 100%;
       margin-bottom: 0.25rem;
     }
+
     .cdk-drag-handle {
       margin-bottom: 0.5rem;
       width: 100%;
       display: flex;
       justify-content: center;
     }
+
     button[cButton] {
       width: 100%;
       margin-top: 0.25rem;
@@ -349,17 +411,20 @@ button[cButton] {
   gap: 1rem;
   padding: 0.5rem 1rem;
   border-radius: $border-radius;
-  background: rgba(13,110,253,0.03);
+  background: rgba(13, 110, 253, 0.03);
   margin-bottom: 1rem;
   position: relative;
+
   .drag-handle {
     cursor: grab;
   }
+
   .role-label,
   .user-label {
     max-width: 250px;
     min-width: 0;
   }
+
   .commission-col,
   .hourly-col,
   .override-col {
@@ -368,12 +433,15 @@ button[cButton] {
     width: 100%;
   }
 }
+
 @media (max-width: 576px) {
+
   .commission-role-row,
   .user-override-row {
     flex-direction: column !important;
     align-items: stretch !important;
     gap: 0.5rem;
+
     .role-label,
     .user-label,
     .commission-col,
@@ -385,6 +453,7 @@ button[cButton] {
       margin-right: 0 !important;
       margin-bottom: 0.5rem;
     }
+
     .drag-handle {
       margin-bottom: 0.5rem;
       margin-right: 0 !important;
@@ -399,23 +468,27 @@ button[cButton] {
   gap: 1rem;
   padding: 0.5rem 1rem;
   border-radius: $border-radius;
-  background: rgba(13,110,253,0.03);
+  background: rgba(13, 110, 253, 0.03);
   margin-bottom: 1rem;
   position: relative;
+
   .drag-handle {
     cursor: grab;
   }
+
   .role-label,
   .commission-col {
     max-width: 250px;
     min-width: 0;
   }
 }
+
 @media (max-width: 576px) {
   .top-level-role-row {
     flex-direction: column !important;
     align-items: stretch !important;
     gap: 0.5rem;
+
     .role-label,
     .commission-col {
       max-width: 100%;
@@ -424,5 +497,19 @@ button[cButton] {
       margin-right: 0 !important;
       margin-bottom: 0.5rem;
     }
+  }
+
+  .input-group>:not(:first-child):not(.dropdown-menu):not(.valid-tooltip):not(.valid-feedback):not(.invalid-tooltip):not(.invalid-feedback) {
+    margin-inline-start: calc(-1 * var(--cui-border-width));
+    border-start-start-radius: 80px 80px;
+    border-end-start-radius: 80px 80px;
+    border-start-end-radius: 80px 80px;
+    border-end-end-radius: 80px 80px;
+  }
+
+  button[cButton] {
+    margin-top: .25rem;
+    width: 100%;
+    margin-bottom: 0.5rem;
   }
 }
