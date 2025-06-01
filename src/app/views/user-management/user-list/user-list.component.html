@@ -3,24 +3,20 @@
     <strong>User Management</strong>
   </c-card-header>
   <c-card-body>
-    <!-- <div *ngIf="isLoading" class="text-center py-3">
-      <c-spinner aria-hidden="true"></c-spinner>
-      <p class="mt-2">Loading users...</p>
-    </div> -->
-    <div *ngIf="isLoading" class="skeleton-loader py-3">
-      <div class="table-responsive user-table-responsive">
-        <table cTable class="mb-0 border user-table" hover responsive striped bordered align="middle">
-          <thead class="d-none d-md-table-header-group">
-            <tr>
-              <th style="width: 35%;">User Details</th>
-              <th style="width: 20%;">Role</th>
-              <th style="width: 25%;">Managed Guilds</th>
-              <th style="width: 20%;" class="text-center">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
+    <div class="table-responsive user-table-responsive">
+      <table cTable class="mb-0 border user-table" hover responsive striped bordered align="middle">
+        <thead class="d-none d-md-table-header-group">
+          <tr>
+            <th style="width: 35%;">User Details</th>
+            <th style="width: 20%;">Role</th>
+            <th style="width: 25%;">Managed Guilds</th>
+            <th style="width: 20%;" class="text-center">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <ng-container *ngIf="isLoading">
             <!-- Skeleton Rows -->
-            <tr *ngFor="let i of [1,2,3,4,5,6,7,8,9,10]" class="user-row skeleton-row">
+            <tr *ngFor="let i of [1, 2, 3, 4, 5]" class="user-row skeleton-row">
               <td data-label="User Details">
                 <div class="skeleton-line short-line"></div>
                 <div class="skeleton-line long-line mt-1"></div>
@@ -36,37 +32,8 @@
                 <div class="skeleton-button ms-2"></div>
               </td>
             </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-
-    <c-alert color="danger" *ngIf="errorMessage && !isLoading" dismissible (click)="errorMessage=null">
-      {{ errorMessage }}
-    </c-alert>
-
-    <ng-container *ngIf="!isLoading && !errorMessage">
-      <div *ngIf="users.length === 0" class="text-center py-5">
-        <svg cIcon name="cilPeople" size="xxl" class="text-muted mb-3"></svg>
-        <h5 class="text-muted">No users found.</h5>
-        <p class="text-muted">Click "Add User" to get started.</p>
-        <button cButton color="success" variant="ghost" size="lg" class="mt-2" (click)="openAddUserModal()">
-          <svg cIcon name="cilUserPlus" size="lg" class="me-1"></svg> Add First User
-        </button>
-      </div>
-
-      <div class="table-responsive user-table-responsive">
-        <table *ngIf="users.length > 0" cTable class="mb-0 border user-table" hover responsive striped bordered
-          align="middle">
-          <thead class="d-none d-md-table-header-group">
-            <tr>
-              <th style="width: 35%;">User Details</th>
-              <th style="width: 20%;">Role</th>
-              <th style="width: 25%;">Managed Guilds</th>
-              <th style="width: 20%;" class="text-center">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
+          </ng-container>
+          <ng-container *ngIf="!isLoading && !errorMessage && users.length > 0">
             <tr *ngFor="let user of users" class="user-row">
               <td data-label="User Details">
                 <div class="fw-semibold">{{ user.email }}</div>
@@ -121,8 +88,23 @@
                 </button>
               </td>
             </tr>
-          </tbody>
-        </table>
+          </ng-container>
+        </tbody>
+      </table>
+    </div>
+
+    <c-alert color="danger" *ngIf="errorMessage && !isLoading" dismissible (click)="errorMessage=null">
+      {{ errorMessage }}
+    </c-alert>
+
+    <ng-container *ngIf="!isLoading && !errorMessage && users.length === 0">
+      <div class="text-center py-5">
+        <svg cIcon name="cilPeople" size="xxl" class="text-muted mb-3"></svg>
+        <h5 class="text-muted">No users found.</h5>
+        <p class="text-muted">Click "Add User" to get started.</p>
+        <button cButton color="success" variant="ghost" size="lg" class="mt-2" (click)="openAddUserModal()">
+          <svg cIcon name="cilUserPlus" size="lg" class="me-1"></svg> Add First User
+        </button>
       </div>
     </ng-container>
 

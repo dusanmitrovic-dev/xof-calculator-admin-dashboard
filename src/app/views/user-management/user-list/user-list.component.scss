@@ -1,57 +1,78 @@
+@use "@coreui/coreui/scss/mixins/transition" as *;
+@use "@coreui/coreui/scss/mixins/color-mode" as *;
+
 // Skeleton Loader Styles
-.skeleton-loader {
-    animation: pulse 1.5s infinite ease-in-out; // Optional: Add a pulse animation
+.skeleton-row {
+  height: 60px; // Adjust based on your row height
+  display: table-row; // For table-like behavior
+  background-color: transparent; // Ensure row background is transparent to see table stripes if any
+
+  td {
+    vertical-align: middle;
   }
-  
-  .skeleton-row {
-    height: 60px; // Adjust based on your row height
-    display: table-row; // For table-like behavior
-    background-color: #f0f0f0; // Light gray background for skeleton
+}
+
+/* Unified skeleton line styles for both themes */
+.skeleton-line {
+  border-radius: 4px;
+  height: 12px;
+  margin-bottom: 8px;
+  background: linear-gradient(to right, #e0e0e0 8%, #a0a0a0 18%, #e0e0e0 33%); // More visible gradient
+  background-size: 1000px 100%;
+  animation: loading-gradient 1.5s infinite linear;
+
+  &.short-line {
+    width: 60%;
   }
-  
-  .skeleton-line {
-    background-color: #e0e0e0; // Slightly darker gray for lines
-    border-radius: 4px;
-    height: 12px;
-    margin-bottom: 8px;
-  
-    &.short-line {
-      width: 60%;
-    }
-  
-    &.medium-line {
-      width: 80%;
-    }
-  
-    &.long-line {
-      width: 90%;
-    }
+
+  &.medium-line {
+    width: 80%;
   }
-  
-  .skeleton-badge {
-    background-color: #e0e0e0;
-    border-radius: 12px; // More rounded for a badge look
-    height: 20px;
-    width: 70px; // Adjust width to mimic a badge
+
+  &.long-line {
+    width: 90%;
   }
-  
-  .skeleton-button {
-    background-color: #e0e0e0;
-    border-radius: 4px;
-    height: 24px;
-    width: 24px; // Mimic a small icon button
-    display: inline-block;
+}
+
+.skeleton-badge {
+  border-radius: 12px; // More rounded for a badge look
+  height: 20px;
+  width: 70px; // Adjust width to mimic a badge
+  background: linear-gradient(to right, #e0e0e0 8%, #a0a0a0 18%, #e0e0e0 33%); // More visible gradient
+  background-size: 1000px 100%;
+  animation: loading-gradient 1.5s infinite linear;
+}
+
+.skeleton-button {
+  border-radius: 4px;
+  height: 24px;
+  width: 24px; // Mimic a small icon button
+  display: inline-block;
+  background: linear-gradient(to right, #e0e0e0 8%, #a0a0a0 18%, #e0e0e0 33%); // More visible gradient
+  background-size: 1000px 100%;
+  animation: loading-gradient 1.5s infinite linear;
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 0.8;
   }
-  
-  @keyframes pulse {
-    0% {
-      opacity: 0.8;
-    }
-    50% {
-      opacity: 1;
-    }
-    100% {
-      opacity: 0.8;
-    }
+
+  50% {
+    opacity: 1;
   }
-  
+
+  100% {
+    opacity: 0.8;
+  }
+}
+
+@keyframes loading-gradient {
+  0% {
+    background-position: -500px 0;
+  }
+
+  100% {
+    background-position: 500px 0;
+  }
+}

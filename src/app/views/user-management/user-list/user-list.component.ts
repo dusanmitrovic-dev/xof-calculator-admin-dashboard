@@ -56,7 +56,7 @@ export class UserListComponent implements OnInit, OnDestroy {
   currentUserId: string | null = null;
 
   isUserEditModalVisible: boolean = false;
-  selectedUserForEdit: User | null = null;
+  selectedUserForEdit: User | null = null; // Default to 5 skeleton rows
 
   private destroy$ = new Subject<void>();
 
