@@ -7,30 +7,30 @@ $box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
 $transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 
 .c-modal {
- background: $modal-bg;
- border-radius: $border-radius;
- box-shadow: $modal-shadow;
- opacity: 0;
- transform: scale(0.98);
- transition: opacity 0.3s $transition, transform 0.3s $transition;
+  background: $modal-bg;
+  border-radius: $border-radius;
+  box-shadow: $modal-shadow;
+  opacity: 0;
+  transform: scale(0.98);
+  transition: opacity 0.3s $transition, transform 0.3s $transition;
 
- &.show {
-   opacity: 1;
-   transform: scale(1);
-   animation: modalFadeIn 0.5s $transition;
- }
+  &.show {
+    opacity: 1;
+    transform: scale(1);
+    animation: modalFadeIn 0.5s $transition;
+  }
 }
 
 @keyframes modalFadeIn {
- from {
-   opacity: 0;
-   transform: scale(0.96) translateY(32px);
- }
+  from {
+    opacity: 0;
+    transform: scale(0.96) translateY(32px);
+  }
 
- to {
-   opacity: 1;
-   transform: scale(1) translateY(0);
- }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
 }
 
 // Table Soft Card-Like Styling (copied from guild-config-list.component.scss)
@@ -40,10 +40,11 @@ $transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   background: $modal-bg;
   border-radius: $border-radius;
   overflow: hidden;
-  box-shadow: 0 2px 8px rgba(13,110,253,0.04);
+  box-shadow: 0 2px 8px rgba(13, 110, 253, 0.04);
   margin-bottom: 1.5rem;
   animation: modalFadeIn 0.5s $transition;
 }
+
 .table th,
 .table td {
   border: none;
@@ -53,46 +54,169 @@ $transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   font-size: 1.05rem;
   color: inherit;
 }
-.table-striped > tbody > tr:nth-of-type(odd) {
-  background-color: rgba(13,110,253,0.025);
+
+.table-striped>tbody>tr:nth-of-type(odd) {
+  background-color: rgba(13, 110, 253, 0.025);
 }
-.table > tbody > tr:hover {
-  background: rgba(13,110,253,0.04);
+
+.table>tbody>tr:hover {
+  background: rgba(13, 110, 253, 0.04);
   transition: background 0.2s;
 }
-.table > thead > tr {
-  background: rgba(13,110,253,0.025);
+
+.table>thead>tr {
+  background: rgba(13, 110, 253, 0.025);
 }
-.table > thead th {
+
+.table>thead th {
   font-weight: 600;
   background: transparent;
-  border-bottom: 1px solid rgba(13,110,253,0.06);
+  border-bottom: 1px solid rgba(13, 110, 253, 0.06);
 }
-.table > tbody > tr:first-child td {
+
+.table>tbody>tr:first-child td {
   border-top: none;
 }
-.table > tbody > tr:last-child td {
+
+.table>tbody>tr:last-child td {
   border-bottom-left-radius: $border-radius;
   border-bottom-right-radius: $border-radius;
 }
-.table > tbody > tr {
-  &:first-child td:first-child { border-top-left-radius: $border-radius; }
-  &:first-child td:last-child { border-top-right-radius: $border-radius; }
-  &:last-child td:first-child { border-bottom-left-radius: $border-radius; }
-  &:last-child td:last-child { border-bottom-right-radius: $border-radius; }
+
+.table>tbody>tr {
+  &:first-child td:first-child {
+    border-top-left-radius: $border-radius;
+  }
+
+  &:first-child td:last-child {
+    border-top-right-radius: $border-radius;
+  }
+
+  &:last-child td:first-child {
+    border-bottom-left-radius: $border-radius;
+  }
+
+  &:last-child td:last-child {
+    border-bottom-right-radius: $border-radius;
+  }
 }
 
-.table > tbody > tr {
+.table>tbody>tr {
   position: relative;
   transition: background 0.2s, box-shadow 0.2s, transform 0.2s;
   cursor: pointer;
-  &:hover, &.active, &:focus {
-    background: rgba(13,110,253,0.07) !important;
-    box-shadow: 0 2px 12px rgba(13,110,253,0.10);
+
+  &:hover,
+  &.active,
+  &:focus {
+    background: rgba(13, 110, 253, 0.07) !important;
+    box-shadow: 0 2px 12px rgba(13, 110, 253, 0.10);
     transform: scale(1.01);
     z-index: 1;
+
     &::before {
       background: $primary-color;
     }
   }
 }
+
+.table td input[type="number"][placeholder="Commission %"] {
+  width: 10ch;
+  min-width: 6ch;
+  max-width: 100px;
+  text-align: center;
+  padding: 0 .5em;
+}
+
+.table td input[type="number"][placeholder="Hourly Rate ($)"] {
+  width: 12ch; // "Hourly Rate ($)" is 13 characters- 1 adjustment character
+  min-width: 6ch;
+  max-width: 100px;
+  text-align: center;
+  padding: 0 .5em;
+}
+
+.table td input[type="number"][placeholder="Min value"] {
+  width: 8ch; // "Min value" is 9 characters- 1 adjustment character
+  min-width: 6ch;
+  max-width: 100px;
+  text-align: center;
+  padding: 0 .5em;
+}
+
+.table td input[type="number"][placeholder="Max value"] {
+  width: 8ch; // "Max value" is 9 characters- 1 adjustment character
+  min-width: 6ch;
+  max-width: 100px;
+  text-align: center;
+  padding: 0 .5em;
+}
+
+.table td input[type="number"][placeholder="Bonus amount"] {
+  width: 11ch; // "Bonus amount" is 12 characters - 1 adjustment character
+  min-width: 6ch;
+  max-width: 100px;
+  text-align: center;
+  padding: 0 .5em;
+}
+
+.table td input[type="text"][placeholder="Enter Role ID"] {
+  width: 13ch;
+  min-width: 6ch;
+  max-width: 100px;
+  text-align: center;
+  padding: 0 .5em;
+}
+
+.table td input[type="text"][placeholder="Enter User ID"] {
+  width: 13ch;
+  min-width: 6ch;
+  max-width: 100px;
+  text-align: center;
+  padding: 0 .5em;
+}
+
+.table td input[type="text"][placeholder="Enter model name"] {
+  width: 16ch;
+  min-width: 6ch;
+  max-width: 100px;
+  text-align: center;
+  padding: 0 .5em;
+}
+
+
+.table td input[type="text"][placeholder="Enter shift name"] {
+  width: 16ch;
+  min-width: 6ch;
+  max-width: 100px;
+  text-align: center;
+  padding: 0 .5em;
+}
+
+.table td input[type="text"][placeholder="Enter period name"] {
+  width: 16ch;
+  min-width: 6ch;
+  max-width: 100px;
+  text-align: center;
+  padding: 0 .5em;
+}
+
+// .input-group>.form-control {
+//   width: inherit;
+// }
+
+// .input-group>:not(:first-child):not(.dropdown-menu):not(.valid-tooltip):not(.valid-feedback):not(.invalid-tooltip):not(.invalid-feedback) {
+//   border-start-start-radius: initial;
+//   border-end-end-radius: initial;
+//   border-start-end-radius: initial;
+//   border-end-start-radius: initial;
+//   width: 100%;
+// }
+
+// .input-group:not(.has-validation)>:not(:last-child):not(.dropdown-toggle):not(.dropdown-menu):not(.form-floating),
+// .input-group:not(.has-validation)>.dropdown-toggle:nth-last-child(n+3),
+// .input-group:not(.has-validation)>.form-floating:not(:last-child)>.form-control,
+// .input-group:not(.has-validation)>.form-floating:not(:last-child)>.form-select[title="Select existing role for commission settings"] {
+//   border-start-start-radius: initial;
+//   border-end-start-radius: initial;
+// }
