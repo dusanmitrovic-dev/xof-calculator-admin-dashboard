@@ -548,11 +548,11 @@
                     class="bonus-rule-wrapper"
                   >
                     <div
-                      class="row g-3 align-items-center p-2 border rounded position-relative flex-wrap bonus-rule-row"
+                      class="row g-3 align-items-center p-2 border rounded position-relative flex-wrap bonus-rule-row text-center"
                     >
                       <div
                         cdkDragHandle
-                        class="col-auto d-flex align-items-center me-2"
+                        class="col-auto d-flex align-items-center me-2 justify-content-center"
                         style="cursor: grab"
                         title="Drag to reorder"
                         aria-label="Drag to reorder bonus rule"
@@ -572,6 +572,7 @@
                         </label>
                         <input
                           cFormControl
+                          class="text-center"
                           type="number"
                           [id]="'bonus_from_' + i"
                           formControlName="from"
@@ -621,6 +622,7 @@
                         </label>
                         <input
                           cFormControl
+                          class="text-center"
                           type="number"
                           [id]="'bonus_to_' + i"
                           formControlName="to"
@@ -685,6 +687,7 @@
                         </label>
                         <input
                           cFormControl
+                          class="text-center"
                           type="number"
                           [id]="'bonus_amount_' + i"
                           formControlName="amount"
