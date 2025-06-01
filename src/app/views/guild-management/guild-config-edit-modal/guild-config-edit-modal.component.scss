@@ -82,7 +82,6 @@ $transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   &:last-child td:last-child { border-bottom-right-radius: $border-radius; }
 }
 
-// Elegant row recognizability for modal tables
 .table > tbody > tr {
   position: relative;
   transition: background 0.2s, box-shadow 0.2s, transform 0.2s;
