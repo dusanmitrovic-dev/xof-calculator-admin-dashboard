@@ -145,7 +145,7 @@ $transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .table td input[type="number"][placeholder="Max value"] {
-  width: 8ch; // "Max value" is 9 characters- 1 adjustment character
+  width: 8ch;
   min-width: 6ch;
   max-width: 100px;
   text-align: center;
@@ -153,7 +153,7 @@ $transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .table td input[type="number"][placeholder="Bonus amount"] {
-  width: 11ch; // "Bonus amount" is 12 characters - 1 adjustment character
+  width: 11ch;
   min-width: 6ch;
   max-width: 100px;
   text-align: center;
