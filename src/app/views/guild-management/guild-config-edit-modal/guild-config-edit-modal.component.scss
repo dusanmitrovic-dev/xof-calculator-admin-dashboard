@@ -129,7 +129,7 @@ $transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .table td input[type="number"][placeholder="Hourly Rate ($)"] {
-  width: 9ch; // "Hourly Rate ($)" is 13 characters- 1 adjustment character
+  width: 9ch;
   min-width: 6ch;
   max-width: 100px;
   text-align: center;
