@@ -121,7 +121,7 @@ $transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .table td input[type="number"][placeholder="Commission %"] {
-  width: 10ch;
+  width: 8ch;
   min-width: 6ch;
   max-width: 100px;
   text-align: center;
@@ -129,7 +129,7 @@ $transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .table td input[type="number"][placeholder="Hourly Rate ($)"] {
-  width: 12ch; // "Hourly Rate ($)" is 13 characters- 1 adjustment character
+  width: 9ch; // "Hourly Rate ($)" is 13 characters- 1 adjustment character
   min-width: 6ch;
   max-width: 100px;
   text-align: center;
@@ -199,6 +199,15 @@ $transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   max-width: 100px;
   text-align: center;
   padding: 0 .5em;
+}
+
+.c-modal-dialog {
+  margin-top: 20%;
+}
+
+.bonus-rules-header {
+  display: flex;
+  justify-content: end;
 }
 
 // .input-group>.form-control {
