@@ -76,5 +76,11 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/dusanmitrovic-dev/xof-calculator-admin-dashboard.git"
+  },
+  "description": "This section outlines the key features and enhancements implemented as part of the 1.0.0 release of the XOF Calculator Admin Dashboard.",
+  "main": "karma.conf.js",
+  "keywords": [],
+  "bugs": {
+    "url": "https://github.com/dusanmitrovic-dev/xof-calculator-admin-dashboard/issues"
   }
 }
