@@ -20,7 +20,7 @@ import { GuildConfigService, AvailableGuild } from '../../../services/guild-conf
 import { AuthService } from '../../../auth/auth.service'; // Import AuthService
 import { TitleService } from '../../../services/title.service'; // Import TitleService
 import { DefaultLayoutComponent } from '..';
-import { logoBase64, logoText } from 'src/app/icons/logo';
+import { logoBase64, logoText } from '../../../icons/logo';
 
 @Component({
     selector: 'app-default-header',
