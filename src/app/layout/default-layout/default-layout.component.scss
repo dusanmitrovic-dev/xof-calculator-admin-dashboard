@@ -25,6 +25,10 @@
     margin-bottom: 1rem;
   }
 
+  .sidebar-brand-full{
+    max-inline-size: 48px;
+  }
+
   // Responsive improvements for predictable elements
   @media (max-width: 576px) {
     .container,
