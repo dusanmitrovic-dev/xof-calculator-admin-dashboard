@@ -135,19 +135,20 @@
 :host ::ng-deep .btn-primary:disabled {
   background: #35354a;
   color: #a0a0b0;
-   cursor: not-allowed;
+  cursor: not-allowed;
 }
 :host ::ng-deep .btn-primary:hover:not(:disabled) {
-   background: #7b82fa;
+  background: #7b82fa;
   box-shadow: 0 4px 16px rgba(99,102,241,0.25);
 }
 
 .form-group > .logo-preview {
-   width: 48px !important;
+  width: 48px !important;
   height: 48px !important;
   object-fit: cover;
   border-radius: 8px;
   background: #23233a;
   padding: 4px;
   display: block;
+
 }
