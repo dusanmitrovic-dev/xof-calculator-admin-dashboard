@@ -134,8 +134,9 @@
 }
 :host ::ng-deep .btn-primary:disabled {
   background: #35354a;
-  
+
   color: #a0a0b0;
+
   cursor: not-allowed;
 }
 :host ::ng-deep .btn-primary:hover:not(:disabled) {
