@@ -1,28 +1,21 @@
 @media (max-width: 576px) {
   .px-4 {
     padding-right: 0rem !important;
-
     padding-left: 0rem !important;
   }
 
   .container,
   .container-fluid,
-
   .container-xxl,
-
   .container-xl,
-
   .container-lg,
-
   .container-md,
-
   .container-sm {
     --cui-gutter-x: 1.5rem;
     --cui-gutter-y: 0;
+
     width: 100%;
     padding-right: 0rem;
-
-
     padding-left: 0rem;
     margin-right: auto;
     margin-left: auto;
